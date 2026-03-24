@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>JGitkins New Repository</title>
+	<link rel="icon" type="image/png" th:href="@{/assets/img/ci2.png}">
+	<link rel="stylesheet" th:href="@{/assets/css/app.css}">
+</head>
+<body>
+<div th:replace="fragments/topbar :: topbar('create-repository')"></div>
+<div class="page">
+	<header class="header-bar header-bar--split">
+		<div>
+			<h1>Create a new repository</h1>
+			<p>Choose the owner, define visibility, and ship the first commit instantly.</p>
+		</div>
+<!--		<div class="header-bar__meta">-->
+<!--			<span>Default branch</span>-->
+<!--			<strong th:text="${form.mainBranch}">main</strong>-->
+<!--		</div>-->
+	</header>
+
+	<div class="alert" th:if="${organizeError}" th:text="${organizeError}"></div>
+	<div class="alert" th:if="${formError}" th:text="${formError}"></div>
+
+	<main class="create-layout">
+		<section class="panel create-panel">
+			<form class="repo-form" th:action="@{/repositories}" th:object="${form}" method="post">
+				<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+				<div class="form-grid">
+					<div class="field">
+						<label for="repo-owner-type">Owner</label>
+						<select id="repo-owner-type" class="input select" th:field="*{ownerType}">
+							<option value="USER" th:text="${ownerLabel}">Personal</option>
+							<option value="ORGANIZATION"
+									th:disabled="${organizes == null || organizes.isEmpty()}">Organization</option>
+						</select>
+						<span class="field__hint">Organizations automatically sync members and permissions.</span>
+					</div>
+
+					<div class="field" id="org-select">
+						<label for="repo-owner-org">Organization</label>
+						<select id="repo-owner-org" class="input select" th:field="*{organizeId}">
+							<option value="" th:text="${organizes == null || organizes.isEmpty() ? 'No organizations available' : 'Select organization'}">Select organization</option>
+							<option th:each="organize : ${organizes}" th:value="${organize.id}" th:text="${organize.name}">Organization</option>
+						</select>
+					</div>
+
+					<div class="field">
+						<label for="repo-name">Repository name</label>
+						<input id="repo-name" class="input" type="text" placeholder="e.g. jgitkins-api" th:field="*{repoName}" />
+						<span class="field__hint">URL: https://jgitkins.io/<strong th:text="${ownerSlug}">owner</strong>/<strong id="repo-name-hint" th:text="${#strings.isEmpty(form.repoName) ? 'repo' : form.repoName}">repo</strong></span>
+					</div>
+
+					<div class="field">
+						<label for="repo-description">Description</label>
+						<textarea id="repo-description" class="textarea" placeholder="Short summary for your team and future contributors." th:field="*{description}"></textarea>
+					</div>
+
+					<div class="form-section">
+						<h2>Visibility</h2>
+						<div class="option-grid">
+							<label class="option-card">
+								<input type="radio" th:field="*{visibility}" value="PRIVATE" />
+								<div>
+									<strong>Private</strong>
+									<p>Only invited members can access and search.</p>
+								</div>
+							</label>
+							<label class="option-card">
+								<input type="radio" th:field="*{visibility}" value="PUBLIC" />
+								<div>
+									<strong>Public</strong>
+									<p>Open to everyone and listed in public discovery.</p>
+								</div>
+							</label>
+						</div>
+					</div>
+
+					<div class="form-section">
+						<h2>Initialize repository</h2>
+						<div class="option-list">
+							<label class="check-row">
+								<input type="checkbox" th:field="*{readme}" />
+								<span>Add README</span>
+							</label>
+							<div class="field">
+								<label for="repo-message">Initial commit message</label>
+								<input id="repo-message" class="input" type="text" placeholder="Initial commit" th:field="*{message}" />
+							</div>
+							<div class="field">
+								<label for="repo-branch">Default branch</label>
+								<input id="repo-branch" class="input" type="text" placeholder="main" th:field="*{mainBranch}" />
+							</div>
+						</div>
+					</div>
+
+					<div class="form-actions">
+						<a class="ghost" href="/">Cancel</a>
+						<button class="primary" type="submit">Create repository</button>
+					</div>
+				</div>
+			</form>
+		</section>
+
+		<aside class="panel create-side">
+			<div class="side-header">
+				<h2>Preview</h2>
+				<span class="badge">Draft</span>
+			</div>
+			<div class="preview-card">
+				<div>
+					<p class="preview-label">Repository path</p>
+					<h3>
+						<span th:text="${ownerSlug}">owner</span>
+						/
+						<span id="repo-name-preview" th:text="${#strings.isEmpty(form.repoName) ? 'repo' : form.repoName}">repo</span>
+					</h3>
+					<p class="preview-desc" th:text="${form.description}">API service powering CI pipelines and release bots.</p>
+				</div>
+				<div class="preview-meta">
+					<span th:text="${form.visibility}">Private</span>
+					<span th:text="${form.readme} ? 'README included' : 'No README'">README included</span>
+					<span th:text="${form.mainBranch}">main</span>
+				</div>
+			</div>
+
+			<div class="side-list">
+				<h3>What happens next</h3>
+				<ul>
+					<li>Invite your team and assign roles</li>
+					<li>Connect CI jobs and webhooks</li>
+					<li>Protect the main branch</li>
+				</ul>
+			</div>
+
+			<div class="alert">
+				<strong>Tip:</strong> Enabling initialization creates the first commit automatically.
+			</div>
+		</aside>
+	</main>
+</div>
+<script>
+	const ownerTypeSelect = document.getElementById("repo-owner-type");
+	const orgSelectWrap = document.getElementById("org-select");
+	const orgSelect = document.getElementById("repo-owner-org");
+	const repoNameInput = document.getElementById("repo-name");
+	const repoNameHint = document.getElementById("repo-name-hint");
+	const repoNamePreview = document.getElementById("repo-name-preview");
+
+	const toggleOrgSelect = () => {
+		const isOrg = ownerTypeSelect.value === "ORGANIZATION";
+		orgSelectWrap.style.display = isOrg ? "grid" : "none";
+		orgSelect.disabled = !isOrg;
+	};
+
+	if (ownerTypeSelect && orgSelectWrap && orgSelect) {
+		ownerTypeSelect.addEventListener("change", toggleOrgSelect);
+		toggleOrgSelect();
+	}
+
+	const syncRepoName = () => {
+		if (!repoNameInput) {
+			return;
+		}
+		const displayName = repoNameInput.value.trim() || "repo";
+		if (repoNameHint) {
+			repoNameHint.textContent = displayName;
+		}
+		if (repoNamePreview) {
+			repoNamePreview.textContent = displayName;
+		}
+	};
+
+	if (repoNameInput) {
+		repoNameInput.addEventListener("input", syncRepoName);
+		syncRepoName();
+	}
+</script>
+</body>
+</html>

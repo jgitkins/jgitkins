@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>JGitkins Dashboard</title>
+	<link rel="icon" type="image/png" th:href="@{/assets/img/ci2.png}">
+	<link rel="stylesheet" th:href="@{/assets/css/app.css}">
+	<script src="https://unpkg.com/htmx.org@1.9.12"></script>
+</head>
+<body>
+<div th:replace="fragments/topbar :: topbar('dashboard')"></div>
+<div class="page">
+	<header class="header-bar header-bar--split">
+		<div>
+			<h1>Hi, <span th:text="${displayName}">there</span></h1>
+			<p>Here’s what’s waiting for you today.</p>
+		</div>
+<!--		<div class="header-bar__meta">-->
+<!--			<div>-->
+<!--				<span>Last sync</span>-->
+<!--				<strong th:text="${#temporals.format(lastUpdated, 'yyyy-MM-dd HH:mm:ss')}">Updated</strong>-->
+<!--			</div>-->
+<!--		</div>-->
+	</header>
+ <div class="dashboard-layout">
+		<section class="dashboard-card dashboard-card--states is-disabled">
+			<h2 class="dashboard-title">Activity</h2>
+			<div class="panel dashboard-tabs">
+				<div class="state-metrics">
+<!--					<div class="state-card is-active">-->
+<!--						<span class="state-card__label">PROCESSING CI</span>-->
+<!--						<strong class="state-card__value">0</strong>-->
+<!--					</div>-->
+<!--					<div class="state-card">-->
+<!--						<span class="state-card__label">PROCESSING ISSUE</span>-->
+<!--						<strong class="state-card__value">0</strong>-->
+<!--					</div>-->
+<!--					<div class="state-card">-->
+<!--						<span class="state-card__label">PROCESSING MR</span>-->
+<!--						<strong class="state-card__value">0</strong>-->
+<!--					</div>-->
+				</div>
+			</div>
+		</section>
+
+		<section class="dashboard-card dashboard-card--access">
+			<h2 class="dashboard-title">Access</h2>
+			<div class="panel repo-widget">
+				<div class="repo-widget__header">
+					<div class="repo-widget__tabs">
+						<button class="repo-widget__tab is-active" type="button" data-target="repo-list">
+							Repositories <span class="chip" th:text="${#lists.size(dashboard.repositories())}">0</span>
+						</button>
+						<button class="repo-widget__tab" type="button" data-target="org-list">
+							Organizations <span class="chip" th:text="${#lists.size(dashboard.organizes())}">0</span>
+						</button>
+					</div>
+				</div>
+				<div class="repo-widget__search">
+					<input class="search-input" type="text" placeholder="Search repositories..."/>
+				</div>
+				<div class="repo-widget__list" id="repo-list" th:if="${!#lists.isEmpty(dashboard.repositories())}">
+					<a class="repo-widget__item" th:each="repo : ${dashboard.repositories()}"
+							 th:href="@{/{owner}/{repo}(owner=${repo.ownerSlug()}, repo=${repo.repoName()})}">
+						<span>[[${repo.namespace()}]]/[[${repo.repoName()}]]</span>
+						<span class="chip" th:text="${repo.repository().visibility()}">PRIVATE</span>
+					</a>
+				</div>
+				<div class="empty" id="repo-empty" th:if="${#lists.isEmpty(dashboard.repositories())}">
+					<p>No repositories to display.</p>
+				</div>
+				<div class="repo-widget__list is-hidden" id="org-list" th:if="${!#lists.isEmpty(dashboard.organizes())}">
+					<a class="repo-widget__item" th:each="organize : ${dashboard.organizes()}"
+							 th:href="@{/{organizeName}(organizeName=${organize.name()})}">
+						<span th:text="${organize.name()}">Organization</span>
+						<span class="chip">ORG</span>
+					</a>
+				</div>
+				<div class="empty is-hidden" id="org-empty" th:if="${#lists.isEmpty(dashboard.organizes())}">
+					<p>No organizations to display.</p>
+				</div>
+			</div>
+		</section>
+
+		<div class="dashboard-feed is-disabled">
+			<h2 class="dashboard-title">Feed</h2>
+			<div id="feed" th:replace="fragments/feed :: list"></div>
+		</div>
+	</div>
+</div>
+<div class="modal" id="username-modal" th:classappend="${pendingUsername} ? ' is-open' : ''">
+	<div class="modal__backdrop"></div>
+	<div class="modal__content">
+		<div class="modal__header">
+			<h2>Choose your username</h2>
+		</div>
+		<p class="modal__note">This will be your personal namespace and repository URL.</p>
+		<div class="alert" th:if="${usernameSetupError}" th:text="${usernameSetupError}"></div>
+		<form class="repo-form" th:action="@{/onboarding/username}" method="post">
+			<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+			<div class="form-grid">
+				<div class="field">
+					<label for="username-input">Username</label>
+					<input id="username-input" class="input" type="text" placeholder="e.g. roovcloudy" name="username" required />
+					<span class="field__hint">Allowed: letters, numbers, dot, hyphen, underscore</span>
+				</div>
+				<div class="form-actions">
+					<button class="primary" type="submit">Save username</button>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+<script>
+	const tabs = document.querySelectorAll(".repo-widget__tab");
+	const repoList = document.getElementById("repo-list");
+	const repoEmpty = document.getElementById("repo-empty");
+	const orgList = document.getElementById("org-list");
+	const orgEmpty = document.getElementById("org-empty");
+
+	const setActive = (target) => {
+		tabs.forEach((tab) => tab.classList.remove("is-active"));
+		tabs.forEach((tab) => {
+			if (tab.dataset.target === target) {
+				tab.classList.add("is-active");
+			}
+		});
+		const showRepo = target === "repo-list";
+		if (repoList) repoList.classList.toggle("is-hidden", !showRepo);
+		if (repoEmpty) repoEmpty.classList.toggle("is-hidden", !showRepo);
+		if (orgList) orgList.classList.toggle("is-hidden", showRepo);
+		if (orgEmpty) orgEmpty.classList.toggle("is-hidden", showRepo);
+	};
+
+	tabs.forEach((tab) => {
+		tab.addEventListener("click", () => setActive(tab.dataset.target));
+	});
+
+</script>
+</body>
+</html>

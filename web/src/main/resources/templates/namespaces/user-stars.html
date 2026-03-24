@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>JGitkins Stars</title>
+	<link rel="icon" type="image/png" th:href="@{/assets/img/ci2.png}">
+	<link rel="stylesheet" th:href="@{/assets/css/app.css}">
+</head>
+<body>
+<div th:replace="fragments/topbar :: topbar('namespace')"></div>
+<div class="page">
+	<header class="header-bar header-bar--split">
+		<div>
+			<h1 th:text="${detail.name()}">User</h1>
+			<p>Personal namespace</p>
+		</div>
+	</header>
+
+	<nav class="repo-subnav" th:if="${detail.errorMessage() == null}">
+		<a class="repo-subnav__link"
+			 th:classappend="${activeTab == 'repositories'} ? ' is-active' : ''"
+			 th:href="@{/{namespace}/-/repositories(namespace=${detail.name()})}">Repositories</a>
+		<a class="repo-subnav__link"
+			 th:classappend="${activeTab == 'stars'} ? ' is-active' : ''"
+			 th:href="@{/{namespace}/-/stars(namespace=${detail.name()})}">Stars</a>
+	</nav>
+
+	<div class="alert" th:if="${detail.errorMessage()}" th:text="${detail.errorMessage()}"></div>
+
+	<main class="user-layout" th:if="${detail.errorMessage() == null}">
+		<aside class="panel user-profile">
+			<div class="panel__body">
+				<div class="profile-card">
+					<div class="profile-card__avatar">?</div>
+					<div>
+						<h2 class="profile-card__name" th:text="${detail.name()}">User</h2>
+						<p class="profile-card__meta">Personal namespace</p>
+					</div>
+				</div>
+			</div>
+		</aside>
+		<section class="panel user-repos">
+			<div class="panel__body">
+				<div class="empty">
+					<p>No starred repositories yet.</p>
+				</div>
+			</div>
+		</section>
+	</main>
+</div>
+</body>
+</html>

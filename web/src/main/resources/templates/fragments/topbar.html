@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<body>
+<header class="topbar" th:fragment="topbar(active)">
+	<div class="topbar__left">
+		<a class="topbar__brand" href="/">
+			<img class="brand__logo" th:src="@{/assets/img/ci2.png}" alt="JGitkins logo"/>
+		</a>
+		<a href="/explore/repositories" class="topbar__tab">
+			<label>Explore</label>
+		</a>
+	</div>
+
+	<div class="topbar__actions">
+		<div sec:authorize="isAnonymous()">
+			<a class="google-button google-button--compact" href="/oauth2/authorization/google">
+				<span class="google-button__icon" aria-hidden="true">G</span>
+				<span>Sign in with Google</span>
+			</a>
+		</div>
+		<div class="topbar__auth" sec:authorize="isAuthenticated()">
+<!--			<a href="/notifications" class="topbar__icon">-->
+<!--				<img class="topbar__icon-image" th:src="@{/assets/svg/notification-svgrepo-com.svg}" alt="Notifications"/>-->
+<!--			</a>-->
+
+			<details class="menu">
+				<summary class="menu__summary">
+					<img class="topbar__icon-image" th:src="@{/assets/svg/new-window-svgrepo-com.svg}" alt="Create"/>
+					<span class="menu__caret" aria-hidden="true">
+						<svg viewBox="0 0 10 6" role="img" focusable="false">
+							<path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+						</svg>
+					</span>
+				</summary>
+				<div class="menu__panel">
+					<a href="/repositories/new" class="menu__item">New repository</a>
+					<a href="/organizes/new" class="menu__item">New organization</a>
+				</div>
+			</details>
+
+			<details class="menu">
+				<summary class="menu__summary">
+					<img class="topbar__icon-image" th:src="@{/assets/svg/profile-round-1342-svgrepo-com.svg}" alt="Profile"/>
+					<span class="menu__caret" aria-hidden="true">
+						<svg viewBox="0 0 10 6" role="img" focusable="false">
+							<path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+						</svg>
+					</span>
+				</summary>
+				<div class="menu__panel">
+					<a href="/settings/profile" class="menu__item">Profile</a>
+<!--					<a href="#" class="menu__item">Starred</a>-->
+<!--					<a href="#" class="menu__item">Subscriptions</a>-->
+					<span class="menu__item is-disabled" aria-disabled="true">Settings</span>
+<!--					<a href="#" class="menu__item">Help</a>-->
+					<form th:action="@{/logout}" method="post" class="menu__form">
+						<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+						<button type="submit" class="menu__item menu__item--button">Sign out</button>
+					</form>
+				</div>
+			</details>
+		</div>
+	</div>
+	<script src="/assets/js/app.js" defer></script>
+</header>
+</body>
+</html>

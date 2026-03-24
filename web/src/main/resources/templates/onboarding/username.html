@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Set username</title>
+	<link rel="icon" type="image/png" th:href="@{/assets/img/ci2.png}">
+	<link rel="stylesheet" th:href="@{/assets/css/app.css}">
+</head>
+<body>
+<div th:replace="fragments/topbar :: topbar('onboarding')"></div>
+<div class="page">
+	<header class="header-bar header-bar--split">
+		<div>
+			<h1>Choose your username</h1>
+			<p>This will be your personal namespace and repository URL.</p>
+		</div>
+	</header>
+
+	<div class="alert" th:if="${formError}" th:text="${formError}"></div>
+
+	<main class="create-layout">
+		<section class="panel create-panel">
+			<form class="repo-form" th:action="@{/onboarding/username}" th:object="${form}" method="post">
+				<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+				<div class="form-grid">
+					<div class="field">
+						<label for="username">Username</label>
+						<input id="username" class="input" type="text" placeholder="e.g. roovcloudy" th:field="*{username}" />
+						<span class="field__hint">Allowed: letters, numbers, dot, hyphen, underscore</span>
+					</div>
+					<div class="form-actions">
+						<button class="primary" type="submit">Save username</button>
+					</div>
+				</div>
+			</form>
+		</section>
+	</main>
+</div>
+</body>
+</html>

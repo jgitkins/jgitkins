@@ -73,14 +73,12 @@ jobs:
     uses: ./.github/workflows/server.yml
     secrets: inherit
 
-  web-placeholder:
-    name: Web Placeholder
+  web:
+    name: Web
     needs: detect-changes
     if: needs.detect-changes.outputs.web_changed == 'true'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Web module not migrated yet
-        run: echo "web module CI jobs should be added after source migration is complete."
+    uses: ./.github/workflows/web.yml
+    secrets: inherit
 
   runner-placeholder:
     name: Runner Placeholder

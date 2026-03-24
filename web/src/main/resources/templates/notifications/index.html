@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>JGitkins Notifications</title>
+	<link rel="icon" type="image/png" th:href="@{/assets/img/ci2.png}">
+	<link rel="stylesheet" th:href="@{/assets/css/app.css}">
+</head>
+<body>
+<div th:replace="fragments/topbar :: topbar('notifications')"></div>
+<div class="page">
+	<header class="header-bar">
+		<div>
+			<h1>Notifications</h1>
+			<p>Stay up to date with repository events.</p>
+		</div>
+	</header>
+
+	<main>
+		<section class="panel">
+			<div class="panel__body">
+				<div class="empty">
+					<p>No notifications yet.</p>
+				</div>
+			</div>
+		</section>
+	</main>
+</div>
+</body>
+</html>

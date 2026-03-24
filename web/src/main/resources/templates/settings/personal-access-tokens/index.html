@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Personal Access Tokens</title>
+	<link rel="icon" type="image/png" th:href="@{/assets/img/ci2.png}">
+	<link rel="stylesheet" th:href="@{/assets/css/app.css}">
+</head>
+<body>
+<div th:replace="fragments/topbar :: topbar('settings')"></div>
+<div class="page">
+	<header class="header-bar">
+		<div>
+			<h1>Personal Access Tokens</h1>
+			<p>Create and manage tokens for API access.</p>
+		</div>
+<!--		<div class="header-bar__meta">-->
+<!--			<a class="primary" href="/settings/personal-access-tokens/new">-->
+<!--				<img class="button-icon" th:src="@{/assets/svg/add-square-svgrepo-com.svg}" alt="" aria-hidden="true" />-->
+<!--				New token-->
+<!--			</a>-->
+<!--		</div>-->
+
+	</header>
+
+	<div class="settings-layout">
+		<nav class="settings-nav">
+			<a class="settings-nav__link" href="/settings/profile">Profile</a>
+			<a class="settings-nav__link is-active" href="/settings/personal-access-tokens">Personal access tokens</a>
+		</nav>
+
+		<div class="settings-content">
+			<section class="panel settings-panel">
+				<h2>Tokens</h2>
+				<p class="settings-muted">
+					<span>Use tokens to authenticate API requests on your behalf.</span>
+					<a href="/settings/personal-access-tokens/new" aria-label="Create new token">
+						<img class="button-icon" th:src="@{/assets/svg/add-square-svgrepo-com.svg}" alt="" aria-hidden="true" />
+					</a>
+				</p>
+				<div class="settings-table">
+				<div class="settings-table__row settings-table__head">
+					<span>Name</span>
+					<span>Description</span>
+					<span>Created</span>
+					<span>Updated</span>
+					<span></span>
+				</div>
+				<div class="settings-table__row" th:if="${#lists.isEmpty(tokens)}">
+					<span>No tokens yet</span>
+					<span>Create a personal access token to begin.</span>
+					<span>-</span>
+					<span>-</span>
+					<span></span>
+				</div>
+				<div class="settings-table__row" th:each="token : ${tokens}">
+					<span th:text="${token.name()}">Token name</span>
+					<span th:text="${token.description() == null || token.description().isBlank() ? '-' : token.description()}">Description</span>
+					<span th:text="${#temporals.format(token.createdAt(), 'yyyy-MM-dd HH:mm')}">Created</span>
+					<span th:text="${#temporals.format(token.updatedAt(), 'yyyy-MM-dd HH:mm')}">Updated</span>
+					<div class="settings-table__action">
+						<button class="ghost" type="button" data-delete-button
+								th:attr="data-delete-id=${token.id()},data-delete-name=${token.name()}">Delete</button>
+					</div>
+				</div>
+			</div>
+			</section>
+		</div>
+	</div>
+</div>
+<div class="modal" th:classappend="${issuedToken} != null ? ' is-open' : ''" data-token-modal>
+	<div class="modal__backdrop" data-modal-close></div>
+	<div class="modal__content" role="dialog" aria-modal="true" aria-labelledby="tokenModalTitle">
+		<div class="modal__header">
+			<h2 id="tokenModalTitle">Personal access token created</h2>
+			<button class="modal__close" type="button" data-modal-close aria-label="Close">
+				<span aria-hidden="true">✕</span>
+			</button>
+		</div>
+		<p class="modal__note">Copy and store this token now. You will not be able to see it again.</p>
+		<div class="modal__token">
+			<input class="input" type="text" readonly
+				   th:value="${issuedToken}"
+				   value="jkpat_example_token" />
+			<button class="ghost" type="button" data-copy>Copy</button>
+		</div>
+	</div>
+</div>
+<div class="modal" data-delete-modal>
+	<div class="modal__backdrop" data-modal-close></div>
+	<div class="modal__content" role="dialog" aria-modal="true" aria-labelledby="deleteModalTitle">
+		<div class="modal__header">
+			<h2 id="deleteModalTitle">Delete token</h2>
+			<button class="modal__close" type="button" data-modal-close aria-label="Close">
+				<span aria-hidden="true">✕</span>
+			</button>
+		</div>
+		<p class="modal__note">This action cannot be undone.</p>
+		<p class="modal__token-name" data-delete-name>Token name</p>
+		<form class="modal__actions" method="post" data-delete-form>
+			<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+			<button class="ghost" type="button" data-modal-close>Cancel</button>
+			<button class="primary" type="submit">Delete</button>
+		</form>
+	</div>
+</div>
+<script>
+	const tokenModal = document.querySelector("[data-token-modal]");
+	if (tokenModal && tokenModal.classList.contains("is-open")) {
+		const closeButtons = tokenModal.querySelectorAll("[data-modal-close]");
+		closeButtons.forEach((button) => {
+			button.addEventListener("click", () => {
+				tokenModal.classList.remove("is-open");
+			});
+		});
+
+		const copyButton = tokenModal.querySelector("[data-copy]");
+		const tokenInput = tokenModal.querySelector(".modal__token input");
+		if (copyButton && tokenInput) {
+			copyButton.addEventListener("click", async () => {
+				try {
+					await navigator.clipboard.writeText(tokenInput.value);
+					copyButton.textContent = "Copied";
+					setTimeout(() => {
+						copyButton.textContent = "Copy";
+					}, 1500);
+				} catch (error) {
+					tokenInput.select();
+					document.execCommand("copy");
+				}
+			});
+		}
+	}
+
+	const deleteModal = document.querySelector("[data-delete-modal]");
+	const deleteName = deleteModal ? deleteModal.querySelector("[data-delete-name]") : null;
+	const deleteForm = deleteModal ? deleteModal.querySelector("[data-delete-form]") : null;
+	document.querySelectorAll("[data-delete-button]").forEach((button) => {
+		button.addEventListener("click", () => {
+			if (!deleteModal || !deleteForm || !deleteName) {
+				return;
+			}
+			const id = button.getAttribute("data-delete-id");
+			const name = button.getAttribute("data-delete-name");
+			deleteForm.setAttribute("action", `/settings/personal-access-tokens/${id}/delete`);
+			deleteName.textContent = name ? `Token: ${name}` : "Token";
+			deleteModal.classList.add("is-open");
+		});
+	});
+
+	if (deleteModal) {
+		deleteModal.querySelectorAll("[data-modal-close]").forEach((button) => {
+			button.addEventListener("click", () => {
+				deleteModal.classList.remove("is-open");
+			});
+		});
+	}
+</script>
+</body>
+</html>

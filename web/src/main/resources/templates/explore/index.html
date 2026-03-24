@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>JGitkins Explore</title>
+	<link rel="icon" type="image/png" th:href="@{/assets/img/ci2.png}">
+	<link rel="stylesheet" th:href="@{/assets/css/app.css}">
+</head>
+<body>
+<div th:replace="fragments/topbar :: topbar('explore')"></div>
+<div class="page">
+<!--	<header class="header-bar">-->
+<!--		<div>-->
+<!--			<h1 th:text="${exploreType == 'users' ? 'Explore Users' : (exploreType == 'organizations' ? 'Explore Organizations' : 'Explore Repositories')}">Explore Repositories</h1>-->
+<!--			<p th:text="${exploreType == 'users' ? 'Discover people and profiles.' : (exploreType == 'organizations' ? 'Browse organizations and teams.' : 'Browse public repositories and follow projects you care about.')}">Browse public repositories and follow projects you care about.</p>-->
+<!--		</div>-->
+<!--	</header>-->
+
+	<nav class="repo-subnav">
+		<a class="repo-subnav__link" th:classappend="${exploreType == 'users'} ? ' is-active' : ''" href="/explore/users">Users</a>
+		<a class="repo-subnav__link" th:classappend="${exploreType == 'repositories'} ? ' is-active' : ''" href="/explore/repositories">Repositories</a>
+		<a class="repo-subnav__link" th:classappend="${exploreType == 'organizations'} ? ' is-active' : ''" href="/explore/organizations">Organizations</a>
+	</nav>
+
+	<main>
+		<section class="panel">
+			<div class="panel__header">
+				<div>
+					<h2 th:text="${exploreType == 'users' ? 'Explore users' : (exploreType == 'organizations' ? 'Explore organizations' : 'Explore public repositories')}">Explore public repositories</h2>
+					<p th:text="${exploreType == 'users' ? 'Search for users and public profiles.' : (exploreType == 'organizations' ? 'Find organizations and open teams.' : 'Find public repositories and explore open projects.')}">Find public repositories and explore open projects.</p>
+				</div>
+			</div>
+			<div class="panel__body">
+				<div th:if="${exploreType == 'repositories'}">
+					<table class="repo-table" th:if="${!#lists.isEmpty(repositories)}">
+						<thead>
+							<tr>
+								<th>Repository</th>
+								<th>Created</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:each="repo : ${repositories}">
+								<td>
+									<a class="repo-table__link" th:href="@{/{namespace}/{repo}(namespace=${repo.namespace()}, repo=${repo.repoName()})}">
+										<span th:text="${repo.namespace()}">owner</span>/<span th:text="${repo.repoName()}">repo</span>
+									</a>
+								</td>
+								<td>
+									<span th:text="${#temporals.format(repo.createdAt(), 'yyyy-MM-dd')}">-</span>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+					<div class="empty" th:if="${#lists.isEmpty(repositories)}">
+						<p>No public repositories available yet.</p>
+					</div>
+				</div>
+				<div th:if="${exploreType == 'organizations'}">
+					<table class="repo-table" th:if="${organizations != null && !#lists.isEmpty(organizations)}">
+						<thead>
+							<tr>
+								<th>Organization</th>
+								<th>Created</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:each="org : ${organizations}">
+								<td>
+									<a class="repo-table__link" th:href="@{/{orgName}(orgName=${org.name()})}" th:text="${org.name()}">Org</a>
+								</td>
+								<td th:text="${#temporals.format(org.createdAt(), 'yyyy-MM-dd')}">-</td>
+							</tr>
+						</tbody>
+					</table>
+					<div class="empty" th:if="${organizations == null || #lists.isEmpty(organizations)}">
+						<p>No organizations found.</p>
+					</div>
+				</div>
+				<div th:if="${exploreType == 'users'}">
+					<table class="repo-table" th:if="${users != null && !#lists.isEmpty(users)}">
+						<thead>
+							<tr>
+								<th>User</th>
+								<th>Signup</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:each="user : ${users}">
+								<td>
+									<a class="repo-table__link" th:href="@{/{username}(username=${user.username()})}" th:text="${user.username()}">user</a>
+								</td>
+								<td th:text="${user.createdAt() != null ? #temporals.format(user.createdAt(), 'yyyy-MM-dd') : '-'}">-</td>
+							</tr>
+						</tbody>
+					</table>
+					<div class="empty" th:if="${users == null || #lists.isEmpty(users)}">
+						<p>No users found.</p>
+					</div>
+				</div>
+			</div>
+		</section>
+	</main>
+</div>
+</body>
+</html>

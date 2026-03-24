@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>JGitkins Organization</title>
+	<link rel="icon" type="image/png" th:href="@{/assets/img/ci2.png}">
+	<link rel="stylesheet" th:href="@{/assets/css/app.css}">
+</head>
+<body>
+<div th:replace="fragments/topbar :: topbar('namespace')"></div>
+<div class="page">
+	<header class="header-bar header-bar--split">
+		<div>
+			<div class="namespace-hero">
+				<span class="namespace-hero__badge">ORGANIZE</span>
+				<h1 th:text="${detail.name()}">Organization</h1>
+			</div>
+			<p th:text="${detail.description() != null ? detail.description() : 'Organization space'}">
+				Organization space
+			</p>
+		</div>
+	</header>
+
+	<nav class="repo-subnav" th:if="${detail.errorMessage() == null}">
+		<a class="repo-subnav__link is-active" href="#repositories">Repositories</a>
+		<span class="repo-subnav__link is-disabled" aria-disabled="true">Package</span>
+	</nav>
+
+	<div class="alert" th:if="${detail.errorMessage()}" th:text="${detail.errorMessage()}"></div>
+
+	<main class="namespace-layout" th:if="${detail.errorMessage() == null}">
+		<section class="panel namespace-main" id="repositories">
+			<div class="panel__body">
+				<ul class="repo-rows" th:if="${!#lists.isEmpty(detail.repositories())}">
+					<li class="repo-row" th:each="repo : ${detail.repositories()}">
+						<a class="repo-row__link" th:href="@{/{owner}/{repo}(owner=${detail.name()}, repo=${repo.name()})}"
+							 th:text="${repo.name()}">repo</a>
+						<span class="chip" th:text="${repo.visibility()}">PRIVATE</span>
+					</li>
+				</ul>
+				<div class="empty" th:if="${#lists.isEmpty(detail.repositories())}">
+					<p>No repositories in this namespace yet.</p>
+				</div>
+			</div>
+		</section>
+		<aside class="panel namespace-aside" id="members">
+			<div class="panel__header">
+				<div>
+					<h2>Members</h2>
+					<p>People with access to this organization.</p>
+				</div>
+			</div>
+			<div class="panel__body">
+				<ul class="member-list" th:if="${!#lists.isEmpty(detail.members())}">
+					<li class="member-card" th:each="member : ${detail.members()}">
+						<div>
+							<h3 th:text="'User #' + ${member.userId()}">User</h3>
+							<p th:text="${member.role()}">Role</p>
+						</div>
+						<span th:text="${#temporals.format(member.joinedAt(), 'yyyy-MM-dd')}">Date</span>
+					</li>
+				</ul>
+				<div class="empty" th:if="${#lists.isEmpty(detail.members())}">
+					<p>No members listed.</p>
+				</div>
+			</div>
+		</aside>
+	</main>
+</div>
+<script>
+	const subnavLinks = document.querySelectorAll(".subnav__link");
+	subnavLinks.forEach((link) => {
+		link.addEventListener("click", () => {
+			subnavLinks.forEach((item) => item.classList.remove("is-active"));
+			link.classList.add("is-active");
+		});
+	});
+</script>
+</body>
+</html>

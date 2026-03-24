@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Create Merge Request</title>
+	<link rel="icon" type="image/png" th:href="@{/assets/img/ci2.png}">
+	<link rel="stylesheet" th:href="@{/assets/css/app.css}">
+</head>
+<body>
+<div th:replace="fragments/topbar :: topbar('repository-merge')"></div>
+<div class="page">
+	<header class="header-bar">
+		<div>
+			<h1>Create Merge Request</h1>
+			<p th:text="${detail.repository != null ? detail.repository.name : 'Repository'}">Repository</p>
+		</div>
+	</header>
+
+	<div class="panel">
+		<div class="empty">
+			<p>Merge request creation is coming next. We can wire the form here once the server MR API is ready.</p>
+			<a class="primary" th:href="@{/{owner}/{repo}(owner=${detail.ownerSlug}, repo=${detail.repoName})}">Back to repository</a>
+		</div>
+	</div>
+</div>
+</body>
+</html>

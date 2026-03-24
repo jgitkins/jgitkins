@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Create Personal Access Token</title>
+	<link rel="icon" type="image/png" th:href="@{/assets/img/ci2.png}">
+	<link rel="stylesheet" th:href="@{/assets/css/app.css}">
+</head>
+<body>
+<div th:replace="fragments/topbar :: topbar('settings')"></div>
+<div class="page">
+	<header class="header-bar">
+		<div>
+			<h1>New personal access token</h1>
+			<p>Issue a token with scoped access for automation and integrations.</p>
+		</div>
+	</header>
+
+	<div class="settings-layout">
+		<nav class="settings-nav">
+			<a class="settings-nav__link" href="/settings/profile">Profile</a>
+			<a class="settings-nav__link is-active" href="/settings/personal-access-tokens">Personal access tokens</a>
+		</nav>
+
+		<section class="panel settings-panel">
+			<h2>Token details</h2>
+			<p class="settings-muted">Tokens are shown once. Store them securely after creation.</p>
+			<form class="settings-form" method="post" th:action="@{/settings/personal-access-tokens}" data-pat-form>
+				<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+				<p class="settings-alert" th:if="${error}" th:text="${error}">Please complete all fields.</p>
+				<label class="settings-field">
+					<span>Token name</span>
+					<input class="input" type="text" name="name" placeholder="CI runner token" required data-required />
+				</label>
+				<label class="settings-field">
+					<span>Description</span>
+					<textarea class="input" name="description" rows="3" placeholder="Short description for this token" required data-required></textarea>
+				</label>
+				<label class="settings-field">
+					<span>Expiration</span>
+					<select class="input select" name="expiration" required data-required>
+						<option value="" selected disabled>Select expiration</option>
+						<option value="30">30 days</option>
+						<option value="60">60 days</option>
+						<option value="90">90 days</option>
+						<option value="never">No expiration</option>
+					</select>
+				</label>
+<!--				<div class="settings-field">-->
+<!--					<span>Scopes</span>-->
+<!--					<div class="settings-checklist">-->
+<!--						<label class="settings-checklist__item">-->
+<!--							<input type="checkbox" checked />-->
+<!--							<span>repo:read</span>-->
+<!--						</label>-->
+<!--						<label class="settings-checklist__item">-->
+<!--							<input type="checkbox" />-->
+<!--							<span>repo:write</span>-->
+<!--						</label>-->
+<!--						<label class="settings-checklist__item">-->
+<!--							<input type="checkbox" />-->
+<!--							<span>job:read</span>-->
+<!--						</label>-->
+<!--						<label class="settings-checklist__item">-->
+<!--							<input type="checkbox" />-->
+<!--							<span>job:write</span>-->
+<!--						</label>-->
+<!--					</div>-->
+<!--				</div>-->
+				<div class="settings-actions">
+					<button class="ghost" type="button" data-cancel>Cancel</button>
+					<button class="primary" type="submit" disabled data-submit>Create token</button>
+				</div>
+			</form>
+		</section>
+	</div>
+</div>
+<script>
+	const form = document.querySelector("[data-pat-form]");
+	if (form) {
+		const requiredFields = Array.from(form.querySelectorAll("[data-required]"));
+		const submitButton = form.querySelector("[data-submit]");
+		const cancelButton = form.querySelector("[data-cancel]");
+
+		const updateState = () => {
+			const allFilled = requiredFields.every((field) => {
+				if (field.tagName === "SELECT") {
+					return field.value && field.value.trim() !== "";
+				}
+				return field.value && field.value.trim() !== "";
+			});
+			submitButton.disabled = !allFilled;
+		};
+
+		requiredFields.forEach((field) => {
+			field.addEventListener("input", updateState);
+			field.addEventListener("change", updateState);
+		});
+
+		updateState();
+
+		if (cancelButton) {
+			cancelButton.addEventListener("click", () => {
+				window.location.href = "/settings/personal-access-tokens";
+			});
+		}
+	}
+</script>
+</body>
+</html>

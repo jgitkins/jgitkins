@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Bad Request</title>
+	<link rel="icon" type="image/png" th:href="@{/assets/img/ci2.png}">
+	<link rel="stylesheet" th:href="@{/assets/css/app.css}">
+</head>
+<body>
+<div th:replace="fragments/topbar :: topbar('error')"></div>
+<div class="page">
+	<header class="header-bar">
+		<div>
+			<h1>400</h1>
+			<p>We couldn’t process that request.</p>
+		</div>
+	</header>
+	<section class="panel">
+		<p>Try again or return to a known page.</p>
+		<div class="settings-actions">
+			<a class="ghost" href="/">Go home</a>
+			<a class="primary" href="/">Dashboard</a>
+		</div>
+	</section>
+</div>
+</body>
+</html>

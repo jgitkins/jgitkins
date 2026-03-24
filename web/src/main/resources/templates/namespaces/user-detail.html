@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>JGitkins User</title>
+	<link rel="icon" type="image/png" th:href="@{/assets/img/ci2.png}">
+	<link rel="stylesheet" th:href="@{/assets/css/app.css}">
+</head>
+<body>
+<div th:replace="fragments/topbar :: topbar('namespace')"></div>
+<div class="page">
+	<header class="header-bar header-bar--split">
+		<div>
+			<div class="namespace-hero">
+				<span class="namespace-hero__badge">USER</span>
+				<h1 th:text="${detail.name()}">User</h1>
+			</div>
+			<p>Personal space</p>
+		</div>
+	</header>
+
+	<nav class="repo-subnav" th:if="${detail.errorMessage() == null}">
+		<a class="repo-subnav__link"
+			 th:classappend="${activeTab == 'repositories'} ? ' is-active' : ''"
+			 th:href="@{/{namespace}/-/repositories(namespace=${detail.name()})}">Repositories</a>
+		<a class="repo-subnav__link"
+			 th:classappend="${activeTab == 'stars'} ? ' is-active' : ''"
+			 th:href="@{/{namespace}/-/stars(namespace=${detail.name()})}">Stars</a>
+	</nav>
+
+	<div class="alert" th:if="${detail.errorMessage()}" th:text="${detail.errorMessage()}"></div>
+
+	<main class="user-layout" th:if="${detail.errorMessage() == null}">
+		<aside class="panel user-profile">
+			<div class="panel__body">
+				<div class="profile-card">
+					<div class="profile-card__avatar">?</div>
+					<div>
+						<h2 class="profile-card__name" th:text="${detail.name()}">User</h2>
+						<p class="profile-card__meta">Personal namespace</p>
+					</div>
+				</div>
+			</div>
+		</aside>
+		<section class="panel user-repos" id="repositories">
+			<div class="panel__body">
+				<table class="repo-table" th:if="${!#lists.isEmpty(detail.repositories())}">
+					<thead>
+						<tr>
+							<th>Repository</th>
+							<th>Visibility</th>
+							<th>Updated</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="repo : ${detail.repositories()}">
+							<td>
+								<a class="repo-table__link" th:href="@{/{owner}/{repo}(owner=${detail.name()}, repo=${repo.name()})}"
+									 th:text="${repo.name()}">repo</a>
+							</td>
+							<td>
+								<span class="chip" th:text="${repo.visibility()}">PRIVATE</span>
+							</td>
+							<td th:text="${#temporals.format(repo.updatedAt(), 'yyyy-MM-dd')}">Updated</td>
+						</tr>
+					</tbody>
+				</table>
+				<div class="empty" th:if="${#lists.isEmpty(detail.repositories())}">
+					<p>No repositories in this namespace yet.</p>
+				</div>
+			</div>
+		</section>
+	</main>
+</div>
+<script>
+	const subnavLinks = document.querySelectorAll(".subnav__link");
+	subnavLinks.forEach((link) => {
+		link.addEventListener("click", () => {
+			subnavLinks.forEach((item) => item.classList.remove("is-active"));
+			link.classList.add("is-active");
+		});
+	});
+</script>
+</body>
+</html>

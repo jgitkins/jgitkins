@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Profile Settings</title>
+	<link rel="icon" type="image/png" th:href="@{/assets/img/ci2.png}">
+	<link rel="stylesheet" th:href="@{/assets/css/app.css}">
+</head>
+<body>
+<div th:replace="fragments/topbar :: topbar('settings')"></div>
+<div class="page">
+	<header class="header-bar">
+		<div>
+			<h1>Settings</h1>
+			<p>Manage your profile and access tokens.</p>
+		</div>
+	</header>
+
+	<div class="settings-layout">
+		<nav class="settings-nav">
+			<a class="settings-nav__link is-active" href="/settings/profile">Profile</a>
+			<a class="settings-nav__link" href="/settings/personal-access-tokens">Personal access tokens</a>
+		</nav>
+
+		<section class="panel settings-panel">
+			<h2>Profile</h2>
+			<p class="settings-muted">Update your display name and contact preferences.</p>
+			<p class="settings-alert">Profile settings are temporarily disabled.</p>
+			<div class="settings-content is-disabled">
+				<div class="settings-form">
+					<label class="settings-field">
+						<span>Name</span>
+						<input class="input" type="text" placeholder="Your name" />
+					</label>
+				<label class="settings-field">
+					<span>Email</span>
+					<input class="input" type="email" placeholder="you@example.com" />
+				</label>
+				<label class="settings-field">
+					<span>Timezone</span>
+					<select class="input select">
+						<option>Asia/Seoul</option>
+						<option>UTC</option>
+						<option>America/Los_Angeles</option>
+					</select>
+				</label>
+				<div class="settings-actions">
+					<button class="primary" type="button">Save changes</button>
+				</div>
+				</div>
+			</div>
+		</section>
+	</div>
+</div>
+</body>
+</html>

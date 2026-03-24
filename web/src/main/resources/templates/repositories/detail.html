@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Repository Detail</title>
+	<link rel="icon" type="image/png" th:href="@{/assets/img/ci2.png}">
+	<link rel="stylesheet" th:href="@{/assets/css/app.css}">
+	<style>
+		#branch-modal .modal__content,
+		#file-modal .modal__content {
+			font-family: "IBM Plex Sans", "Inter Tight", "Noto Sans", sans-serif;
+		}
+
+		#branch-modal .form,
+		#file-modal .form {
+			display: grid;
+			gap: 16px;
+		}
+
+		#branch-modal .form-row,
+		#file-modal .form-row {
+			display: grid;
+			gap: 8px;
+		}
+
+		#branch-modal .form-row .label,
+		#file-modal .form-row .label,
+		#directory-modal .form-row .label {
+			font-size: 13px;
+		}
+
+		#directory-modal .modal__content {
+			font-family: "IBM Plex Sans", "Inter Tight", "Noto Sans", sans-serif;
+		}
+
+		#directory-modal .form {
+			display: grid;
+			gap: 16px;
+		}
+
+		#directory-modal .form-row {
+			display: grid;
+			gap: 8px;
+		}
+
+		.repo-find-results {
+			position: absolute;
+			top: 42px;
+			left: 0;
+			width: clamp(280px, 46vw, 560px);
+			max-height: 340px;
+			overflow: auto;
+			display: none;
+			z-index: 20;
+		}
+
+		.repo-find-results .menu__item {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			line-height: 1.35;
+		}
+
+		.repo-find-results__icon {
+			width: 15px;
+			height: 15px;
+			flex: 0 0 auto;
+			color: #59636e;
+		}
+
+		.repo-find-results__path {
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+
+		.repo-find-results__item--disabled {
+			cursor: not-allowed;
+			color: #8f99a4;
+			background: #f6f8fa;
+		}
+	</style>
+</head>
+<body>
+<div th:replace="~{fragments/topbar :: topbar('repository-detail')}"></div>
+<div class="page">
+	<div class="alert" th:if="${detail.errorMessage != null}" th:text="${detail.errorMessage}"></div>
+
+	<section class="repo-detail" th:if="${detail.repository != null}">
+		<div class="alert" th:if="${branchError != null}" th:text="${branchError}"></div>
+		<div class="alert" th:if="${fileError != null}" th:text="${fileError}"></div>
+		<div class="alert" th:if="${directoryError != null}" th:text="${directoryError}"></div>
+		<div class="success" th:if="${branchSuccess != null}" th:text="${branchSuccess}"></div>
+		<div class="success" th:if="${fileSuccess != null}" th:text="${fileSuccess}"></div>
+		<div class="success" th:if="${directorySuccess != null}" th:text="${directorySuccess}"></div>
+<!--		<div class="repo-detail__stats">-->
+<!--			<div class="repo-detail__stat">-->
+<!--				<span>Commits</span>-->
+<!--				<strong>0</strong>-->
+<!--			</div>-->
+<!--			<div class="repo-detail__stat">-->
+<!--				<span>Branches</span>-->
+<!--				<strong th:text="${#lists.size(detail.branches)}">0</strong>-->
+<!--			</div>-->
+<!--			<div class="repo-detail__stat">-->
+<!--				<span>Tags</span>-->
+<!--				<strong>0</strong>-->
+<!--			</div>-->
+<!--			<div class="repo-detail__stat">-->
+<!--				<span>Repository size</span>-->
+<!--				<strong>—</strong>-->
+<!--			</div>-->
+<!--		</div>-->
+
+		<nav class="repo-subnav">
+			<a class="repo-subnav__link is-active" href="#">Code</a>
+			<span class="repo-subnav__link is-disabled" aria-disabled="true">Issues</span>
+			<span class="repo-subnav__link is-disabled" aria-disabled="true">Merge requests</span>
+<!--			<span class="repo-subnav__link is-disabled" aria-disabled="true">Actions</span>-->
+<!--			<span class="repo-subnav__link is-disabled" aria-disabled="true">Projects</span>-->
+<!--			<span class="repo-subnav__link is-disabled" aria-disabled="true">Wiki</span>-->
+<!--			<span class="repo-subnav__link is-disabled" aria-disabled="true">Security</span>-->
+<!--			<span class="repo-subnav__link is-disabled" aria-disabled="true">Insights</span>-->
+			<span class="repo-subnav__link is-disabled" aria-disabled="true">Settings</span>
+		</nav>
+
+		<header class="repo-title">
+			<div class="repo-title__main">
+				<div class="repo-title__logo" aria-hidden="true">JG</div>
+				<h1 th:text="${detail.repository.name}">Repository</h1>
+				<span class="repo-title__badge" th:text="${detail.repository.visibility}">PRIVATE</span>
+			</div>
+			<div class="repo-title__actions">
+<!--				<button class="ghost is-disabled" type="button" disabled>Watch</button>-->
+<!--				<button class="ghost is-disabled" type="button" disabled>Fork</button>-->
+				<button class="ghost is-disabled" type="button">Star</button>
+			</div>
+		</header>
+
+		<div class="repo-detail__content">
+			<div class="repo-detail__main">
+				<div class="repo-detail__toolbar">
+					<div class="repo-detail__toolbar-left">
+						<div class="repo-detail__branch-select-wrap">
+							<select id="branch-select" class="input select repo-detail__branch-select">
+								<option th:each="branch : ${detail.branches}"
+										th:value="${branch.name}"
+										th:text="${branch.defaultBranch ? branch.name + ' (default)' : branch.name}"
+										th:selected="${branch.name == detail.selectedBranch}">main</option>
+							</select>
+						</div>
+					</div>
+					<div class="repo-detail__toolbar-right" style="position: relative;">
+						<input id="find-file-input" class="search-input repo-detail__search-input" type="text" placeholder="Find a file" autocomplete="off" />
+						<div id="find-file-results" class="menu__panel repo-find-results"></div>
+						<details class="menu repo-detail__menu">
+							<summary class="menu__summary repo-detail__icon-button">
+								<img class="topbar__icon-image" th:src="@{/assets/svg/new-window-svgrepo-com.svg}" alt="Add"/>
+								<span class="repo-detail__caret" aria-hidden="true">
+									<svg viewBox="0 0 10 6" role="img" focusable="false">
+										<path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+									</svg>
+								</span>
+							</summary>
+							<div class="menu__panel">
+								<button class="menu__item menu__item--button" type="button" data-open-modal="branch-modal" th:if="${detail.writable}">New branch</button>
+								<button class="menu__item menu__item--button" type="button" data-open-modal="file-modal" th:if="${detail.writable}">New file</button>
+								<button class="menu__item menu__item--button" type="button" data-open-modal="directory-modal" th:if="${detail.writable}">New directory</button>
+								<span class="menu__item is-disabled" th:if="${!detail.writable}" aria-disabled="true"
+									  th:text="${'No write access (' + detail.role + ')'}">No write access</span>
+							</div>
+						</details>
+						<details class="menu repo-detail__menu">
+							<summary class="menu__summary repo-detail__icon-button">
+								<img class="topbar__icon-image" th:src="@{/assets/svg/code-snippet-02-svgrepo-com.svg}" alt="Code"/>
+								<span class="repo-detail__caret" aria-hidden="true">
+									<svg viewBox="0 0 10 6" role="img" focusable="false">
+										<path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+									</svg>
+								</span>
+							</summary>
+							<div class="menu__panel repo-detail__code-panel">
+								<div class="repo-detail__code-tabs">
+									<button class="ghost is-active" type="button">HTTPS</button>
+									<button class="ghost is-disabled" type="button" disabled aria-disabled="true">SSH</button>
+								</div>
+								<div class="repo-detail__clone-row">
+									<input id="code-clone-path" class="input" type="text" readonly
+										   th:value="${detail.repository.cloneUrl != null ? detail.repository.cloneUrl : detail.repository.clonePath}" />
+									<button class="ghost" type="button" data-copy-target="code-clone-path">Copy</button>
+								</div>
+								<div class="repo-detail__code-actions">
+									<a class="menu__item is-disabled" href="#" aria-disabled="true" tabindex="-1">Download ZIP</a>
+									<a class="menu__item is-disabled" href="#" aria-disabled="true" tabindex="-1">Download TAR.GZ</a>
+								</div>
+							</div>
+						</details>
+					</div>
+				</div>
+
+				<div class="panel repo-detail__tree">
+					<div class="repo-detail__tree-header">
+						<h2>Files</h2>
+					</div>
+					<div class="tree-list" th:if="${!#lists.isEmpty(detail.files)}">
+						<div class="tree-row tree-row--head">
+							<span>Name</span>
+							<span>Path</span>
+							<span>Type</span>
+						</div>
+						<a class="tree-row tree-row--link tree-row--back"
+						   th:if="${currentPath != null && !currentPath.isEmpty()}"
+						   th:with="parentPath=${currentPath.contains('/') ? currentPath.substring(0, currentPath.lastIndexOf('/')) : ''},
+								   backHref=${parentPath.isEmpty() ? '/' + namespace + '/' + repoName + '?branch=' + detail.selectedBranch : '/' + namespace + '/' + repoName + '/tree/' + parentPath + '?branch=' + detail.selectedBranch}"
+						   th:href="${backHref}">
+							<span class="tree-item__name">
+								<span class="tree-item__icon" aria-hidden="true">
+									<svg viewBox="0 0 24 24" role="img" focusable="false">
+										<path d="M7 7h10a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2zm-2 5h6v2H5v3l-4-4 4-4v3z"/>
+									</svg>
+								</span>
+								<span class="tree-item__label">..</span>
+							</span>
+							<span class="tree-item__path" th:text="${parentPath.isEmpty() ? '/' : '/' + parentPath}">/</span>
+							<span class="tree-item__meta">parent</span>
+						</a>
+						<th:block th:each="entry : ${detail.files}"
+								  th:with="entryPath=${entry.path != null && entry.path.startsWith('/') ? entry.path.substring(1) : entry.path}">
+							<a class="tree-row tree-row--link"
+							   th:if="${entry.type == 'tree'}"
+							   th:href="|/${namespace}/${repoName}/tree/${entryPath}?branch=${detail.selectedBranch}|">
+								<span class="tree-item__name">
+									<span class="tree-item__icon" th:if="${entry.type == 'tree'}" aria-hidden="true">
+										<svg viewBox="0 0 24 24" role="img" focusable="false">
+											<path d="M3 6a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v1H3V6zm0 4h20v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-8z"/>
+										</svg>
+									</span>
+									<span class="tree-item__icon" th:unless="${entry.type == 'tree'}" aria-hidden="true">
+										<svg viewBox="0 0 24 24" role="img" focusable="false">
+											<path d="M6 3h8l4 4v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zm8 1.5V8h3.5L14 4.5z"/>
+										</svg>
+									</span>
+									<span class="tree-item__label" th:text="${entry.name}">src</span>
+								</span>
+								<span class="tree-item__path" th:text="${entry.path}">/src</span>
+								<span class="tree-item__meta" th:text="${entry.type}">tree</span>
+							</a>
+							<div class="tree-row tree-row--file" th:if="${entry.type != 'tree'}">
+								<span class="tree-item__name">
+									<span class="tree-item__icon" th:if="${entry.type == 'tree'}" aria-hidden="true">
+										<svg viewBox="0 0 24 24" role="img" focusable="false">
+											<path d="M3 6a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v1H3V6zm0 4h20v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-8z"/>
+										</svg>
+									</span>
+									<span class="tree-item__icon" th:unless="${entry.type == 'tree'}" aria-hidden="true">
+										<svg viewBox="0 0 24 24" role="img" focusable="false">
+											<path d="M6 3h8l4 4v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zm8 1.5V8h3.5L14 4.5z"/>
+										</svg>
+									</span>
+									<span class="tree-item__label" th:text="${entry.name}">README.md</span>
+								</span>
+								<span class="tree-item__path" th:text="${entry.path}">/README.md</span>
+								<span class="tree-item__meta" th:text="${entry.type}">file</span>
+							</div>
+						</th:block>
+					</div>
+					<div class="empty" th:if="${#lists.isEmpty(detail.files)}">
+						<p>No files found for this branch.</p>
+					</div>
+				</div>
+			</div>
+			<aside class="repo-detail__sidebar is-disabled">
+				<div class="panel repo-side-card">
+					<h3>About</h3>
+					<p th:text="${detail.repository.description != null ? detail.repository.description : 'No description, website, or topics provided.'}">No description, website, or topics provided.</p>
+					<div class="repo-side-card__meta">
+						<span>README</span>
+						<span>Activity</span>
+					</div>
+				</div>
+				<div class="panel repo-side-card">
+					<h3>Releases</h3>
+					<p>No releases published</p>
+				</div>
+				<div class="panel repo-side-card">
+					<h3>Packages</h3>
+					<p>No packages published</p>
+				</div>
+			</aside>
+		</div>
+	</section>
+
+	<div id="branch-modal" class="modal" aria-hidden="true">
+		<div class="modal__backdrop" data-close-modal></div>
+		<div class="modal__content">
+			<div class="modal__header">
+				<h2>Create Branch</h2>
+			</div>
+			<form th:if="${detail.writable}" th:action="|/${namespace}/${repoName}/branches|" method="post" class="form">
+				<input type="hidden" name="currentPath" th:value="${currentPath}" />
+				<input type="hidden" name="currentBranch" th:value="${detail.selectedBranch}" />
+				<div class="form-row">
+					<label class="label" for="new-branch-name">Branch name</label>
+					<input id="new-branch-name" class="input" type="text" name="branchName" placeholder="feature/my-branch" required />
+				</div>
+				<div class="form-row">
+					<label class="label" for="source-branch">From branch</label>
+					<select id="source-branch" class="input select" name="sourceBranch" required>
+						<option th:each="branch : ${detail.branches}"
+								th:value="${branch.name}"
+								th:text="${branch.defaultBranch ? branch.name + ' (default)' : branch.name}"
+								th:selected="${branch.name == detail.selectedBranch}">main</option>
+					</select>
+				</div>
+				<div class="modal__actions">
+					<button class="ghost" type="button" data-close-modal>Cancel</button>
+					<button class="primary" type="submit">Create</button>
+				</div>
+			</form>
+			<div class="empty" th:if="${!detail.writable}">
+				<p th:text="${'You do not have write permission. role=' + detail.role}">You do not have write permission.</p>
+			</div>
+		</div>
+	</div>
+
+	<div id="file-modal" class="modal" aria-hidden="true">
+		<div class="modal__backdrop" data-close-modal></div>
+		<div class="modal__content">
+			<div class="modal__header">
+				<h2>Upload File</h2>
+			</div>
+			<form th:if="${detail.writable}" th:action="|/${namespace}/${repoName}/files|" method="post" enctype="multipart/form-data" class="form">
+				<input type="hidden" name="currentPath" th:value="${currentPath}" />
+				<div class="form-row">
+					<label class="label" for="upload-branch">Branch</label>
+					<input id="upload-branch" class="input" type="text" th:value="${detail.selectedBranch}" readonly />
+					<input type="hidden" name="branch" th:value="${detail.selectedBranch}" />
+				</div>
+				<div class="form-row">
+					<label class="label" for="upload-directory">Path</label>
+					<select id="upload-directory" class="input select">
+						<option value="" th:selected="${currentPath == null || currentPath.isEmpty()}">/</option>
+						<option th:if="${currentPath != null && !currentPath.isEmpty()}"
+								th:value="${currentPath}"
+								th:text="${'/' + currentPath}"
+								selected>/src</option>
+						<option th:each="entry : ${detail.files}"
+								th:if="${entry.type == 'tree'}"
+								th:with="entryPath=${entry.path != null && entry.path.startsWith('/') ? entry.path.substring(1) : entry.path}"
+								th:value="${entryPath}"
+								th:text="${'/' + entryPath}">/docs</option>
+					</select>
+				</div>
+				<div class="form-row">
+					<label class="label" for="upload-file-name">File name</label>
+					<input id="upload-file-name" class="input" type="text" placeholder="new-file.txt" required />
+					<input id="upload-path" type="hidden" name="path"
+						   th:value="${currentPath != null && !currentPath.isEmpty() ? currentPath + '/new-file.txt' : 'new-file.txt'}" />
+				</div>
+				<div class="form-row">
+					<label class="label" for="upload-message">Commit message</label>
+					<input id="upload-message" class="input" type="text" name="message" placeholder="Add new file" required />
+				</div>
+				<div class="form-row">
+					<label class="label" for="upload-file">File</label>
+					<input id="upload-file" class="input" type="file" name="file" required />
+				</div>
+				<div class="modal__actions">
+					<button class="ghost" type="button" data-close-modal>Cancel</button>
+					<button class="primary" type="submit">Upload file</button>
+				</div>
+			</form>
+			<div class="empty" th:if="${!detail.writable}">
+				<p th:text="${'You do not have write permission. role=' + detail.role}">You do not have write permission.</p>
+			</div>
+		</div>
+	</div>
+
+	<div id="directory-modal" class="modal" aria-hidden="true">
+		<div class="modal__backdrop" data-close-modal></div>
+		<div class="modal__content">
+			<div class="modal__header">
+				<h2>New Directory</h2>
+			</div>
+			<form th:if="${detail.writable}" th:action="|/${namespace}/${repoName}/directories|" method="post" class="form">
+				<input type="hidden" name="currentPath" th:value="${currentPath}" />
+				<div class="form-row">
+					<label class="label" for="directory-branch">Branch</label>
+					<input id="directory-branch" class="input" type="text" th:value="${detail.selectedBranch}" readonly />
+					<input type="hidden" name="branch" th:value="${detail.selectedBranch}" />
+				</div>
+				<div class="form-row">
+					<label class="label" for="directory-parent">Path</label>
+					<select id="directory-parent" class="input select">
+						<option value="" th:selected="${currentPath == null || currentPath.isEmpty()}">/</option>
+						<option th:if="${currentPath != null && !currentPath.isEmpty()}"
+								th:value="${currentPath}"
+								th:text="${'/' + currentPath}"
+								selected>/src</option>
+						<option th:each="entry : ${detail.files}"
+								th:if="${entry.type == 'tree'}"
+								th:with="entryPath=${entry.path != null && entry.path.startsWith('/') ? entry.path.substring(1) : entry.path}"
+								th:value="${entryPath}"
+								th:text="${'/' + entryPath}">/docs</option>
+					</select>
+				</div>
+				<div class="form-row">
+					<label class="label" for="directory-name">Directory name</label>
+					<input id="directory-name" class="input" type="text" placeholder="new-folder" required />
+					<input id="directory-path" type="hidden" name="directoryPath"
+						   th:value="${currentPath != null && !currentPath.isEmpty() ? currentPath + '/new-folder' : 'new-folder'}" />
+				</div>
+				<div class="form-row">
+					<label class="label" for="directory-message">Commit message</label>
+					<input id="directory-message" class="input" type="text" name="message" placeholder="Create new directory" required />
+				</div>
+				<div class="modal__actions">
+					<button class="ghost" type="button" data-close-modal>Cancel</button>
+					<button class="primary" type="submit">Create directory</button>
+				</div>
+			</form>
+			<div class="empty" th:if="${!detail.writable}">
+				<p th:text="${'You do not have write permission. role=' + detail.role}">You do not have write permission.</p>
+			</div>
+		</div>
+	</div>
+</div>
+<script th:inline="javascript">
+	const branchSelect = document.getElementById("branch-select");
+	if (branchSelect) {
+		branchSelect.addEventListener("change", (event) => {
+			const selected = event.target.value;
+			const url = new URL(window.location.href);
+			url.searchParams.set("branch", selected);
+			window.location.href = url.toString();
+		});
+	}
+
+	document.querySelectorAll("[data-copy-target]").forEach((button) => {
+		button.addEventListener("click", async () => {
+			const targetId = button.getAttribute("data-copy-target");
+			const input = document.getElementById(targetId);
+			if (!input) {
+				return;
+			}
+			try {
+				await navigator.clipboard.writeText(input.value);
+				button.textContent = "Copied";
+				setTimeout(() => {
+					button.textContent = "Copy";
+				}, 1200);
+			} catch (error) {
+				input.select();
+				document.execCommand("copy");
+				button.textContent = "Copied";
+				setTimeout(() => {
+					button.textContent = "Copy";
+				}, 1200);
+			}
+		});
+	});
+
+	const openModalButtons = document.querySelectorAll("[data-open-modal]");
+	const allModals = document.querySelectorAll(".modal");
+	const closeModalButtons = document.querySelectorAll("[data-close-modal]");
+
+	function closeAllModals() {
+		allModals.forEach((modal) => {
+			modal.classList.remove("is-open");
+			modal.setAttribute("aria-hidden", "true");
+		});
+	}
+
+	openModalButtons.forEach((button) => {
+		button.addEventListener("click", () => {
+			const modalId = button.getAttribute("data-open-modal");
+			const modal = document.getElementById(modalId);
+			if (!modal) {
+				return;
+			}
+			closeAllModals();
+			modal.classList.add("is-open");
+			modal.setAttribute("aria-hidden", "false");
+		});
+	});
+
+	closeModalButtons.forEach((button) => {
+		button.addEventListener("click", closeAllModals);
+	});
+
+	document.addEventListener("keydown", (event) => {
+		if (event.key === "Escape") {
+			closeAllModals();
+		}
+	});
+
+	const findFileInput = document.getElementById("find-file-input");
+	const findFileResults = document.getElementById("find-file-results");
+	let findFileTimer = null;
+	let fileIndex = [];
+	let indexReady = false;
+
+	function normalizeIndexPayload(payload) {
+		if (Array.isArray(payload)) {
+			return payload;
+		}
+		if (payload && Array.isArray(payload.data)) {
+			return payload.data;
+		}
+		return [];
+	}
+
+	function escapeHtml(value) {
+		return String(value || "")
+			.replace(/&/g, "&amp;")
+			.replace(/</g, "&lt;")
+			.replace(/>/g, "&gt;")
+			.replace(/"/g, "&quot;")
+			.replace(/'/g, "&#39;");
+	}
+
+	function normalizePath(value) {
+		return String(value || "").replace(/^\/+|\/+$/g, "");
+	}
+
+	function buildSearchIndex(entries) {
+		const raw = Array.isArray(entries) ? entries : [];
+		const dedup = new Map();
+		const directories = new Set();
+
+		raw.forEach((entry) => {
+			const path = normalizePath(entry?.path || entry?.name || "");
+			if (!path) {
+				return;
+			}
+			const type = String(entry?.type || "blob").toLowerCase();
+			const name = entry?.name || path.substring(path.lastIndexOf("/") + 1);
+			dedup.set(`${type}:${path}`, { name, path, type });
+
+			const segments = path.split("/");
+			for (let i = 1; i < segments.length; i += 1) {
+				directories.add(segments.slice(0, i).join("/"));
+			}
+		});
+
+		directories.forEach((directoryPath) => {
+			if (!dedup.has(`tree:${directoryPath}`)) {
+				const name = directoryPath.substring(directoryPath.lastIndexOf("/") + 1);
+				dedup.set(`tree:${directoryPath}`, { name, path: directoryPath, type: "tree" });
+			}
+		});
+
+		return Array.from(dedup.values())
+			.sort((a, b) => {
+				const typeA = (a.type || "").toLowerCase();
+				const typeB = (b.type || "").toLowerCase();
+				if (typeA !== typeB) {
+					return typeA === "tree" ? -1 : 1;
+				}
+				return (a.path || "").localeCompare((b.path || ""), undefined, { sensitivity: "base" });
+			});
+	}
+
+	function resultIcon(type) {
+		const normalized = (type || "").toLowerCase();
+		if (normalized === "tree") {
+			return "<svg class='repo-find-results__icon' viewBox='0 0 24 24' aria-hidden='true'><path d='M3 6a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v1H3V6zm0 4h20v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-8z'/></svg>";
+		}
+		return "<svg class='repo-find-results__icon' viewBox='0 0 24 24' aria-hidden='true'><path d='M6 3h8l4 4v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zm8 1.5V8h3.5L14 4.5z'/></svg>";
+	}
+
+	function renderFindFileResults(items, branch) {
+		if (!findFileResults) {
+			return;
+		}
+		if (!items || items.length === 0) {
+			findFileResults.innerHTML = "<div class='menu__item'>No matching files</div>";
+			findFileResults.style.display = "block";
+			return;
+		}
+		findFileResults.innerHTML = items.map((item) => {
+			const path = normalizePath(item.path || item.name || "");
+			const type = String(item.type || "blob").toLowerCase();
+			const safePath = escapeHtml(path);
+			const icon = resultIcon(type);
+			if (type === "tree") {
+				const href = `/${window.__repoNamespace}/${window.__repoName}/tree/${path}?branch=${encodeURIComponent(branch || "main")}`;
+				return `<a class='menu__item' href='${href}'>${icon}<span class='repo-find-results__path'>${safePath}</span></a>`;
+			}
+			return `<span class='menu__item repo-find-results__item--disabled'>${icon}<span class='repo-find-results__path'>${safePath}</span></span>`;
+		}).join("");
+		findFileResults.style.display = "block";
+	}
+
+	if (findFileInput && findFileResults) {
+		window.__repoNamespace = /*[[${namespace}]]*/ "";
+		window.__repoName = /*[[${repoName}]]*/ "";
+		const initialBranch = branchSelect ? branchSelect.value : (/*[[${detail.selectedBranch}]]*/ "main");
+
+		(async () => {
+			findFileResults.innerHTML = "<div class='menu__item'>Loading file index...</div>";
+			try {
+				const response = await fetch(`/${window.__repoNamespace}/${window.__repoName}/find-files/index?branch=${encodeURIComponent(initialBranch)}`);
+				if (!response.ok) {
+					throw new Error("find-file index request failed");
+				}
+					const payload = await response.json();
+					fileIndex = buildSearchIndex(normalizeIndexPayload(payload));
+				} catch (e) {
+					fileIndex = [];
+					findFileResults.innerHTML = "<div class='menu__item'>Failed to load file index</div>";
+				}
+			indexReady = true;
+		})();
+
+		findFileInput.addEventListener("focus", () => {
+			if (!indexReady) {
+				findFileResults.style.display = "block";
+			}
+		});
+
+		findFileInput.addEventListener("keyup", () => {
+			const keyword = findFileInput.value.trim().toLowerCase();
+			const branch = branchSelect ? branchSelect.value : initialBranch;
+			if (findFileTimer) {
+				clearTimeout(findFileTimer);
+			}
+			if (!keyword) {
+				findFileResults.style.display = "none";
+				findFileResults.innerHTML = "";
+				return;
+			}
+			findFileTimer = setTimeout(() => {
+				if (!indexReady) {
+					findFileResults.innerHTML = "<div class='menu__item'>Loading file index...</div>";
+					findFileResults.style.display = "block";
+					return;
+				}
+				const matched = (fileIndex || [])
+					.filter((item) => {
+						const path = (item.path || "").toLowerCase();
+						const name = (item.name || "").toLowerCase();
+						return path.includes(keyword) || name.includes(keyword);
+					})
+					.slice(0, 20);
+				renderFindFileResults(matched, branch);
+			}, 120);
+		});
+
+		document.addEventListener("click", (event) => {
+			if (!findFileResults.contains(event.target) && event.target !== findFileInput) {
+				findFileResults.style.display = "none";
+			}
+		});
+	}
+
+	const uploadForm = document.querySelector("#file-modal form");
+	if (uploadForm) {
+		const directorySelect = document.getElementById("upload-directory");
+		const fileNameInput = document.getElementById("upload-file-name");
+		const pathInput = document.getElementById("upload-path");
+
+		const resolveUploadPath = () => {
+			const directory = (directorySelect?.value || "").replace(/^\/+|\/+$/g, "");
+			const fileName = (fileNameInput?.value || "").trim().replace(/^\/+|\/+$/g, "");
+			if (!pathInput) {
+				return "";
+			}
+			const resolved = directory && fileName ? `${directory}/${fileName}` : (fileName || directory);
+			pathInput.value = resolved;
+			return resolved;
+		};
+
+		directorySelect?.addEventListener("change", resolveUploadPath);
+		fileNameInput?.addEventListener("input", resolveUploadPath);
+		resolveUploadPath();
+
+		uploadForm.addEventListener("submit", (event) => {
+			const resolved = resolveUploadPath();
+			if (!resolved) {
+				event.preventDefault();
+				alert("파일 경로를 선택해 주세요.");
+			}
+		});
+	}
+
+	const directoryForm = document.querySelector("#directory-modal form");
+	if (directoryForm) {
+		const directoryParentSelect = document.getElementById("directory-parent");
+		const directoryNameInput = document.getElementById("directory-name");
+		const directoryPathInput = document.getElementById("directory-path");
+
+		const resolveDirectoryPath = () => {
+			const parent = (directoryParentSelect?.value || "").replace(/^\/+|\/+$/g, "");
+			const directoryName = (directoryNameInput?.value || "").trim().replace(/^\/+|\/+$/g, "");
+			if (!directoryPathInput) {
+				return "";
+			}
+			const resolved = parent && directoryName ? `${parent}/${directoryName}` : (directoryName || parent);
+			directoryPathInput.value = resolved;
+			return resolved;
+		};
+
+		directoryParentSelect?.addEventListener("change", resolveDirectoryPath);
+		directoryNameInput?.addEventListener("input", resolveDirectoryPath);
+		resolveDirectoryPath();
+
+		directoryForm.addEventListener("submit", (event) => {
+			const resolved = resolveDirectoryPath();
+			if (!resolved) {
+				event.preventDefault();
+				alert("디렉터리 경로를 입력해 주세요.");
+			}
+		});
+	}
+
+</script>
+</body>
+</html>

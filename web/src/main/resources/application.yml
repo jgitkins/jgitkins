@@ -1,0 +1,51 @@
+server:
+  port: ${WAS_PORT:8081}
+  forward-headers-strategy: framework
+
+---
+# Cache Storage
+spring:
+  session:
+    store-type: redis
+    redis:
+      namespace: jgitkins:web:sessions
+  data:
+    redis:
+      host: ${REDIS_HOST:}
+      port: ${REDIS_PORT:}
+  mvc:
+    static-path-pattern: /assets/**
+---
+
+# OAuth
+spring:
+  thymeleaf:
+    cache: false
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${OAUTH_GOOGLE_CLIENT_ID:}
+            client-secret: ${OAUTH_GOOGLE_CLIENT_SECRET:}
+            scope: openid, profile, email
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+        provider:
+          google:
+            issuer-uri: https://accounts.google.com
+
+---
+jgitkins:
+  server:
+    base-url: ${JGITKINS_SERVER_BASE_URL}
+  web:
+    pr-url-template: ""
+    issue-url-template: ""
+
+---
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+      base-path: /actuator

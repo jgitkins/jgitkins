@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>JGitkins New Organization</title>
+	<link rel="icon" type="image/png" th:href="@{/assets/img/ci2.png}">
+	<link rel="stylesheet" th:href="@{/assets/css/app.css}">
+</head>
+<body>
+<div th:replace="fragments/topbar :: topbar('create-organization')"></div>
+<div class="page">
+	<header class="header-bar header-bar--split">
+		<div>
+			<h1>Create a new organization</h1>
+			<p>Claim a namespace, invite teammates, and manage shared repositories.</p>
+		</div>
+	</header>
+
+	<div class="alert" th:if="${formError}" th:text="${formError}"></div>
+
+	<main class="create-layout">
+		<section class="panel create-panel">
+			<form class="repo-form" th:action="@{/organizes}" th:object="${form}" method="post">
+				<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+				<div class="form-grid">
+					<div class="field">
+						<label for="org-name">Organization name</label>
+						<input id="org-name" class="input" type="text" placeholder="e.g. jgitkins-team" th:field="*{name}" />
+						<span class="field__hint">Allowed: letters, numbers, hyphen (-), underscore (_)</span>
+					</div>
+
+					<div class="field">
+						<label for="org-description">Description</label>
+						<textarea id="org-description" class="textarea" placeholder="Describe your organization in one sentence." th:field="*{description}"></textarea>
+					</div>
+
+					<div class="form-actions">
+						<a class="ghost" href="/">Cancel</a>
+						<button class="primary" type="submit">Create organization</button>
+					</div>
+				</div>
+			</form>
+		</section>
+
+		<aside class="panel create-side">
+			<div class="side-header">
+				<h2>Preview</h2>
+				<span class="badge">Namespace</span>
+			</div>
+			<div class="preview-card">
+				<div>
+					<p class="preview-label">Organization namespace</p>
+					<h3>
+						<span id="org-preview-name" th:text="${form.name}">your-org</span>
+					</h3>
+					<p class="preview-desc" id="org-preview-desc" th:text="${form.description}">
+						Add a short description to introduce your team.
+					</p>
+				</div>
+				<div class="preview-meta">
+					<span>Owner: you</span>
+					<span>Type: organization</span>
+				</div>
+			</div>
+
+			<div class="side-list">
+				<h3>What happens next</h3>
+				<ul>
+					<li>Invite teammates to join the organization</li>
+					<li>Create shared repositories under this namespace</li>
+					<li>Manage permissions and access roles</li>
+				</ul>
+			</div>
+
+			<div class="alert">
+				<strong>Tip:</strong> Organization names share the same namespace as users.
+			</div>
+		</aside>
+	</main>
+</div>
+<script>
+	const nameInput = document.getElementById("org-name");
+	const descInput = document.getElementById("org-description");
+	const previewName = document.getElementById("org-preview-name");
+	const previewDesc = document.getElementById("org-preview-desc");
+
+	const syncPreview = () => {
+		if (previewName && nameInput) {
+			previewName.textContent = nameInput.value || "your-org";
+		}
+		if (previewDesc && descInput) {
+			previewDesc.textContent = descInput.value || "Add a short description to introduce your team.";
+		}
+	};
+
+	if (nameInput && descInput) {
+		nameInput.addEventListener("input", syncPreview);
+		descInput.addEventListener("input", syncPreview);
+		syncPreview();
+	}
+</script>
+</body>
+</html>

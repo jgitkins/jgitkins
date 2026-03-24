@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<body>
+<section class="panel"
+		 th:fragment="list"
+		 hx-get="/fragments/organizes"
+		 hx-trigger="load, every 20s"
+		 hx-swap="outerHTML">
+		<div class="panel__header">
+			<div>
+				<h2>Accessible organizations</h2>
+				<p>Organizations available to the signed-in user.</p>
+			</div>
+			<div class="panel__meta">
+				<span th:text="${#temporals.format(lastUpdated, 'yyyy-MM-dd HH:mm:ss')}">Updated</span>
+				<button class="ghost" hx-get="/fragments/organizes" hx-swap="outerHTML">Refresh</button>
+			</div>
+		</div>
+
+	<div class="panel__body" th:if="${dashboard.errorMessage() != null}">
+		<div class="alert">[[${dashboard.errorMessage()}]]</div>
+	</div>
+
+	<div class="panel__body" th:if="${dashboard.errorMessage() == null}">
+		<div class="empty" th:if="${#lists.isEmpty(dashboard.organizes())}">
+			<p>No organizations found.</p>
+			<a class="primary" href="/organizes/new">Create your first org</a>
+		</div>
+		<ul class="organize-list" th:if="${!#lists.isEmpty(dashboard.organizes())}">
+			<li class="organize-card" th:each="organize : ${dashboard.organizes()}">
+				<div>
+					<h3 th:text="${organize.name()}">Organize Name</h3>
+					<p th:text="${organize.description()}">Description</p>
+				</div>
+				<div class="organize-meta">
+					<span th:text="${#temporals.format(organize.createdAt(), 'yyyy-MM-dd')}">Date</span>
+					<button class="ghost">View details</button>
+				</div>
+			</li>
+		</ul>
+	</div>
+</section>
+</body>
+</html>

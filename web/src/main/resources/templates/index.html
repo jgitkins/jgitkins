@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>JGitkins</title>
+	<link rel="icon" type="image/png" th:href="@{/assets/img/ci2.png}">
+	<link rel="stylesheet" th:href="@{/assets/css/app.css}">
+</head>
+<body>
+<div th:replace="fragments/topbar :: topbar('home')"></div>
+<div class="page">
+	<header class="hero">
+		<div class="brand">
+			<span class="brand__mark">JG</span>
+			<div class="brand__meta">
+				<p class="brand__title">JGitkins</p>
+				<p class="brand__subtitle">See repository flow at a glance</p>
+			</div>
+		</div>
+		<div class="hero__content">
+			<h1>See your team’s repository flow in one view.</h1>
+			<p>Collect recent org and repo activity into a single, fast dashboard.</p>
+			<p><strong>This project is currently under development.</strong></p>
+			<div class="hero__actions">
+<!--				<a class="hero__link" th:href="@{/oauth2/authorization/google}">Sign in</a>-->
+				<a class="hero__link" th:href="@{/explore}">Explore</a>
+			</div>
+		</div>
+	</header>
+</div>
+</body>
+</html>
