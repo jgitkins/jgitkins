@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.jgitkins.server.infrastructure.persistence.mapper.JobDispatchQueryMapper">
+  <resultMap id="DispatchableJobRowResultMap" type="io.jgitkins.server.infrastructure.persistence.model.DispatchableJobRow">
+    <constructor>
+      <idArg column="JOB_ID" javaType="java.lang.Long" jdbcType="BIGINT" />
+      <arg column="REPOSITORY_ID" javaType="java.lang.Long" jdbcType="BIGINT" />
+      <arg column="COMMIT_HASH" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="BRANCH_NAME" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="TRIGGERED_BY" javaType="java.lang.Long" jdbcType="BIGINT" />
+      <arg column="JOB_CREATED_AT" javaType="java.time.LocalDateTime" jdbcType="TIMESTAMP" />
+      <arg column="REPOSITORY_OWNER_TYPE" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="REPOSITORY_OWNER_ID" javaType="java.lang.Long" jdbcType="BIGINT" />
+      <arg column="REPOSITORY_CLONE_PATH" javaType="java.lang.String" jdbcType="VARCHAR" />
+    </constructor>
+  </resultMap>
+
+  <select id="selectNextDispatchableJob" resultMap="DispatchableJobRowResultMap">
+    SELECT
+      JOB.ID AS JOB_ID,
+      JOB.REPOSITORY_ID,
+      JOB.COMMIT_HASH,
+      JOB.BRANCH_NAME,
+      JOB.TRIGGERED_BY,
+      JOB.CREATED_AT AS JOB_CREATED_AT,
+      REPOSITORY.OWNER_TYPE AS REPOSITORY_OWNER_TYPE,
+      REPOSITORY.OWNER_ID AS REPOSITORY_OWNER_ID,
+      REPOSITORY.CLONE_PATH AS REPOSITORY_CLONE_PATH
+    FROM JOB JOB
+    JOIN REPOSITORY REPOSITORY ON REPOSITORY.ID = JOB.REPOSITORY_ID
+    WHERE EXISTS (
+      SELECT 1
+      FROM JOB_HISTORY JOB_HISTORY
+      WHERE JOB_HISTORY.JOB_ID = JOB.ID
+        AND JOB_HISTORY.STATUS = 'PENDING'
+        AND NOT EXISTS (
+          SELECT 1
+          FROM JOB_HISTORY NEWER
+          WHERE NEWER.JOB_ID = JOB_HISTORY.JOB_ID
+            AND (
+              NEWER.CREATED_AT > JOB_HISTORY.CREATED_AT
+              OR (NEWER.CREATED_AT = JOB_HISTORY.CREATED_AT AND NEWER.ID > JOB_HISTORY.ID)
+            )
+        )
+    )
+    <choose>
+      <when test="dispatchScope == 'ORGANIZE'">
+        AND REPOSITORY.OWNER_TYPE = 'ORGANIZATION'
+        AND REPOSITORY.OWNER_ID = #{scopeTargetId}
+      </when>
+      <when test="dispatchScope == 'REPOSITORY'">
+        AND REPOSITORY.ID = #{scopeTargetId}
+      </when>
+    </choose>
+    ORDER BY JOB.CREATED_AT ASC, JOB.ID ASC
+    limit 1
+  </select>
+</mapper>

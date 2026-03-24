@@ -1,0 +1,65 @@
+<!DOCTYPE generatorConfiguration PUBLIC
+        "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<generatorConfiguration>
+    <!--
+        <context/> entire document: https://mybatis.org/generator/configreference/context.html
+
+        context.id: A unique identifier you like
+        context.targetRuntime: Used to specify the runtime target for generated code.
+            It has MyBatis3DynamicSql / MyBatis3Kotlin / MyBatis3 / MyBatis3Simple 4 selection to choice.
+    -->
+    <classPathEntry location="./mariadb-java-client-3.1.4.jar"/>
+
+    <context id="simple" targetRuntime="MyBatis3">
+
+        <plugin type="org.mybatis.generator.plugins.FluentBuilderMethodsPlugin"/>
+
+        <plugin type="org.mybatis.generator.plugins.RenameExampleClassPlugin">
+            <property name="searchString" value="Example$"/>
+            <property name="replaceString" value="Condition"/>
+        </plugin>
+
+        <commentGenerator>
+            <property name="suppressDate" value="true"/>
+            <property name="suppressAllComments" value="true"/>
+        </commentGenerator>
+
+
+   <jdbcConnection driverClass="org.mariadb.jdbc.Driver"
+                       connectionURL="jdbc:mariadb://172.10.40.141:3306/TPS"
+                       userId="maxscale"
+                       password="cloud1234"/>
+
+        <!-- Date > LocalDateTime -->
+        <javaTypeResolver type="org.mybatis.generator.internal.types.JavaTypeResolverDefaultImpl">
+            <property name="forceBigDecimals" value="false"/>
+            <property name="useJSR310Types" value="true"/>
+        </javaTypeResolver>
+
+        <!-- Java model -->
+        <javaModelGenerator targetPackage="org.okestro.tps.core.persistence.model"
+                            targetProject="../src/main/java">
+            <property name="enableSubPackages" value="true"/>
+            <property name="trimStrings" value="true"/>
+        </javaModelGenerator>
+
+
+        <!-- sqlMapGenerator, javaClientGenerator 옵션 주석시 Example 클래스 미생성-->
+        <sqlMapGenerator targetPackage="mapper"
+                         targetProject="unknown">
+            <property name="enableSubPackages" value="true"/>
+        </sqlMapGenerator>
+
+        <javaClientGenerator type="XMLMAPPER"
+                             targetPackage="unknown"
+                             targetProject="unknown">
+            <property name="enableSubPackages" value="true"/>
+        </javaClientGenerator>
+
+
+        <table schema="public" tableName="TB%" />
+
+    </context>
+</generatorConfiguration>

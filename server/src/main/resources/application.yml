@@ -1,0 +1,77 @@
+# tomcat
+server:
+  port: ${REST_PORT}
+  servlet:
+    context-path: /
+---
+# netty
+grpc:
+  server:
+    port: ${GRPC_PORT}
+---
+# mybatis
+mybatis:
+  mapper-locations: classpath*:/mapper/**/*.xml
+
+---
+# env
+---
+# Spring 설정
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  datasource:
+    hikari:
+      driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
+      jdbc-url: ${JDBC_URL}
+      username: ${JDBC_USERNAME}
+      password: ${JDBC_PASSWORD}
+      pool-name: CP
+      maximum-pool-size: 5
+      connection-timeout: 8000
+      max-lifetime: 147000
+---
+# Application
+jgitkins:
+  server:
+    runtime:
+#      rest-host: ${SERVICE_HOST}
+      rest-port: ${REST_PORT}
+      rest-base-path: /api
+#      grpc-host: ${SERVICE_HOST}
+      grpc-port: ${GRPC_PORT}
+      poll-interval-ms: 5000
+      busy-wait-interval-ms: 1000
+      volume: ${BARE_PATH}
+      service-host: ${SERVICE_HOST}
+      rest-scheme: ${REST_SCHEME}
+  security:
+    jwt:
+      secret: ${JGITKINS_JWT_SECRET}
+      ttl-seconds: ${JGITKINS_JWT_TTL:900}
+
+---
+# OAuth
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${OAUTH_GOOGLE_CLIENT_ID:}
+            client-secret: ${OAUTH_GOOGLE_CLIENT_SECRET:}
+            scope:
+              - openid
+              - profile
+              - email
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+        provider:
+          google:
+            issuer-uri: https://accounts.google.com
+---
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+      base-path: /actuator

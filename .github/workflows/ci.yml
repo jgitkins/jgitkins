@@ -1,0 +1,92 @@
+name: jgitkins CI
+
+on:
+  # pull_request:
+  #   branches:
+  #     - develop
+  push:
+    branches:
+      - develop
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: jgitkins-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      server_changed: ${{ steps.filter.outputs.server_changed }}
+      web_changed: ${{ steps.filter.outputs.web_changed }}
+      runner_changed: ${{ steps.filter.outputs.runner_changed }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect changed modules
+        id: filter
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            base_sha="${{ github.event.pull_request.base.sha }}"
+          elif [[ -n "${{ github.event.before }}" && "${{ github.event.before }}" != "0000000000000000000000000000000000000000" ]]; then
+            base_sha="${{ github.event.before }}"
+          else
+            base_sha="$(git rev-list --max-parents=0 HEAD)"
+          fi
+
+          git diff --name-only "${base_sha}" "${GITHUB_SHA}" | tee changed_files.txt
+
+          server_changed=false
+          web_changed=false
+          runner_changed=false
+
+          if grep -Eq '^(server/|\.github/workflows/ci\.yml$|\.github/workflows/server\.yml$)' changed_files.txt; then
+            server_changed=true
+          fi
+
+          if grep -Eq '^(web/|\.github/workflows/ci\.yml$|\.github/workflows/web\.yml$)' changed_files.txt; then
+            web_changed=true
+          fi
+
+          if grep -Eq '^(runner/|\.github/workflows/ci\.yml$|\.github/workflows/runner\.yml$)' changed_files.txt; then
+            runner_changed=true
+          fi
+
+          echo "server_changed=${server_changed}" >> "${GITHUB_OUTPUT}"
+          echo "web_changed=${web_changed}" >> "${GITHUB_OUTPUT}"
+          echo "runner_changed=${runner_changed}" >> "${GITHUB_OUTPUT}"
+
+  server:
+    name: Server
+    needs: detect-changes
+    if: needs.detect-changes.outputs.server_changed == 'true'
+    uses: ./.github/workflows/server.yml
+    secrets: inherit
+
+  web-placeholder:
+    name: Web Placeholder
+    needs: detect-changes
+    if: needs.detect-changes.outputs.web_changed == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Web module not migrated yet
+        run: echo "web module CI jobs should be added after source migration is complete."
+
+  runner-placeholder:
+    name: Runner Placeholder
+    needs: detect-changes
+    if: needs.detect-changes.outputs.runner_changed == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Runner module not migrated yet
+        run: echo "runner module CI jobs should be added after source migration is complete."

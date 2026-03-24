@@ -1,0 +1,48 @@
+version: "3.9"
+
+services:
+  jgitkins-server:
+    build:
+      context: ../..
+      dockerfile: Dockerfile
+    image: jgitkins-server:latest
+    ports:
+      - "18080:8084"
+      - "19090:9090"
+    environment:
+      SPRING_PROFILES_ACTIVE: local
+      SPRING_DATASOURCE_HIKARI_JDBC_URL: jdbc:log4jdbc:mariadb://mariadb:3306/JGITKINS?allowMultiQueries=true
+      SPRING_DATASOURCE_HIKARI_USERNAME: root
+      SPRING_DATASOURCE_HIKARI_PASSWORD: root1234
+    networks:
+      - jgitkins-net
+    restart: unless-stopped
+
+  jgitkins-web:
+    build:
+      context: ../../../jgitkins-web
+      dockerfile: Dockerfile
+    image: jgitkins-web:latest
+    ports:
+      - "18081:8081"
+    environment:
+      REDIS_HOST: valkey
+      REDIS_PORT: "6379"
+      JGITKINS_SERVER_BASE_URL: http://jgitkins-server:8084
+    networks:
+      - jgitkins-net
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:stable
+    ports:
+      - "80:80"
+    volumes:
+      - /opt/apps/nginx/nginx/conf.d/reverse.conf:/etc/nginx/conf.d/reverse.conf:ro
+    networks:
+      - jgitkins-net
+    restart: unless-stopped
+
+networks:
+  jgitkins-net:
+    external: true

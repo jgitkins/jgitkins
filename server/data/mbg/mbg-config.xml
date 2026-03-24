@@ -1,0 +1,113 @@
+<!DOCTYPE generatorConfiguration PUBLIC
+        "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<generatorConfiguration>
+
+    <classPathEntry location="./mariadb-java-client-3.1.4.jar"/>
+
+    <context id="simple" targetRuntime="MyBatis3">
+
+        <!-- mapper annotation -->
+        <plugin type="org.mybatis.generator.plugins.MapperAnnotationPlugin">
+            <property name="useMapperCommentGenerator" value="true"/>
+        </plugin>
+
+        <!-- custom -->
+        <plugin type="org.mybatis.generator.plugins.CustomMapperPrefixPlugin">
+            <property name="mapperType" value="Mbg"/> </plugin>
+        <plugin type="org.mybatis.generator.plugins.CustomRenameMethodPlugin"/>
+
+        <!-- pagination -->
+<!--        <plugin type="org.mybatis.generator.plugins.RowBoundsPlugin"/>-->
+
+        <!-- builder -->
+        <plugin type="org.mybatis.generator.plugins.FluentBuilderMethodsPlugin"/>
+
+        <!-- override(merged X) -->
+        <plugin type="org.mybatis.generator.plugins.UnmergeableXmlMappersPlugin"/>
+
+        <plugin type="org.mybatis.generator.plugins.RenameExampleClassPlugin">
+            <property name="searchString" value="Example$"/>
+            <property name="replaceString" value="Condition"/>
+        </plugin>
+
+        <commentGenerator>
+            <property name="suppressDate" value="true"/>
+            <property name="suppressAllComments" value="true"/>
+        </commentGenerator>
+
+
+   <jdbcConnection driverClass="org.mariadb.jdbc.Driver"
+                       connectionURL="jdbc:mariadb://localhost:3306/JGITKINS"
+                       userId="root"
+                       password="root1234"/>
+
+        <!-- Date > LocalDateTime -->
+        <javaTypeResolver type="org.mybatis.generator.internal.types.JavaTypeResolverDefaultImpl">
+            <property name="forceBigDecimals" value="false"/>
+            <property name="useJSR310Types" value="true"/>
+        </javaTypeResolver>
+
+        <javaModelGenerator targetPackage="io.jgitkins.server.infrastructure.persistence.model"
+                            targetProject="../../src/main/java">
+            <property name="enableSubPackages" value="true"/>
+            <property name="trimStrings" value="true"/>
+        </javaModelGenerator>
+
+
+        <sqlMapGenerator targetPackage="mbg"
+                         targetProject="../../src/main/resources/mapper">
+            <property name="enableSubPackages" value="true"/>
+        </sqlMapGenerator>
+
+        <javaClientGenerator type="XMLMAPPER"
+                             targetPackage="io.jgitkins.server.infrastructure.persistence.mapper"
+                             targetProject="../../src/main/java">
+            <property name="enableSubPackages" value="true"/>
+        </javaClientGenerator>
+
+        <table tableName="USER" domainObjectName="UserEntity">
+            <generatedKey column="id" sqlStatement="JDBC" identity="true"/>
+        </table>
+
+        <table tableName="USER_IDENTITIES" domainObjectName="UserIdentitiesEntity">
+            <generatedKey column="id" sqlStatement="JDBC" identity="true"/>
+        </table>
+
+        <table tableName="USER_CREDENTIALS" domainObjectName="UserCredentialsEntity">
+            <generatedKey column="id" sqlStatement="JDBC" identity="true"/>
+        </table>
+
+        <table tableName="ORGANIZE" domainObjectName="OrganizeEntity">
+            <generatedKey column="id" sqlStatement="JDBC" identity="true"/>
+        </table>
+        <table tableName="ORGANIZE_MEMBER" domainObjectName="OrganizeMemberEntity">
+            <generatedKey column="id" sqlStatement="JDBC" identity="true"/>
+        </table>
+
+        <table tableName="REPOSITORY" domainObjectName="RepositoryEntity">
+            <generatedKey column="id" sqlStatement="JDBC" identity="true"/>
+        </table>
+        <table tableName="REPOSITORY_MEMBER" domainObjectName="RepositoryMemberEntity">
+            <generatedKey column="id" sqlStatement="JDBC" identity="true"/>
+        </table>
+
+        <table tableName="BRANCH" domainObjectName="BranchEntity">
+            <generatedKey column="id" sqlStatement="JDBC" identity="true"/>
+        </table>
+        <table tableName="RUNNER" domainObjectName="RunnerEntity">
+            <generatedKey column="id" sqlStatement="JDBC" identity="true"/>
+        </table>
+        <table tableName="RUNNER_ASSIGNMENT" domainObjectName="RunnerAssignmentEntity">
+            <generatedKey column="id" sqlStatement="JDBC" identity="true"/>
+        </table>
+        <table tableName="JOB" domainObjectName="JobEntity">
+            <generatedKey column="id" sqlStatement="JDBC" identity="true"/>
+        </table>
+        <table tableName="JOB_HISTORY" domainObjectName="JobHistoryEntity">
+            <generatedKey column="id" sqlStatement="JDBC" identity="true"/>
+        </table>
+
+    </context>
+</generatorConfiguration>

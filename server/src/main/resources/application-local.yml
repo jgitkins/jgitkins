@@ -1,0 +1,9 @@
+# Swagger 설정
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+    operations-sorter: method
+    display-request-duration: true
+    persist-authorization: true

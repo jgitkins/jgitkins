@@ -1,0 +1,422 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.jgitkins.server.infrastructure.persistence.mapper.RepositoryEntityMbgMapper">
+  <resultMap id="BaseResultMap" type="io.jgitkins.server.infrastructure.persistence.model.RepositoryEntity">
+    <id column="ID" jdbcType="BIGINT" property="id" />
+    <result column="NAME" jdbcType="VARCHAR" property="name" />
+    <result column="PATH" jdbcType="VARCHAR" property="path" />
+    <result column="REPOSITORY_TYPE" jdbcType="VARCHAR" property="repositoryType" />
+    <result column="OWNER_TYPE" jdbcType="VARCHAR" property="ownerType" />
+    <result column="OWNER_ID" jdbcType="BIGINT" property="ownerId" />
+    <result column="CREDENTIAL_ID" jdbcType="VARCHAR" property="credentialId" />
+    <result column="CLONE_PATH" jdbcType="VARCHAR" property="clonePath" />
+    <result column="DEFAULT_BRANCH" jdbcType="VARCHAR" property="defaultBranch" />
+    <result column="VISIBILITY" jdbcType="VARCHAR" property="visibility" />
+    <result column="STATUS" jdbcType="VARCHAR" property="status" />
+    <result column="LAST_SYNCED_AT" jdbcType="TIMESTAMP" property="lastSyncedAt" />
+    <result column="CREATED_AT" jdbcType="TIMESTAMP" property="createdAt" />
+    <result column="UPDATED_AT" jdbcType="TIMESTAMP" property="updatedAt" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="io.jgitkins.server.infrastructure.persistence.model.RepositoryEntity">
+    <result column="DESCRIPTION" jdbcType="LONGVARCHAR" property="description" />
+  </resultMap>
+  <sql id="Condition_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Condition_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    ID, NAME, PATH, REPOSITORY_TYPE, OWNER_TYPE, OWNER_ID, CREDENTIAL_ID, CLONE_PATH, 
+    DEFAULT_BRANCH, VISIBILITY, STATUS, LAST_SYNCED_AT, CREATED_AT, UPDATED_AT
+  </sql>
+  <sql id="Blob_Column_List">
+    DESCRIPTION
+  </sql>
+  <select id="selectByConditionWithBLOBs" parameterType="io.jgitkins.server.infrastructure.persistence.model.RepositoryEntityCondition" resultMap="ResultMapWithBLOBs">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from REPOSITORY
+    <if test="_parameter != null">
+      <include refid="Condition_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByCondition" parameterType="io.jgitkins.server.infrastructure.persistence.model.RepositoryEntityCondition" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from REPOSITORY
+    <if test="_parameter != null">
+      <include refid="Condition_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from REPOSITORY
+    where ID = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from REPOSITORY
+    where ID = #{id,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByCondition" parameterType="io.jgitkins.server.infrastructure.persistence.model.RepositoryEntityCondition">
+    delete from REPOSITORY
+    <if test="_parameter != null">
+      <include refid="Condition_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" keyColumn="ID" keyProperty="id" parameterType="io.jgitkins.server.infrastructure.persistence.model.RepositoryEntity" useGeneratedKeys="true">
+    insert into REPOSITORY (NAME, PATH, REPOSITORY_TYPE, 
+      OWNER_TYPE, OWNER_ID, CREDENTIAL_ID, 
+      CLONE_PATH, DEFAULT_BRANCH, VISIBILITY, 
+      STATUS, LAST_SYNCED_AT, CREATED_AT, 
+      UPDATED_AT, DESCRIPTION)
+    values (#{name,jdbcType=VARCHAR}, #{path,jdbcType=VARCHAR}, #{repositoryType,jdbcType=VARCHAR}, 
+      #{ownerType,jdbcType=VARCHAR}, #{ownerId,jdbcType=BIGINT}, #{credentialId,jdbcType=VARCHAR}, 
+      #{clonePath,jdbcType=VARCHAR}, #{defaultBranch,jdbcType=VARCHAR}, #{visibility,jdbcType=VARCHAR}, 
+      #{status,jdbcType=VARCHAR}, #{lastSyncedAt,jdbcType=TIMESTAMP}, #{createdAt,jdbcType=TIMESTAMP}, 
+      #{updatedAt,jdbcType=TIMESTAMP}, #{description,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" keyColumn="ID" keyProperty="id" parameterType="io.jgitkins.server.infrastructure.persistence.model.RepositoryEntity" useGeneratedKeys="true">
+    insert into REPOSITORY
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="name != null">
+        NAME,
+      </if>
+      <if test="path != null">
+        PATH,
+      </if>
+      <if test="repositoryType != null">
+        REPOSITORY_TYPE,
+      </if>
+      <if test="ownerType != null">
+        OWNER_TYPE,
+      </if>
+      <if test="ownerId != null">
+        OWNER_ID,
+      </if>
+      <if test="credentialId != null">
+        CREDENTIAL_ID,
+      </if>
+      <if test="clonePath != null">
+        CLONE_PATH,
+      </if>
+      <if test="defaultBranch != null">
+        DEFAULT_BRANCH,
+      </if>
+      <if test="visibility != null">
+        VISIBILITY,
+      </if>
+      <if test="status != null">
+        STATUS,
+      </if>
+      <if test="lastSyncedAt != null">
+        LAST_SYNCED_AT,
+      </if>
+      <if test="createdAt != null">
+        CREATED_AT,
+      </if>
+      <if test="updatedAt != null">
+        UPDATED_AT,
+      </if>
+      <if test="description != null">
+        DESCRIPTION,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="path != null">
+        #{path,jdbcType=VARCHAR},
+      </if>
+      <if test="repositoryType != null">
+        #{repositoryType,jdbcType=VARCHAR},
+      </if>
+      <if test="ownerType != null">
+        #{ownerType,jdbcType=VARCHAR},
+      </if>
+      <if test="ownerId != null">
+        #{ownerId,jdbcType=BIGINT},
+      </if>
+      <if test="credentialId != null">
+        #{credentialId,jdbcType=VARCHAR},
+      </if>
+      <if test="clonePath != null">
+        #{clonePath,jdbcType=VARCHAR},
+      </if>
+      <if test="defaultBranch != null">
+        #{defaultBranch,jdbcType=VARCHAR},
+      </if>
+      <if test="visibility != null">
+        #{visibility,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="lastSyncedAt != null">
+        #{lastSyncedAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createdAt != null">
+        #{createdAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedAt != null">
+        #{updatedAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="description != null">
+        #{description,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByCondition" parameterType="io.jgitkins.server.infrastructure.persistence.model.RepositoryEntityCondition" resultType="java.lang.Long">
+    select count(*) from REPOSITORY
+    <if test="_parameter != null">
+      <include refid="Condition_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByConditionSelective" parameterType="map">
+    update REPOSITORY
+    <set>
+      <if test="row.id != null">
+        ID = #{row.id,jdbcType=BIGINT},
+      </if>
+      <if test="row.name != null">
+        NAME = #{row.name,jdbcType=VARCHAR},
+      </if>
+      <if test="row.path != null">
+        PATH = #{row.path,jdbcType=VARCHAR},
+      </if>
+      <if test="row.repositoryType != null">
+        REPOSITORY_TYPE = #{row.repositoryType,jdbcType=VARCHAR},
+      </if>
+      <if test="row.ownerType != null">
+        OWNER_TYPE = #{row.ownerType,jdbcType=VARCHAR},
+      </if>
+      <if test="row.ownerId != null">
+        OWNER_ID = #{row.ownerId,jdbcType=BIGINT},
+      </if>
+      <if test="row.credentialId != null">
+        CREDENTIAL_ID = #{row.credentialId,jdbcType=VARCHAR},
+      </if>
+      <if test="row.clonePath != null">
+        CLONE_PATH = #{row.clonePath,jdbcType=VARCHAR},
+      </if>
+      <if test="row.defaultBranch != null">
+        DEFAULT_BRANCH = #{row.defaultBranch,jdbcType=VARCHAR},
+      </if>
+      <if test="row.visibility != null">
+        VISIBILITY = #{row.visibility,jdbcType=VARCHAR},
+      </if>
+      <if test="row.status != null">
+        STATUS = #{row.status,jdbcType=VARCHAR},
+      </if>
+      <if test="row.lastSyncedAt != null">
+        LAST_SYNCED_AT = #{row.lastSyncedAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="row.createdAt != null">
+        CREATED_AT = #{row.createdAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="row.updatedAt != null">
+        UPDATED_AT = #{row.updatedAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="row.description != null">
+        DESCRIPTION = #{row.description,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    <if test="example != null">
+      <include refid="Update_By_Condition_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByConditionWithBLOBs" parameterType="map">
+    update REPOSITORY
+    set ID = #{row.id,jdbcType=BIGINT},
+      NAME = #{row.name,jdbcType=VARCHAR},
+      PATH = #{row.path,jdbcType=VARCHAR},
+      REPOSITORY_TYPE = #{row.repositoryType,jdbcType=VARCHAR},
+      OWNER_TYPE = #{row.ownerType,jdbcType=VARCHAR},
+      OWNER_ID = #{row.ownerId,jdbcType=BIGINT},
+      CREDENTIAL_ID = #{row.credentialId,jdbcType=VARCHAR},
+      CLONE_PATH = #{row.clonePath,jdbcType=VARCHAR},
+      DEFAULT_BRANCH = #{row.defaultBranch,jdbcType=VARCHAR},
+      VISIBILITY = #{row.visibility,jdbcType=VARCHAR},
+      STATUS = #{row.status,jdbcType=VARCHAR},
+      LAST_SYNCED_AT = #{row.lastSyncedAt,jdbcType=TIMESTAMP},
+      CREATED_AT = #{row.createdAt,jdbcType=TIMESTAMP},
+      UPDATED_AT = #{row.updatedAt,jdbcType=TIMESTAMP},
+      DESCRIPTION = #{row.description,jdbcType=LONGVARCHAR}
+    <if test="example != null">
+      <include refid="Update_By_Condition_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByCondition" parameterType="map">
+    update REPOSITORY
+    set ID = #{row.id,jdbcType=BIGINT},
+      NAME = #{row.name,jdbcType=VARCHAR},
+      PATH = #{row.path,jdbcType=VARCHAR},
+      REPOSITORY_TYPE = #{row.repositoryType,jdbcType=VARCHAR},
+      OWNER_TYPE = #{row.ownerType,jdbcType=VARCHAR},
+      OWNER_ID = #{row.ownerId,jdbcType=BIGINT},
+      CREDENTIAL_ID = #{row.credentialId,jdbcType=VARCHAR},
+      CLONE_PATH = #{row.clonePath,jdbcType=VARCHAR},
+      DEFAULT_BRANCH = #{row.defaultBranch,jdbcType=VARCHAR},
+      VISIBILITY = #{row.visibility,jdbcType=VARCHAR},
+      STATUS = #{row.status,jdbcType=VARCHAR},
+      LAST_SYNCED_AT = #{row.lastSyncedAt,jdbcType=TIMESTAMP},
+      CREATED_AT = #{row.createdAt,jdbcType=TIMESTAMP},
+      UPDATED_AT = #{row.updatedAt,jdbcType=TIMESTAMP}
+    <if test="example != null">
+      <include refid="Update_By_Condition_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="io.jgitkins.server.infrastructure.persistence.model.RepositoryEntity">
+    update REPOSITORY
+    <set>
+      <if test="name != null">
+        NAME = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="path != null">
+        PATH = #{path,jdbcType=VARCHAR},
+      </if>
+      <if test="repositoryType != null">
+        REPOSITORY_TYPE = #{repositoryType,jdbcType=VARCHAR},
+      </if>
+      <if test="ownerType != null">
+        OWNER_TYPE = #{ownerType,jdbcType=VARCHAR},
+      </if>
+      <if test="ownerId != null">
+        OWNER_ID = #{ownerId,jdbcType=BIGINT},
+      </if>
+      <if test="credentialId != null">
+        CREDENTIAL_ID = #{credentialId,jdbcType=VARCHAR},
+      </if>
+      <if test="clonePath != null">
+        CLONE_PATH = #{clonePath,jdbcType=VARCHAR},
+      </if>
+      <if test="defaultBranch != null">
+        DEFAULT_BRANCH = #{defaultBranch,jdbcType=VARCHAR},
+      </if>
+      <if test="visibility != null">
+        VISIBILITY = #{visibility,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        STATUS = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="lastSyncedAt != null">
+        LAST_SYNCED_AT = #{lastSyncedAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createdAt != null">
+        CREATED_AT = #{createdAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedAt != null">
+        UPDATED_AT = #{updatedAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="description != null">
+        DESCRIPTION = #{description,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="io.jgitkins.server.infrastructure.persistence.model.RepositoryEntity">
+    update REPOSITORY
+    set NAME = #{name,jdbcType=VARCHAR},
+      PATH = #{path,jdbcType=VARCHAR},
+      REPOSITORY_TYPE = #{repositoryType,jdbcType=VARCHAR},
+      OWNER_TYPE = #{ownerType,jdbcType=VARCHAR},
+      OWNER_ID = #{ownerId,jdbcType=BIGINT},
+      CREDENTIAL_ID = #{credentialId,jdbcType=VARCHAR},
+      CLONE_PATH = #{clonePath,jdbcType=VARCHAR},
+      DEFAULT_BRANCH = #{defaultBranch,jdbcType=VARCHAR},
+      VISIBILITY = #{visibility,jdbcType=VARCHAR},
+      STATUS = #{status,jdbcType=VARCHAR},
+      LAST_SYNCED_AT = #{lastSyncedAt,jdbcType=TIMESTAMP},
+      CREATED_AT = #{createdAt,jdbcType=TIMESTAMP},
+      UPDATED_AT = #{updatedAt,jdbcType=TIMESTAMP},
+      DESCRIPTION = #{description,jdbcType=LONGVARCHAR}
+    where ID = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="io.jgitkins.server.infrastructure.persistence.model.RepositoryEntity">
+    update REPOSITORY
+    set NAME = #{name,jdbcType=VARCHAR},
+      PATH = #{path,jdbcType=VARCHAR},
+      REPOSITORY_TYPE = #{repositoryType,jdbcType=VARCHAR},
+      OWNER_TYPE = #{ownerType,jdbcType=VARCHAR},
+      OWNER_ID = #{ownerId,jdbcType=BIGINT},
+      CREDENTIAL_ID = #{credentialId,jdbcType=VARCHAR},
+      CLONE_PATH = #{clonePath,jdbcType=VARCHAR},
+      DEFAULT_BRANCH = #{defaultBranch,jdbcType=VARCHAR},
+      VISIBILITY = #{visibility,jdbcType=VARCHAR},
+      STATUS = #{status,jdbcType=VARCHAR},
+      LAST_SYNCED_AT = #{lastSyncedAt,jdbcType=TIMESTAMP},
+      CREATED_AT = #{createdAt,jdbcType=TIMESTAMP},
+      UPDATED_AT = #{updatedAt,jdbcType=TIMESTAMP}
+    where ID = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

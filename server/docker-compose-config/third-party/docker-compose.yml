@@ -1,0 +1,82 @@
+version: "3.9"
+
+services:
+  ##################################
+  ############ MARIADB #############
+  ##################################
+  mariadb:
+    image: mariadb:11.4
+    container_name: mariadb
+    restart: unless-stopped
+
+    environment:
+      TZ: Asia/Seoul
+
+      MARIADB_ROOT_PASSWORD: root1234
+      MARIADB_DATABASE: JGITKINS
+      MARIADB_USER: root
+      MARIADB_PASSWORD: root1234
+
+    ports:
+      # - "127.0.0.1:3306:3306"
+      - "0.0.0.0:3306:3306"
+
+    volumes:
+      - /opt/apps-data/jgitkins/third-party/mariadb:/var/lib/mysql
+
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --max-connections=300
+    networks:
+      - jgitkins-net
+
+    deploy:
+      resources:
+        limits:
+          memory: 2g
+
+  ##################################
+  ############ VALKEY ##############
+  ##################################
+  valkey:
+    image: valkey/valkey:7.2
+    container_name: valkey
+    restart: unless-stopped
+
+    # 외부 노출 싫으면 127.0.0.1 유지 (권장)
+    ports:
+      - "127.0.0.1:6379:6379"
+
+    # 데이터 영구화(베타라도 추천)
+    volumes:
+      - /opt/apps-data/jgitkins/third-party/valkey:/data
+
+    # 운영 기본값: AOF 켜고, 스냅샷도 유지
+    command:
+      - valkey-server
+      - --appendonly
+      - "yes"
+      - --save
+      - "900"
+      - "1"
+      - --save
+      - "300"
+      - "10"
+      - --save
+      - "60"
+      - "10000"
+    networks:
+      - jgitkins-net
+
+    deploy:
+      resources:
+        limits:
+          memory: 1g
+
+
+volumes: {}
+
+networks:
+  jgitkins-net:
+    external: true

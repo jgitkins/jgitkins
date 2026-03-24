@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.jgitkins.server.infrastructure.persistence.mapper.UserIdentitiesEntityMbgMapper">
+  <resultMap id="BaseResultMap" type="io.jgitkins.server.infrastructure.persistence.model.UserIdentitiesEntity">
+    <id column="ID" jdbcType="BIGINT" property="id" />
+    <result column="USER_ID" jdbcType="BIGINT" property="userId" />
+    <result column="PROVIDER_NAME" jdbcType="VARCHAR" property="providerName" />
+    <result column="PROVIDER_SUB" jdbcType="VARCHAR" property="providerSub" />
+    <result column="EMAIL" jdbcType="VARCHAR" property="email" />
+    <result column="EMAIL_VERIFIED" jdbcType="BOOLEAN" property="emailVerified" />
+    <result column="NAME" jdbcType="VARCHAR" property="name" />
+    <result column="AVATAR_URL" jdbcType="VARCHAR" property="avatarUrl" />
+    <result column="CREATED_AT" jdbcType="TIMESTAMP" property="createdAt" />
+    <result column="UPDATED_AT" jdbcType="TIMESTAMP" property="updatedAt" />
+  </resultMap>
+  <sql id="Condition_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Condition_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    ID, USER_ID, PROVIDER_NAME, PROVIDER_SUB, EMAIL, EMAIL_VERIFIED, NAME, AVATAR_URL, 
+    CREATED_AT, UPDATED_AT
+  </sql>
+  <select id="selectByCondition" parameterType="io.jgitkins.server.infrastructure.persistence.model.UserIdentitiesEntityCondition" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from USER_IDENTITIES
+    <if test="_parameter != null">
+      <include refid="Condition_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from USER_IDENTITIES
+    where ID = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from USER_IDENTITIES
+    where ID = #{id,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByCondition" parameterType="io.jgitkins.server.infrastructure.persistence.model.UserIdentitiesEntityCondition">
+    delete from USER_IDENTITIES
+    <if test="_parameter != null">
+      <include refid="Condition_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" keyColumn="ID" keyProperty="id" parameterType="io.jgitkins.server.infrastructure.persistence.model.UserIdentitiesEntity" useGeneratedKeys="true">
+    insert into USER_IDENTITIES (USER_ID, PROVIDER_NAME, PROVIDER_SUB, 
+      EMAIL, EMAIL_VERIFIED, NAME, 
+      AVATAR_URL, CREATED_AT, UPDATED_AT
+      )
+    values (#{userId,jdbcType=BIGINT}, #{providerName,jdbcType=VARCHAR}, #{providerSub,jdbcType=VARCHAR}, 
+      #{email,jdbcType=VARCHAR}, #{emailVerified,jdbcType=BOOLEAN}, #{name,jdbcType=VARCHAR}, 
+      #{avatarUrl,jdbcType=VARCHAR}, #{createdAt,jdbcType=TIMESTAMP}, #{updatedAt,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" keyColumn="ID" keyProperty="id" parameterType="io.jgitkins.server.infrastructure.persistence.model.UserIdentitiesEntity" useGeneratedKeys="true">
+    insert into USER_IDENTITIES
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="userId != null">
+        USER_ID,
+      </if>
+      <if test="providerName != null">
+        PROVIDER_NAME,
+      </if>
+      <if test="providerSub != null">
+        PROVIDER_SUB,
+      </if>
+      <if test="email != null">
+        EMAIL,
+      </if>
+      <if test="emailVerified != null">
+        EMAIL_VERIFIED,
+      </if>
+      <if test="name != null">
+        NAME,
+      </if>
+      <if test="avatarUrl != null">
+        AVATAR_URL,
+      </if>
+      <if test="createdAt != null">
+        CREATED_AT,
+      </if>
+      <if test="updatedAt != null">
+        UPDATED_AT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="userId != null">
+        #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="providerName != null">
+        #{providerName,jdbcType=VARCHAR},
+      </if>
+      <if test="providerSub != null">
+        #{providerSub,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null">
+        #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="emailVerified != null">
+        #{emailVerified,jdbcType=BOOLEAN},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="avatarUrl != null">
+        #{avatarUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="createdAt != null">
+        #{createdAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedAt != null">
+        #{updatedAt,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByCondition" parameterType="io.jgitkins.server.infrastructure.persistence.model.UserIdentitiesEntityCondition" resultType="java.lang.Long">
+    select count(*) from USER_IDENTITIES
+    <if test="_parameter != null">
+      <include refid="Condition_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByConditionSelective" parameterType="map">
+    update USER_IDENTITIES
+    <set>
+      <if test="row.id != null">
+        ID = #{row.id,jdbcType=BIGINT},
+      </if>
+      <if test="row.userId != null">
+        USER_ID = #{row.userId,jdbcType=BIGINT},
+      </if>
+      <if test="row.providerName != null">
+        PROVIDER_NAME = #{row.providerName,jdbcType=VARCHAR},
+      </if>
+      <if test="row.providerSub != null">
+        PROVIDER_SUB = #{row.providerSub,jdbcType=VARCHAR},
+      </if>
+      <if test="row.email != null">
+        EMAIL = #{row.email,jdbcType=VARCHAR},
+      </if>
+      <if test="row.emailVerified != null">
+        EMAIL_VERIFIED = #{row.emailVerified,jdbcType=BOOLEAN},
+      </if>
+      <if test="row.name != null">
+        NAME = #{row.name,jdbcType=VARCHAR},
+      </if>
+      <if test="row.avatarUrl != null">
+        AVATAR_URL = #{row.avatarUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="row.createdAt != null">
+        CREATED_AT = #{row.createdAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="row.updatedAt != null">
+        UPDATED_AT = #{row.updatedAt,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    <if test="example != null">
+      <include refid="Update_By_Condition_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByCondition" parameterType="map">
+    update USER_IDENTITIES
+    set ID = #{row.id,jdbcType=BIGINT},
+      USER_ID = #{row.userId,jdbcType=BIGINT},
+      PROVIDER_NAME = #{row.providerName,jdbcType=VARCHAR},
+      PROVIDER_SUB = #{row.providerSub,jdbcType=VARCHAR},
+      EMAIL = #{row.email,jdbcType=VARCHAR},
+      EMAIL_VERIFIED = #{row.emailVerified,jdbcType=BOOLEAN},
+      NAME = #{row.name,jdbcType=VARCHAR},
+      AVATAR_URL = #{row.avatarUrl,jdbcType=VARCHAR},
+      CREATED_AT = #{row.createdAt,jdbcType=TIMESTAMP},
+      UPDATED_AT = #{row.updatedAt,jdbcType=TIMESTAMP}
+    <if test="example != null">
+      <include refid="Update_By_Condition_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="io.jgitkins.server.infrastructure.persistence.model.UserIdentitiesEntity">
+    update USER_IDENTITIES
+    <set>
+      <if test="userId != null">
+        USER_ID = #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="providerName != null">
+        PROVIDER_NAME = #{providerName,jdbcType=VARCHAR},
+      </if>
+      <if test="providerSub != null">
+        PROVIDER_SUB = #{providerSub,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null">
+        EMAIL = #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="emailVerified != null">
+        EMAIL_VERIFIED = #{emailVerified,jdbcType=BOOLEAN},
+      </if>
+      <if test="name != null">
+        NAME = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="avatarUrl != null">
+        AVATAR_URL = #{avatarUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="createdAt != null">
+        CREATED_AT = #{createdAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedAt != null">
+        UPDATED_AT = #{updatedAt,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="io.jgitkins.server.infrastructure.persistence.model.UserIdentitiesEntity">
+    update USER_IDENTITIES
+    set USER_ID = #{userId,jdbcType=BIGINT},
+      PROVIDER_NAME = #{providerName,jdbcType=VARCHAR},
+      PROVIDER_SUB = #{providerSub,jdbcType=VARCHAR},
+      EMAIL = #{email,jdbcType=VARCHAR},
+      EMAIL_VERIFIED = #{emailVerified,jdbcType=BOOLEAN},
+      NAME = #{name,jdbcType=VARCHAR},
+      AVATAR_URL = #{avatarUrl,jdbcType=VARCHAR},
+      CREATED_AT = #{createdAt,jdbcType=TIMESTAMP},
+      UPDATED_AT = #{updatedAt,jdbcType=TIMESTAMP}
+    where ID = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>
