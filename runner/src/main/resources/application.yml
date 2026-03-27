@@ -1,0 +1,28 @@
+# 기본 설정
+server:
+  port: 8080
+  servlet:
+    context-path: /
+---
+# Mybatis 설정
+mybatis:
+  mapper-locations: classpath*:/mapper/**/*.xml
+---
+# RabbitMQ Configuration
+spring:
+  datasource:
+    driver-class-name: ${RUNNER_DB_DRIVER:org.h2.Driver}
+#    url: ${RUNNER_DB_URL:jdbc:h2:file:~/runner;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE}
+    url: jdbc:h2:file:~/runner;AUTO_SERVER=TRUE
+    username: ${RUNNER_DB_USERNAME:runner}
+    password: ${RUNNER_DB_PASSWORD:runner}
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:/DDL.sql
+      continue-on-error: true
+
+runner:
+  runner-name: ${RUNNER_NAME:local-runner}
+  server-host: ${RUNNER_SERVER_HOST:localhost}
+  server-port: ${RUNNER_SERVER_PORT:9090}

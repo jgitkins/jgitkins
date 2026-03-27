@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.jgitkins.runner.infrastructure.persistence.mapper.RunnerConfigFileEntityMbgMapper">
+  <resultMap id="BaseResultMap" type="io.jgitkins.runner.infrastructure.persistence.model.RunnerConfigFileEntity">
+    <id column="ID" jdbcType="BIGINT" property="id" />
+    <result column="RUNNER_ID" jdbcType="BIGINT" property="runnerId" />
+    <result column="FILENAME" jdbcType="VARCHAR" property="filename" />
+    <result column="CONTENTS" jdbcType="VARCHAR" property="contents" />
+    <result column="UPDATED_AT" jdbcType="TIMESTAMP" property="updatedAt" />
+  </resultMap>
+  <sql id="Condition_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Condition_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    ID, RUNNER_ID, FILENAME, CONTENTS, UPDATED_AT
+  </sql>
+  <select id="selectByCondition" parameterType="io.jgitkins.runner.infrastructure.persistence.model.RunnerConfigFileEntityCondition" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from RUNNER_CONFIG_FILE
+    <if test="_parameter != null">
+      <include refid="Condition_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from RUNNER_CONFIG_FILE
+    where ID = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from RUNNER_CONFIG_FILE
+    where ID = #{id,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByCondition" parameterType="io.jgitkins.runner.infrastructure.persistence.model.RunnerConfigFileEntityCondition">
+    delete from RUNNER_CONFIG_FILE
+    <if test="_parameter != null">
+      <include refid="Condition_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" keyColumn="ID" keyProperty="id" parameterType="io.jgitkins.runner.infrastructure.persistence.model.RunnerConfigFileEntity" useGeneratedKeys="true">
+    insert into RUNNER_CONFIG_FILE (RUNNER_ID, FILENAME, CONTENTS, 
+      UPDATED_AT)
+    values (#{runnerId,jdbcType=BIGINT}, #{filename,jdbcType=VARCHAR}, #{contents,jdbcType=VARCHAR}, 
+      #{updatedAt,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" keyColumn="ID" keyProperty="id" parameterType="io.jgitkins.runner.infrastructure.persistence.model.RunnerConfigFileEntity" useGeneratedKeys="true">
+    insert into RUNNER_CONFIG_FILE
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="runnerId != null">
+        RUNNER_ID,
+      </if>
+      <if test="filename != null">
+        FILENAME,
+      </if>
+      <if test="contents != null">
+        CONTENTS,
+      </if>
+      <if test="updatedAt != null">
+        UPDATED_AT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="runnerId != null">
+        #{runnerId,jdbcType=BIGINT},
+      </if>
+      <if test="filename != null">
+        #{filename,jdbcType=VARCHAR},
+      </if>
+      <if test="contents != null">
+        #{contents,jdbcType=VARCHAR},
+      </if>
+      <if test="updatedAt != null">
+        #{updatedAt,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByCondition" parameterType="io.jgitkins.runner.infrastructure.persistence.model.RunnerConfigFileEntityCondition" resultType="java.lang.Long">
+    select count(*) from RUNNER_CONFIG_FILE
+    <if test="_parameter != null">
+      <include refid="Condition_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByConditionSelective" parameterType="map">
+    update RUNNER_CONFIG_FILE
+    <set>
+      <if test="row.id != null">
+        ID = #{row.id,jdbcType=BIGINT},
+      </if>
+      <if test="row.runnerId != null">
+        RUNNER_ID = #{row.runnerId,jdbcType=BIGINT},
+      </if>
+      <if test="row.filename != null">
+        FILENAME = #{row.filename,jdbcType=VARCHAR},
+      </if>
+      <if test="row.contents != null">
+        CONTENTS = #{row.contents,jdbcType=VARCHAR},
+      </if>
+      <if test="row.updatedAt != null">
+        UPDATED_AT = #{row.updatedAt,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    <if test="example != null">
+      <include refid="Update_By_Condition_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByCondition" parameterType="map">
+    update RUNNER_CONFIG_FILE
+    set ID = #{row.id,jdbcType=BIGINT},
+      RUNNER_ID = #{row.runnerId,jdbcType=BIGINT},
+      FILENAME = #{row.filename,jdbcType=VARCHAR},
+      CONTENTS = #{row.contents,jdbcType=VARCHAR},
+      UPDATED_AT = #{row.updatedAt,jdbcType=TIMESTAMP}
+    <if test="example != null">
+      <include refid="Update_By_Condition_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="io.jgitkins.runner.infrastructure.persistence.model.RunnerConfigFileEntity">
+    update RUNNER_CONFIG_FILE
+    <set>
+      <if test="runnerId != null">
+        RUNNER_ID = #{runnerId,jdbcType=BIGINT},
+      </if>
+      <if test="filename != null">
+        FILENAME = #{filename,jdbcType=VARCHAR},
+      </if>
+      <if test="contents != null">
+        CONTENTS = #{contents,jdbcType=VARCHAR},
+      </if>
+      <if test="updatedAt != null">
+        UPDATED_AT = #{updatedAt,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="io.jgitkins.runner.infrastructure.persistence.model.RunnerConfigFileEntity">
+    update RUNNER_CONFIG_FILE
+    set RUNNER_ID = #{runnerId,jdbcType=BIGINT},
+      FILENAME = #{filename,jdbcType=VARCHAR},
+      CONTENTS = #{contents,jdbcType=VARCHAR},
+      UPDATED_AT = #{updatedAt,jdbcType=TIMESTAMP}
+    where ID = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

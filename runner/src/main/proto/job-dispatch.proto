@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "io.jgitkins.server.grpc";
+option java_outer_classname = "JobDispatchProto";
+
+package jgitkins.dispatch;
+
+service JobDispatchService {
+  rpc RequestJob (JobDispatchRequest) returns (JobDispatchResponse);
+  rpc ReportJobResult (JobResultRequest) returns (JobResultResponse);
+}
+
+message JobDispatchRequest {
+  string runnerToken = 1;
+}
+
+message JobDispatchResponse {
+  bool hasJob = 1;
+  JobPayload job = 2;
+}
+
+message JobPayload {
+  int64 jobId = 1;
+  int64 jobHistoryId = 2;
+  int64 runnerId = 3;
+  int64 repositoryId = 4;
+  int64 organizeId = 5;
+  string commitHash = 6;
+  string branchName = 7;
+  int64 triggeredBy = 8;
+  string cloneUrl = 9;
+}
+
+message JobResultRequest {
+  string runnerToken = 1;
+  int64 jobId = 2;
+  JobResultStatus status = 3;
+}
+
+message JobResultResponse {
+  bool accepted = 1;
+  string message = 2;
+}
+
+enum JobResultStatus {
+  JOB_RESULT_SUCCESS = 0;
+  JOB_RESULT_FAILED = 1;
+}

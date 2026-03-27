@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="true">
+
+    <!-- common loggers -->
+    <logger name="org.springframework" level="INFO" />
+    <logger name="org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver" level="ERROR" />
+    <logger name="org.springframework.beans.factory" level="WARN" />
+    <logger name="org.springframework.jdbc.support" level="WARN" />
+    <logger name="org.apache" level="INFO" />
+    <logger name="net.sf.ehcache" level="INFO" />
+    <logger name="org.apache.ibatis" level="INFO" />
+    <logger name="org.aspectj" level="INFO" />
+    <logger name="org.mybatis.spring" level="INFO" />
+    <logger name="com.zaxxer.hikari" level="INFO" />
+    <logger name="org.hibernate" level="INFO" />
+    <logger name="javax.management" level="WARN" />
+    <logger name="jdk.event.security" level="INFO" />
+
+    <logger name="jdbc" level="OFF" />
+    <logger name="jdbc.sqlonly" level="WARN" />
+    <logger name="jdbc.resultsettable" level="WARN" />
+    <logger name="jdbc.sqltiming" level="WARN" />
+    <logger name="io.jgitkins.server.infrastructure.persistence.mapper" level="WARN" />
+
+
+
+
+
+
+
+    <!-- properties -->
+    <conversionRule conversionWord="highlight" converterClass="org.springframework.boot.logging.logback.ColorConverter" />
+    <property name="LOG_PATTERN" value="%d{yyyy-MM-dd HH:MM:ss} [%highlight(%level)] [%thread] %logger{36} - %msg%n"/>
+    <property name="LOGS" value="${user.home}/notificator/logs" />
+
+
+
+
+
+
+    <!-- profiles -->
+    <SpringProfile name="local">
+        <logger name="logging.level.org.springframework.security" level="DEBUG" />
+        <logger name="org.springframework.cache" level="TRACE" />
+        <logger name="io.jgitkins" level="DEBUG" />
+        <!--         <logger name="springfox" level="DEBUG" /> -->
+
+        <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder>
+                <pattern>${LOG_PATTERN}</pattern>
+            </encoder>
+        </appender>
+
+        <root level="OFF">
+            <appender-ref ref="STDOUT" />
+        </root>
+    </SpringProfile>
+
+    <!-- Dev, Stg, Prd -->
+    <SpringProfile name="!local">
+        <logger name="org.springframework.cache" level="TRACE" />
+        <logger name="io.jgitkins" level="DEBUG" />
+
+        <appender name="RollingFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+<!--            <file>${LOGS}/api.log</file>-->
+            <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+<!--                <Pattern>%d %p %C{1.} [%t] %m%n</Pattern>-->
+                <pattern>${LOG_PATTERN}</pattern>
+            </encoder>
+
+            <rollingPolicy
+                    class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+<!--                <fileNamePattern>${LOGS}/archived/spring-boot-logger-%d{yyyy-MM-dd}.%i.log </fileNamePattern>-->
+                <fileNamePattern>${LOGS}/notificator-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+                <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                    <maxFileSize>100MB</maxFileSize>
+                </timeBasedFileNamingAndTriggeringPolicy>
+            </rollingPolicy>
+        </appender>
+
+        <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder>
+                <pattern>${LOG_PATTERN}</pattern>
+            </encoder>
+        </appender>
+
+        <root level="OFF">
+            <appender-ref ref="RollingFile" />
+            <appender-ref ref="STDOUT" />
+        </root>
+    </SpringProfile>
+
+</configuration>
