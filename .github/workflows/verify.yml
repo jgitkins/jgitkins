@@ -48,6 +48,4 @@ jobs:
   runner:
     needs: detect
     if: needs.detect.outputs.runner == 'true'
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo "runner verify workflow is not ready yet."
+    uses: ./.github/workflows/runner-verify.yml

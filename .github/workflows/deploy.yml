@@ -50,4 +50,4 @@ jobs:
     if: needs.detect.outputs.runner == 'true'
     runs-on: ubuntu-latest
     steps:
-      - run: echo "runner release workflow is not ready yet."
+      - run: echo "runner release is skipped: Dockerfile and deployment assets are not prepared yet."
