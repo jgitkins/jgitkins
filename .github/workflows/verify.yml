@@ -1,0 +1,70 @@
+name: verify
+
+on:
+  push:
+    branches:
+      - develop
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verify-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  detect:
+    runs-on: ubuntu-latest
+    outputs:
+      server: ${{ steps.filter.outputs.server }}
+      web: ${{ steps.filter.outputs.web }}
+      runner: ${{ steps.filter.outputs.runner }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - id: filter
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [[ -n "${{ github.event.before }}" && "${{ github.event.before }}" != "0000000000000000000000000000000000000000" ]]; then
+            base_sha="${{ github.event.before }}"
+          else
+            base_sha="$(git rev-list --max-parents=0 HEAD)"
+          fi
+
+          git diff --name-only "${base_sha}" "${GITHUB_SHA}" > changed_files.txt
+
+          mark() {
+            local name="$1"
+            local pattern="$2"
+            if grep -Eq "${pattern}" changed_files.txt; then
+              echo "${name}=true" >> "${GITHUB_OUTPUT}"
+            else
+              echo "${name}=false" >> "${GITHUB_OUTPUT}"
+            fi
+          }
+
+          mark server '^(server/|\.github/workflows/verify\.yml$|\.github/workflows/server-verify\.yml$)'
+          mark web '^(web/|\.github/workflows/verify\.yml$|\.github/workflows/web-verify\.yml$)'
+          mark runner '^(runner/|\.github/workflows/verify\.yml$|\.github/workflows/runner-verify\.yml$)'
+
+  server:
+    needs: detect
+    if: needs.detect.outputs.server == 'true'
+    uses: ./.github/workflows/server-verify.yml
+
+  web:
+    needs: detect
+    if: needs.detect.outputs.web == 'true'
+    uses: ./.github/workflows/web-verify.yml
+
+  runner:
+    needs: detect
+    if: needs.detect.outputs.runner == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "runner verify workflow is not ready yet."

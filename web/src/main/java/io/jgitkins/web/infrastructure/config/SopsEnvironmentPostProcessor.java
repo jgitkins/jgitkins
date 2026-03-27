@@ -40,6 +40,11 @@ public class SopsEnvironmentPostProcessor implements EnvironmentPostProcessor, O
             return;
         }
 
+        if (!isSopsAvailable()) {
+            log.warn("sops binary is not available, skipping optional secret file: {}", encPath);
+            return;
+        }
+
         try {
             String decrypted = decryptWithSops(encPath);
 
@@ -91,4 +96,20 @@ public class SopsEnvironmentPostProcessor implements EnvironmentPostProcessor, O
         }
         return output;
     }
+
+    private boolean isSopsAvailable() {
+        try {
+            Process process = new ProcessBuilder("sops", "--version")
+                    .redirectErrorStream(true)
+                    .start();
+            return process.waitFor(SOPS_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                    && process.exitValue() == 0;
+        } catch (IOException e) {
+            return false;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return false;
+        }
+    }
+
 }

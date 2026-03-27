@@ -8,6 +8,7 @@ import org.springframework.core.env.MapPropertySource;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
@@ -27,6 +28,11 @@ public class SopsEnvironmentPostProcessor implements EnvironmentPostProcessor, O
 
         if (!encFile.exists()) {
             // local/dev runs should not fail when secrets are missing
+            return;
+        }
+
+        if (!isSopsAvailable()) {
+            // CI or fresh dev environments may not have sops installed.
             return;
         }
 
@@ -65,4 +71,19 @@ public class SopsEnvironmentPostProcessor implements EnvironmentPostProcessor, O
         // Before application.yml
         return Ordered.HIGHEST_PRECEDENCE;
     }
+
+    private boolean isSopsAvailable() {
+        try {
+            Process process = new ProcessBuilder("sops", "--version")
+                    .redirectErrorStream(true)
+                    .start();
+            return process.waitFor() == 0;
+        } catch (IOException e) {
+            return false;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return false;
+        }
+    }
+
 }
