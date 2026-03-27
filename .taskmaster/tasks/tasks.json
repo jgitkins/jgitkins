@@ -2,7 +2,7 @@
   "master": {
     "tasks": [
       {
-        "id": "1",
+        "id": 1,
         "title": "신규기능",
         "description": "사용자 가치 전달을 위한 기능 개발/확장 작업",
         "status": "pending",
@@ -14,7 +14,7 @@
         "subtasks": [
           {
             "id": 1,
-      "title": "[runner] 복잡한 Jenkinsfile 실행 지원 범위 검증 및 Job/Runner 보완",
+            "title": "[runner] 복잡한 Jenkinsfile 실행 지원 범위 검증 및 Job/Runner 보완",
             "description": "복잡한 Jenkinsfile 시나리오를 기준으로 Job 생성부터 Runner 실행까지 현재 지원 범위를 검증하고, 필요한 기능 보완 포인트를 도출한다.",
             "status": "pending",
             "dependencies": [],
@@ -51,7 +51,7 @@
           },
           {
             "id": 4,
-      "title": "[server, web] Repository 화면 기능 버튼 인증/인가 제어",
+            "title": "[server, web] Repository 화면 기능 버튼 인증/인가 제어",
             "description": "Public repository 조회는 허용하되 쓰기성 기능은 인증/권한 사용자로 제한한다.",
             "details": "[source: jgitkins-web, original subtask: 1.3]\n브랜치 생성/파일 업로드/디렉터리 생성 버튼 노출 및 서버 호출 권한을 일관되게 통제한다.",
             "status": "pending",
@@ -63,7 +63,7 @@
           },
           {
             "id": 5,
-      "title": "[server, runner] Feature Plugin Management",
+            "title": "[server, runner] Feature Plugin Management",
             "description": "Add a first-class plugin management workflow so each runner profile can declare the Jenkins plugins required for a pipeline, persist those definitions in the CLI config, and ensure the Docker executor mounts the resolved bundle before calling the server.",
             "details": "[source: jgitkins-runner, original subtask: 1.2]\n- Teach the CLI config loader to read/write a `plugins` section in `~/.jgitkins-runner/config.yml`, keep named bundles per profile, and expose Picocli flags that let `run` reference a specific `plugins.yaml` manifest.\n- Introduce a parser (e.g., `PluginBundleLoader` under `src/main/java/io/jgitkins/runner/infrastructure/plugins`) that reads the YAML, downloads/cache `.jpi` files, and mirrors Jenkinsfile Runner’s expected directory layout before execution.\n- Extend `JobExecuteRequest` (`src/main/java/io/jgitkins/runner/presentation/api/dto/JobExecuteRequest.java`) and related DTO/command objects so `/pipelines/run` can accept an optional plugin bundle identifier or manifest path; default to the active profile’s bundle.\n- Update `DockerRunnerAdapter.run` (`src/main/java/io/jgitkins/runner/infrastructure/adapter/DockerRunnerAdapter.java`) so the `Bind` list includes both the workspace and the resolved plugin volume (mount to `/usr/share/jenkins/ref/plugins` or configurable `runner.plugins.mountPath`).\n- Provide CLI subcommands such as `plugins list`, `plugins sync`, and `plugins use` to inspect/update bundles, persisting changes back to the YAML config alongside existing registration data.\n- Document plugin workflow in `README.md`, including how to author `plugins.yaml`, where bundles are cached, and how to override bundles per `run` invocation.\nPseudo:\n```\nPluginBundle bundle = pluginBundleLoader.load(activeProfile);\nBind plugins = new Bind(bundle.getPath(), new Volume(config.getPluginsMountPath()));\nCreateContainerResponse container = dockerClient.createContainerCmd(image)\n    .withBinds(workspaceBind, plugins)\n    .exec();\n```\n",
             "status": "pending",
@@ -80,7 +80,7 @@
         ]
       },
       {
-        "id": "2",
+        "id": 2,
         "title": "리팩토링",
         "description": "구조 개선, 품질 개선, 테스트 체계 강화 작업",
         "status": "pending",
@@ -166,7 +166,7 @@
         ]
       },
       {
-        "id": "3",
+        "id": 3,
         "title": "보안",
         "description": "인증/인가/자격증명/보안 회귀 강화 작업",
         "status": "pending",
@@ -178,7 +178,7 @@
         "subtasks": []
       },
       {
-        "id": "4",
+        "id": 4,
         "title": "운영/인프라",
         "description": "배포/모니터링/CI-CD/운영 안정성 개선 작업",
         "status": "pending",
@@ -187,10 +187,20 @@
         "details": "카테고리 기반 상위 Task",
         "testStrategy": "운영 시나리오 검증",
         "updatedAt": "2026-03-25T12:33:35.937Z",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "모노레포변경으로 인한 ci 설정 최적화",
+            "description": "",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 4
+          }
+        ]
       },
       {
-        "id": "5",
+        "id": 5,
         "title": "버그/핫픽스",
         "description": "사용자 영향 버그 및 긴급 수정 작업",
         "status": "done",
@@ -221,7 +231,9 @@
       "completedCount": 1,
       "tags": [
         "master"
-      ]
+      ],
+      "created": "2026-03-27T01:13:34.380Z",
+      "description": "Tasks for master context"
     }
   }
 }

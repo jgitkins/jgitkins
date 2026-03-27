@@ -25,30 +25,13 @@ jobs:
 
       - id: filter
         shell: bash
+        env:
+          EVENT_BEFORE: ${{ github.event.before }}
+          SERVER_PATTERN: '^(server/|\.github/workflows/deploy\.yml$|\.github/workflows/server-release\.yml$)'
+          WEB_PATTERN: '^(web/|\.github/workflows/deploy\.yml$|\.github/workflows/web-release\.yml$)'
+          RUNNER_PATTERN: '^(runner/|\.github/workflows/deploy\.yml$|\.github/workflows/runner-release\.yml$)'
         run: |
-          set -euo pipefail
-
-          if [[ -n "${{ github.event.before }}" && "${{ github.event.before }}" != "0000000000000000000000000000000000000000" ]]; then
-            base_sha="${{ github.event.before }}"
-          else
-            base_sha="$(git rev-list --max-parents=0 HEAD)"
-          fi
-
-          git diff --name-only "${base_sha}" "${GITHUB_SHA}" > changed_files.txt
-
-          mark() {
-            local name="$1"
-            local pattern="$2"
-            if grep -Eq "${pattern}" changed_files.txt; then
-              echo "${name}=true" >> "${GITHUB_OUTPUT}"
-            else
-              echo "${name}=false" >> "${GITHUB_OUTPUT}"
-            fi
-          }
-
-          mark server '^(server/|\.github/workflows/deploy\.yml$|\.github/workflows/server-release\.yml$)'
-          mark web '^(web/|\.github/workflows/deploy\.yml$|\.github/workflows/web-release\.yml$)'
-          mark runner '^(runner/|\.github/workflows/deploy\.yml$|\.github/workflows/runner-release\.yml$)'
+          bash .github/scripts/detect-changed-modules.sh
 
   server:
     needs: detect
