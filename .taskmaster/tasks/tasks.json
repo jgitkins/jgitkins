@@ -88,7 +88,7 @@
         "priority": "high",
         "details": "기존 기능별 Task를 카테고리 기반(신규기능/리팩토링/보안)으로 재구성함.",
         "testStrategy": "카테고리별 우선순위에 따라 하위 작업을 순차 수행하고 회귀 테스트를 적용한다.",
-        "updatedAt": "2026-03-29T02:27:11.425Z",
+        "updatedAt": "2026-03-29T02:46:53.347Z",
         "subtasks": [
           {
             "id": 1,
@@ -127,12 +127,13 @@
             "id": 4,
             "title": "[web, server, runner] 멀티모듈 로깅 Java Configuration 표준화 준비",
             "description": "server의 2026-03-09 커밋 fc0412a79891f15d326823cf6a58963da7f1dc31을 기준선으로 삼아 runner/web 모듈에도 확장 가능한 LoggingConfigurator 전환 계획과 적용 기준을 수립한다.",
-            "status": "pending",
+            "status": "done",
             "dependencies": [],
             "details": "[source: jgitkins-server, original subtask: 2.43]\n참조 문서: .taskmaster/docs/refactor/task_2_43_plan.md. 1) server의 LoggingConfigurator, spring.factories 등록, XML 제거 방식을 기준선으로 삼는다. 2) runner/web의 기존 logback-spring.xml 차이를 비교하여 root level, 공통 logger preset, 로그 파일 경로/파일명, traceId 패턴, SOPS EnvironmentPostProcessor 공존 조건을 정리한다. 3) 공통 모듈 추출 여부는 비교 검토하되 1차 적용은 모듈별 configurator 도입과 XML 제거를 우선 검토한다. 4) local/non-local 프로파일별 console/file appender, 비동기 appender, spring.factories 등록, 회귀 검증 기준을 문서화한다.",
             "testStrategy": "각 모듈을 local 및 non-local 프로파일로 부팅하여 console/file appender 동작, root/logger level, traceId 패턴, spring.factories 기반 초기화, 기존 SOPS 초기화 공존 여부를 검증한다.",
             "parentTaskId": 2,
-            "parentId": "2"
+            "parentId": "2",
+            "updatedAt": "2026-03-29T02:46:53.347Z"
           },
           {
             "id": 5,
@@ -262,7 +263,7 @@
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2026-03-29T02:27:11.425Z",
+      "lastModified": "2026-03-29T02:46:53.347Z",
       "taskCount": 5,
       "completedCount": 2,
       "tags": [

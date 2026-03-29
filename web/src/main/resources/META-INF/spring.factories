@@ -1,3 +1,7 @@
-# ?????? ????? ?????? ?? (sops)
+# EnvironmentPostProcessor for SOPS
 org.springframework.boot.env.EnvironmentPostProcessor=\
 io.jgitkins.web.infrastructure.config.SopsEnvironmentPostProcessor
+
+# Logging Configurator
+org.springframework.context.ApplicationListener=\
+io.jgitkins.web.infrastructure.config.LoggingConfigurator
