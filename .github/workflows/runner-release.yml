@@ -1,4 +1,4 @@
-name: web-release
+name: runner-release
 
 on:
   workflow_call:
@@ -23,21 +23,21 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - uses: docker/build-push-action@v6
         with:
-          context: ./web
-          file: ./web/Dockerfile
+          context: ./runner
+          file: ./runner/Dockerfile
           push: true
           platforms: linux/arm64
           tags: |
-            ${{ env.REGISTRY }}/${{ github.repository_owner }}/jgitkins-web:${{ github.sha }}
-            ${{ env.REGISTRY }}/${{ github.repository_owner }}/jgitkins-web:latest
+            ${{ env.REGISTRY }}/${{ github.repository_owner }}/jgitkins-runner:${{ github.sha }}
+            ${{ env.REGISTRY }}/${{ github.repository_owner }}/jgitkins-runner:latest
       - uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.SSH_HOST_ALZAR }}
           username: ${{ secrets.SSH_USER_ALZAR }}
           key: ${{ secrets.SSH_KEY_ALZAR }}
           port: ${{ secrets.SSH_PORT || 22 }}
-          source: web/docker-compose-config/apps/docker-compose.yml
-          target: ${{ secrets.MONO_DEPLOY_PATH_WEB }}
+          source: runner/docker-compose-config/apps/docker-compose.yml
+          target: ${{ secrets.MONO_DEPLOY_PATH_RUNNER }}
           strip_components: 3
       - uses: appleboy/ssh-action@v1.0.3
         env:
@@ -51,10 +51,10 @@ jobs:
           script: |
             set -e
             export PATH=/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin
-            export COMPOSE_PROJECT_NAME=jgitkins-web
+            export COMPOSE_PROJECT_NAME=jgitkins-runner
             echo "${GITHUB_TOKEN}" | docker login "${REGISTRY}" -u "${GITHUB_ACTOR}" --password-stdin
-            cd "${{ secrets.MONO_DEPLOY_PATH_WEB }}"
+            cd "${{ secrets.MONO_DEPLOY_PATH_RUNNER }}"
             docker-compose -f docker-compose.yml down --remove-orphans || true
-            docker-compose -f docker-compose.yml pull jgitkins-web
-            docker-compose -f docker-compose.yml up -d --force-recreate jgitkins-web
+            docker-compose -f docker-compose.yml pull jgitkins-runner
+            docker-compose -f docker-compose.yml up -d --force-recreate jgitkins-runner
             docker image prune -f

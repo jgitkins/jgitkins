@@ -1,6 +1,9 @@
 name: deploy
 
 on:
+  push:
+    branches:
+      - develop
   workflow_dispatch:
 
 permissions:
@@ -48,6 +51,5 @@ jobs:
   runner:
     needs: detect
     if: needs.detect.outputs.runner == 'true'
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo "runner release is skipped: Dockerfile and deployment assets are not prepared yet."
+    uses: ./.github/workflows/runner-release.yml
+    secrets: inherit

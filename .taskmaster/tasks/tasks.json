@@ -88,7 +88,7 @@
         "priority": "high",
         "details": "기존 기능별 Task를 카테고리 기반(신규기능/리팩토링/보안)으로 재구성함.",
         "testStrategy": "카테고리별 우선순위에 따라 하위 작업을 순차 수행하고 회귀 테스트를 적용한다.",
-        "updatedAt": "2026-03-27T01:58:50.047Z",
+        "updatedAt": "2026-03-27T05:41:50.767Z",
         "subtasks": [
           {
             "id": 1,
@@ -168,10 +168,10 @@
             "title": "[runner] 기존 jgitkins-runner 소스 이관",
             "description": "기존 jgitkins-runner 저장소의 실행/빌드에 필요한 소스 자산만 monorepo의 runner 모듈로 이관한다.",
             "details": "",
-            "status": "in-progress",
+            "status": "done",
             "dependencies": [],
             "parentTaskId": 2,
-            "updatedAt": "2026-03-27T01:58:50.047Z",
+            "updatedAt": "2026-03-27T05:41:50.767Z",
             "parentId": "undefined"
           }
         ]
@@ -180,12 +180,12 @@
         "id": "3",
         "title": "보안",
         "description": "인증/인가/자격증명/보안 회귀 강화 작업",
-        "status": "pending",
+        "status": "cancelled",
         "dependencies": [],
         "priority": "high",
         "details": "기존 기능별 Task를 카테고리 기반(신규기능/리팩토링/보안)으로 재구성함.",
         "testStrategy": "카테고리별 우선순위에 따라 하위 작업을 순차 수행하고 회귀 테스트를 적용한다.",
-        "updatedAt": "2026-03-25T12:33:34.015Z",
+        "updatedAt": "2026-03-27T13:15:02.839Z",
         "subtasks": []
       },
       {
@@ -197,7 +197,7 @@
         "priority": "high",
         "details": "카테고리 기반 상위 Task",
         "testStrategy": "운영 시나리오 검증",
-        "updatedAt": "2026-03-27T02:10:02.377Z",
+        "updatedAt": "2026-03-27T04:51:37.649Z",
         "subtasks": [
           {
             "id": 1,
@@ -219,6 +219,17 @@
             "dependencies": [],
             "parentTaskId": 4,
             "updatedAt": "2026-03-27T02:10:02.377Z",
+            "parentId": "undefined"
+          },
+          {
+            "id": 3,
+            "title": "[runner] 모노레포 runner release/deploy 연결",
+            "description": "runner 모듈의 Docker 빌드 및 release/deploy 경로를 monorepo CI에 연결한다.",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 4,
+            "updatedAt": "2026-03-27T04:51:37.649Z",
             "parentId": "undefined"
           }
         ]
@@ -250,7 +261,7 @@
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2026-03-27T02:10:02.377Z",
+      "lastModified": "2026-03-27T13:15:02.843Z",
       "taskCount": 5,
       "completedCount": 2,
       "tags": [

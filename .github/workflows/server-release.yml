@@ -37,7 +37,8 @@ jobs:
           key: ${{ secrets.SSH_KEY_ALZAR }}
           port: ${{ secrets.SSH_PORT || 22 }}
           source: server/docker-compose-config/apps/docker-compose.yml
-          target: ${{ format('{0}/docker-compose-config/apps', secrets.DEPLOY_PATH_SERVER) }}
+          target: ${{ secrets.MONO_DEPLOY_PATH_SERVER }}
+          strip_components: 3
       - uses: appleboy/ssh-action@v1.0.3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -50,8 +51,10 @@ jobs:
           script: |
             set -e
             export PATH=/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin
+            export COMPOSE_PROJECT_NAME=jgitkins-server
             echo "${GITHUB_TOKEN}" | docker login "${REGISTRY}" -u "${GITHUB_ACTOR}" --password-stdin
-            cd "${{ secrets.DEPLOY_PATH_SERVER }}"
-            docker-compose -f docker-compose-config/apps/docker-compose.yml pull jgitkins-server
-            docker-compose -f docker-compose-config/apps/docker-compose.yml up -d --force-recreate jgitkins-server
+            cd "${{ secrets.MONO_DEPLOY_PATH_SERVER }}"
+            docker-compose -f docker-compose.yml down --remove-orphans || true
+            docker-compose -f docker-compose.yml pull jgitkins-server
+            docker-compose -f docker-compose.yml up -d --force-recreate jgitkins-server
             docker image prune -f

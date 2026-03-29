@@ -1,7 +1,6 @@
-version: "3.9"
-
 services:
   jgitkins-web:
+    container_name: jgitkins-web-1
     build:
       context: ../..
       dockerfile: Dockerfile

@@ -1,0 +1,22 @@
+services:
+  jgitkins-runner:
+    container_name: jgitkins-runner-1
+    image: ghcr.io/jgitkins/jgitkins-runner:latest
+    ports:
+      - "18082:8080"
+    environment:
+      JAVA_TOOL_OPTIONS: -Duser.home=/data
+      RUNNER_NAME: prod-runner
+      RUNNER_SERVER_HOST: jgitkins-server
+      RUNNER_SERVER_PORT: 9090
+      RUNNER_DOCKER_HOST: unix:///var/run/docker.sock
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./data:/data
+    networks:
+      - jgitkins-net
+    restart: unless-stopped
+
+networks:
+  jgitkins-net:
+    external: true
