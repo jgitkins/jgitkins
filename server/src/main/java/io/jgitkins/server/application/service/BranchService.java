@@ -52,13 +52,13 @@ public class BranchService implements BranchLoadUseCase, BranchCreateUseCase, Br
 
     @Override
     public void createBranch(BranchCreateCommand command) {
-        Repository repository = loadRepositoryWithWriteAccess(command.getRepositoryId());
+        Repository repository = loadRepositoryWithWriteAccess(command.repositoryId());
         String namespace = repositoryNamespaceResolver.resolve(repository);
 
         // 검증 및 소스 브랜치 결정 (Validator 위임)
         String resolvedSourceBranch = branchCreationValidator.validateAndResolveSource(command, repository);
 
-        Branch newBranch = Branch.create(command.getRepositoryId(), command.getBranchName());
+        Branch newBranch = Branch.create(command.repositoryId(), command.branchName());
         BranchCreationContext context = BranchCreationContext.of(command, namespace, repository, resolvedSourceBranch);
 
         branchGitPort.createBranch(context);

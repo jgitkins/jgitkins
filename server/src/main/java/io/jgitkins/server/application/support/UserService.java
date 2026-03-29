@@ -27,7 +27,7 @@ public class UserService {
                 // TODO: Presentation 계층으로 이관 (Validator 통해 처리하기)
                 // param validation must be enforced in the entry point.
 
-                return userIdentityPort.findByProvider(command.getProviderName(), command.getProviderSub())
+                return userIdentityPort.findByProvider(command.providerName(), command.providerSub())
                                 .map(identity -> signin(identity, command, loginAt))
                                 .orElseGet(() -> signinWithSignUp(command, loginAt));
         }
@@ -39,11 +39,11 @@ public class UserService {
                 User user = userPort.findById(identity.getUserId())
                                 .orElseThrow(() -> new IllegalStateException("User not found for identity"));
 
-                User persistedUser = persistUserWithUpdates(user, command.getEmail(), command.getName(),
-                                command.getAvatarUrl(),
+                User persistedUser = persistUserWithUpdates(user, command.email(), command.name(),
+                                command.avatarUrl(),
                                 loginAt);
-                UserIdentity updatedIdentity = userProfileUpdater.updateIdentityIfChanged(identity, command.getEmail(),
-                                command.isEmailVerified(), command.getName(), command.getAvatarUrl());
+                UserIdentity updatedIdentity = userProfileUpdater.updateIdentityIfChanged(identity, command.email(),
+                                command.emailVerified(), command.name(), command.avatarUrl());
                 if (updatedIdentity != identity) {
                         userIdentityPort.save(updatedIdentity);
                 }
@@ -54,20 +54,20 @@ public class UserService {
         private User signinWithSignUp(UserLoginOrSignUpCommand command,
                         LocalDateTime loginAt) {
 
-                User user = findOrCreateUserForIdentity(command.getEmail(), command.getName(), command.getAvatarUrl(),
-                                command.getProviderName(), command.getProviderSub());
-                User persisted = persistUserWithUpdates(user, command.getEmail(), command.getName(),
-                                command.getAvatarUrl(),
+                User user = findOrCreateUserForIdentity(command.email(), command.name(), command.avatarUrl(),
+                                command.providerName(), command.providerSub());
+                User persisted = persistUserWithUpdates(user, command.email(), command.name(),
+                                command.avatarUrl(),
                                 loginAt);
 
                 UserIdentity identity = UserIdentity.create(
                                 persisted.getId(),
-                                command.getProviderName(),
-                                command.getProviderSub(),
-                                command.getEmail(),
-                                command.isEmailVerified(),
-                                command.getName(),
-                                command.getAvatarUrl());
+                                command.providerName(),
+                                command.providerSub(),
+                                command.email(),
+                                command.emailVerified(),
+                                command.name(),
+                                command.avatarUrl());
                 userIdentityPort.save(identity);
 
                 return persisted;

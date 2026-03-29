@@ -43,11 +43,7 @@ class RepositoryMemberServiceTest {
     void addRepositoryMember_savesWithRequestedRoleWhenNotExists() {
         when(repositoryMemberPort.existsByRepositoryIdAndUserId(RepositoryId.of(1L), UserId.of(2L))).thenReturn(false);
 
-        RepositoryMemberAddCommand command = RepositoryMemberAddCommand.builder()
-                .repositoryId(1L)
-                .userId(2L)
-                .role(RepositoryMemberRole.MAINTAINER)
-                .build();
+        RepositoryMemberAddCommand command = new RepositoryMemberAddCommand(1L, 2L, RepositoryMemberRole.MAINTAINER);
 
         service.addRepositoryMember(command);
 
@@ -60,10 +56,7 @@ class RepositoryMemberServiceTest {
     void addRepositoryMember_usesReaderRoleWhenRoleMissing() {
         when(repositoryMemberPort.existsByRepositoryIdAndUserId(RepositoryId.of(1L), UserId.of(2L))).thenReturn(false);
 
-        RepositoryMemberAddCommand command = RepositoryMemberAddCommand.builder()
-                .repositoryId(1L)
-                .userId(2L)
-                .build();
+        RepositoryMemberAddCommand command = new RepositoryMemberAddCommand(1L, 2L, null);
 
         service.addRepositoryMember(command);
 
@@ -76,11 +69,7 @@ class RepositoryMemberServiceTest {
     void addRepositoryMember_doesNothingWhenAlreadyExists() {
         when(repositoryMemberPort.existsByRepositoryIdAndUserId(RepositoryId.of(1L), UserId.of(2L))).thenReturn(true);
 
-        RepositoryMemberAddCommand command = RepositoryMemberAddCommand.builder()
-                .repositoryId(1L)
-                .userId(2L)
-                .role(RepositoryMemberRole.WRITER)
-                .build();
+        RepositoryMemberAddCommand command = new RepositoryMemberAddCommand(1L, 2L, RepositoryMemberRole.WRITER);
 
         service.addRepositoryMember(command);
 
@@ -91,7 +80,7 @@ class RepositoryMemberServiceTest {
     void addRepositoryMember_throwsWhenCommandInvalid() {
         assertThrows(JgitkinsException.class, () -> service.addRepositoryMember(null));
         assertThrows(JgitkinsException.class, () -> service.addRepositoryMember(
-                RepositoryMemberAddCommand.builder().repositoryId(1L).build()
+                new RepositoryMemberAddCommand(1L, null, null)
         ));
     }
 
@@ -122,9 +111,9 @@ class RepositoryMemberServiceTest {
         List<RepositoryMemberSummary> result = service.getRepositoryMembers(1L);
 
         assertEquals(1, result.size());
-        assertEquals(2L, result.get(0).getUserId());
-        assertEquals(RepositoryMemberRole.WRITER, result.get(0).getRole());
-        assertEquals(addedAt, result.get(0).getAddedAt());
+        assertEquals(2L, result.get(0).userId());
+        assertEquals(RepositoryMemberRole.WRITER, result.get(0).role());
+        assertEquals(addedAt, result.get(0).addedAt());
     }
 
     @Test

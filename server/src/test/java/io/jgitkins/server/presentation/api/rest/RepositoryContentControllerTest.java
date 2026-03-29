@@ -87,10 +87,7 @@ class RepositoryContentControllerTest {
     @Test
     void uploadFileByRepositoryId_resolvesRepositoryKeyAndDelegates() throws Exception {
         when(repositoryLoadUseCase.getRepository(10L)).thenReturn(
-                RepositoryResult.builder()
-                        .id(10L)
-                        .clonePath("users/alice/sample-repo.git")
-                        .build()
+                new RepositoryResult(10L, null, null, null, null, null, null, null, null, "users/alice/sample-repo.git", null, false, null, null, null)
         );
 
         MockMultipartFile filePart = new MockMultipartFile(
@@ -121,11 +118,7 @@ class RepositoryContentControllerTest {
     @Test
     void uploadFileByRepositoryId_returnsNotFound_whenRepositoryPathInvalid() throws Exception {
         when(repositoryLoadUseCase.getRepository(11L)).thenReturn(
-                RepositoryResult.builder()
-                        .id(11L)
-                        .clonePath("invalid-path-only")
-                        .path("also-invalid")
-                        .build()
+                new RepositoryResult(11L, null, null, "also-invalid", null, null, null, null, null, "invalid-path-only", null, false, null, null, null)
         );
 
         MockMultipartFile filePart = new MockMultipartFile(

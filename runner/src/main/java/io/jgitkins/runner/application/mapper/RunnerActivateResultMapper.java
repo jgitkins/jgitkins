@@ -12,15 +12,15 @@ public final class RunnerActivateResultMapper {
         if (configuration == null) {
             return null;
         }
-        return RunnerActivateResult.builder()
-                                   .runnerToken(configuration.getRunnerToken())
-                                   .masterBaseUrl(configuration.getMasterBaseUrl())
-                                   .pollInterval(configuration.getPollInterval())
-                                   .busyWaitInterval(configuration.getBusyWaitInterval())
-//                                   .volumePath(configuration.getVolumePath())
-//                                   .runnerImageName(configuration.getRunnerImageName())
-//                                   .jenkinsfilePath(configuration.getJenkinsfilePath())
-//                                   .jenkinsPluginConfigPath(configuration.getJenkinsPluginConfigPath())
-                                   .build();
+        return new RunnerActivateResult(
+                configuration.getRunnerToken(),
+                configuration.getMasterBaseUrl(),
+                configuration.getPollInterval(),
+                configuration.getBusyWaitInterval(),
+                null,
+                null,
+                null,
+                null
+        );
     }
 }

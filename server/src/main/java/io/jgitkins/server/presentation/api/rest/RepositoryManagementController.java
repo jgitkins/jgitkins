@@ -40,7 +40,7 @@ public class RepositoryManagementController {
     public ResponseEntity<ApiResponse<RepositoryResult>> create(@Valid @RequestBody RepositoryCreateRequest request) {
         RepositoryCreateCommand createCommand = repositoryRequestMapper.toCommand(request);
         RepositoryResult result = repositoryCreateUseCase.create(createCommand);
-        return ApiResponse.created(result.getId(), result);
+        return ApiResponse.created(result.id(), result);
     }
 
     @Operation(summary = "Get Repository Metadata")

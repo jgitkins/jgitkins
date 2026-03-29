@@ -33,11 +33,7 @@ public class OrganizeMemberController {
     @PostMapping
     public ResponseEntity<ApiResponse<Void>> addMember(@PathVariable Long organizeId,
                                                        @RequestBody OrganizeMemberAddRequest request) {
-        OrganizeMemberAddCommand command = OrganizeMemberAddCommand.builder()
-                .organizeId(organizeId)
-                .userId(request.userId())
-                .role(request.role())
-                .build();
+        OrganizeMemberAddCommand command = new OrganizeMemberAddCommand(organizeId, request.userId(), request.role());
         organizeMemberAddUseCase.addOrganizeMember(command);
         return ApiResponse.ok();
     }

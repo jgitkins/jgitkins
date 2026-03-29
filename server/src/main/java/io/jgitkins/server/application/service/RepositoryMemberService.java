@@ -30,14 +30,14 @@ public class RepositoryMemberService implements RepositoryMemberAddUseCase,
     public void addRepositoryMember(RepositoryMemberAddCommand command) {
         repositoryMemberValidator.validateAddCommand(command);
         
-        RepositoryId repositoryId = RepositoryId.of(command.getRepositoryId());
-        UserId userId = UserId.of(command.getUserId());
+        RepositoryId repositoryId = RepositoryId.of(command.repositoryId());
+        UserId userId = UserId.of(command.userId());
         
         if (repositoryMemberValidator.isAlreadyMember(repositoryId, userId)) {
             return;
         }
         
-        RepositoryMemberRole role = command.getRole() != null ? command.getRole() : RepositoryMemberRole.READER;
+        RepositoryMemberRole role = command.role() != null ? command.role() : RepositoryMemberRole.READER;
         RepositoryMember member = RepositoryMember.create(repositoryId, userId, role, null);
         repositoryMemberPort.save(member);
     }

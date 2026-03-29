@@ -24,9 +24,7 @@ class UserServiceTest {
         UserService service = new UserService(mock(UserPersistencePort.class), mock(UserIdentityPersistencePort.class),
                 mock(UsernameAllocator.class), new UserProfileUpdater());
 
-        UserLoginOrSignUpCommand command = UserLoginOrSignUpCommand.builder()
-                .providerSub("sub")
-                .build();
+        UserLoginOrSignUpCommand command = new UserLoginOrSignUpCommand(null, "sub", null, false, null, null);
 
         assertThrows(IllegalArgumentException.class, () ->
                 service.loginOrSignUp(command));
@@ -49,13 +47,7 @@ class UserServiceTest {
 
         UserService service = new UserService(userPort, identityPort, allocator, updater);
 
-        UserLoginOrSignUpCommand command = UserLoginOrSignUpCommand.builder()
-                .providerName("google")
-                .providerSub("sub")
-                .email("a@b.com")
-                .emailVerified(true)
-                .name("User")
-                .build();
+        UserLoginOrSignUpCommand command = new UserLoginOrSignUpCommand("google", "sub", "a@b.com", true, "User", null);
 
         User result = service.loginOrSignUp(command);
 
@@ -81,13 +73,7 @@ class UserServiceTest {
 
         UserService service = new UserService(userPort, identityPort, allocator, updater);
 
-        UserLoginOrSignUpCommand command = UserLoginOrSignUpCommand.builder()
-                .providerName("google")
-                .providerSub("sub")
-                .email("a@b.com")
-                .emailVerified(true)
-                .name("User")
-                .build();
+        UserLoginOrSignUpCommand command = new UserLoginOrSignUpCommand("google", "sub", "a@b.com", true, "User", null);
 
         User result = service.loginOrSignUp(command);
 

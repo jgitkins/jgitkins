@@ -21,15 +21,15 @@ public class OAuthLoginService implements OAuthLoginUseCase {
 
     @Override
     public OAuthLoginResult login(OAuthLoginCommand command) {
-        User user = userService.loginOrSignUp(UserLoginOrSignUpCommand.builder()
-                .providerName(command.getProvider())
-                .providerSub(command.getSubject())
-                .email(command.getEmail())
-                .emailVerified(command.isEmailVerified())
-                .name(command.getName())
-                .avatarUrl(command.getAvatarUrl())
-                .build());
+        User user = userService.loginOrSignUp(new UserLoginOrSignUpCommand(
+                command.provider(),
+                command.subject(),
+                command.email(),
+                command.emailVerified(),
+                command.name(),
+                command.avatarUrl()
+        ));
         String appToken = tokenIssuerPort.issueToken(user.getId(), List.of("ROLE_USER"));
-        return new OAuthLoginResult(appToken, user, command.getProvider());
+        return new OAuthLoginResult(appToken, user, command.provider());
     }
 }

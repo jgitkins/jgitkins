@@ -62,11 +62,7 @@ class BranchServiceTest {
         when(repositoryPort.findById(RepositoryId.of(1L))).thenReturn(Optional.of(repository));
         when(repositoryNamespaceResolver.resolve(repository)).thenReturn("org");
 
-        BranchCreateCommand command = BranchCreateCommand.builder()
-                .repositoryId(1L)
-                .branchName("feature")
-                .sourceBranch("main")
-                .build();
+        BranchCreateCommand command = new BranchCreateCommand(1L, "feature", "main", false);
 
         service.createBranch(command);
 

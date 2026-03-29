@@ -31,17 +31,17 @@
 
 [source: jgitkins-server, original subtask: 2.19]
 
-### 2.2. [web, server] application dto 단순 carrier record 전환
+### 2.2. [web, server, runner] application dto 단순 carrier record 전환
 
 **Status:** pending  
 **Dependencies:** None  
 
-src/main/java/io/jgitkins/server/application/dto 이하의 단순 carrier DTO를 선별해 Java record로 전환하고, builder/getter 중심 호출부와 테스트를 함께 정리한다.
+server/runner application dto 이하의 단순 carrier DTO를 선별해 Java record로 전환하고, web 호환성 검토와 builder/getter 중심 호출부 및 테스트 정리를 함께 수행한다.
 
 **Details:**
 
 [source: jgitkins-server, original subtask: 2.41]
-대상 범위는 src/main/java/io/jgitkins/server/application/dto, command, result 패키지이며, 이미 record인 RepositoryKey, RepositoryCreationContext, RunnerDispatchContext, PushHookRequest, PushJobPlanRequest, DispatchJobCommand, RepositoryCreateCommand, DispatchableJob, JobDispatchResult, JobCreationDecision 등은 유지한다. 후속 전환 대상은 단순 데이터 운반 역할만 하는 command/result/summary/request 객체를 우선 검토하며, 예를 들어 BranchCreateCommand, OrganizeCreationCommand, OrganizeMemberAddCommand, RepositoryMemberAddCommand, RunnerRegisterCommand, UpdateOrganizeCommand, UpdateRepositoryCommand, UserCredentialIssueCommand, OAuthLoginCommand, JobCreateCommand, JobResultReportCommand, BranchSearchResult, OrganizeCreationResult, OrganizeMemberSummary, RepositoryMemberSummary, RunnerDetailResult, RunnerRegistrationResult, RunnerActivateResult, UserAdminSummary, UserAdminDetail, UserCredentialIssueResult, UserCredentialSummary, UserIdentitySummary, UserSummary 등이 후보가 된다. 단, PipelineConfig, PipelineRule, RunnerExecutionConfig, RunnerRuntimeConfig, MergeResult, FileUploadInfo, FileUploadRequest, CommitHistory, BranchInfo처럼 컬렉션 방어 복사, 정적 팩토리, 기본값 정책, 커스텀 메서드나 의미 있는 생성 규칙이 있는 타입은 단순 carrier 여부를 먼저 검토하고 필요 시 범위에서 제외한다. 변경 시 Lombok Builder/Getter 제거, mapper/service/controller/test 호출부의 accessor 및 생성 방식 정리, JSON 직렬화와 회귀 테스트 범위 정의를 포함한다.
+참조 문서: .taskmaster/docs/refactor/task_2_2_plan.md. 대상 범위는 server의 src/main/java/io/jgitkins/server/application/dto, command, result 패키지와 runner의 src/main/java/io/jgitkins/runner/application/dto 패키지다. web 모듈은 현재 application dto 대부분이 이미 record이므로 직접 전환 대상보다는 server/runner 변경 이후 mapper/controller/view model 호환성 검토와 회귀 검증 범위에 포함한다. 유지 대상은 이미 record인 RepositoryKey, RepositoryCreationContext, RunnerDispatchContext, PushHookRequest, PushJobPlanRequest, DispatchJobCommand, RepositoryCreateCommand, DispatchableJob, JobDispatchResult, JobCreationDecision 등이며, web의 기존 record DTO도 동일하게 유지한다. 우선 검토 후보는 server 쪽 BranchCreateCommand, OrganizeCreationCommand, OrganizeMemberAddCommand, RepositoryMemberAddCommand, RunnerRegisterCommand, UpdateOrganizeCommand, UserCredentialIssueCommand, OAuthLoginCommand, JobCreateCommand, JobResultReportCommand, UserLoginOrSignUpCommand, BranchSearchResult, OrganizeCreationResult, OrganizeMemberSummary, RepositoryMemberSummary, RunnerDetailResult, RunnerRegistrationResult, RunnerActivateResult, UserAdminSummary, UserAdminDetail, UserCredentialIssueResult, UserCredentialSummary, UserIdentitySummary, UserSummary, RepositoryResult, RepositoryOverviewResult 등과 runner 쪽 RunnerRuntimeConfigResult, RunnerExecutionConfigResult, RunnerActivateResult, JobRunContext 등이다. 단, BranchCreationContext, PushEventCommand, UpdateRepositoryCommand, JobPlan, OAuthLoginResult, PipelineConfig, PipelineRule, RunnerExecutionConfig, RunnerRuntimeConfig, MergeResult, FileUploadInfo, FileUploadRequest, CommitHistory, BranchInfo처럼 정적 팩토리, setter, 도메인 객체 노출, 컬렉션 방어 복사, 기본값 정책, 커스텀 메서드나 의미 있는 생성 규칙이 있는 타입은 단순 carrier 여부를 먼저 검토하고 필요 시 범위에서 제외한다. 변경 시 Lombok Builder/Getter 제거, mapper/service/controller/runner adapter/test 호출부의 accessor 및 생성 방식 정리, Jackson 직렬화와 모듈 간 회귀 테스트 범위 정의를 포함한다.
 
 ### 2.3. [server] ErrorCode 단순화 및 세부 Exception 클래스 설계 검토
 

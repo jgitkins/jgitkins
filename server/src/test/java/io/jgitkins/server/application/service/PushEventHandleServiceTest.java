@@ -64,9 +64,9 @@ class PushEventHandleServiceTest {
         ArgumentCaptor<JobCreateCommand> captor = ArgumentCaptor.forClass(JobCreateCommand.class);
         verify(jobCreateUseCase).create(captor.capture());
         JobCreateCommand job = captor.getValue();
-        assertEquals("repo", job.getRepoName());
-        assertEquals(9L, job.getRepositoryId());
-        assertEquals(".jgitkins/pipelines/main.Jenkinsfile", job.getPipelineFilePath());
+        assertEquals("repo", job.repoName());
+        assertEquals(9L, job.repositoryId());
+        assertEquals(".jgitkins/pipelines/main.Jenkinsfile", job.pipelineFilePath());
     }
 
     @Test

@@ -50,7 +50,7 @@ public class RunnerCliApplicationRunner implements ApplicationRunner {
 
         try {
             RunnerActivateResult result = activationUseCase.activate(token, server);
-            log.info("Runner activated. server={}", result.getMasterBaseUrl());
+            log.info("Runner activated. server={}", result.masterBaseUrl());
             exit(EXIT_SUCCESS);
         } catch (RunnerRegistrationException ex) {
             log.error("Runner activation failed. status={}, message={}", ex.getStatusCode(), ex.getMessage());

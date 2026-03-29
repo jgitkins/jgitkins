@@ -62,11 +62,11 @@ class UserCredentialServiceTest {
 
         UserCredentialIssueResult result = service.issueCredential(new UserCredentialIssueCommand("token", "desc", null));
 
-        assertNotNull(result.getToken());
-        assertTrue(result.getToken().startsWith("jkpat_"));
-        assertEquals(10L, result.getCredentialId());
+        assertNotNull(result.token());
+        assertTrue(result.token().startsWith("jkpat_"));
+        assertEquals(10L, result.credentialId());
 
-        verify(encoder).encode(result.getToken());
+        verify(encoder).encode(result.token());
 
         ArgumentCaptor<UserCredential> captor = ArgumentCaptor.forClass(UserCredential.class);
         verify(port).save(captor.capture());
@@ -90,12 +90,12 @@ class UserCredentialServiceTest {
 
         assertEquals(1, result.size());
         UserCredentialSummary summary = result.get(0);
-        assertEquals(7L, summary.getId());
-        assertEquals("PAT", summary.getProvider());
-        assertEquals("n", summary.getName());
-        assertEquals("d", summary.getDescription());
-        assertEquals(createdAt, summary.getCreatedAt());
-        assertEquals(updatedAt, summary.getUpdatedAt());
+        assertEquals(7L, summary.id());
+        assertEquals("PAT", summary.provider());
+        assertEquals("n", summary.name());
+        assertEquals("d", summary.description());
+        assertEquals(createdAt, summary.createdAt());
+        assertEquals(updatedAt, summary.updatedAt());
     }
 
     @Test

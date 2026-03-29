@@ -53,11 +53,11 @@ class PublicUserQueryServiceTest {
         List<UserSummary> result = publicUserQueryService.getUsers();
 
         assertEquals(1, result.size());
-        assertEquals(1L, result.get(0).getId());
-        assertEquals("alice", result.get(0).getUsername());
-        assertEquals("Alice", result.get(0).getDisplayName());
-        assertEquals("https://img/alice.png", result.get(0).getAvatarUrl());
-        assertEquals(createdAt, result.get(0).getCreatedAt());
+        assertEquals(1L, result.get(0).id());
+        assertEquals("alice", result.get(0).username());
+        assertEquals("Alice", result.get(0).displayName());
+        assertEquals("https://img/alice.png", result.get(0).avatarUrl());
+        assertEquals(createdAt, result.get(0).createdAt());
         verify(userPort).findAll();
     }
 }

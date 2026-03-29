@@ -57,30 +57,22 @@ class OrganizeServiceTest {
 
     @Test
     void createOrganize_savesWhenNameAndNamespaceAreAvailable() {
-        OrganizeCreationCommand command = OrganizeCreationCommand.builder()
-                .name("org")
-                .ownerId(1L)
-                .description("desc")
-                .build();
+        OrganizeCreationCommand command = new OrganizeCreationCommand("org", 1L, "desc");
 
         when(organizePort.findByName(any(OrganizeName.class))).thenReturn(Optional.empty());
         when(organizePort.save(any(Organize.class))).thenAnswer(invocation -> invocation.getArgument(0));
         when(organizeApplicationMapper.toDto(any(Organize.class)))
-                .thenReturn(OrganizeCreationResult.builder().name("org").build());
+                .thenReturn(new OrganizeCreationResult(null, "org", null, null, null, null));
 
         OrganizeCreationResult response = service.createOrganize(command);
 
-        assertEquals("org", response.getName());
+        assertEquals("org", response.name());
         verify(organizePort).save(any(Organize.class));
     }
 
     @Test
     void createOrganize_throwsWhenOrganizeNameExists() {
-        OrganizeCreationCommand command = OrganizeCreationCommand.builder()
-                .name("duplicate")
-                .ownerId(1L)
-                .description("desc")
-                .build();
+        OrganizeCreationCommand command = new OrganizeCreationCommand("duplicate", 1L, "desc");
         when(organizePort.findByName(any(OrganizeName.class)))
                 .thenReturn(Optional.of(sampleOrganize(1L, "duplicate", 1L)));
 
@@ -116,14 +108,14 @@ class OrganizeServiceTest {
         when(organizeMemberPort.existsByOrganizeIdAndUserId(OrganizeId.of(11L), UserId.of(7L))).thenReturn(true);
         when(organizeMemberPort.existsByOrganizeIdAndUserId(OrganizeId.of(12L), UserId.of(7L))).thenReturn(false);
         when(organizeApplicationMapper.toDto(owned))
-                .thenReturn(OrganizeCreationResult.builder().id(10L).name("owned").build());
+                .thenReturn(new OrganizeCreationResult(10L, "owned", null, null, null, null));
         when(organizeApplicationMapper.toDto(member))
-                .thenReturn(OrganizeCreationResult.builder().id(11L).name("member").build());
+                .thenReturn(new OrganizeCreationResult(11L, "member", null, null, null, null));
 
         List<OrganizeCreationResult> results = service.getAccessibleOrganizes();
 
         assertEquals(2, results.size());
-        assertEquals(List.of("owned", "member"), results.stream().map(OrganizeCreationResult::getName).toList());
+        assertEquals(List.of("owned", "member"), results.stream().map(OrganizeCreationResult::name).toList());
         verify(organizeMemberPort).existsByOrganizeIdAndUserId(eq(OrganizeId.of(11L)), eq(UserId.of(7L)));
         verify(organizeMemberPort).existsByOrganizeIdAndUserId(eq(OrganizeId.of(12L)), eq(UserId.of(7L)));
     }

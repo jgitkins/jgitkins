@@ -33,14 +33,14 @@ public class OrganizeService implements OrganizeCreationUseCase,
     @Transactional
     public OrganizeCreationResult createOrganize(OrganizeCreationCommand command) {
         // 1. 입력 정합성 검증 (Domain VO 생성)
-        OrganizeName name = OrganizeName.from(command.getName());
-        UserId ownerId = command.getOwnerId() != null ? UserId.of(command.getOwnerId()) : null;
+        OrganizeName name = OrganizeName.from(command.name());
+        UserId ownerId = command.ownerId() != null ? UserId.of(command.ownerId()) : null;
 
         // 2. 데이터 정합성 검증
         organizeValidator.validateCreation(name);
 
         // 3. 비즈니스 로직 수행 (Aggregate 생성 및 저장)
-        Organize organize = Organize.create(name, ownerId, command.getDescription());
+        Organize organize = Organize.create(name, ownerId, command.description());
 
         return organizeApplicationMapper.toDto(organizePort.save(organize));
     }

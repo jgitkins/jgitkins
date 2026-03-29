@@ -56,9 +56,9 @@ class RepositoryMemberControllerTest {
                 .andExpect(status().isOk());
 
         verify(repositoryMemberAddUseCase).addRepositoryMember(org.mockito.ArgumentMatchers.argThat(cmd ->
-                cmd.getRepositoryId().equals(1L)
-                        && cmd.getUserId().equals(2L)
-                        && cmd.getRole() == RepositoryMemberRole.WRITER
+                cmd.repositoryId().equals(1L)
+                        && cmd.userId().equals(2L)
+                        && cmd.role() == RepositoryMemberRole.WRITER
         ));
     }
 
@@ -74,9 +74,9 @@ class RepositoryMemberControllerTest {
                 .andExpect(status().isOk());
 
         verify(repositoryMemberAddUseCase).addRepositoryMember(org.mockito.ArgumentMatchers.argThat(cmd ->
-                cmd.getRepositoryId().equals(1L)
-                        && cmd.getUserId().equals(3L)
-                        && cmd.getRole() == null
+                cmd.repositoryId().equals(1L)
+                        && cmd.userId().equals(3L)
+                        && cmd.role() == null
         ));
     }
 

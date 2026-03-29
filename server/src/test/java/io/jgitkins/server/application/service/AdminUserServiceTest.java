@@ -63,8 +63,8 @@ class AdminUserServiceTest {
         List<UserAdminSummary> summaries = adminUserService.getUsers();
 
         assertEquals(1, summaries.size());
-        assertEquals("alice", summaries.get(0).getUsername());
-        assertEquals("ACTIVE", summaries.get(0).getStatus());
+        assertEquals("alice", summaries.get(0).username());
+        assertEquals("ACTIVE", summaries.get(0).status());
     }
 
     @Test
@@ -100,10 +100,10 @@ class AdminUserServiceTest {
 
         UserAdminDetail detail = adminUserService.getUser(2L);
 
-        assertEquals(2L, detail.getId());
-        assertEquals("BLOCKED", detail.getStatus());
-        assertEquals(1, detail.getIdentities().size());
-        assertEquals("google", detail.getIdentities().get(0).getProviderName());
+        assertEquals(2L, detail.id());
+        assertEquals("BLOCKED", detail.status());
+        assertEquals(1, detail.identities().size());
+        assertEquals("google", detail.identities().get(0).providerName());
     }
 
     @Test

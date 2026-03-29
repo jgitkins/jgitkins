@@ -65,13 +65,13 @@ public class PushEventHandleService implements PushEventHandleUseCase {
     }
 
     private JobCreateCommand buildJobCommand(PushEventCommand command, String pipelineFilePath) {
-        return JobCreateCommand.builder()
-                .repoName(command.getRepoName())
-                .repositoryId(command.getRepositoryId())
-                .branchName(command.getBranchName())
-                .commitHash(command.getCommitHash())
-                .pipelineFilePath(pipelineFilePath)
-                .triggeredBy(command.getTriggeredBy())
-                .build();
+        return new JobCreateCommand(
+                command.getRepoName(),
+                command.getRepositoryId(),
+                command.getCommitHash(),
+                command.getBranchName(),
+                pipelineFilePath,
+                command.getTriggeredBy()
+        );
     }
 }

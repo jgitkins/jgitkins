@@ -36,7 +36,7 @@ public class UserCredentialController {
     public ResponseEntity<ApiResponse<UserCredentialIssueResult>> issuePat(@Valid @RequestBody UserCredentialIssueRequest request) {
         UserCredentialIssueCommand command = new UserCredentialIssueCommand(request.name(), request.description(), request.expiration());
         UserCredentialIssueResult result = userCredentialIssueUseCase.issueCredential(command);
-        return ApiResponse.created(result.getCredentialId(), result);
+        return ApiResponse.created(result.credentialId(), result);
     }
 
     @Operation(summary = "List personal access tokens")

@@ -57,9 +57,9 @@ class OrganizeMemberControllerTest {
                 .andExpect(jsonPath("$.error").doesNotExist());
 
         verify(organizeMemberAddUseCase).addOrganizeMember(org.mockito.ArgumentMatchers.argThat(cmd ->
-                cmd.getOrganizeId().equals(1L)
-                        && cmd.getUserId().equals(2L)
-                        && cmd.getRole() == OrganizeMemberRole.MEMBER
+                cmd.organizeId().equals(1L)
+                        && cmd.userId().equals(2L)
+                        && cmd.role() == OrganizeMemberRole.MEMBER
         ));
     }
 
@@ -75,9 +75,9 @@ class OrganizeMemberControllerTest {
                 .andExpect(status().isOk());
 
         verify(organizeMemberAddUseCase).addOrganizeMember(org.mockito.ArgumentMatchers.argThat(cmd ->
-                cmd.getOrganizeId().equals(1L)
-                        && cmd.getUserId().equals(3L)
-                        && cmd.getRole() == null
+                cmd.organizeId().equals(1L)
+                        && cmd.userId().equals(3L)
+                        && cmd.role() == null
         ));
     }
 

@@ -8,7 +8,7 @@ import org.springframework.util.StringUtils;
 public class DockerInputValidator {
 
     public void validate(JobRunContext context) {
-        if (context == null || !StringUtils.hasText(context.getRunnerImageName())) {
+        if (context == null || !StringUtils.hasText(context.runnerImageName())) {
             throw new IllegalArgumentException("Runner image name must be provided.");
         }
     }

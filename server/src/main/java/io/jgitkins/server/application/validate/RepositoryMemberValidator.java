@@ -17,7 +17,7 @@ public class RepositoryMemberValidator {
 
     // TODO: form 검증은 presentation 계층으로 이관할것
     public void validateAddCommand(RepositoryMemberAddCommand command) {
-        if (command == null || command.getRepositoryId() == null || command.getUserId() == null) {
+        if (command == null || command.repositoryId() == null || command.userId() == null) {
             throw new ApplicationException(
                     ApplicationErrorCode.MEMBER_IDENTIFIER_REQUIRED,
                     "RepositoryId and UserId are required to add a repository member");

@@ -30,9 +30,9 @@ public class RunnerManagementService implements RunnerRegisterUseCase, RunnerDel
     @Override
     @Transactional
     public RunnerRegistrationResult register(RunnerRegisterCommand command) {
-        Runner runner = Runner.create(command.getDescription(),
-                command.getScopeType(),
-                command.getTargetId());
+        Runner runner = Runner.create(command.description(),
+                command.scopeType(),
+                command.targetId());
         Runner savedRunner = runnerPort.save(runner);
         log.info("Runner registered. runnerId={}", savedRunner.getId());
         return runnerApplicationMapper.toRegistrationResult(savedRunner);
@@ -69,10 +69,10 @@ public class RunnerManagementService implements RunnerRegisterUseCase, RunnerDel
         try {
             Runner persisted = runnerPort.save(activatedInfo);
             log.info("Runner activated. runnerId={}", persisted.getId());
-            return RunnerActivateResult.builder()
-                    .executionConfig(RunnerExecutionConfig.defaultConfig())
-                    .runtimeConfig(runtimeConfigProvider.createConfig())
-                    .build();
+            return new RunnerActivateResult(
+                    runtimeConfigProvider.createConfig(),
+                    RunnerExecutionConfig.defaultConfig()
+            );
         } catch (RuntimeException ex) {
             log.error("Runner activation failed. runnerId={}", runner.getId(), ex);
             // Infrastructure 어댑터에서 InfrastructureException으로 감싸지 않은 경우

@@ -20,7 +20,7 @@ public class BranchCreationValidator {
      */
     public String validateAndResolveSource(BranchCreateCommand command, Repository repository) {
         validateRepositoryInitialized(repository);
-        validateBranchDoesNotExist(command.getRepositoryId(), command.getBranchName());
+        validateBranchDoesNotExist(command.repositoryId(), command.branchName());
         return resolveAndValidateSourceBranch(command, repository);
     }
 
@@ -39,9 +39,9 @@ public class BranchCreationValidator {
     }
 
     public String resolveAndValidateSourceBranch(BranchCreateCommand command, Repository repository) {
-        String sourceBranch = (command.getSourceBranch() == null || command.getSourceBranch().isBlank())
+        String sourceBranch = (command.sourceBranch() == null || command.sourceBranch().isBlank())
                 ? repository.getDefaultBranch().getValue()
-                : command.getSourceBranch();
+                : command.sourceBranch();
 
         branchPort.findByRepositoryIdAndName(repository.getId().getValue(), sourceBranch)
                 .orElseThrow(() -> new ApplicationException(ApplicationErrorCode.SOURCE_BRANCH_NOT_FOUND,

@@ -58,11 +58,11 @@ public class JobRunnerPortTest {
             String repoName = "ccc";
             String ref = "378e2aff9a5bddf5f2db16d1e9182cfdf230ac29";
             workspace = repositorySyncPort.fetchRepository(cloneUrl, taskCd, repoName, ref);
-            JobRunContext context = JobRunContext.builder()
-                    .workspacePath(workspace.toAbsolutePath().toString())
-                    .runnerImageName(image)
-                    .pluginPath(pluginConfigPath)
-                    .build();
+            JobRunContext context = new JobRunContext(
+                    workspace.toAbsolutePath().toString(),
+                    image,
+                    pluginConfigPath
+            );
             containerRunnerPort.run(context);
         } catch (Exception e) {
 //            System.out.println("error : , e.getMessage(), e)k;

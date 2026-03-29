@@ -43,11 +43,7 @@ class OrganizeMemberServiceTest {
     void addOrganizeMember_savesWhenNotExists() {
         when(organizeMemberPort.existsByOrganizeIdAndUserId(OrganizeId.of(1L), UserId.of(2L))).thenReturn(false);
 
-        OrganizeMemberAddCommand command = OrganizeMemberAddCommand.builder()
-                .organizeId(1L)
-                .userId(2L)
-                .role(OrganizeMemberRole.OWNER)
-                .build();
+        OrganizeMemberAddCommand command = new OrganizeMemberAddCommand(1L, 2L, OrganizeMemberRole.OWNER);
 
         service.addOrganizeMember(command);
 
@@ -60,11 +56,7 @@ class OrganizeMemberServiceTest {
     void addOrganizeMember_usesMemberRoleWhenRoleIsMissing() {
         when(organizeMemberPort.existsByOrganizeIdAndUserId(OrganizeId.of(1L), UserId.of(2L))).thenReturn(false);
 
-        OrganizeMemberAddCommand command = OrganizeMemberAddCommand.builder()
-                .organizeId(1L)
-                .userId(2L)
-                .role(null)
-                .build();
+        OrganizeMemberAddCommand command = new OrganizeMemberAddCommand(1L, 2L, null);
 
         service.addOrganizeMember(command);
 
@@ -77,11 +69,7 @@ class OrganizeMemberServiceTest {
     void addOrganizeMember_throwsWhenAlreadyExists() {
         when(organizeMemberPort.existsByOrganizeIdAndUserId(OrganizeId.of(1L), UserId.of(2L))).thenReturn(true);
 
-        OrganizeMemberAddCommand command = OrganizeMemberAddCommand.builder()
-                .organizeId(1L)
-                .userId(2L)
-                .role(OrganizeMemberRole.MEMBER)
-                .build();
+        OrganizeMemberAddCommand command = new OrganizeMemberAddCommand(1L, 2L, OrganizeMemberRole.MEMBER);
 
         org.junit.jupiter.api.Assertions.assertThrows(RuntimeException.class, () -> service.addOrganizeMember(command));
         verify(organizeMemberPort, never()).save(any());
@@ -103,9 +91,9 @@ class OrganizeMemberServiceTest {
         List<OrganizeMemberSummary> result = service.getOrganizeMembers(1L);
 
         assertEquals(1, result.size());
-        assertEquals(2L, result.get(0).getUserId());
-        assertEquals(OrganizeMemberRole.OWNER, result.get(0).getRole());
-        assertEquals(joinedAt, result.get(0).getJoinedAt());
+        assertEquals(2L, result.get(0).userId());
+        assertEquals(OrganizeMemberRole.OWNER, result.get(0).role());
+        assertEquals(joinedAt, result.get(0).joinedAt());
     }
 
 }

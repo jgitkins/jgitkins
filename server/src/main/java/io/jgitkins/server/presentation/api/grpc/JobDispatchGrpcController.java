@@ -49,11 +49,11 @@ public class JobDispatchGrpcController extends JobDispatchServiceGrpc.JobDispatc
 
     @Override
     public void reportJobResult(JobResultRequest request, StreamObserver<JobResultResponse> responseObserver) {
-        JobResultReportCommand command = JobResultReportCommand.builder()
-                                                               .runnerToken(request.getRunnerToken())
-                                                               .jobId(request.getJobId())
-                                                               .status(convertStatus(request.getStatus()))
-                                                               .build();
+        JobResultReportCommand command = new JobResultReportCommand(
+                request.getRunnerToken(),
+                request.getJobId(),
+                convertStatus(request.getStatus())
+        );
         log.debug("receive result");
         jobResultReportUseCase.reportJobResult(command);
 

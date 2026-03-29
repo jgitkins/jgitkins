@@ -51,11 +51,7 @@ class BranchControllerTest {
 
     @Test
     void create_returnsCreated() throws Exception {
-        BranchCreateCommand command = BranchCreateCommand.builder()
-                .repositoryId(1L)
-                .branchName("feature")
-                .sourceBranch("main")
-                .build();
+        BranchCreateCommand command = new BranchCreateCommand(1L, "feature", "main", false);
         when(branchRequestMapper.toCommand(any(Long.class), any(BranchCreateRequest.class))).thenReturn(command);
 
         mockMvc.perform(post("/api/repositories/1/branches")
@@ -72,11 +68,7 @@ class BranchControllerTest {
 
     @Test
     void create_acceptsLegacyNameAlias() throws Exception {
-        BranchCreateCommand command = BranchCreateCommand.builder()
-                .repositoryId(1L)
-                .branchName("feature-alias")
-                .sourceBranch("main")
-                .build();
+        BranchCreateCommand command = new BranchCreateCommand(1L, "feature-alias", "main", false);
         when(branchRequestMapper.toCommand(any(Long.class), any(BranchCreateRequest.class))).thenReturn(command);
 
         mockMvc.perform(post("/api/repositories/1/branches")
@@ -94,8 +86,8 @@ class BranchControllerTest {
     @Test
     void getBranches_returnsList() throws Exception {
         when(branchLoadUseCase.getBranches(1L)).thenReturn(List.of(
-                BranchSearchResult.builder().repositoryId(1L).name("main").defaultBranch(true).build(),
-                BranchSearchResult.builder().repositoryId(1L).name("feature").defaultBranch(false).build()
+                new BranchSearchResult(1L, "main", false, false, true),
+                new BranchSearchResult(1L, "feature", false, false, false)
         ));
 
         mockMvc.perform(get("/api/repositories/1/branches"))
@@ -110,7 +102,7 @@ class BranchControllerTest {
     @Test
     void getBranch_returnsBranch() throws Exception {
         when(branchLoadUseCase.getBranch(1L, "feature"))
-                .thenReturn(BranchSearchResult.builder().repositoryId(1L).name("feature").defaultBranch(false).build());
+                .thenReturn(new BranchSearchResult(1L, "feature", false, false, false));
 
         mockMvc.perform(get("/api/repositories/1/branches/feature"))
                 .andExpect(status().isOk())

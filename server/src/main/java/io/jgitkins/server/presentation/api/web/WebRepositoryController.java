@@ -40,6 +40,6 @@ public class WebRepositoryController {
 			@org.springframework.web.bind.annotation.RequestParam(name = "branch", required = false) String branch
 	) throws java.io.IOException {
 		RepositoryResult repository = repositoryLoadUseCase.getRepositoryByPath(namespace, repoName);
-		return ApiResponse.ok(repositoryOverviewUseCase.getOverview(repository.getId(), branch));
+		return ApiResponse.ok(repositoryOverviewUseCase.getOverview(repository.id(), branch));
 	}
 }

@@ -42,7 +42,7 @@ public class RunnerController {
     public ResponseEntity<ApiResponse<RunnerRegistrationResult>> registerRunner(@Valid @RequestBody RunnerCreateRequest request) {
         RunnerRegisterCommand registerCommand = runnerRequestMapper.toCommand(request);
         RunnerRegistrationResult result = runnerRegisterUseCase.register(registerCommand);
-        return ApiResponse.created(result.getRunnerId(), result);
+        return ApiResponse.created(result.runnerId(), result);
     }
 
     @Operation(summary = "List Runners", description = "Retrieve all registered runners")

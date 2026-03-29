@@ -59,11 +59,11 @@ public class RunnerJobService implements RunnerJobUseCase {
                                                                Long.toString(payload.getRepositoryId()),
                                                                payload.getBranchName());
 
-            JobRunContext context = JobRunContext.builder()
-                    .workspacePath(workspace.toAbsolutePath().toString())
-                    .runnerImageName(configuration.getRunnerImageName())
-                    .pluginPath(null) // TODO: plugin path
-                    .build();
+            JobRunContext context = new JobRunContext(
+                    workspace.toAbsolutePath().toString(),
+                    configuration.getRunnerImageName(),
+                    null
+            );
             int exitCode = jobRunnerPort.run(context);
 
             JobResultStatus status = JobResultStatusMapper.fromExitCode(exitCode);

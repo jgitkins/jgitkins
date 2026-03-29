@@ -27,13 +27,13 @@ public class OrganizeMemberService implements OrganizeMemberAddUseCase,
     @Override
     @Transactional
     public void addOrganizeMember(OrganizeMemberAddCommand command) {
-        OrganizeId organizeId = OrganizeId.of(command.getOrganizeId());
-        UserId userId = UserId.of(command.getUserId());
+        OrganizeId organizeId = OrganizeId.of(command.organizeId());
+        UserId userId = UserId.of(command.userId());
 
         OrganizeMember member = OrganizeMember.create(
                 organizeId,
                 userId,
-                organizeMemberValidator.resolveRole(command.getRole()),
+                organizeMemberValidator.resolveRole(command.role()),
                 null
         );
 

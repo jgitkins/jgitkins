@@ -50,17 +50,8 @@ class OrganizeControllerTest {
 
     @Test
     void createOrganize_returnsCreatedResponse() throws Exception {
-        OrganizeCreationCommand command = OrganizeCreationCommand.builder()
-                .name("core-team")
-                .ownerId(1L)
-                .description("Core Team")
-                .build();
-        OrganizeCreationResult result = OrganizeCreationResult.builder()
-                .id(10L)
-                .name("core-team")
-                .ownerId(1L)
-                .description("Core Team")
-                .build();
+        OrganizeCreationCommand command = new OrganizeCreationCommand("core-team", 1L, "Core Team");
+        OrganizeCreationResult result = new OrganizeCreationResult(10L, "core-team", "Core Team", 1L, null, null);
 
         when(organizeRequestMapper.toCommand(org.mockito.ArgumentMatchers.any(OrganizeCreationRequest.class)))
                 .thenReturn(command);
@@ -84,8 +75,8 @@ class OrganizeControllerTest {
     @Test
     void getOrganizes_returnsList() throws Exception {
         when(organizeLoadUseCase.getOrganizes()).thenReturn(List.of(
-                OrganizeCreationResult.builder().id(1L).name("org-a").build(),
-                OrganizeCreationResult.builder().id(2L).name("org-b").build()
+                new OrganizeCreationResult(1L, "org-a", null, null, null, null),
+                new OrganizeCreationResult(2L, "org-b", null, null, null, null)
         ));
 
         mockMvc.perform(get("/api/organizes"))
@@ -99,7 +90,7 @@ class OrganizeControllerTest {
     @Test
     void getAccessibleOrganizes_returnsList() throws Exception {
         when(organizeLoadUseCase.getAccessibleOrganizes()).thenReturn(List.of(
-                OrganizeCreationResult.builder().id(3L).name("org-c").build()
+                new OrganizeCreationResult(3L, "org-c", null, null, null, null)
         ));
 
         mockMvc.perform(get("/api/organizes/me"))
@@ -112,7 +103,7 @@ class OrganizeControllerTest {
     @Test
     void getOrganize_returnsSingleResult() throws Exception {
         when(organizeLoadUseCase.getOrganize(7L)).thenReturn(
-                OrganizeCreationResult.builder().id(7L).name("org-seven").build()
+                new OrganizeCreationResult(7L, "org-seven", null, null, null, null)
         );
 
         mockMvc.perform(get("/api/organizes/7"))

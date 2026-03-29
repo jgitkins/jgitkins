@@ -27,16 +27,16 @@ public class JobResultReportService implements JobResultReportUseCase {
     @Override
     @Transactional
     public void reportJobResult(JobResultReportCommand command) {
-        Runner runner = runnerPort.findByToken(command.getRunnerToken())
+        Runner runner = runnerPort.findByToken(command.runnerToken())
                                        .orElseThrow(() -> new IllegalArgumentException("Runner not found for token"));
 
-        Job job = jobPort.findById(command.getJobId())
-                              .orElseThrow(() -> new IllegalArgumentException("Job not found for id " + command.getJobId()));
+        Job job = jobPort.findById(command.jobId())
+                              .orElseThrow(() -> new IllegalArgumentException("Job not found for id " + command.jobId()));
 
         JobHistory previousHistory = job.getLatestHistory();
         RunnerId runnerId = RunnerId.of(String.valueOf(runner.getId()));
 
-        if (command.getStatus() == JobResultStatus.SUCCESS) {
+        if (command.status() == JobResultStatus.SUCCESS) {
             job.completeSuccess(runnerId);
         } else {
             job.completeFailure(runnerId);
@@ -44,7 +44,7 @@ public class JobResultReportService implements JobResultReportUseCase {
 
         Optional<Long> persistedId = jobPort.saveHistory(job, previousHistory);
         if (persistedId.isEmpty()) {
-            throw new IllegalStateException("Failed to persist job result history for job " + command.getJobId());
+            throw new IllegalStateException("Failed to persist job result history for job " + command.jobId());
         }
     }
 }

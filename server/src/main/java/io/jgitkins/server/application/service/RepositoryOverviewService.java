@@ -48,14 +48,14 @@ public class RepositoryOverviewService implements RepositoryOverviewUseCase {
 		GitRepositoryAccessUseCase.RepositoryPermission permission = gitRepositoryAccessUseCase.resolvePermission(null,
 				key != null ? key.namespace() : null, key != null ? key.repoName() : null, userId);
 
-		return RepositoryOverviewResult.builder()
-				.repository(repository)
-				.branches(branches)
-				.tree(tree)
-				.selectedBranch(selectedBranch)
-				.role(permission.role())
-				.writable(permission.writable())
-				.build();
+		return new RepositoryOverviewResult(
+				repository,
+				branches,
+				tree,
+				selectedBranch,
+				permission.role(),
+				permission.writable()
+		);
 	}
 
 	private String resolveBranch(String branch, List<BranchSearchResult> branches) {
@@ -64,15 +64,15 @@ public class RepositoryOverviewService implements RepositoryOverviewUseCase {
 		}
 
 		return branches.stream()
-				.filter(b -> b.isDefaultBranch())
+				.filter(BranchSearchResult::defaultBranch)
 				.findFirst()
-				.map(BranchSearchResult::getName)
-				.orElseGet(() -> branches.isEmpty() ? null : branches.get(0).getName());
+				.map(BranchSearchResult::name)
+				.orElseGet(() -> branches.isEmpty() ? null : branches.get(0).name());
 	}
 
 	private RepositoryKey resolveRepositoryKey(RepositoryResult repository) {
 		// TODO: repository 필수 값 여부는 상위 계층 호출 전 혹은 Controller 검증 단에서 처리
-		RepositoryKey key = RepositoryKey.fromPath(repository.getClonePath());
-		return key != null ? key : RepositoryKey.fromPath(repository.getPath());
+		RepositoryKey key = RepositoryKey.fromPath(repository.clonePath());
+		return key != null ? key : RepositoryKey.fromPath(repository.path());
 	}
 }

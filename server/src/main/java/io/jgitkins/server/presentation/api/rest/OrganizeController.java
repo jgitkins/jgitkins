@@ -33,7 +33,7 @@ public class OrganizeController {
     public ResponseEntity<ApiResponse<OrganizeCreationResult>> createOrganize(@RequestBody OrganizeCreationRequest request) {
         OrganizeCreationCommand command = organizeRequestMapper.toCommand(request);
         OrganizeCreationResult result = organizeCreationUseCase.createOrganize(command);
-        return ApiResponse.created(result.getId(), result);
+        return ApiResponse.created(result.id(), result);
     }
 
     @Operation(summary = "List Organizes")

@@ -44,26 +44,18 @@ class RunnerManagementServiceTest {
 
     @Test
     void register_returnsMappedResult() {
-        RunnerRegisterCommand command = RunnerRegisterCommand.builder()
-                .description("runner")
-                .scopeType(RunnerScopeType.GLOBAL)
-                .build();
+        RunnerRegisterCommand command = new RunnerRegisterCommand("runner", RunnerScopeType.GLOBAL, null);
 
         Runner saved = Runner.restore(10L, "RNR-123", "runner", RunnerStatus.OFFLINE,
                 RunnerScopeType.GLOBAL, null, null, LocalDateTime.now(), LocalDateTime.now());
-        RunnerRegistrationResult mapped = RunnerRegistrationResult.builder()
-                .runnerId(10L)
-                .token("RNR-123")
-                .status("OFFLINE")
-                .registeredAt(LocalDateTime.now())
-                .build();
+        RunnerRegistrationResult mapped = new RunnerRegistrationResult(10L, "RNR-123", "OFFLINE", LocalDateTime.now());
 
         when(runnerPort.save(any(Runner.class))).thenReturn(saved);
         when(runnerApplicationMapper.toRegistrationResult(saved)).thenReturn(mapped);
 
         RunnerRegistrationResult result = service.register(command);
 
-        assertThat(result.getRunnerId()).isEqualTo(10L);
+        assertThat(result.runnerId()).isEqualTo(10L);
         verify(runnerPort).save(any(Runner.class));
     }
 
@@ -112,8 +104,8 @@ class RunnerManagementServiceTest {
 
         RunnerActivateResult result = service.activate("RNR-TOKEN", "127.0.0.1");
 
-        assertThat(result.getRuntimeConfig().getServiceHost()).isEqualTo("localhost");
-        assertThat(result.getExecutionConfig().getRunnerImageName()).isEqualTo("jenkins/jenkinsfile-runner");
+        assertThat(result.runtimeConfig().getServiceHost()).isEqualTo("localhost");
+        assertThat(result.executionConfig().getRunnerImageName()).isEqualTo("jenkins/jenkinsfile-runner");
         verify(runnerPort).save(any(Runner.class));
     }
 

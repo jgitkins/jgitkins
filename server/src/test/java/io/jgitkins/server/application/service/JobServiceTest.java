@@ -30,13 +30,6 @@ class JobServiceTest {
     }
 
     private JobCreateCommand command(String pipelineFilePath) {
-        return JobCreateCommand.builder()
-                .repoName("repo")
-                .repositoryId(9L)
-                .commitHash("abc1234")
-                .branchName("main")
-                .pipelineFilePath(pipelineFilePath)
-                .triggeredBy(1L)
-                .build();
+        return new JobCreateCommand("repo", 9L, "abc1234", "main", pipelineFilePath, 1L);
     }
 }

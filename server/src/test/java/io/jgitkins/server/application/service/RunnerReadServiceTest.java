@@ -37,14 +37,14 @@ class RunnerReadServiceTest {
     void getRunner_returnsMappedResult() {
         Runner runner = Runner.restore(1L, "RNR-TOKEN", "runner", RunnerStatus.OFFLINE,
                 RunnerScopeType.GLOBAL, null, null, LocalDateTime.now(), LocalDateTime.now());
-        RunnerDetailResult mapped = RunnerDetailResult.builder().runnerId(1L).status("OFFLINE").build();
+        RunnerDetailResult mapped = new RunnerDetailResult(1L, null, null, "OFFLINE", null, null);
 
         when(runnerPort.findById(1L)).thenReturn(Optional.of(runner));
         when(runnerApplicationMapper.toActivationResult(runner)).thenReturn(mapped);
 
         RunnerDetailResult result = service.getRunner(1L);
 
-        assertThat(result.getRunnerId()).isEqualTo(1L);
+        assertThat(result.runnerId()).isEqualTo(1L);
         verify(runnerPort).findById(1L);
         verify(runnerApplicationMapper).toActivationResult(runner);
     }
@@ -66,8 +66,8 @@ class RunnerReadServiceTest {
         Runner b = Runner.restore(2L, "T2", "b", RunnerStatus.ONLINE,
                 RunnerScopeType.GLOBAL, null, "10.0.0.1", LocalDateTime.now(), LocalDateTime.now());
 
-        RunnerDetailResult ma = RunnerDetailResult.builder().runnerId(1L).build();
-        RunnerDetailResult mb = RunnerDetailResult.builder().runnerId(2L).build();
+        RunnerDetailResult ma = new RunnerDetailResult(1L, null, null, null, null, null);
+        RunnerDetailResult mb = new RunnerDetailResult(2L, null, null, null, null, null);
 
         when(runnerPort.findAll()).thenReturn(List.of(a, b));
         when(runnerApplicationMapper.toActivationResult(a)).thenReturn(ma);
@@ -76,7 +76,7 @@ class RunnerReadServiceTest {
         List<RunnerDetailResult> results = service.getRunners();
 
         assertThat(results).hasSize(2);
-        assertThat(results.get(0).getRunnerId()).isEqualTo(1L);
-        assertThat(results.get(1).getRunnerId()).isEqualTo(2L);
+        assertThat(results.get(0).runnerId()).isEqualTo(1L);
+        assertThat(results.get(1).runnerId()).isEqualTo(2L);
     }
 }

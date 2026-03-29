@@ -61,11 +61,7 @@ class RepositoryManagementControllerTest {
                 .ownerType(OwnerType.USER)
                 .mainBranch("main")
                 .build();
-        RepositoryResult result = RepositoryResult.builder()
-                .id(100L)
-                .name("sample-repo")
-                .ownerType("USER")
-                .build();
+        RepositoryResult result = new RepositoryResult(100L, "USER", "sample-repo", null, null, null, null, null, null, null, null, false, null, null, null);
 
         when(repositoryRequestMapper.toCommand(any(RepositoryCreateRequest.class))).thenReturn(command);
         when(repositoryCreateUseCase.create(command)).thenReturn(result);
@@ -88,7 +84,7 @@ class RepositoryManagementControllerTest {
     @Test
     void getRepository_returnsMetadata() throws Exception {
         when(repositoryLoadUseCase.getRepository(1L))
-                .thenReturn(RepositoryResult.builder().id(1L).name("repo-1").build());
+                .thenReturn(new RepositoryResult(1L, null, "repo-1", null, null, null, null, null, null, null, null, false, null, null, null));
 
         mockMvc.perform(get("/api/repositories/1"))
                 .andExpect(status().isOk())
@@ -101,8 +97,8 @@ class RepositoryManagementControllerTest {
     @Test
     void getRepositories_returnsList() throws Exception {
         when(repositoryLoadUseCase.getRepositories()).thenReturn(List.of(
-                RepositoryResult.builder().id(1L).name("repo-1").build(),
-                RepositoryResult.builder().id(2L).name("repo-2").build()
+                new RepositoryResult(1L, null, "repo-1", null, null, null, null, null, null, null, null, false, null, null, null),
+                new RepositoryResult(2L, null, "repo-2", null, null, null, null, null, null, null, null, false, null, null, null)
         ));
 
         mockMvc.perform(get("/api/repositories"))
@@ -116,7 +112,7 @@ class RepositoryManagementControllerTest {
     @Test
     void getUserRepositories_returnsList() throws Exception {
         when(repositoryLoadUseCase.getRepositoriesByUsername("alice"))
-                .thenReturn(List.of(RepositoryResult.builder().id(3L).name("alice-repo").build()));
+                .thenReturn(List.of(new RepositoryResult(3L, null, "alice-repo", null, null, null, null, null, null, null, null, false, null, null, null)));
 
         mockMvc.perform(get("/api/repositories/users/alice"))
                 .andExpect(status().isOk())

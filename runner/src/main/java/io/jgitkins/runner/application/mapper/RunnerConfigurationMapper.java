@@ -25,21 +25,21 @@ public class RunnerConfigurationMapper {
 
     private RunnerRuntimeConfig toRuntimeConfig(RunnerRuntimeConfigResult result, String runnerToken, String overrideBaseUrl) {
         if (result == null) {
-            result = RunnerRuntimeConfigResult.builder().build();
+            result = new RunnerRuntimeConfigResult(null, null, null, null, null, null, null);
         }
         HostPort override = parseHostPort(overrideBaseUrl);
-        String restHost = firstNonBlank(override.host, result.getRestHost());
-        Integer restPort = override.port != null ? override.port : result.getRestPort();
+        String restHost = firstNonBlank(override.host, result.restHost());
+        Integer restPort = override.port != null ? override.port : result.restPort();
 
         return RunnerRuntimeConfig.builder()
                                   .runnerToken(runnerToken)
                                   .restHost(restHost)
                                   .restPort(restPort)
-                                  .restBasePath(result.getRestBasePath())
-                                  .grpcHost(result.getGrpcHost())
-                                  .grpcPort(result.getGrpcPort())
-                                  .pollInterval(toDuration(result.getPollIntervalMs()))
-                                  .busyWaitInterval(toDuration(result.getBusyWaitIntervalMs()))
+                                  .restBasePath(result.restBasePath())
+                                  .grpcHost(result.grpcHost())
+                                  .grpcPort(result.grpcPort())
+                                  .pollInterval(toDuration(result.pollIntervalMs()))
+                                  .busyWaitInterval(toDuration(result.busyWaitIntervalMs()))
                                   .build();
     }
 
@@ -48,8 +48,8 @@ public class RunnerConfigurationMapper {
             return null;
         }
         return RunnerExecutionConfig.builder()
-                                    .runnerImageName(result.getRunnerImageName())
-                                    .jenkinsPluginConfig(result.getJenkinsPluginConfig())
+                                    .runnerImageName(result.runnerImageName())
+                                    .jenkinsPluginConfig(result.jenkinsPluginConfig())
                                     .build();
     }
 

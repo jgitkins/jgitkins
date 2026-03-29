@@ -24,12 +24,12 @@ public class JobService implements JobCreateUseCase {
     @Transactional
     public void create(JobCreateCommand command) {
         log.info("Creating job for repo: {}, commit: {}, path: {}",
-                command.getRepoName(), command.getCommitHash(), command.getPipelineFilePath());
+                command.repoName(), command.commitHash(), command.pipelineFilePath());
 
-        Job job = Job.create(RepositoryId.of(command.getRepositoryId()),
-                             CommitHash.of(command.getCommitHash()),
-                             BranchName.of(command.getBranchName()),
-                             UserId.of(command.getTriggeredBy()));
+        Job job = Job.create(RepositoryId.of(command.repositoryId()),
+                             CommitHash.of(command.commitHash()),
+                             BranchName.of(command.branchName()),
+                             UserId.of(command.triggeredBy()));
 
         jobPort.save(job);
 

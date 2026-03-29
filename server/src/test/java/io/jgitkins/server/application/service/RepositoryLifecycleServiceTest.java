@@ -82,12 +82,12 @@ class RepositoryLifecycleServiceTest {
     void getRepository_returnsMappedResult() {
         Repository repository = org.mockito.Mockito.mock(Repository.class);
         when(repositoryPort.findById(RepositoryId.of(1L))).thenReturn(Optional.of(repository));
-        RepositoryResult result = RepositoryResult.builder().id(1L).build();
+        RepositoryResult result = new RepositoryResult(1L, null, null, null, null, null, null, null, null, null, null, false, null, null, null);
         when(repositoryApplicationMapper.toDto(repository)).thenReturn(result);
 
         RepositoryResult response = service.getRepository(1L);
 
-        assertEquals(1L, response.getId());
+        assertEquals(1L, response.id());
     }
 
     @Test
@@ -129,7 +129,7 @@ class RepositoryLifecycleServiceTest {
                 .description("desc")
                 .build();
         Repository saved = org.mockito.Mockito.mock(Repository.class);
-        RepositoryResult result = RepositoryResult.builder().id(100L).name("sample-repo").build();
+        RepositoryResult result = new RepositoryResult(100L, null, "sample-repo", null, null, null, null, null, null, null, null, false, null, null, null);
 
         when(currentUserPersistencePort.resolveCurrentUserId()).thenReturn(Optional.of(7L));
         when(repositoryPort.findByOwnerAndName(OwnerType.USER, OwnerId.of(7L), RepositoryName.from("sample-repo")))
@@ -141,7 +141,7 @@ class RepositoryLifecycleServiceTest {
 
         RepositoryResult response = service.create(command);
 
-        assertEquals(100L, response.getId());
+        assertEquals(100L, response.id());
         verify(repositoryGitPort).initialize("alice", "sample-repo");
         verify(domainEventPublisher).publish(anyList());
     }
@@ -171,14 +171,14 @@ class RepositoryLifecycleServiceTest {
         when(repositoryPort.findAll()).thenReturn(List.of(publicRepo, myPrivateRepo, orgPrivateRepo, notVisibleRepo));
         when(organizeMemberPort.existsByOrganizeIdAndUserId(OrganizeId.of(10L), UserId.of(7L))).thenReturn(true);
 
-        when(repositoryApplicationMapper.toDto(publicRepo)).thenReturn(RepositoryResult.builder().id(1L).name("public").build());
-        when(repositoryApplicationMapper.toDto(myPrivateRepo)).thenReturn(RepositoryResult.builder().id(2L).name("mine").build());
-        when(repositoryApplicationMapper.toDto(orgPrivateRepo)).thenReturn(RepositoryResult.builder().id(3L).name("org").build());
+        when(repositoryApplicationMapper.toDto(publicRepo)).thenReturn(new RepositoryResult(1L, null, "public", null, null, null, null, null, null, null, null, false, null, null, null));
+        when(repositoryApplicationMapper.toDto(myPrivateRepo)).thenReturn(new RepositoryResult(2L, null, "mine", null, null, null, null, null, null, null, null, false, null, null, null));
+        when(repositoryApplicationMapper.toDto(orgPrivateRepo)).thenReturn(new RepositoryResult(3L, null, "org", null, null, null, null, null, null, null, null, false, null, null, null));
 
         List<RepositoryResult> response = service.getRepositories();
 
         assertEquals(3, response.size());
-        assertEquals(List.of("public", "mine", "org"), response.stream().map(RepositoryResult::getName).toList());
+        assertEquals(List.of("public", "mine", "org"), response.stream().map(RepositoryResult::name).toList());
     }
 
     @Test
@@ -220,12 +220,12 @@ class RepositoryLifecycleServiceTest {
         when(publicRepo.getVisibility()).thenReturn(RepositoryVisibility.PUBLIC);
         when(privateRepo.getVisibility()).thenReturn(RepositoryVisibility.PRIVATE);
         when(repositoryApplicationMapper.toDto(publicRepo))
-                .thenReturn(RepositoryResult.builder().id(1L).name("public").build());
+                .thenReturn(new RepositoryResult(1L, null, "public", null, null, null, null, null, null, null, null, false, null, null, null));
 
         List<RepositoryResult> response = service.getRepositoriesByUsername("alice");
 
         assertEquals(1, response.size());
-        assertEquals("public", response.get(0).getName());
+        assertEquals("public", response.get(0).name());
         verify(repositoryApplicationMapper, never()).toDto(privateRepo);
     }
 }

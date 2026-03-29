@@ -33,11 +33,7 @@ public class RepositoryMemberController {
     @PostMapping
     public ResponseEntity<ApiResponse<Void>> addMember(@PathVariable Long repositoryId,
                                                        @RequestBody RepositoryMemberAddRequest request) {
-        RepositoryMemberAddCommand command = RepositoryMemberAddCommand.builder()
-                .repositoryId(repositoryId)
-                .userId(request.userId())
-                .role(request.role())
-                .build();
+        RepositoryMemberAddCommand command = new RepositoryMemberAddCommand(repositoryId, request.userId(), request.role());
         repositoryMemberAddUseCase.addRepositoryMember(command);
         return ApiResponse.ok();
     }

@@ -94,17 +94,9 @@ class RunnerControllerTest {
     void registerRunner_returnsCreated() throws Exception {
         RunnerCreateRequest request = new RunnerCreateRequest("runner-01", RunnerScopeType.GLOBAL, null);
 
-        RunnerRegisterCommand command = RunnerRegisterCommand.builder()
-                .description("runner-01")
-                .scopeType(RunnerScopeType.GLOBAL)
-                .build();
+        RunnerRegisterCommand command = new RunnerRegisterCommand("runner-01", RunnerScopeType.GLOBAL, null);
 
-        RunnerRegistrationResult result = RunnerRegistrationResult.builder()
-                .runnerId(100L)
-                .token("token-100")
-                .status("OFFLINE")
-                .registeredAt(LocalDateTime.now())
-                .build();
+        RunnerRegistrationResult result = new RunnerRegistrationResult(100L, "token-100", "OFFLINE", LocalDateTime.now());
 
         when(runnerRequestMapper.toCommand(any(RunnerCreateRequest.class))).thenReturn(command);
         when(runnerRegisterUseCase.register(command)).thenReturn(result);
@@ -122,12 +114,7 @@ class RunnerControllerTest {
 
     @Test
     void getRunners_returnsMappedResponses() throws Exception {
-        RunnerDetailResult detail = RunnerDetailResult.builder()
-                .runnerId(1L)
-                .description("runner")
-                .status("ONLINE")
-                .registeredAt(LocalDateTime.now())
-                .build();
+        RunnerDetailResult detail = new RunnerDetailResult(1L, null, "runner", "ONLINE", null, LocalDateTime.now());
         RunnerResponse response = new RunnerResponse(1L, null, "runner", "ONLINE", null, null);
 
         when(runnerLoadUseCase.getRunners()).thenReturn(List.of(detail));
@@ -143,12 +130,7 @@ class RunnerControllerTest {
 
     @Test
     void getRunner_returnsSingleRunner() throws Exception {
-        RunnerDetailResult detail = RunnerDetailResult.builder()
-                .runnerId(2L)
-                .description("runner-2")
-                .status("OFFLINE")
-                .registeredAt(LocalDateTime.now())
-                .build();
+        RunnerDetailResult detail = new RunnerDetailResult(2L, null, "runner-2", "OFFLINE", null, LocalDateTime.now());
         RunnerResponse response = new RunnerResponse(2L, null, "runner-2", "OFFLINE", null, null);
 
         when(runnerLoadUseCase.getRunner(2L)).thenReturn(detail);
@@ -172,8 +154,8 @@ class RunnerControllerTest {
 
     @Test
     void activateRunner_prefersXForwardedForHeader() throws Exception {
-        RunnerActivateResult result = RunnerActivateResult.builder()
-                .runtimeConfig(RunnerRuntimeConfig.builder()
+        RunnerActivateResult result = new RunnerActivateResult(
+                RunnerRuntimeConfig.builder()
                         .serviceHost("localhost")
                         .restScheme("http")
                         .restPort(8080)
@@ -181,9 +163,9 @@ class RunnerControllerTest {
                         .grpcPort(6565)
                         .pollIntervalMs(5000L)
                         .busyWaitIntervalMs(1000L)
-                        .build())
-                .executionConfig(RunnerExecutionConfig.defaultConfig())
-                .build();
+                        .build(),
+                RunnerExecutionConfig.defaultConfig()
+        );
 
         when(runnerActivateUseCase.activate("runner-token", "203.0.113.10")).thenReturn(result);
 

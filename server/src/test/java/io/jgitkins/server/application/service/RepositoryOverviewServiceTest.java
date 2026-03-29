@@ -43,14 +43,11 @@ class RepositoryOverviewServiceTest {
 
     @Test
     void getOverview_usesDefaultBranchAndLoadsTree() {
-        RepositoryResult repository = RepositoryResult.builder()
-                .clonePath("org/repo.git")
-                .path("org/repo")
-                .build();
+        RepositoryResult repository = new RepositoryResult(null, null, null, "org/repo", null, null, null, null, null, "org/repo.git", null, false, null, null, null);
         when(repositoryLoadUseCase.getRepository(1L)).thenReturn(repository);
 
         List<BranchSearchResult> branches = List.of(
-                BranchSearchResult.builder().name("main").defaultBranch(true).build());
+                new BranchSearchResult(null, "main", false, false, true));
         when(branchLoadUseCase.getBranches(1L)).thenReturn(branches);
 
         List<FileEntry> tree = List.of(FileEntry.builder().name("README.md").build());
@@ -61,9 +58,9 @@ class RepositoryOverviewServiceTest {
 
         RepositoryOverviewResult result = service.getOverview(1L, null);
 
-        assertEquals("main", result.getSelectedBranch());
-        assertEquals(tree, result.getTree());
-        assertEquals("OWNER", result.getRole());
-        assertEquals(true, result.isWritable());
+        assertEquals("main", result.selectedBranch());
+        assertEquals(tree, result.tree());
+        assertEquals("OWNER", result.role());
+        assertEquals(true, result.writable());
     }
 }

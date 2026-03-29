@@ -77,9 +77,9 @@ public class RepositoryContentController {
 
     private RepositoryKey resolveRepositoryKey(Long repositoryId) {
         var repository = repositoryLoadUseCase.getRepository(repositoryId);
-        RepositoryKey key = RepositoryKey.fromPath(repository.getClonePath());
+        RepositoryKey key = RepositoryKey.fromPath(repository.clonePath());
         if (key == null) {
-            key = RepositoryKey.fromPath(repository.getPath());
+            key = RepositoryKey.fromPath(repository.path());
         }
         if (key == null) {
             throw new ApplicationException(

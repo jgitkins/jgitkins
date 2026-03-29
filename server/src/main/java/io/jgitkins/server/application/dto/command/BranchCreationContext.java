@@ -20,10 +20,10 @@ public class BranchCreationContext {
                                            Repository repository,
                                            String resolvedSourceBranch) {
         return BranchCreationContext.builder()
-                .repositoryId(command.getRepositoryId())
-                .branchName(command.getBranchName())
+                .repositoryId(command.repositoryId())
+                .branchName(command.branchName())
                 .sourceBranch(resolvedSourceBranch)
-                .physicalCreationRequired(command.isPhysicalCreationRequired())
+                .physicalCreationRequired(command.physicalCreationRequired())
                 .namespace(namespace)
                 .repositoryName(repository.getName().getValue())
                 .build();

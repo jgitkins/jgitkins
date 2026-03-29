@@ -29,9 +29,9 @@ public class DockerRunnerAdapter implements JobRunnerPort {
     @Override
     public int run(JobRunContext context) {
         inputValidator.validate(context);
-        String workspacePath = context.getWorkspacePath();
-        String imageName = context.getRunnerImageName();
-        String pluginPath = context.getPluginPath();
+        String workspacePath = context.workspacePath();
+        String imageName = context.runnerImageName();
+        String pluginPath = context.pluginPath();
 
         logContainerInfo(imageName, workspacePath, pluginPath);
 

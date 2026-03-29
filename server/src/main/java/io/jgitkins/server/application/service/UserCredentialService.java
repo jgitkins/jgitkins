@@ -43,8 +43,8 @@ public class UserCredentialService implements UserCredentialIssueUseCase,
 
         UserCredential credential = UserCredential.issue(
                 userId,
-                command.getName(),
-                command.getDescription(),
+                command.name(),
+                command.description(),
                 hash);
 
         UserCredential saved = userCredentialPort.save(credential);
