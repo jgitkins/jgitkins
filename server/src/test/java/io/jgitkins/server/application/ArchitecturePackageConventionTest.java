@@ -22,6 +22,7 @@ import io.jgitkins.server.application.service.UserCredentialService;
 import io.jgitkins.server.application.service.UserProfileService;
 import io.jgitkins.server.application.support.RepositoryLookupService;
 import io.jgitkins.server.application.support.RepositoryNamespaceResolver;
+import io.jgitkins.server.application.support.RepositoryProvisioner;
 import io.jgitkins.server.application.support.RunnerRuntimeConfigProvider;
 import io.jgitkins.server.application.support.UserService;
 import java.io.IOException;
@@ -66,6 +67,7 @@ class ArchitecturePackageConventionTest {
                 UserService.class,
                 RepositoryLookupService.class,
                 RepositoryNamespaceResolver.class,
+                RepositoryProvisioner.class,
                 RunnerRuntimeConfigProvider.class);
 
         supportClasses.forEach(supportClass -> {

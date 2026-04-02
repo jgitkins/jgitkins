@@ -1,6 +1,5 @@
 package io.jgitkins.server.domain.aggregate;
 
-import io.jgitkins.server.domain.event.RepositoryProvisionedEvent;
 import io.jgitkins.server.domain.event.RepositorySynchronizedEvent;
 import io.jgitkins.server.domain.model.vo.BranchName;
 import io.jgitkins.server.domain.model.vo.InitialCommitOptions;
@@ -19,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class RepositoryTest {
 
     @Test
-    void shouldCreateRepositoryAndEmitProvisionedEvent() {
+    void shouldCreateRepositoryWithoutProvisionedEvent() {
         Repository repository = Repository.create(
                 OwnerType.ORGANIZATION,
                 OwnerId.of(1L),
@@ -40,10 +39,7 @@ class RepositoryTest {
         assertThat(repository.getDefaultBranch().getValue()).isEqualTo("main");
         assertThat(repository.getDescription()).isEqualTo("Demo repository");
         assertThat(repository.isRequiresInitialContent()).isTrue();
-        assertThat(repository.getDomainEvents())
-                .hasSize(1)
-                .first()
-                .isInstanceOf(RepositoryProvisionedEvent.class);
+        assertThat(repository.getDomainEvents()).isEmpty();
     }
 
     @Test
@@ -67,7 +63,7 @@ class RepositoryTest {
         assertThat(syncedRepository.isRequiresInitialContent()).isFalse();
         assertThat(syncedRepository.getLastSyncedAt()).isEqualTo(syncedAt);
         assertThat(syncedRepository.getDomainEvents())
-                .hasSize(2)
+                .hasSize(1)
                 .filteredOn(event -> event instanceof RepositorySynchronizedEvent)
                 .hasSize(1);
     }

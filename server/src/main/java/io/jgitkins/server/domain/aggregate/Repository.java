@@ -1,6 +1,5 @@
 package io.jgitkins.server.domain.aggregate;
 
-import io.jgitkins.server.domain.event.RepositoryProvisionedEvent;
 import io.jgitkins.server.domain.event.RepositorySynchronizedEvent;
 import io.jgitkins.server.domain.model.vo.BranchName;
 import io.jgitkins.server.domain.model.vo.InitialCommitOptions;
@@ -100,7 +99,6 @@ public class Repository extends AbstractAggregateRoot<RepositoryId> {
                 initialCommitOptions.requiresInitialContent(),
                 false
         );
-        repository.registerEvent(RepositoryProvisionedEvent.from(repository, initialCommitOptions));
         return repository;
     }
 

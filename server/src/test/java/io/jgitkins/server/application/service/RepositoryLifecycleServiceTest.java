@@ -3,7 +3,6 @@ package io.jgitkins.server.application.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -19,9 +18,11 @@ import io.jgitkins.server.application.port.out.RepositoryPersistencePort;
 import io.jgitkins.server.application.port.out.UserPersistencePort;
 import io.jgitkins.server.application.support.RepositoryLookupService;
 import io.jgitkins.server.application.support.RepositoryNamespaceResolver;
+import io.jgitkins.server.application.support.RepositoryProvisioner;
 import io.jgitkins.server.application.validate.RepositoryValidator;
 import io.jgitkins.server.common.exception.JgitkinsException;
 import io.jgitkins.server.domain.aggregate.Repository;
+import io.jgitkins.server.domain.model.vo.InitialCommitOptions;
 import io.jgitkins.server.domain.model.vo.OrganizeId;
 import io.jgitkins.server.domain.model.vo.OwnerId;
 import io.jgitkins.server.domain.model.vo.OwnerType;
@@ -45,11 +46,11 @@ class RepositoryLifecycleServiceTest {
     @Mock
     private RepositoryApplicationMapper repositoryApplicationMapper;
     @Mock
-    private io.jgitkins.server.application.common.event.DomainEventPublisher domainEventPublisher;
-    @Mock
     private RepositoryGitPort repositoryGitPort;
     @Mock
     private RepositoryPersistencePort repositoryPort;
+    @Mock
+    private RepositoryProvisioner repositoryProvisioner;
     @Mock
     private OrganizeMemberPersistencePort organizeMemberPort;
     @Mock
@@ -68,7 +69,7 @@ class RepositoryLifecycleServiceTest {
         service = new RepositoryLifecycleService(
                 repositoryNamespaceResolver,
                 repositoryApplicationMapper,
-                domainEventPublisher,
+                repositoryProvisioner,
                 repositoryGitPort,
                 repositoryPort,
                 currentUserPersistencePort,
@@ -136,14 +137,13 @@ class RepositoryLifecycleServiceTest {
                 .thenReturn(Optional.empty());
         when(repositoryNamespaceResolver.resolve(OwnerType.USER, OwnerId.of(7L))).thenReturn("alice");
         when(repositoryPort.save(any(Repository.class))).thenReturn(saved);
-        when(saved.getDomainEvents()).thenReturn(List.of());
+        when(repositoryProvisioner.provision(any(Repository.class), any(InitialCommitOptions.class))).thenReturn(saved);
         when(repositoryApplicationMapper.toDto(saved)).thenReturn(result);
 
         RepositoryResult response = service.create(command);
 
         assertEquals(100L, response.id());
-        verify(repositoryGitPort).initialize("alice", "sample-repo");
-        verify(domainEventPublisher).publish(anyList());
+        verify(repositoryProvisioner).provision(any(Repository.class), any(InitialCommitOptions.class));
     }
 
     @Test

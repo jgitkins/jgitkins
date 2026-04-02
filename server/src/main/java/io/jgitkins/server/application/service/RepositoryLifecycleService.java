@@ -1,7 +1,6 @@
 package io.jgitkins.server.application.service;
 
 import io.jgitkins.server.application.common.error.ApplicationErrorCode;
-import io.jgitkins.server.application.common.event.DomainEventPublisher;
 import io.jgitkins.server.application.dto.command.RepositoryCreateCommand;
 import io.jgitkins.server.application.dto.result.RepositoryResult;
 import io.jgitkins.server.application.mapper.RepositoryApplicationMapper;
@@ -15,6 +14,7 @@ import io.jgitkins.server.application.port.out.UserPersistencePort;
 import io.jgitkins.server.application.common.RepositoryPathHelper;
 import io.jgitkins.server.application.support.RepositoryLookupService;
 import io.jgitkins.server.application.support.RepositoryNamespaceResolver;
+import io.jgitkins.server.application.support.RepositoryProvisioner;
 import io.jgitkins.server.application.validate.RepositoryValidator;
 import io.jgitkins.server.application.exception.ApplicationException;
 import io.jgitkins.server.domain.aggregate.Repository;
@@ -38,7 +38,8 @@ public class RepositoryLifecycleService implements RepositoryCreateUseCase,
 
     private final RepositoryNamespaceResolver repositoryNamespaceResolver;
     private final RepositoryApplicationMapper repositoryApplicationMapper;
-    private final DomainEventPublisher domainEventPublisher;
+    private final RepositoryProvisioner repositoryProvisioner;
+    private final RepositoryLookupService repositoryLookupService;
 
     private final RepositoryGitPort repositoryGitPort;
     private final RepositoryPersistencePort repositoryPort;
@@ -46,21 +47,22 @@ public class RepositoryLifecycleService implements RepositoryCreateUseCase,
     private final UserPersistencePort userPort;
 
     private final RepositoryValidator repositoryValidator;
-    private final RepositoryLookupService repositoryLookupService;
 
     @Override
     @Transactional
     public RepositoryResult create(RepositoryCreateCommand command) {
+        // init domain entity
         Repository repository = createRepository(command);
+
+        // validation can be created
         validateRepositoryCreation(repository, command.organizeId());
 
+        // persistence
         Repository saved = repositoryPort.save(repository);
-        repositoryGitPort.initialize(
-                repositoryNamespaceResolver.resolve(repository.getOwnerType(), repository.getOwnerId()),
-                repository.getName().getValue());
 
-        publishDomainEvents(saved);
-        return repositoryApplicationMapper.toDto(saved);
+        // provisioned (create bare repository + default branch + initial commit)
+        Repository provisioned = repositoryProvisioner.provision(saved, createInitialCommitOptions(command));
+        return repositoryApplicationMapper.toDto(provisioned);
     }
 
     @Override
@@ -137,6 +139,7 @@ public class RepositoryLifecycleService implements RepositoryCreateUseCase,
         OwnerType ownerType = command.ownerType();
         OwnerId ownerId = resolveOwnerId(ownerType, command.organizeId());
         String namespace = repositoryNamespaceResolver.resolve(ownerType, ownerId);
+        InitialCommitOptions initialCommitOptions = createInitialCommitOptions(command);
 
         return Repository.create(
                 ownerType,
@@ -148,12 +151,16 @@ public class RepositoryLifecycleService implements RepositoryCreateUseCase,
                 command.description(),
                 RepositoryPathHelper.buildClonePath(namespace, command.repoName()),
                 command.credentialId(),
-                InitialCommitOptions.of(
-                        command.readme(),
-                        command.message(),
-                        command.authorName(),
-                        command.authorEmail()
-                )
+                initialCommitOptions
+        );
+    }
+
+    private InitialCommitOptions createInitialCommitOptions(RepositoryCreateCommand command) {
+        return InitialCommitOptions.of(
+                command.readme(),
+                command.message(),
+                command.authorName(),
+                command.authorEmail()
         );
     }
 
@@ -163,10 +170,5 @@ public class RepositoryLifecycleService implements RepositoryCreateUseCase,
                 repository.getOwnerType(),
                 repository.getOwnerId(),
                 repository.getName());
-    }
-
-    private void publishDomainEvents(Repository repository) {
-        domainEventPublisher.publish(repository.getDomainEvents());
-        repository.clearDomainEvents();
     }
 }
