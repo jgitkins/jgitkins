@@ -1,4 +1,4 @@
-package io.jgitkins.server.infrastructure.adapter.persistence;
+package io.jgitkins.server.infrastructure.adapter.persistence.repository;
 
 import io.jgitkins.server.domain.Branch;
 import io.jgitkins.server.domain.repository.BranchRepository;

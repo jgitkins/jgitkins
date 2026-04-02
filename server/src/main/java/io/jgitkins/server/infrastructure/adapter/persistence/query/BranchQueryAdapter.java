@@ -1,4 +1,4 @@
-package io.jgitkins.server.infrastructure.adapter.persistence;
+package io.jgitkins.server.infrastructure.adapter.persistence.query;
 
 import io.jgitkins.server.application.dto.result.BranchSearchResult;
 import io.jgitkins.server.application.port.out.BranchQueryPort;
