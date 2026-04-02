@@ -1,0 +1,4 @@
+rootProject.name = 'jgitkins'
+include 'runner'
+include 'server'
+include 'web'
