@@ -48,7 +48,7 @@ class RepositoryOverviewServiceTest {
 
         List<BranchSearchResult> branches = List.of(
                 new BranchSearchResult(null, "main", false, false, true));
-        when(branchLoadUseCase.getBranches(1L)).thenReturn(branches);
+        when(branchLoadUseCase.loadBranches(1L)).thenReturn(branches);
 
         List<FileEntry> tree = List.of(FileEntry.builder().name("README.md").build());
         when(fileTreeLoadUseCase.getTree("org", "repo", "main", "")).thenReturn(tree);

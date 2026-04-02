@@ -1,5 +1,6 @@
 package io.jgitkins.server.domain;
 
+import io.jgitkins.server.domain.exception.DefaultBranchDeletionNotAllowedException;
 import lombok.Getter;
 
 @Getter
@@ -37,5 +38,11 @@ public class Branch {
 
     public static Branch rehydrate(Long repositoryId, String name, boolean locked, boolean ciEnabled, boolean defaultBranch) {
         return new Branch(repositoryId, name, locked, ciEnabled, defaultBranch);
+    }
+
+    public void delete() {
+        if (defaultBranch) {
+            throw new DefaultBranchDeletionNotAllowedException(name);
+        }
     }
 }

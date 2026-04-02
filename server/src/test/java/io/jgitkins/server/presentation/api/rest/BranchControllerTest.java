@@ -85,7 +85,7 @@ class BranchControllerTest {
 
     @Test
     void getBranches_returnsList() throws Exception {
-        when(branchLoadUseCase.getBranches(1L)).thenReturn(List.of(
+        when(branchLoadUseCase.loadBranches(1L)).thenReturn(List.of(
                 new BranchSearchResult(1L, "main", false, false, true),
                 new BranchSearchResult(1L, "feature", false, false, false)
         ));
@@ -96,12 +96,12 @@ class BranchControllerTest {
                 .andExpect(jsonPath("$.data[0].defaultBranch").value(true))
                 .andExpect(jsonPath("$.data[1].name").value("feature"));
 
-        verify(branchLoadUseCase).getBranches(1L);
+        verify(branchLoadUseCase).loadBranches(1L);
     }
 
     @Test
     void getBranch_returnsBranch() throws Exception {
-        when(branchLoadUseCase.getBranch(1L, "feature"))
+        when(branchLoadUseCase.loadBranch(1L, "feature"))
                 .thenReturn(new BranchSearchResult(1L, "feature", false, false, false));
 
         mockMvc.perform(get("/api/repositories/1/branches/feature"))
@@ -109,7 +109,7 @@ class BranchControllerTest {
                 .andExpect(jsonPath("$.data.name").value("feature"))
                 .andExpect(jsonPath("$.data.defaultBranch").value(false));
 
-        verify(branchLoadUseCase).getBranch(1L, "feature");
+        verify(branchLoadUseCase).loadBranch(1L, "feature");
     }
 
     @Test

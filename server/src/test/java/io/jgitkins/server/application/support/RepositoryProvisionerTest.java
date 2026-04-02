@@ -8,7 +8,6 @@ import static org.mockito.Mockito.when;
 
 import io.jgitkins.server.application.dto.CommitFile;
 import io.jgitkins.server.application.factory.CommitFileFactory;
-import io.jgitkins.server.application.port.out.BranchPersistencePort;
 import io.jgitkins.server.application.port.out.CommitGitPort;
 import io.jgitkins.server.application.port.out.RepositoryGitPort;
 import io.jgitkins.server.application.port.out.RepositoryPersistencePort;
@@ -18,6 +17,7 @@ import io.jgitkins.server.domain.model.vo.BranchName;
 import io.jgitkins.server.domain.model.vo.InitialCommitOptions;
 import io.jgitkins.server.domain.model.vo.RepositoryId;
 import io.jgitkins.server.domain.model.vo.RepositoryName;
+import io.jgitkins.server.domain.repository.BranchRepository;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,7 +33,7 @@ class RepositoryProvisionerTest {
     @Mock
     private RepositoryPersistencePort repositoryPort;
     @Mock
-    private BranchPersistencePort branchPort;
+    private BranchRepository branchPort;
     @Mock
     private RepositoryNamespaceResolver repositoryNamespaceResolver;
     @Mock

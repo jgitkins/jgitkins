@@ -13,9 +13,9 @@ import io.jgitkins.server.application.dto.result.JobPlan;
 import io.jgitkins.server.application.dto.result.PipelineSkipReason;
 import io.jgitkins.server.application.dto.support.PushJobPlanRequest;
 import io.jgitkins.server.application.port.in.JobCreateUseCase;
-import io.jgitkins.server.application.port.out.BranchPersistencePort;
 import io.jgitkins.server.application.support.PushJobCreationPolicy;
 import io.jgitkins.server.application.validate.JobCreationValidator;
+import io.jgitkins.server.domain.repository.BranchRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -30,7 +30,7 @@ class PushEventHandleServiceTest {
     private JobCreateUseCase jobCreateUseCase;
 
     @Mock
-    private BranchPersistencePort branchPort;
+    private BranchRepository branchPort;
 
     @Mock
     private JobCreationValidator jobCreationValidator;

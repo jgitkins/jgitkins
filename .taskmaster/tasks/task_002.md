@@ -105,3 +105,27 @@ Repository 생성 후처리에서 `RepositoryProvisionedEventListener` 기반 �
 
 [source: jgitkins-server, original subtask: custom]
 참조 문서: .taskmaster/docs/refactor/task_2_9_plan.md. 검토 범위는 `server/src/main/java/io/jgitkins/server/application/event/RepositoryProvisionedEventListener.java`, `server/src/main/java/io/jgitkins/server/domain/event/RepositoryProvisionedEvent.java`, `server/src/main/java/io/jgitkins/server/domain/aggregate/Repository.java`, `server/src/main/java/io/jgitkins/server/application/service/RepositoryLifecycleService.java`, `server/src/main/java/io/jgitkins/server/application/support` 패키지다. 목표는 `RepositoryProvisionedEventListener`가 담당하던 기본 브랜치 생성, 초기 커밋, HEAD 갱신, 초기화 상태 반영 절차를 `RepositoryProvisioner`로 이동하고, `RepositoryLifecycleService.create()`가 저장소 저장 및 git 초기화 직후 이를 직접 오케스트레이션하도록 정리하는 것이다. 이 과정에서 `Repository.create()`의 `RepositoryProvisionedEvent` 등록은 제거 대상으로 검토하며, `Presentation` 계층은 기존처럼 단일 `RepositoryCreateUseCase` 호출만 유지한다. `DomainEventPublisher`와 다른 도메인 이벤트 사용처는 이번 범위에서 제거하지 않으며, 해당 인터페이스와 구현체의 잔존 여부는 다른 aggregate 사용처를 확인한 뒤 결정한다.
+
+### 2.10. [server] RepositoryLifecycleService 분리 및 Load/Management 책임 재구성
+
+**Status:** pending  
+**Dependencies:** None  
+
+`RepositoryLifecycleService`를 `RepositoryManagementService`와 `RepositoryLoadService`로 분리하고, 조회 전용 메서드를 별도 Load Service로 이관하며, `RepositoryLoadUseCase` 및 연관 호출부의 메서드 명명 규칙을 `load*` 계열로 정리할지 검토 후 반영한다.
+
+**Details:**
+
+[source: jgitkins-server, original subtask: custom]
+참조 문서: .taskmaster/docs/refactor/task_2_10_plan.md. 검토 범위는 `server/src/main/java/io/jgitkins/server/application/service/RepositoryLifecycleService.java`, `server/src/main/java/io/jgitkins/server/application/port/in/RepositoryLoadUseCase.java`, `server/src/main/java/io/jgitkins/server/presentation/api/rest/RepositoryManagementController.java`, `server/src/main/java/io/jgitkins/server/presentation/api/rest/RepositoryContentController.java`, `server/src/main/java/io/jgitkins/server/presentation/api/web/WebRepositoryController.java`, `server/src/main/java/io/jgitkins/server/application/service/RepositoryOverviewService.java`, `server/src/test/java/io/jgitkins/server/application/service/RepositoryLifecycleServiceTest.java`, `server/src/test/java/io/jgitkins/server/application/ArchitecturePackageConventionTest.java` 및 `RepositoryLoadUseCase` 호출 테스트 전반이다. 목표는 생성/삭제 오케스트레이션과 조회 책임을 분리하여 서비스 응집도를 높이고, Load 전용 구현체 도입 이후에도 기존 Controller의 UseCase 계약은 유지하는 것이다. 메서드 명명은 `RepositoryLoadUseCase`라는 포트 이름과 맞추어 `get*`에서 `load*`로 정리하는 방안을 우선 검토하되, 단순 치환이 아닌 조회 의도와 반환 의미가 명확한 이름으로 조정하는 것을 원칙으로 한다.
+
+### 2.11. [server] BranchService 분리 및 Branch 조회/관리 책임 재구성
+
+**Status:** pending  
+**Dependencies:** None  
+
+`BranchService`를 `BranchManagementService`와 `BranchLoadService`로 분리하고, 조회성 메서드를 별도 서비스로 이관하며, `BranchLoadUseCase`의 `get*` 메서드를 `load*`로 정리할지 검토 후 반영 기준을 수립한다.
+
+**Details:**
+
+[source: jgitkins-server, original subtask: custom]
+참조 문서: .taskmaster/docs/refactor/task_2_11_plan.md. 검토 범위는 `server/src/main/java/io/jgitkins/server/application/service/BranchService.java`, `server/src/main/java/io/jgitkins/server/application/port/in/BranchLoadUseCase.java`, `server/src/main/java/io/jgitkins/server/application/port/in/BranchCreateUseCase.java`, `server/src/main/java/io/jgitkins/server/application/port/in/BranchDeleteUseCase.java`, `server/src/main/java/io/jgitkins/server/presentation/api/rest/BranchController.java`, `server/src/main/java/io/jgitkins/server/application/service/RepositoryOverviewService.java`, `server/src/test/java/io/jgitkins/server/application/service/BranchServiceTest.java`, `server/src/test/java/io/jgitkins/server/presentation/api/rest/BranchControllerTest.java`, `server/src/test/java/io/jgitkins/server/application/ArchitecturePackageConventionTest.java` 및 관련 조회 호출부 전반이다. 목표는 브랜치 조회와 생성/삭제 오케스트레이션 책임을 분리하여 서비스 응집도를 높이고, `BranchLoadUseCase`의 메서드 명명을 `get*`에서 `load*`로 정렬할지 검토한 뒤 일관된 기준을 문서화하는 것이다.

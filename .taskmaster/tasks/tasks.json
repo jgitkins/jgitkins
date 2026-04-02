@@ -88,7 +88,7 @@
         "priority": "high",
         "details": "기존 기능별 Task를 카테고리 기반(신규기능/리팩토링/보안)으로 재구성함.",
         "testStrategy": "카테고리별 우선순위에 따라 하위 작업을 순차 수행하고 회귀 테스트를 적용한다.",
-        "updatedAt": "2026-03-29T02:46:53.347Z",
+        "updatedAt": "2026-04-02T14:21:45.758Z",
         "subtasks": [
           {
             "id": 1,
@@ -185,6 +185,27 @@
             "dependencies": [],
             "parentTaskId": 2,
             "parentId": "2"
+          },
+          {
+            "id": 10,
+            "title": "[server] RepositoryLifecycleService 분리 및 Load/Management 책임 재구성",
+            "description": "`RepositoryLifecycleService`를 `RepositoryManagementService`와 `RepositoryLoadService`로 분리하고, 조회 전용 메서드를 별도 Load Service로 이관하며, `RepositoryLoadUseCase` 및 연관 호출부의 메서드 명명 규칙을 `load*` 계열로 정리할지 검토 후 반영한다.",
+            "details": "[source: jgitkins-server, original subtask: custom]\n참조 문서: .taskmaster/docs/refactor/task_2_10_plan.md. 검토 범위는 `server/src/main/java/io/jgitkins/server/application/service/RepositoryLifecycleService.java`, `server/src/main/java/io/jgitkins/server/application/port/in/RepositoryLoadUseCase.java`, `server/src/main/java/io/jgitkins/server/presentation/api/rest/RepositoryManagementController.java`, `server/src/main/java/io/jgitkins/server/presentation/api/rest/RepositoryContentController.java`, `server/src/main/java/io/jgitkins/server/presentation/api/web/WebRepositoryController.java`, `server/src/main/java/io/jgitkins/server/application/service/RepositoryOverviewService.java`, `server/src/test/java/io/jgitkins/server/application/service/RepositoryLifecycleServiceTest.java`, `server/src/test/java/io/jgitkins/server/application/ArchitecturePackageConventionTest.java` 및 `RepositoryLoadUseCase` 호출 테스트 전반이다. 목표는 생성/삭제 오케스트레이션과 조회 책임을 분리하여 서비스 응집도를 높이고, Load 전용 구현체 도입 이후에도 기존 Controller의 UseCase 계약은 유지하는 것이다. 메서드 명명은 `RepositoryLoadUseCase`라는 포트 이름과 맞추어 `get*`에서 `load*`로 정리하는 방안을 우선 검토하되, 단순 치환이 아닌 조회 의도와 반환 의미가 명확한 이름으로 조정하는 것을 원칙으로 한다.",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 2,
+            "parentId": "2"
+          },
+          {
+            "id": 11,
+            "title": "[server] BranchService 분리 및 Branch 조회/관리 책임 재구성",
+            "description": "`BranchService`를 `BranchManagementService`와 `BranchLoadService`로 분리하고, 조회성 메서드를 별도 서비스로 이관하며, `BranchLoadUseCase`의 `get*` 메서드를 `load*`로 정리할지 검토 후 반영 기준을 수립한다.",
+            "details": "[source: jgitkins-server, original subtask: custom]\n참조 문서: .taskmaster/docs/refactor/task_2_11_plan.md. 검토 범위는 `server/src/main/java/io/jgitkins/server/application/service/BranchService.java`, `server/src/main/java/io/jgitkins/server/application/port/in/BranchLoadUseCase.java`, `server/src/main/java/io/jgitkins/server/application/port/in/BranchCreateUseCase.java`, `server/src/main/java/io/jgitkins/server/application/port/in/BranchDeleteUseCase.java`, `server/src/main/java/io/jgitkins/server/presentation/api/rest/BranchController.java`, `server/src/main/java/io/jgitkins/server/application/service/RepositoryOverviewService.java`, `server/src/test/java/io/jgitkins/server/application/service/BranchServiceTest.java`, `server/src/test/java/io/jgitkins/server/presentation/api/rest/BranchControllerTest.java`, `server/src/test/java/io/jgitkins/server/application/ArchitecturePackageConventionTest.java` 및 관련 조회 호출부 전반이다. 목표는 브랜치 조회와 생성/삭제 오케스트레이션 책임을 분리하여 서비스 응집도를 높이고, `BranchLoadUseCase`의 메서드 명명을 `get*`에서 `load*`로 정렬할지 검토한 뒤 일관된 기준을 문서화하는 것이다.",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 2,
+            "parentId": "2",
+            "updatedAt": "2026-04-02T14:21:45.758Z"
           }
         ]
       },
@@ -273,7 +294,7 @@
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2026-03-29T02:46:53.347Z",
+      "lastModified": "2026-04-02T14:21:45.760Z",
       "taskCount": 5,
       "completedCount": 2,
       "tags": [

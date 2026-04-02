@@ -6,7 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.jgitkins.server.application.support.CloneUrlBuilder;
 import io.jgitkins.server.application.service.AdminUserService;
-import io.jgitkins.server.application.service.BranchService;
+import io.jgitkins.server.application.service.BranchLoadService;
+import io.jgitkins.server.application.service.BranchManagementService;
 import io.jgitkins.server.application.service.CommitService;
 import io.jgitkins.server.application.service.MergeService;
 import io.jgitkins.server.application.service.OAuthLoginService;
@@ -15,7 +16,8 @@ import io.jgitkins.server.application.service.OrganizeService;
 import io.jgitkins.server.application.service.PublicUserQueryService;
 import io.jgitkins.server.application.service.PushEventHandleService;
 import io.jgitkins.server.application.service.RepositoryFileService;
-import io.jgitkins.server.application.service.RepositoryLifecycleService;
+import io.jgitkins.server.application.service.RepositoryLoadService;
+import io.jgitkins.server.application.service.RepositoryManagementService;
 import io.jgitkins.server.application.service.RepositoryMemberService;
 import io.jgitkins.server.application.service.RepositoryOverviewService;
 import io.jgitkins.server.application.service.UserCredentialService;
@@ -42,7 +44,8 @@ class ArchitecturePackageConventionTest {
     void applicationServices_resideInUnifiedServicePackage() {
         List<Class<?>> serviceClasses = List.of(
                 AdminUserService.class,
-                BranchService.class,
+                BranchLoadService.class,
+                BranchManagementService.class,
                 CommitService.class,
                 MergeService.class,
                 OAuthLoginService.class,
@@ -51,7 +54,8 @@ class ArchitecturePackageConventionTest {
                 PublicUserQueryService.class,
                 PushEventHandleService.class,
                 RepositoryFileService.class,
-                RepositoryLifecycleService.class,
+                RepositoryLoadService.class,
+                RepositoryManagementService.class,
                 RepositoryMemberService.class,
                 RepositoryOverviewService.class,
                 UserCredentialService.class,

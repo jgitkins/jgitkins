@@ -6,11 +6,11 @@ import static org.mockito.Mockito.when;
 
 import io.jgitkins.server.common.exception.JgitkinsException;
 import io.jgitkins.server.application.dto.command.BranchCreateCommand;
-import io.jgitkins.server.application.port.out.BranchPersistencePort;
 import io.jgitkins.server.domain.Branch;
 import io.jgitkins.server.domain.aggregate.Repository;
 import io.jgitkins.server.domain.model.vo.BranchName;
 import io.jgitkins.server.domain.model.vo.RepositoryId;
+import io.jgitkins.server.domain.repository.BranchRepository;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,7 +22,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class BranchCreationValidatorTest {
 
     @Mock
-    private BranchPersistencePort branchPort;
+    private BranchRepository branchPort;
 
     @InjectMocks
     private BranchCreationValidator validator;
@@ -65,14 +65,5 @@ class BranchCreationValidatorTest {
         BranchCreateCommand command = new BranchCreateCommand(1L, "feature", "dev", false);
 
         assertThrows(JgitkinsException.class, () -> validator.resolveAndValidateSourceBranch(command, repository));
-    }
-
-    @Test
-    void validateNotDefaultBranch_throwsWhenDeletingDefaultBranch() {
-        Repository repository = org.mockito.Mockito.mock(Repository.class);
-        Branch defaultBranch = Branch.create(1L, "main", false, false, true);
-        when(repository.getDefaultBranch()).thenReturn(BranchName.of("main"));
-
-        assertThrows(JgitkinsException.class, () -> validator.validateNotDefaultBranch(repository, defaultBranch));
     }
 }

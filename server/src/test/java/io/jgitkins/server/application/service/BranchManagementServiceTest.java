@@ -1,9 +1,14 @@
 package io.jgitkins.server.application.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import io.jgitkins.server.application.dto.command.BranchCreateCommand;
-import io.jgitkins.server.application.mapper.BranchApplicationMapper;
 import io.jgitkins.server.application.port.out.BranchGitPort;
-import io.jgitkins.server.application.port.out.BranchPersistencePort;
 import io.jgitkins.server.application.port.out.RepositoryPersistencePort;
 import io.jgitkins.server.application.support.RepositoryNamespaceResolver;
 import io.jgitkins.server.application.validate.BranchCreationValidator;
@@ -13,47 +18,34 @@ import io.jgitkins.server.domain.Branch;
 import io.jgitkins.server.domain.aggregate.Repository;
 import io.jgitkins.server.domain.model.vo.RepositoryId;
 import io.jgitkins.server.domain.model.vo.RepositoryName;
+import io.jgitkins.server.domain.repository.BranchRepository;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 @ExtendWith(MockitoExtension.class)
-class BranchServiceTest {
+class BranchManagementServiceTest {
 
     @Mock
     private RepositoryNamespaceResolver repositoryNamespaceResolver;
-
     @Mock
     private BranchCreationValidator branchCreationValidator;
-
     @Mock
     private RepositoryAccessValidator repositoryAccessValidator;
-
-    @Mock
-    private BranchApplicationMapper branchApplicationMapper;
-
     @Mock
     private BranchGitPort branchGitPort;
-
     @Mock
-    private BranchPersistencePort branchPort;
-
+    private BranchRepository branchPort;
     @Mock
     private RepositoryPersistencePort repositoryPort;
 
     @InjectMocks
-    private BranchService service;
+    private BranchManagementService service;
 
     @Test
     void createBranch_createsBranchInGitAndPersistence() {
@@ -88,15 +80,32 @@ class BranchServiceTest {
         service.deleteBranch(1L, "feature");
 
         verify(repositoryAccessValidator).validateCanCommit("org", "repo");
-        verify(branchCreationValidator).validateNotDefaultBranch(repository, branch);
-        verify(branchGitPort).deleteBranch("org", "repo", "feature");
-        verify(branchPort).deleteByRepositoryIdAndName(1L, "feature");
+        InOrder inOrder = inOrder(branchPort, branchGitPort);
+        inOrder.verify(branchPort).delete(branch);
+        inOrder.verify(branchGitPort).deleteBranch("org", "repo", "feature");
     }
 
     @Test
-    void getBranch_throwsWhenBranchMissing() {
+    void deleteBranch_throwsWhenBranchMissing() {
+        Repository repository = org.mockito.Mockito.mock(Repository.class);
+        when(repository.getName()).thenReturn(RepositoryName.from("repo"));
+        when(repositoryPort.findById(RepositoryId.of(1L))).thenReturn(Optional.of(repository));
+        when(repositoryNamespaceResolver.resolve(repository)).thenReturn("org");
         when(branchPort.findByRepositoryIdAndName(1L, "missing")).thenReturn(Optional.empty());
 
-        assertThrows(JgitkinsException.class, () -> service.getBranch(1L, "missing"));
+        assertThrows(JgitkinsException.class, () -> service.deleteBranch(1L, "missing"));
+    }
+
+    @Test
+    void deleteBranch_throwsWhenBranchIsDefault() {
+        Repository repository = org.mockito.Mockito.mock(Repository.class);
+        Branch defaultBranch = Branch.create(1L, "main", false, false, true);
+
+        when(repository.getName()).thenReturn(RepositoryName.from("repo"));
+        when(repositoryPort.findById(RepositoryId.of(1L))).thenReturn(Optional.of(repository));
+        when(repositoryNamespaceResolver.resolve(repository)).thenReturn("org");
+        when(branchPort.findByRepositoryIdAndName(1L, "main")).thenReturn(Optional.of(defaultBranch));
+
+        assertThrows(JgitkinsException.class, () -> service.deleteBranch(1L, "main"));
     }
 }

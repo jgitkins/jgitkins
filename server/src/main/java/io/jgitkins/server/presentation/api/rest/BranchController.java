@@ -45,13 +45,13 @@ public class BranchController {
     @Operation(summary = "Get Branches")
     @GetMapping
     public ResponseEntity<ApiResponse<List<BranchSearchResult>>> getBranches(@PathVariable Long repositoryId) {
-        return ApiResponse.ok(branchLoadUseCase.getBranches(repositoryId));
+        return ApiResponse.ok(branchLoadUseCase.loadBranches(repositoryId));
     }
 
     @Operation(summary = "Get Branch")
     @GetMapping("/{branchName}")
     public ResponseEntity<ApiResponse<BranchSearchResult>> getBranch(@PathVariable Long repositoryId, @PathVariable String branchName) {
-        return ApiResponse.ok(branchLoadUseCase.getBranch(repositoryId, branchName));
+        return ApiResponse.ok(branchLoadUseCase.loadBranch(repositoryId, branchName));
     }
 
     @Operation(summary = "Delete branch")

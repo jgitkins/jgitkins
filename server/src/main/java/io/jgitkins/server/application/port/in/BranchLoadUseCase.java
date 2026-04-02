@@ -5,6 +5,6 @@ import io.jgitkins.server.application.dto.result.BranchSearchResult;
 import java.util.List;
 
 public interface BranchLoadUseCase {
-    List<BranchSearchResult> getBranches(Long repositoryId);
-    BranchSearchResult getBranch(Long repositoryId, String branchName);
+    List<BranchSearchResult> loadBranches(Long repositoryId);
+    BranchSearchResult loadBranch(Long repositoryId, String branchName);
 }

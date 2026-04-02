@@ -2,13 +2,13 @@ package io.jgitkins.server.application.support;
 
 import io.jgitkins.server.application.dto.CommitFile;
 import io.jgitkins.server.application.factory.CommitFileFactory;
-import io.jgitkins.server.application.port.out.BranchPersistencePort;
 import io.jgitkins.server.application.port.out.CommitGitPort;
 import io.jgitkins.server.application.port.out.RepositoryGitPort;
 import io.jgitkins.server.application.port.out.RepositoryPersistencePort;
 import io.jgitkins.server.domain.Branch;
 import io.jgitkins.server.domain.aggregate.Repository;
 import io.jgitkins.server.domain.model.vo.InitialCommitOptions;
+import io.jgitkins.server.domain.repository.BranchRepository;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +20,7 @@ public class RepositoryProvisioner {
 
     private final CommitFileFactory commitFileFactory;
     private final RepositoryPersistencePort repositoryPort;
-    private final BranchPersistencePort branchPort;
+    private final BranchRepository branchPort;
     private final RepositoryNamespaceResolver repositoryNamespaceResolver;
     private final CommitGitPort commitGitPort;
     private final RepositoryGitPort repositoryGitPort;

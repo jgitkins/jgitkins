@@ -3,9 +3,9 @@ package io.jgitkins.server.application.validate;
 import io.jgitkins.server.application.common.error.ApplicationErrorCode;
 import io.jgitkins.server.application.dto.command.BranchCreateCommand;
 import io.jgitkins.server.application.exception.ApplicationException;
-import io.jgitkins.server.application.port.out.BranchPersistencePort;
 import io.jgitkins.server.domain.Branch;
 import io.jgitkins.server.domain.aggregate.Repository;
+import io.jgitkins.server.domain.repository.BranchRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class BranchCreationValidator {
 
-    private final BranchPersistencePort branchPort;
+    private final BranchRepository branchPort;
 
     /**
      * 브랜치 생성에 필요한 모든 비즈니스 규칙을 검증하고 소스 브랜치를 결정합니다.
@@ -49,10 +49,4 @@ public class BranchCreationValidator {
         return sourceBranch;
     }
 
-    public void validateNotDefaultBranch(Repository repository, Branch branch) {
-        if (repository.getDefaultBranch().getValue().equals(branch.getName()) || branch.isDefaultBranch()) {
-            throw new ApplicationException(ApplicationErrorCode.BRANCH_ALREADY_EXISTS,
-                    "Default branch cannot be deleted: " + branch.getName());
-        }
-    }
 }

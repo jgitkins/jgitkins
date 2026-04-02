@@ -7,10 +7,10 @@ import io.jgitkins.server.application.dto.result.JobPlan;
 import io.jgitkins.server.application.dto.support.PushJobPlanRequest;
 import io.jgitkins.server.application.port.in.JobCreateUseCase;
 import io.jgitkins.server.application.port.in.PushEventHandleUseCase;
-import io.jgitkins.server.application.port.out.BranchPersistencePort;
 import io.jgitkins.server.application.support.PushJobCreationPolicy;
 import io.jgitkins.server.application.validate.JobCreationValidator;
 import io.jgitkins.server.domain.Branch;
+import io.jgitkins.server.domain.repository.BranchRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -22,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class PushEventHandleService implements PushEventHandleUseCase {
 
     private final JobCreateUseCase jobCreateUseCase;
-    private final BranchPersistencePort branchPort;
+    private final BranchRepository branchPort;
     private final JobCreationValidator jobCreationValidator;
     private final PushJobCreationPolicy pushJobCreationPolicy;
 
@@ -59,7 +59,7 @@ public class PushEventHandleService implements PushEventHandleUseCase {
             branchPort.save(Branch.create(repositoryId, command.getBranchName()));
         } else if (command.isBranchDeleted()) {
             log.info("Deleting branch [{}] from repository [{}]", command.getBranchName(), repositoryId);
-            branchPort.deleteByRepositoryIdAndName(repositoryId, command.getBranchName());
+            branchPort.delete(Branch.create(repositoryId, command.getBranchName()));
         }
         // UPDATE(Push)의 경우 현재 로직에서는 별도의 Branch 엔티티 갱신이 필요 없음 (커밋 해시는 Job에 기록됨)
     }

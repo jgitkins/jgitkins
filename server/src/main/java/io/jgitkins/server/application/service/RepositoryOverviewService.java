@@ -37,7 +37,7 @@ public class RepositoryOverviewService implements RepositoryOverviewUseCase {
 
 		RepositoryKey key = resolveRepositoryKey(repository);
 
-		List<BranchSearchResult> branches = branchLoadUseCase.getBranches(repositoryId);
+		List<BranchSearchResult> branches = branchLoadUseCase.loadBranches(repositoryId);
 
 		String selectedBranch = resolveBranch(branch, branches);
 
