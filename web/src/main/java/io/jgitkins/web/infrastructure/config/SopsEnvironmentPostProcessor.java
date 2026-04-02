@@ -8,10 +8,12 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.yaml.snakeyaml.Yaml;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -20,6 +22,9 @@ import java.util.concurrent.TimeUnit;
 public class SopsEnvironmentPostProcessor implements EnvironmentPostProcessor, Ordered {
 
     private static final long SOPS_TIMEOUT_SECONDS = 15;
+    private static final String SECRETS_DIR_PROPERTY = "jgitkins.secrets.dir";
+    private static final String SECRETS_DIR_ENV = "JGITKINS_SECRETS_DIR";
+    private static final String MODULE_DIR = "web";
 
     @Override
     public void postProcessEnvironment(
@@ -31,12 +36,10 @@ public class SopsEnvironmentPostProcessor implements EnvironmentPostProcessor, O
         ).orElse("local");
 
         log.debug("Loading SOPS secrets for profile={}", profile);
-        String encPath = "secrets/app." + profile + ".enc.yaml";
-        File encFile = new File(encPath);
-
-        if (!encFile.exists()) {
+        Path encPath = resolveEncryptedSecretPath(profile, environment, currentWorkingDirectory());
+        if (encPath == null) {
             // local/dev runs should not fail when secrets are missing
-            log.debug("SOPS secret file not found, skipping: {}", encPath);
+            log.debug("SOPS secret file not found for profile={}, cwd={}", profile, currentWorkingDirectory());
             return;
         }
 
@@ -76,8 +79,8 @@ public class SopsEnvironmentPostProcessor implements EnvironmentPostProcessor, O
         return Ordered.HIGHEST_PRECEDENCE;
     }
 
-    private String decryptWithSops(String encPath) throws IOException, InterruptedException {
-        Process process = new ProcessBuilder("sops", "-d", encPath)
+    private String decryptWithSops(Path encPath) throws IOException, InterruptedException {
+        Process process = new ProcessBuilder("sops", "-d", encPath.toString())
                 .redirectErrorStream(true)
                 .start();
 
@@ -95,6 +98,38 @@ public class SopsEnvironmentPostProcessor implements EnvironmentPostProcessor, O
             throw new IllegalStateException("sops decrypt failed: " + output);
         }
         return output;
+    }
+
+    Path resolveEncryptedSecretPath(
+            String profile,
+            ConfigurableEnvironment environment,
+            Path workingDirectory
+    ) {
+        String secretFileName = "app." + profile + ".enc.yaml";
+        String configuredSecretsDir = Optional.ofNullable(environment.getProperty(SECRETS_DIR_PROPERTY))
+                .filter(value -> !value.isBlank())
+                .or(() -> Optional.ofNullable(System.getProperty(SECRETS_DIR_PROPERTY))
+                        .filter(value -> !value.isBlank()))
+                .or(() -> Optional.ofNullable(System.getenv(SECRETS_DIR_ENV))
+                        .filter(value -> !value.isBlank()))
+                .orElse(null);
+
+        List<Path> candidates = configuredSecretsDir == null
+                ? List.of(
+                workingDirectory.resolve("secrets").resolve(secretFileName),
+                workingDirectory.resolve(MODULE_DIR).resolve("secrets").resolve(secretFileName)
+        )
+                : List.of(Paths.get(configuredSecretsDir).resolve(secretFileName));
+
+        return candidates.stream()
+                .map(Path::normalize)
+                .filter(path -> path.toFile().exists())
+                .findFirst()
+                .orElse(null);
+    }
+
+    private Path currentWorkingDirectory() {
+        return Paths.get(System.getProperty("user.dir")).toAbsolutePath().normalize();
     }
 
     private boolean isSopsAvailable() {
