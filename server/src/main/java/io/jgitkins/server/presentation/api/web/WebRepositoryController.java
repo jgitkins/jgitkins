@@ -29,7 +29,7 @@ public class WebRepositoryController {
 	@Operation(summary = "Get User Repositories by Username (Web)")
 	@GetMapping("/users/{username}")
 	public ResponseEntity<ApiResponse<List<RepositoryResult>>> getUserRepositories(@PathVariable("username") @NotBlank String username) {
-		return ApiResponse.ok(repositoryLoadUseCase.getRepositoriesByUsername(username));
+		return ApiResponse.ok(repositoryLoadUseCase.loadUserRepositories(username));
 	}
 
 	@Operation(summary = "Get Repository Overview by Namespace/Repo (Web)")
@@ -39,7 +39,7 @@ public class WebRepositoryController {
 			@PathVariable String repoName, // TODO: valid 추가
 			@org.springframework.web.bind.annotation.RequestParam(name = "branch", required = false) String branch
 	) throws java.io.IOException {
-		RepositoryResult repository = repositoryLoadUseCase.getRepositoryByPath(namespace, repoName);
+		RepositoryResult repository = repositoryLoadUseCase.loadRepositoryByPath(namespace, repoName);
 		return ApiResponse.ok(repositoryOverviewUseCase.getOverview(repository.id(), branch));
 	}
 }

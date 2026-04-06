@@ -5,9 +5,9 @@ import io.jgitkins.server.application.dto.result.RepositoryResult;
 import java.util.List;
 
 public interface RepositoryLoadUseCase {
-    RepositoryResult getRepository(Long repositoryId);
-    RepositoryResult getRepositoryByPath(String namespace, String repoName);
-    List<RepositoryResult> getRepositories();
+    RepositoryResult loadRepository(Long repositoryId);
+    RepositoryResult loadRepositoryByPath(String namespace, String repoName);
+    List<RepositoryResult> loadRepositories();
 
-    List<RepositoryResult> getRepositoriesByUsername(String username);
+    List<RepositoryResult> loadUserRepositories(String username);
 }

@@ -1,0 +1,81 @@
+package io.jgitkins.server.application.service;
+
+import io.jgitkins.server.application.common.error.ApplicationErrorCode;
+import io.jgitkins.server.application.dto.result.RepositoryResult;
+import io.jgitkins.server.application.exception.ApplicationException;
+import io.jgitkins.server.application.mapper.RepositoryApplicationMapper;
+import io.jgitkins.server.application.port.in.RepositoryLoadUseCase;
+import io.jgitkins.server.application.port.out.CurrentUserPort;
+import io.jgitkins.server.application.port.out.RepositoryPersistencePort;
+import io.jgitkins.server.application.port.out.UserPersistencePort;
+import io.jgitkins.server.application.support.RepositoryLookupService;
+import io.jgitkins.server.domain.aggregate.Repository;
+import io.jgitkins.server.domain.model.vo.OrganizeId;
+import io.jgitkins.server.domain.model.vo.OwnerId;
+import io.jgitkins.server.domain.model.vo.OwnerType;
+import io.jgitkins.server.domain.model.vo.RepositoryId;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+@Service
+@RequiredArgsConstructor
+public class RepositoryLoadService implements RepositoryLoadUseCase {
+
+    private final RepositoryApplicationMapper repositoryApplicationMapper;
+    private final RepositoryLookupService repositoryLookupService;
+    private final RepositoryPersistencePort repositoryPort;
+    private final CurrentUserPort currentUserPersistencePort;
+    private final UserPersistencePort userPort;
+
+    @Override
+    @Transactional(readOnly = true)
+    public RepositoryResult loadRepository(Long repositoryId) {
+        Repository repository = repositoryPort.findById(RepositoryId.of(repositoryId))
+                .orElseThrow(() -> new ApplicationException(ApplicationErrorCode.REPOSITORY_NOT_FOUND,
+                        "Repository not found: " + repositoryId));
+        return repositoryApplicationMapper.toDto(repository);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public RepositoryResult loadRepositoryByPath(String namespace, String repoName) {
+        Repository repository = repositoryLookupService.findByPath(namespace, repoName)
+                .orElseThrow(() -> new ApplicationException(ApplicationErrorCode.REPOSITORY_NOT_FOUND,
+                        String.format("Repository not found: %s/%s", namespace, repoName)));
+        return repositoryApplicationMapper.toDto(repository);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<RepositoryResult> loadRepositories() {
+        Optional<Long> requesterId = currentUserPersistencePort.resolveCurrentUserId();
+        Map<OrganizeId, Boolean> membershipCache = new HashMap<>();
+
+        return repositoryPort.findAll().stream()
+                .filter(repo -> repositoryLookupService.isVisibleToRequester(repo, requesterId, membershipCache))
+                .map(repositoryApplicationMapper::toDto)
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<RepositoryResult> loadUserRepositories(String username) {
+        String normalizedUsername = username != null ? username.trim() : "";
+
+        Long ownerId = userPort.findUserIdByUsername(normalizedUsername)
+                .orElseThrow(() -> new ApplicationException(ApplicationErrorCode.USER_NOT_FOUND,
+                        "User not found: " + normalizedUsername));
+
+        Optional<Long> requesterId = currentUserPersistencePort.resolveCurrentUserId();
+        return repositoryPort.findAllByOwner(OwnerType.USER, OwnerId.of(ownerId)).stream()
+                .filter(repo -> repositoryLookupService.isVisibleToUserOwner(repo, requesterId, ownerId))
+                .map(repositoryApplicationMapper::toDto)
+                .toList();
+    }
+}

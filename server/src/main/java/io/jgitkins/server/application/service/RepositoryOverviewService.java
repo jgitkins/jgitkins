@@ -33,7 +33,7 @@ public class RepositoryOverviewService implements RepositoryOverviewUseCase {
 	@Override
 	public RepositoryOverviewResult getOverview(Long repositoryId, String branch) {
 
-		RepositoryResult repository = repositoryLoadUseCase.getRepository(repositoryId);
+		RepositoryResult repository = repositoryLoadUseCase.loadRepository(repositoryId);
 
 		RepositoryKey key = resolveRepositoryKey(repository);
 

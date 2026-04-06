@@ -46,19 +46,19 @@ public class RepositoryManagementController {
     @Operation(summary = "Get Repository Metadata")
     @GetMapping("/{repositoryId}")
     public ResponseEntity<ApiResponse<RepositoryResult>> getRepository(@PathVariable Long repositoryId) {
-        return ApiResponse.ok(repositoryLoadUseCase.getRepository(repositoryId));
+        return ApiResponse.ok(repositoryLoadUseCase.loadRepository(repositoryId));
     }
 
     @Operation(summary = "Get Repositories")
     @GetMapping
     public ResponseEntity<ApiResponse<List<RepositoryResult>>> getRepositories() {
-        return ApiResponse.ok(repositoryLoadUseCase.getRepositories());
+        return ApiResponse.ok(repositoryLoadUseCase.loadRepositories());
     }
 
     @Operation(summary = "Get User Repositories by Username")
     @GetMapping("/users/{username}")
     public ResponseEntity<ApiResponse<List<RepositoryResult>>> getUserRepositories(@PathVariable("username") @NotBlank String username) {
-        return ApiResponse.ok(repositoryLoadUseCase.getRepositoriesByUsername(username));
+        return ApiResponse.ok(repositoryLoadUseCase.loadUserRepositories(username));
     }
 
     @Operation(summary = "Delete Repository")

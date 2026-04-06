@@ -83,7 +83,7 @@ class RepositoryManagementControllerTest {
 
     @Test
     void getRepository_returnsMetadata() throws Exception {
-        when(repositoryLoadUseCase.getRepository(1L))
+        when(repositoryLoadUseCase.loadRepository(1L))
                 .thenReturn(new RepositoryResult(1L, null, "repo-1", null, null, null, null, null, null, null, null, false, null, null, null));
 
         mockMvc.perform(get("/api/repositories/1"))
@@ -91,12 +91,12 @@ class RepositoryManagementControllerTest {
                 .andExpect(jsonPath("$.data.id").value(1L))
                 .andExpect(jsonPath("$.data.name").value("repo-1"));
 
-        verify(repositoryLoadUseCase).getRepository(1L);
+        verify(repositoryLoadUseCase).loadRepository(1L);
     }
 
     @Test
     void getRepositories_returnsList() throws Exception {
-        when(repositoryLoadUseCase.getRepositories()).thenReturn(List.of(
+        when(repositoryLoadUseCase.loadRepositories()).thenReturn(List.of(
                 new RepositoryResult(1L, null, "repo-1", null, null, null, null, null, null, null, null, false, null, null, null),
                 new RepositoryResult(2L, null, "repo-2", null, null, null, null, null, null, null, null, false, null, null, null)
         ));
@@ -106,12 +106,12 @@ class RepositoryManagementControllerTest {
                 .andExpect(jsonPath("$.data[0].name").value("repo-1"))
                 .andExpect(jsonPath("$.data[1].name").value("repo-2"));
 
-        verify(repositoryLoadUseCase).getRepositories();
+        verify(repositoryLoadUseCase).loadRepositories();
     }
 
     @Test
     void getUserRepositories_returnsList() throws Exception {
-        when(repositoryLoadUseCase.getRepositoriesByUsername("alice"))
+        when(repositoryLoadUseCase.loadUserRepositories("alice"))
                 .thenReturn(List.of(new RepositoryResult(3L, null, "alice-repo", null, null, null, null, null, null, null, null, false, null, null, null)));
 
         mockMvc.perform(get("/api/repositories/users/alice"))
@@ -119,7 +119,7 @@ class RepositoryManagementControllerTest {
                 .andExpect(jsonPath("$.data[0].id").value(3L))
                 .andExpect(jsonPath("$.data[0].name").value("alice-repo"));
 
-        verify(repositoryLoadUseCase).getRepositoriesByUsername("alice");
+        verify(repositoryLoadUseCase).loadUserRepositories("alice");
     }
 
     @Test

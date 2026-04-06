@@ -86,7 +86,7 @@ class RepositoryContentControllerTest {
 
     @Test
     void uploadFileByRepositoryId_resolvesRepositoryKeyAndDelegates() throws Exception {
-        when(repositoryLoadUseCase.getRepository(10L)).thenReturn(
+        when(repositoryLoadUseCase.loadRepository(10L)).thenReturn(
                 new RepositoryResult(10L, null, null, null, null, null, null, null, null, "users/alice/sample-repo.git", null, false, null, null, null)
         );
 
@@ -117,7 +117,7 @@ class RepositoryContentControllerTest {
 
     @Test
     void uploadFileByRepositoryId_returnsNotFound_whenRepositoryPathInvalid() throws Exception {
-        when(repositoryLoadUseCase.getRepository(11L)).thenReturn(
+        when(repositoryLoadUseCase.loadRepository(11L)).thenReturn(
                 new RepositoryResult(11L, null, null, "also-invalid", null, null, null, null, null, "invalid-path-only", null, false, null, null, null)
         );
 

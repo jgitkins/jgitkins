@@ -44,7 +44,7 @@ class RepositoryOverviewServiceTest {
     @Test
     void getOverview_usesDefaultBranchAndLoadsTree() {
         RepositoryResult repository = new RepositoryResult(null, null, null, "org/repo", null, null, null, null, null, "org/repo.git", null, false, null, null, null);
-        when(repositoryLoadUseCase.getRepository(1L)).thenReturn(repository);
+        when(repositoryLoadUseCase.loadRepository(1L)).thenReturn(repository);
 
         List<BranchSearchResult> branches = List.of(
                 new BranchSearchResult(null, "main", false, false, true));
