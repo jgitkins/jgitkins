@@ -1,19 +1,32 @@
 package io.jgitkins.server.domain.exception;
 
-import io.jgitkins.server.common.error.ErrorCode;
 import io.jgitkins.server.common.exception.JgitkinsException;
+import io.jgitkins.server.domain.error.DomainErrorCode;
+import io.jgitkins.server.domain.error.DomainProblemSpec;
 
 public class DomainException extends JgitkinsException {
 
-    public DomainException(ErrorCode errorCode) {
+    public DomainException(DomainErrorCode errorCode) {
         super(errorCode);
     }
 
-    public DomainException(ErrorCode errorCode, String message) {
+    public DomainException(DomainErrorCode errorCode, String message) {
         super(errorCode, message);
     }
 
-    public DomainException(ErrorCode errorCode, String message, Throwable cause) {
+    public DomainException(DomainErrorCode errorCode, String message, Throwable cause) {
         super(errorCode, message, cause);
+    }
+
+    public DomainException(DomainProblemSpec problemSpec) {
+        super(problemSpec);
+    }
+
+    public DomainException(DomainProblemSpec problemSpec, String message) {
+        super(problemSpec, message);
+    }
+
+    public DomainException(DomainProblemSpec problemSpec, String message, Throwable cause) {
+        super(problemSpec, message, cause);
     }
 }

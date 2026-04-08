@@ -11,8 +11,7 @@ import io.jgitkins.server.application.port.out.RepositoryPersistencePort;
 import io.jgitkins.server.application.support.RepositoryNamespaceResolver;
 import io.jgitkins.server.application.support.RepositoryProvisioner;
 import io.jgitkins.server.application.validate.RepositoryValidator;
-import io.jgitkins.server.application.common.error.ApplicationErrorCode;
-import io.jgitkins.server.application.exception.ApplicationException;
+import io.jgitkins.server.application.exception.RepositoryNotFoundException;
 import io.jgitkins.server.domain.aggregate.Repository;
 import io.jgitkins.server.domain.model.vo.BranchName;
 import io.jgitkins.server.domain.model.vo.InitialCommitOptions;
@@ -53,8 +52,7 @@ public class RepositoryManagementService implements RepositoryCreateUseCase, Rep
     public void deleteRepository(Long repositoryId) {
         RepositoryId id = RepositoryId.of(repositoryId);
         Repository repository = repositoryPort.findById(id)
-                .orElseThrow(() -> new ApplicationException(ApplicationErrorCode.REPOSITORY_NOT_FOUND,
-                        "Repository not found: " + repositoryId));
+                .orElseThrow(() -> new RepositoryNotFoundException(repositoryId));
 
         repositoryValidator.enforceDeletionPermission(repository);
 

@@ -1,9 +1,9 @@
 package io.jgitkins.server.application.validate;
 
-import io.jgitkins.server.application.common.error.ApplicationErrorCode;
 import io.jgitkins.server.application.dto.command.BranchCreateCommand;
-import io.jgitkins.server.application.exception.ApplicationException;
-import io.jgitkins.server.domain.Branch;
+import io.jgitkins.server.application.exception.BranchAlreadyExistsException;
+import io.jgitkins.server.application.exception.RepositoryNotInitializedException;
+import io.jgitkins.server.application.exception.SourceBranchNotFoundException;
 import io.jgitkins.server.domain.aggregate.Repository;
 import io.jgitkins.server.domain.repository.BranchRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,13 +27,13 @@ public class BranchCreationValidator {
     public void validateBranchDoesNotExist(Long repositoryId, String branchName) {
         branchPort.findByRepositoryIdAndName(repositoryId, branchName)
                 .ifPresent(existing -> {
-                    throw new ApplicationException(ApplicationErrorCode.BRANCH_ALREADY_EXISTS);
+                    throw new BranchAlreadyExistsException(branchName);
                 });
     }
 
     public void validateRepositoryInitialized(Repository repository) {
         if (!repository.isInitialized()) {
-            throw new ApplicationException(ApplicationErrorCode.REPOSITORY_NOT_INITIALIZED,
+            throw new RepositoryNotInitializedException(
                     "Repository is not yet initialized. Initialize default branch before creating new branches.");
         }
     }
@@ -44,8 +44,8 @@ public class BranchCreationValidator {
                 : command.sourceBranch();
 
         branchPort.findByRepositoryIdAndName(repository.getId().getValue(), sourceBranch)
-                .orElseThrow(() -> new ApplicationException(ApplicationErrorCode.SOURCE_BRANCH_NOT_FOUND,
-                        "Source branch not found or not initialized: " + sourceBranch));
+                .orElseThrow(() -> new SourceBranchNotFoundException(
+                        "Source branch not found or not initialized: " + sourceBranch, true));
         return sourceBranch;
     }
 

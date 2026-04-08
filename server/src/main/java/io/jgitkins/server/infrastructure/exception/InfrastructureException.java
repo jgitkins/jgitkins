@@ -1,19 +1,32 @@
 package io.jgitkins.server.infrastructure.exception;
 
-import io.jgitkins.server.common.error.ErrorCode;
 import io.jgitkins.server.common.exception.JgitkinsException;
+import io.jgitkins.server.infrastructure.common.error.InfrastructureErrorCode;
+import io.jgitkins.server.infrastructure.common.error.InfrastructureProblemSpec;
 
 public class InfrastructureException extends JgitkinsException {
 
-    public InfrastructureException(ErrorCode errorCode) {
+    public InfrastructureException(InfrastructureErrorCode errorCode) {
         super(errorCode);
     }
 
-    public InfrastructureException(ErrorCode errorCode, String message) {
+    public InfrastructureException(InfrastructureErrorCode errorCode, String message) {
         super(errorCode, message);
     }
 
-    public InfrastructureException(ErrorCode errorCode, String message, Throwable cause) {
+    public InfrastructureException(InfrastructureErrorCode errorCode, String message, Throwable cause) {
         super(errorCode, message, cause);
+    }
+
+    public InfrastructureException(InfrastructureProblemSpec problemSpec) {
+        super(problemSpec);
+    }
+
+    public InfrastructureException(InfrastructureProblemSpec problemSpec, String message) {
+        super(problemSpec, message);
+    }
+
+    public InfrastructureException(InfrastructureProblemSpec problemSpec, String message, Throwable cause) {
+        super(problemSpec, message, cause);
     }
 }

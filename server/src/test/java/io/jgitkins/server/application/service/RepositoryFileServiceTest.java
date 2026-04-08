@@ -2,10 +2,10 @@ package io.jgitkins.server.application.service;
 
 import io.jgitkins.server.application.dto.CommitFile;
 import io.jgitkins.server.application.dto.FileUploadInfo;
-import io.jgitkins.server.application.factory.CommitFileFactory;
 import io.jgitkins.server.application.port.out.CommitGitPort;
 import io.jgitkins.server.application.port.out.FileGitPort;
 import io.jgitkins.server.application.validate.RepositoryAccessValidator;
+import io.jgitkins.server.common.factory.CommitFileFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

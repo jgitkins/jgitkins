@@ -1,6 +1,7 @@
 package io.jgitkins.server.presentation.common;
 
 import io.jgitkins.server.common.error.ErrorCode;
+import io.jgitkins.server.common.problem.ProblemSpec;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -32,12 +33,28 @@ public final class ApiResponse<T> {
         return new ApiResponse<>(null, ApiError.of(errorCode));
     }
 
+    public static <T> ApiResponse<T> failure(ProblemSpec<? extends ErrorCode> problemSpec) {
+        return new ApiResponse<>(null, ApiError.of(problemSpec));
+    }
+
     public static <T> ApiResponse<T> failure(ErrorCode errorCode, String message) {
         return new ApiResponse<>(null, ApiError.of(errorCode, message));
     }
 
+    public static <T> ApiResponse<T> failure(ProblemSpec<? extends ErrorCode> problemSpec, String message) {
+        return new ApiResponse<>(null, ApiError.of(problemSpec, message));
+    }
+
     public static <T> ApiResponse<T> failure(ErrorCode errorCode, String message, String source) {
         return new ApiResponse<>(null, ApiError.of(errorCode, message, source));
+    }
+
+    public static <T> ApiResponse<T> failure(ProblemSpec<? extends ErrorCode> problemSpec, String message, String source) {
+        return new ApiResponse<>(null, ApiError.of(problemSpec, message, source));
+    }
+
+    public static <T> ApiResponse<T> failure(String code, String message, String source) {
+        return new ApiResponse<>(null, ApiError.of(code, message, source));
     }
 
     public static <T> ResponseEntity<ApiResponse<T>> created(Object resourceId, T body) {

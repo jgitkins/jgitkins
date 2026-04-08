@@ -2,6 +2,7 @@ package io.jgitkins.server.presentation.common;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.jgitkins.server.common.error.ErrorCode;
+import io.jgitkins.server.common.problem.ProblemSpec;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public final class ApiError {
@@ -14,6 +15,22 @@ public final class ApiError {
         this.code = code;
         this.message = message;
         this.source = source;
+    }
+
+    public static ApiError of(String code, String message, String source) {
+        return new ApiError(code, message, source);
+    }
+
+    public static ApiError of(ProblemSpec<? extends ErrorCode> problemSpec) {
+        return new ApiError(problemSpec.getCode(), problemSpec.getDefaultMessage(), null);
+    }
+
+    public static ApiError of(ProblemSpec<? extends ErrorCode> problemSpec, String message) {
+        return new ApiError(problemSpec.getCode(), message, null);
+    }
+
+    public static ApiError of(ProblemSpec<? extends ErrorCode> problemSpec, String message, String source) {
+        return new ApiError(problemSpec.getCode(), message, source);
     }
 
     public static ApiError of(ErrorCode errorCode) {

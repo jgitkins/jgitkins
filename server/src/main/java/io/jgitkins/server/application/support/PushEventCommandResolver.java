@@ -1,10 +1,9 @@
 package io.jgitkins.server.application.support;
 
 import io.jgitkins.server.application.common.RepositoryPathHelper;
-import io.jgitkins.server.application.common.error.ApplicationErrorCode;
 import io.jgitkins.server.application.dto.command.PushEventCommand;
 import io.jgitkins.server.application.dto.command.PushHookRequest;
-import io.jgitkins.server.application.exception.ApplicationException;
+import io.jgitkins.server.application.exception.RepositoryNotFoundException;
 import io.jgitkins.server.application.port.out.RepositoryPersistencePort;
 import io.jgitkins.server.domain.aggregate.Repository;
 import java.nio.file.Path;
@@ -29,13 +28,11 @@ public class PushEventCommandResolver {
 
     public PushEventCommand resolve(PushHookRequest request) {
         Repository repository = resolveRepository(request.gitDirPath())
-                .orElseThrow(() -> new ApplicationException(
-                        ApplicationErrorCode.REPOSITORY_NOT_FOUND,
+                .orElseThrow(() -> new RepositoryNotFoundException(
                         "Repository not found for path: " + request.gitDirPath()));
 
         String namespace = extractNamespace(repository)
-                .orElseThrow(() -> new ApplicationException(
-                        ApplicationErrorCode.REPOSITORY_NOT_FOUND,
+                .orElseThrow(() -> new RepositoryNotFoundException(
                         "Repository namespace not found for path: " + request.gitDirPath()));
 
         return PushEventCommand.builder()

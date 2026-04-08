@@ -6,6 +6,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import io.jgitkins.server.common.exception.JgitkinsException;
+import io.jgitkins.server.application.common.error.ApplicationErrorCode;
+import io.jgitkins.server.application.exception.RunnerNotFoundException;
 import io.jgitkins.server.application.dto.result.RunnerDetailResult;
 import io.jgitkins.server.application.mapper.RunnerApplicationMapper;
 import io.jgitkins.server.application.port.out.RunnerPersistencePort;
@@ -54,9 +56,9 @@ class RunnerReadServiceTest {
         when(runnerPort.findById(99L)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> service.getRunner(99L))
-                .isInstanceOf(JgitkinsException.class)
+                .isInstanceOf(RunnerNotFoundException.class)
                 .extracting(ex -> ((JgitkinsException) ex).getErrorCode())
-                .isEqualTo(io.jgitkins.server.application.common.error.ApplicationErrorCode.RUNNER_NOT_FOUND);
+                .isEqualTo(ApplicationErrorCode.NOT_FOUND);
     }
 
     @Test

@@ -88,7 +88,7 @@
         "priority": "high",
         "details": "기존 기능별 Task를 카테고리 기반(신규기능/리팩토링/보안)으로 재구성함.",
         "testStrategy": "카테고리별 우선순위에 따라 하위 작업을 순차 수행하고 회귀 테스트를 적용한다.",
-        "updatedAt": "2026-04-06T12:55:23.913Z",
+        "updatedAt": "2026-04-08T12:43:43.401Z",
         "subtasks": [
           {
             "id": 1,
@@ -116,12 +116,13 @@
             "id": 3,
             "title": "[server] ErrorCode 단순화 및 세부 Exception 클래스 설계 검토",
             "description": "ErrorCode를 HTTP status 중심의 단순 코드로 축소할 수 있는지 검토하고, Application 예외를 UserNotFoundException 같은 구체 타입 중심으로 상세화하는 방향의 설계/적용 기준을 정리한다.",
-            "status": "pending",
+            "status": "done",
             "dependencies": [],
             "details": "[source: jgitkins-server, original subtask: 2.42]\n이 서브태스크는 즉시 구현 확정이 아니라 사전 검토와 적용 기준 수립을 목표로 한다. 검토 주제 1: ErrorCode는 status 의미에 맞는 단순 코드만 유지하는 방향을 평가한다. 예를 들어 다수의 세부 NOT_FOUND 계열 코드를 개별 enum으로 늘리는 대신 NOT_FOUND, BAD_REQUEST, CONFLICT, FORBIDDEN, UNAUTHORIZED, INTERNAL_SERVER_ERROR 같은 status 중심 코드로 축소했을 때의 장단점을 분석한다. 검토 주제 2: 반대로 예외 클래스는 더 구체적으로 세분화한다. 예를 들어 Application/Domain 계층에서 UserNotFoundException, RepositoryNotFoundException, OrganizeNotFoundException, RunnerNotFoundException 같은 상세 구현체가 각자 내부적으로 ErrorCode.NOT_FOUND 를 고정 보유하는 모델을 검토한다. 함께 확인할 사항은 다음과 같다. 1) 현재 ErrorCode, JgitkinsException, DomainException, ApplicationException, InfrastructureException, GlobalExceptionHandler 구조와의 정합성. 2) ErrorCode 축소 시 외부 응답 메시지, 로깅, 관측성, 프론트엔드 분기 처리에 미치는 영향. 3) 세부 Exception 클래스 증가가 가독성/유지보수성/테스트성에 주는 이점과 비용. 4) 어떤 계층까지 세부 Exception 을 허용할지, 도메인/애플리케이션/인프라에서의 책임 경계. 5) 최종적으로 진행 여부를 너와 검토 후 결정할 수 있도록 적용안 A/B와 마이그레이션 전략을 문서화한다.",
             "testStrategy": "",
             "parentTaskId": 2,
-            "parentId": "2"
+            "parentId": "2",
+            "updatedAt": "2026-04-08T12:43:43.401Z"
           },
           {
             "id": 4,
@@ -296,7 +297,7 @@
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2026-04-06T12:55:23.914Z",
+      "lastModified": "2026-04-08T12:43:43.403Z",
       "taskCount": 5,
       "completedCount": 2,
       "tags": [

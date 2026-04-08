@@ -1,8 +1,7 @@
 package io.jgitkins.server.application.service;
 
-import io.jgitkins.server.application.common.error.ApplicationErrorCode;
 import io.jgitkins.server.application.dto.result.BranchSearchResult;
-import io.jgitkins.server.application.exception.ApplicationException;
+import io.jgitkins.server.application.exception.BranchNotFoundException;
 import io.jgitkins.server.application.port.in.BranchLoadUseCase;
 import io.jgitkins.server.application.port.out.BranchQueryPort;
 import java.util.List;
@@ -23,6 +22,6 @@ public class BranchLoadService implements BranchLoadUseCase {
     @Override
     public BranchSearchResult loadBranch(Long repositoryId, String branchName) {
         return branchQueryPort.findByRepositoryIdAndName(repositoryId, branchName)
-                .orElseThrow(() -> new ApplicationException(ApplicationErrorCode.BRANCH_NOT_FOUND, "Branch not found: " + branchName));
+                .orElseThrow(() -> new BranchNotFoundException(branchName));
     }
 }

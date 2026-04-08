@@ -2,6 +2,7 @@ package io.jgitkins.server.application.service;
 
 import io.jgitkins.server.common.exception.JgitkinsException;
 import io.jgitkins.server.domain.error.DomainErrorCode;
+import io.jgitkins.server.domain.error.DomainProblemSpec;
 import io.jgitkins.server.application.port.out.CurrentUserPort;
 import io.jgitkins.server.application.port.out.UserPersistencePort;
 import io.jgitkins.server.application.validate.ActivationValidator;
@@ -72,7 +73,8 @@ class UserProfileServiceTest {
 
         JgitkinsException exception = assertThrows(JgitkinsException.class, () -> service.activate("new_name"));
 
-        assertSame(DomainErrorCode.USER_ALREADY_ACTIVATED, exception.getErrorCode());
+        assertSame(DomainErrorCode.INVALID_STATE, exception.getErrorCode());
+        assertSame(DomainProblemSpec.USER_ALREADY_ACTIVATED, exception.getProblemSpec());
         verify(userPort, never()).save(any(User.class));
     }
 }

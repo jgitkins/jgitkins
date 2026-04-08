@@ -2,12 +2,14 @@ package io.jgitkins.server.presentation.advice;
 
 import io.jgitkins.server.application.exception.ApplicationException;
 import io.jgitkins.server.common.error.ErrorCode;
+import io.jgitkins.server.common.exception.JgitkinsException;
 import io.jgitkins.server.domain.exception.DomainException;
 import io.jgitkins.server.infrastructure.common.error.InfrastructureErrorCode;
 import io.jgitkins.server.infrastructure.exception.InfrastructureException;
 import io.jgitkins.server.presentation.advice.mapper.CompositeErrorHttpStatusMapper;
 import io.jgitkins.server.presentation.common.ApiResponse;
 import io.jgitkins.server.presentation.common.error.PresentationErrorCode;
+import io.jgitkins.server.presentation.common.error.PresentationProblemSpec;
 import io.jgitkins.server.presentation.exception.PresentationException;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
@@ -44,8 +46,8 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Void>> handlePresentationException(Exception ex) {
         String message = extractValidationMessage(ex);
         log.warn("Presentation exception errorCode=[{}], message=[{}]",
-                PresentationErrorCode.BAD_REQUEST.getCode(), message);
-        return buildResponse(PresentationErrorCode.BAD_REQUEST, HttpStatus.BAD_REQUEST, message, SOURCE_PRESENTATION);
+                PresentationProblemSpec.BAD_REQUEST.getCode(), message);
+        return buildResponse(PresentationProblemSpec.BAD_REQUEST, HttpStatus.BAD_REQUEST, message, SOURCE_PRESENTATION);
     }
 
     @ExceptionHandler(PresentationException.class)
@@ -53,8 +55,8 @@ public class GlobalExceptionHandler {
         ErrorCode errorCode = ex.getErrorCode();
         HttpStatus status = statusMapper.map(errorCode);
         log.warn("Presentation exception errorCode=[{}], status=[{}], message=[{}]",
-                errorCode.getCode(), status, ex.getMessage());
-        return buildResponse(errorCode, status, ex.getMessage(), SOURCE_PRESENTATION);
+                ex.getProblemCode(), status, ex.getMessage());
+        return buildResponse(ex, status, SOURCE_PRESENTATION);
     }
 
     @ExceptionHandler(ApplicationException.class)
@@ -62,8 +64,8 @@ public class GlobalExceptionHandler {
         ErrorCode errorCode = ex.getErrorCode();
         HttpStatus status = statusMapper.map(errorCode);
         log.warn("Application exception errorCode=[{}], status=[{}], message=[{}]",
-                errorCode.getCode(), status, ex.getMessage());
-        return buildResponse(errorCode, status, ex.getMessage(), SOURCE_APPLICATION);
+                ex.getProblemCode(), status, ex.getMessage());
+        return buildResponse(ex, status, SOURCE_APPLICATION);
     }
 
     @ExceptionHandler(DomainException.class)
@@ -71,8 +73,8 @@ public class GlobalExceptionHandler {
         ErrorCode errorCode = ex.getErrorCode();
         HttpStatus status = statusMapper.map(errorCode);
         log.warn("Domain exception errorCode=[{}], status=[{}], message=[{}]",
-                errorCode.getCode(), status, ex.getMessage());
-        return buildResponse(errorCode, status, ex.getMessage(), SOURCE_DOMAIN);
+                ex.getProblemCode(), status, ex.getMessage());
+        return buildResponse(ex, status, SOURCE_DOMAIN);
     }
 
     @ExceptionHandler(InfrastructureException.class)
@@ -80,14 +82,14 @@ public class GlobalExceptionHandler {
         ErrorCode errorCode = ex.getErrorCode();
         HttpStatus status = statusMapper.map(errorCode);
         log.error("Infrastructure exception errorCode=[{}], status=[{}], message=[{}]",
-                errorCode.getCode(), status, ex.getMessage(), ex);
-        return buildResponse(errorCode, status, ex.getMessage(), SOURCE_INFRASTRUCTURE);
+                ex.getProblemCode(), status, ex.getMessage(), ex);
+        return buildResponse(ex, status, SOURCE_INFRASTRUCTURE);
     }
 
 
     @ExceptionHandler(NoHandlerFoundException.class)
     public ResponseEntity<ApiResponse<Void>> handleNoHandler(NoHandlerFoundException ex) {
-        return buildResponse(PresentationErrorCode.BAD_REQUEST, HttpStatus.NOT_FOUND, ex.getMessage(),
+        return buildResponse(PresentationProblemSpec.BAD_REQUEST, HttpStatus.NOT_FOUND, ex.getMessage(),
                 SOURCE_PRESENTATION);
     }
 
@@ -100,6 +102,14 @@ public class GlobalExceptionHandler {
                 SOURCE_INFRASTRUCTURE);
     }
 
+    private ResponseEntity<ApiResponse<Void>> buildResponse(JgitkinsException exception,
+            HttpStatus status,
+            String source) {
+        String responseMessage = resolveMessage(exception, exception.getMessage());
+        return ResponseEntity.status(status)
+                .body(ApiResponse.failure(exception.getProblemCode(), responseMessage, source));
+    }
+
     private ResponseEntity<ApiResponse<Void>> buildResponse(ErrorCode errorCode,
             HttpStatus status,
             String message,
@@ -108,6 +118,29 @@ public class GlobalExceptionHandler {
                 ? errorCode.getDefaultMessage()
                 : message;
         return ResponseEntity.status(status).body(ApiResponse.failure(errorCode, responseMessage, source));
+    }
+
+    private ResponseEntity<ApiResponse<Void>> buildResponse(PresentationProblemSpec problemSpec,
+            HttpStatus status,
+            String message,
+            String source) {
+        String responseMessage = resolveMessage(problemSpec, message);
+        return ResponseEntity.status(status)
+                .body(ApiResponse.failure(problemSpec.getCode(), responseMessage, source));
+    }
+
+    private String resolveMessage(JgitkinsException exception, String message) {
+        if (message == null || message.isBlank()) {
+            return exception.getDefaultMessage();
+        }
+        return message;
+    }
+
+    private String resolveMessage(PresentationProblemSpec problemSpec, String message) {
+        if (message == null || message.isBlank()) {
+            return problemSpec.getDefaultMessage();
+        }
+        return message;
     }
 
     private String extractValidationMessage(Exception ex) {

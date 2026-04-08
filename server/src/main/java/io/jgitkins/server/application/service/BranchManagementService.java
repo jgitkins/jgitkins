@@ -2,7 +2,8 @@ package io.jgitkins.server.application.service;
 
 import io.jgitkins.server.application.dto.command.BranchCreateCommand;
 import io.jgitkins.server.application.dto.command.BranchCreationContext;
-import io.jgitkins.server.application.exception.ApplicationException;
+import io.jgitkins.server.application.exception.BranchNotFoundException;
+import io.jgitkins.server.application.exception.RepositoryNotFoundException;
 import io.jgitkins.server.application.port.in.BranchCreateUseCase;
 import io.jgitkins.server.application.port.in.BranchDeleteUseCase;
 import io.jgitkins.server.application.port.out.BranchGitPort;
@@ -17,9 +18,6 @@ import io.jgitkins.server.domain.repository.BranchRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import static io.jgitkins.server.application.common.error.ApplicationErrorCode.REPOSITORY_NOT_FOUND;
-import static io.jgitkins.server.application.common.error.ApplicationErrorCode.BRANCH_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -69,9 +67,7 @@ public class BranchManagementService implements BranchCreateUseCase, BranchDelet
 
     private BranchWriteContext loadWriteContext(Long repositoryId) {
         Repository repository = repositoryPort.findById(RepositoryId.of(repositoryId))
-                .orElseThrow(() -> new ApplicationException(
-                        REPOSITORY_NOT_FOUND,
-                        "Repository not found: " + repositoryId));
+                .orElseThrow(() -> new RepositoryNotFoundException(repositoryId));
 
         String namespace = repositoryNamespaceResolver.resolve(repository);
         repositoryAccessValidator.validateCanCommit(namespace, repository.getName().getValue());
@@ -80,9 +76,7 @@ public class BranchManagementService implements BranchCreateUseCase, BranchDelet
 
     private Branch loadExistingBranch(Long repositoryId, String branchName) {
         return branchRepository.findByRepositoryIdAndName(repositoryId, branchName)
-                .orElseThrow(() -> new ApplicationException(
-                        BRANCH_NOT_FOUND,
-                        "Branch not found: " + branchName));
+                .orElseThrow(() -> new BranchNotFoundException(branchName));
     }
 
     private record BranchWriteContext(Repository repository, String namespace) {

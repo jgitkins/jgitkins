@@ -23,36 +23,10 @@ public class ApplicationErrorHttpStatusMapper implements ErrorHttpStatusMapper {
     private HttpStatus mapApplication(ApplicationErrorCode errorCode) {
         return switch (errorCode) {
             case UNAUTHENTICATED -> HttpStatus.UNAUTHORIZED;
-            case ACCESS_DENIED,
-                    REPOSITORY_ACCESS_DENIED,
-                    ORGANIZE_ACCESS_DENIED ->
-                HttpStatus.FORBIDDEN;
-            case ORGANIZE_NOT_FOUND,
-                    USER_NOT_FOUND,
-                    REPOSITORY_NOT_FOUND,
-                    BRANCH_NOT_FOUND,
-                    COMMIT_NOT_FOUND,
-                    SOURCE_BRANCH_NOT_FOUND,
-                    COMMIT_TREE_NOT_FOUND,
-                    RUNNER_NOT_FOUND ->
-                HttpStatus.NOT_FOUND;
-            case REPOSITORY_ALREADY_EXISTS,
-                    BRANCH_ALREADY_EXISTS,
-                    ORGANIZE_ALREADY_EXISTS,
-                    USERNAME_ALREADY_EXISTS,
-                    RUNNER_ALREADY_ACTIVED ->
-                HttpStatus.CONFLICT;
-            case INVALID_OWNER_CONTEXT,
-                    MEMBER_IDENTIFIER_REQUIRED,
-                    REPOSITORY_NOT_INITIALIZED ->
-                HttpStatus.UNPROCESSABLE_ENTITY;
-            case FILE_READ_FAILED,
-                    RUNNER_DELETE_FAILED,
-                    RUNNER_ACTIVATION_FAILED ->
-                HttpStatus.INTERNAL_SERVER_ERROR;
-            case VALIDATION_FAILED,
-                    INVALID_NAMESPACE ->
-                HttpStatus.BAD_REQUEST;
+            case ACCESS_DENIED -> HttpStatus.FORBIDDEN;
+            case NOT_FOUND -> HttpStatus.NOT_FOUND;
+            case ALREADY_EXISTS -> HttpStatus.CONFLICT;
+            case UNPROCESSABLE -> HttpStatus.UNPROCESSABLE_ENTITY;
         };
     }
 

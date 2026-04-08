@@ -1,10 +1,11 @@
 package io.jgitkins.server.domain.exception;
 
-import io.jgitkins.server.domain.error.DomainErrorCode;
+import io.jgitkins.server.domain.error.DomainProblemSpec;
 
 public class DefaultBranchDeletionNotAllowedException extends DomainException {
 
     public DefaultBranchDeletionNotAllowedException(String branchName) {
-        super(DomainErrorCode.RULE_VIOLATION, "Default branch cannot be deleted: " + branchName);
+        super(DomainProblemSpec.DEFAULT_BRANCH_DELETION_NOT_ALLOWED,
+                "Default branch cannot be deleted: " + branchName);
     }
 }

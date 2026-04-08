@@ -1,10 +1,10 @@
 package io.jgitkins.server.application.support;
 
 import io.jgitkins.server.application.dto.CommitFile;
-import io.jgitkins.server.application.factory.CommitFileFactory;
 import io.jgitkins.server.application.port.out.CommitGitPort;
 import io.jgitkins.server.application.port.out.RepositoryGitPort;
 import io.jgitkins.server.application.port.out.RepositoryPersistencePort;
+import io.jgitkins.server.common.factory.CommitFileFactory;
 import io.jgitkins.server.domain.Branch;
 import io.jgitkins.server.domain.aggregate.Repository;
 import io.jgitkins.server.domain.model.vo.InitialCommitOptions;

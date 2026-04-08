@@ -1,11 +1,9 @@
 package io.jgitkins.server.infrastructure.adapter.git;
 
-import io.jgitkins.server.application.common.error.ApplicationErrorCode;
 import io.jgitkins.server.application.dto.FileEntry;
-import io.jgitkins.server.application.exception.ApplicationException;
+import io.jgitkins.server.application.exception.BranchNotFoundException;
 import io.jgitkins.server.application.port.out.FileGitPort;
-import io.jgitkins.server.infrastructure.common.error.InfrastructureErrorCode;
-import io.jgitkins.server.infrastructure.exception.InfrastructureException;
+import io.jgitkins.server.infrastructure.exception.FileLoadFailedException;
 import io.jgitkins.server.infrastructure.support.RepositoryResolver;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -37,7 +35,7 @@ public class RepositoryGitFileAdapter implements FileGitPort {
             RevTree commitTree = resolveCommitTree(repository, branch);
             return listFiles(repository, commitTree, directory);
         } catch (IOException e) {
-            throw new InfrastructureException(InfrastructureErrorCode.FILE_LOAD_FAILED, "Failed to list files", e);
+            throw new FileLoadFailedException("Failed to list files", e);
         }
     }
 
@@ -47,7 +45,7 @@ public class RepositoryGitFileAdapter implements FileGitPort {
             RevTree tree = resolveCommitTree(repository, branch);
             return collectAllFileEntries(repository, tree);
         } catch (IOException e) {
-            throw new InfrastructureException(InfrastructureErrorCode.FILE_LOAD_FAILED, "Failed to list all files", e);
+            throw new FileLoadFailedException("Failed to list all files", e);
         }
     }
 
@@ -67,7 +65,7 @@ public class RepositoryGitFileAdapter implements FileGitPort {
         ObjectId headId = repository.resolve(branch);
         // TODO: do not known application exception from adapter
         if (headId == null) {
-            throw new ApplicationException(ApplicationErrorCode.BRANCH_NOT_FOUND, "Branch not found: " + branch);
+            throw new BranchNotFoundException(branch);
         }
 
         try (RevWalk revWalk = new RevWalk(repository)) {

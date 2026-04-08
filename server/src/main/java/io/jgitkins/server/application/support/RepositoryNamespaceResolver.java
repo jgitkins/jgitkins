@@ -1,13 +1,14 @@
 package io.jgitkins.server.application.support;
 
-import io.jgitkins.server.application.common.error.ApplicationErrorCode;
-import io.jgitkins.server.application.exception.ApplicationException;
+import io.jgitkins.server.application.exception.InvalidNamespaceException;
+import io.jgitkins.server.application.exception.OrganizeNotFoundException;
+import io.jgitkins.server.application.exception.UserNotFoundException;
 import io.jgitkins.server.application.port.out.OrganizePersistencePort;
 import io.jgitkins.server.application.port.out.UserPersistencePort;
 import io.jgitkins.server.domain.aggregate.Repository;
+import io.jgitkins.server.domain.model.User;
 import io.jgitkins.server.domain.model.vo.OwnerId;
 import io.jgitkins.server.domain.model.vo.OwnerType;
-import io.jgitkins.server.domain.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -20,8 +21,7 @@ public class RepositoryNamespaceResolver {
 
     public NamespaceInfo resolve(String namespace) {
         if (namespace == null || namespace.isBlank()) {
-            throw new ApplicationException(
-                    ApplicationErrorCode.INVALID_NAMESPACE,
+            throw new InvalidNamespaceException(
                     "Namespace cannot be empty");
         }
 
@@ -39,8 +39,7 @@ public class RepositoryNamespaceResolver {
             return userInfo;
         }
 
-        throw new ApplicationException(
-                ApplicationErrorCode.INVALID_NAMESPACE,
+        throw new InvalidNamespaceException(
                 "Could not resolve namespace to organize or user: " + target);
     }
 
@@ -52,10 +51,10 @@ public class RepositoryNamespaceResolver {
         if (ownerType == OwnerType.ORGANIZATION) {
             return organizePort.findById(io.jgitkins.server.domain.model.vo.OrganizeId.of(ownerId.getValue()))
                     .map(org -> org.getName().getValue())
-                    .orElseThrow(() -> new ApplicationException(ApplicationErrorCode.ORGANIZE_NOT_FOUND));
+                    .orElseThrow(OrganizeNotFoundException::new);
         } else {
             User user = userPort.findById(ownerId.getValue())
-                    .orElseThrow(() -> new ApplicationException(ApplicationErrorCode.USER_NOT_FOUND));
+                    .orElseThrow(UserNotFoundException::new);
             return user.getUsername();
         }
     }

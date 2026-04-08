@@ -1,12 +1,11 @@
 package io.jgitkins.server.infrastructure.adapter.git;
 
-import io.jgitkins.server.application.common.error.ApplicationErrorCode;
 import io.jgitkins.server.application.dto.CommitFile;
 import io.jgitkins.server.application.dto.CommitHistory;
-import io.jgitkins.server.application.exception.ApplicationException;
+import io.jgitkins.server.application.exception.CommitNotFoundException;
 import io.jgitkins.server.application.port.out.CommitGitPort;
-import io.jgitkins.server.infrastructure.common.error.InfrastructureErrorCode;
-import io.jgitkins.server.infrastructure.exception.InfrastructureException;
+import io.jgitkins.server.infrastructure.exception.CommitFailedException;
+import io.jgitkins.server.infrastructure.exception.CommitLoadFailedException;
 import io.jgitkins.server.infrastructure.support.RepositoryResolver;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,8 +40,7 @@ public class RepositoryGitCommitAdapter implements CommitGitPort {
             ObjectId commitId = repository.resolve(commitHash);
             // TODO: refactor do not known ApplicationException from adpater
             if (commitId == null) {
-                throw new ApplicationException(ApplicationErrorCode.COMMIT_NOT_FOUND,
-                        "Commit not found: " + commitHash);
+                throw new CommitNotFoundException(commitHash);
             }
 
             try (RevWalk revWalk = new RevWalk(repository)) {
@@ -50,7 +48,7 @@ public class RepositoryGitCommitAdapter implements CommitGitPort {
                 return toHistory(revCommit);
             }
         } catch (IOException e) {
-            throw new InfrastructureException(InfrastructureErrorCode.COMMIT_LOAD_FAILED,
+            throw new CommitLoadFailedException(
                     "Failed to load commit: " + commitHash, e);
         }
     }
@@ -72,7 +70,7 @@ public class RepositoryGitCommitAdapter implements CommitGitPort {
             }
             return histories;
         } catch (IOException | GitAPIException e) {
-            throw new InfrastructureException(InfrastructureErrorCode.COMMIT_LOAD_FAILED,
+            throw new CommitLoadFailedException(
                     "Failed to load commit histories for branch: " + branch, e);
         }
     }
@@ -89,7 +87,7 @@ public class RepositoryGitCommitAdapter implements CommitGitPort {
             ObjectId commitId = createCommit(repository, branch, message, authorName, authorEmail, files);
             updateBranchReference(repository, branch, commitId);
         } catch (IOException e) {
-            throw new InfrastructureException(InfrastructureErrorCode.COMMIT_FAILED, "Failed to commit changes", e);
+            throw new CommitFailedException("Failed to commit changes", e);
         }
     }
 
@@ -145,7 +143,7 @@ public class RepositoryGitCommitAdapter implements CommitGitPort {
             entry.setObjectId(blobId);
             return entry;
         } catch (IOException e) {
-            throw new InfrastructureException(InfrastructureErrorCode.COMMIT_FAILED,
+            throw new CommitFailedException(
                     "Failed to stage commit file: " + file.getPath(), e);
         }
     }
@@ -186,7 +184,7 @@ public class RepositoryGitCommitAdapter implements CommitGitPort {
 
     private String normalizePath(String path) {
         if (!StringUtils.hasText(path)) {
-            throw new InfrastructureException(InfrastructureErrorCode.COMMIT_FAILED, "Commit file path is required");
+            throw new CommitFailedException("Commit file path is required");
         }
         return path.trim().replace('\\', '/').replaceAll("^/+", "");
     }

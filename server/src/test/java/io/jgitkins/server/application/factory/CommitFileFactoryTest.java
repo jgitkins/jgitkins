@@ -4,9 +4,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import io.jgitkins.server.application.common.error.ApplicationErrorCode;
 import io.jgitkins.server.application.dto.FileUploadInfo;
 import io.jgitkins.server.common.exception.JgitkinsException;
+import io.jgitkins.server.common.factory.CommitFileFactory;
+import io.jgitkins.server.infrastructure.common.error.InfrastructureErrorCode;
 import java.io.IOException;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,7 +17,7 @@ class CommitFileFactoryTest {
     private final CommitFileFactory commitFileFactory = new CommitFileFactory();
 
     @Test
-    void prepareUploadFile_mapsIoFailureToApplicationError() throws Exception {
+    void prepareUploadFile_mapsIoFailureToInfrastructureError() throws Exception {
         MultipartFile file = mock(MultipartFile.class);
         FileUploadInfo request = new FileUploadInfo();
         request.setFilePath("README.md");
@@ -27,6 +28,6 @@ class CommitFileFactoryTest {
         assertThatThrownBy(() -> commitFileFactory.prepareUploadFile(file, request))
                 .isInstanceOf(JgitkinsException.class)
                 .extracting(ex -> ((JgitkinsException) ex).getErrorCode())
-                .isEqualTo(ApplicationErrorCode.FILE_READ_FAILED);
+                .isEqualTo(InfrastructureErrorCode.FILESYSTEM_ACCESS_FAILED);
     }
 }

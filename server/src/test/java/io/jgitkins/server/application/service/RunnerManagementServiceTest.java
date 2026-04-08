@@ -16,6 +16,11 @@ import io.jgitkins.server.application.mapper.RunnerApplicationMapper;
 import io.jgitkins.server.application.port.out.RunnerPersistencePort;
 import io.jgitkins.server.application.support.RunnerRuntimeConfigProvider;
 import io.jgitkins.server.common.exception.JgitkinsException;
+import io.jgitkins.server.application.exception.RunnerNotFoundException;
+import io.jgitkins.server.infrastructure.common.error.InfrastructureErrorCode;
+import io.jgitkins.server.domain.error.DomainProblemSpec;
+import io.jgitkins.server.infrastructure.exception.RunnerActivationFailedException;
+import io.jgitkins.server.infrastructure.exception.RunnerDeletionFailedException;
 import io.jgitkins.server.domain.aggregate.Runner;
 import io.jgitkins.server.domain.model.vo.RunnerScopeType;
 import io.jgitkins.server.domain.model.vo.RunnerStatus;
@@ -64,22 +69,23 @@ class RunnerManagementServiceTest {
         when(runnerPort.findById(99L)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> service.deleteRunner(99L))
-                .isInstanceOf(JgitkinsException.class)
+                .isInstanceOf(RunnerNotFoundException.class)
                 .extracting(ex -> ((JgitkinsException) ex).getErrorCode())
-                .isEqualTo(ApplicationErrorCode.RUNNER_NOT_FOUND);
+                .isEqualTo(ApplicationErrorCode.NOT_FOUND);
     }
 
     @Test
-    void deleteRunner_mapsRuntimeFailureToApplicationError() {
+    void deleteRunner_mapsRuntimeFailureToInfrastructureError() {
         Runner runner = Runner.restore(99L, "RNR-TOKEN", "runner", RunnerStatus.OFFLINE,
                 RunnerScopeType.GLOBAL, null, null, LocalDateTime.now(), LocalDateTime.now());
         when(runnerPort.findById(99L)).thenReturn(Optional.of(runner));
-        doThrow(new RuntimeException("delete failed")).when(runnerPort).deleteById(99L);
+        doThrow(new RunnerDeletionFailedException("Runner deletion failed", new RuntimeException("delete failed")))
+                .when(runnerPort).deleteById(99L);
 
         assertThatThrownBy(() -> service.deleteRunner(99L))
-                .isInstanceOf(JgitkinsException.class)
+                .isInstanceOf(RunnerDeletionFailedException.class)
                 .extracting(ex -> ((JgitkinsException) ex).getErrorCode())
-                .isEqualTo(ApplicationErrorCode.RUNNER_DELETE_FAILED);
+                .isEqualTo(InfrastructureErrorCode.PERSISTENCE_OPERATION_FAILED);
     }
 
     @Test
@@ -118,21 +124,22 @@ class RunnerManagementServiceTest {
 
         assertThatThrownBy(() -> service.activate("RNR-TOKEN", "127.0.0.1"))
                 .isInstanceOf(JgitkinsException.class)
-                .extracting(ex -> ((JgitkinsException) ex).getErrorCode().getCode())
-                .isEqualTo("RUNNER_ALREADY_ACTIVED");
+                .extracting(ex -> ((JgitkinsException) ex).getProblemCode())
+                .isEqualTo(DomainProblemSpec.RUNNER_ALREADY_ACTIVE.getCode());
     }
 
     @Test
-    void activate_mapsPersistenceFailureToApplicationError() {
+    void activate_mapsPersistenceFailureToInfrastructureError() {
         Runner offline = Runner.restore(1L, "RNR-TOKEN", "runner", RunnerStatus.OFFLINE,
                 RunnerScopeType.GLOBAL, null, null, LocalDateTime.now(), LocalDateTime.now());
 
         when(runnerPort.findByToken("RNR-TOKEN")).thenReturn(Optional.of(offline));
-        when(runnerPort.save(any(Runner.class))).thenThrow(new RuntimeException("save failed"));
+        when(runnerPort.save(any(Runner.class)))
+                .thenThrow(new RunnerActivationFailedException("Runner activation persistence failed", new RuntimeException("save failed")));
 
         assertThatThrownBy(() -> service.activate("RNR-TOKEN", "127.0.0.1"))
-                .isInstanceOf(JgitkinsException.class)
+                .isInstanceOf(RunnerActivationFailedException.class)
                 .extracting(ex -> ((JgitkinsException) ex).getErrorCode())
-                .isEqualTo(ApplicationErrorCode.RUNNER_ACTIVATION_FAILED);
+                .isEqualTo(InfrastructureErrorCode.PERSISTENCE_OPERATION_FAILED);
     }
 }

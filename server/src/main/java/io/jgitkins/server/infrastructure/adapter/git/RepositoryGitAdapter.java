@@ -2,8 +2,9 @@ package io.jgitkins.server.infrastructure.adapter.git;
 
 import io.jgitkins.server.application.common.GitConstants;
 import io.jgitkins.server.application.port.out.RepositoryGitPort;
-import io.jgitkins.server.infrastructure.common.error.InfrastructureErrorCode;
-import io.jgitkins.server.infrastructure.exception.InfrastructureException;
+import io.jgitkins.server.infrastructure.exception.HeadReferenceUpdateFailedException;
+import io.jgitkins.server.infrastructure.exception.RepositoryCreateFailedException;
+import io.jgitkins.server.infrastructure.exception.RepositoryDeleteFailedException;
 import io.jgitkins.server.infrastructure.support.RepositoryFileSystemHelper;
 import io.jgitkins.server.infrastructure.support.RepositoryResolver;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +37,7 @@ public class RepositoryGitAdapter implements RepositoryGitPort {
             }
         } catch (IOException e) {
             log.error("Repository git create failed. namespace={}, repoName={}", namespace, repoName, e);
-            throw new InfrastructureException(InfrastructureErrorCode.REPOSITORY_CREATE_FAILED, "Repository creation failed: " + gitDir.getAbsolutePath(), e);
+            throw new RepositoryCreateFailedException("Repository creation failed: " + gitDir.getAbsolutePath(), e);
         }
     }
 
@@ -57,7 +58,7 @@ public class RepositoryGitAdapter implements RepositoryGitPort {
                 }
             }
         } catch (IOException e) {
-            throw new InfrastructureException(InfrastructureErrorCode.REPOSITORY_DELETE_FAILED, "Failed to delete repository directory: " + gitDir.getAbsolutePath(), e);
+            throw new RepositoryDeleteFailedException("Failed to delete repository directory: " + gitDir.getAbsolutePath(), e);
         }
     }
 
@@ -68,7 +69,7 @@ public class RepositoryGitAdapter implements RepositoryGitPort {
             repo.updateRef(Constants.HEAD, true)
                     .link(mainRef);
         } catch (IOException e) {
-            throw new InfrastructureException(InfrastructureErrorCode.HEAD_POINT_FAILED, String.format("Failed to link HEAD for repo %s/%s", namespace, repoName), e);
+            throw new HeadReferenceUpdateFailedException(String.format("Failed to link HEAD for repo %s/%s", namespace, repoName), e);
         }
     }
 

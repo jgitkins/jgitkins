@@ -1,8 +1,7 @@
 package io.jgitkins.server.application.validate;
 
+import io.jgitkins.server.application.exception.OrganizeMemberAlreadyExistsException;
 import io.jgitkins.server.application.port.out.OrganizeMemberPersistencePort;
-import io.jgitkins.server.application.exception.ApplicationException;
-import io.jgitkins.server.domain.error.DomainErrorCode;
 import io.jgitkins.server.domain.model.vo.OrganizeId;
 import io.jgitkins.server.domain.model.vo.OrganizeMemberRole;
 import io.jgitkins.server.domain.model.vo.UserId;
@@ -21,9 +20,7 @@ public class OrganizeMemberValidator {
 
     public void validateMemberNotExists(OrganizeId organizeId, UserId userId) {
         if (organizeMemberPort.existsByOrganizeIdAndUserId(organizeId, userId)) {
-            throw new ApplicationException(DomainErrorCode.ORGANIZE_MEMBER_ALREADY_EXISTS,
-                    String.format("Organize member already exists: organizeId=%s, userId=%s",
-                            organizeId.getValue(), userId.getValue()));
+            throw new OrganizeMemberAlreadyExistsException(organizeId.getValue(), userId.getValue());
         }
     }
 }

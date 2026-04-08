@@ -1,10 +1,10 @@
 package io.jgitkins.server.domain.exception;
 
-import io.jgitkins.server.domain.error.DomainErrorCode;
+import io.jgitkins.server.domain.error.DomainProblemSpec;
 
 public class RunnerTokenMissingException extends DomainException {
 
     public RunnerTokenMissingException() {
-        super(DomainErrorCode.RUNNER_TOKEN_INVALID, "Runner activation token is required");
+        super(DomainProblemSpec.RUNNER_TOKEN_MISSING, "Runner activation token is required");
     }
 }

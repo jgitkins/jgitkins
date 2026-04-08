@@ -1,11 +1,12 @@
 package io.jgitkins.server.infrastructure.adapter.git;
 
-import io.jgitkins.server.application.common.error.ApplicationErrorCode;
 import io.jgitkins.server.application.dto.command.BranchCreationContext;
-import io.jgitkins.server.application.exception.ApplicationException;
+import io.jgitkins.server.application.exception.BranchAlreadyExistsException;
+import io.jgitkins.server.application.exception.BranchNotFoundException;
+import io.jgitkins.server.application.exception.SourceBranchNotFoundException;
 import io.jgitkins.server.application.port.out.BranchGitPort;
-import io.jgitkins.server.infrastructure.common.error.InfrastructureErrorCode;
-import io.jgitkins.server.infrastructure.exception.InfrastructureException;
+import io.jgitkins.server.infrastructure.exception.BranchCreateFailedException;
+import io.jgitkins.server.infrastructure.exception.BranchDeleteFailedException;
 import io.jgitkins.server.infrastructure.support.RepositoryResolver;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,11 +36,11 @@ public class BranchGitAdapter implements BranchGitPort {
             try (Git git = new Git(repo)) {
                 // TODO: refactor 수정필요 Adapter에서 ApplicationException 모르기
                 if (repo.resolve(sourceBranch) == null) {
-                    throw new ApplicationException(ApplicationErrorCode.SOURCE_BRANCH_NOT_FOUND, "Source branch not found: " + sourceBranch);
+                    throw new SourceBranchNotFoundException(sourceBranch);
                 }
 
                 if (repo.resolve(branchName) != null) {
-                    throw new ApplicationException(ApplicationErrorCode.BRANCH_ALREADY_EXISTS, "Branch already exists: " + branchName);
+                    throw new BranchAlreadyExistsException(branchName);
                 }
 
                 git.branchCreate()
@@ -48,10 +49,10 @@ public class BranchGitAdapter implements BranchGitPort {
                         .call();
             }
         } catch (RefNotFoundException e) {
-            throw new InfrastructureException(InfrastructureErrorCode.BRANCH_CREATE_FAILED,
+            throw new BranchCreateFailedException(
                     "Failed to create branch - Ref not found: " + sourceBranch, e);
         } catch (GitAPIException | IOException e) {
-            throw new InfrastructureException(InfrastructureErrorCode.BRANCH_CREATE_FAILED,
+            throw new BranchCreateFailedException(
                     "Failed to create branch: " + branchName, e);
         }
     }
@@ -62,8 +63,7 @@ public class BranchGitAdapter implements BranchGitPort {
             try (Git git = new Git(repo)) {
                 if (repo.resolve(branchName) == null) {
                     // TODO: refactor 수정필요 Adapter에서 ApplicationException 모르기
-                    throw new ApplicationException(ApplicationErrorCode.BRANCH_NOT_FOUND,
-                            "Branch not found: " + branchName);
+                    throw new BranchNotFoundException(branchName);
                 }
 
                 git.branchDelete()
@@ -72,7 +72,7 @@ public class BranchGitAdapter implements BranchGitPort {
                         .call();
             }
         } catch (GitAPIException | IOException e) {
-            throw new InfrastructureException(InfrastructureErrorCode.BRANCH_DELETE_FAILED,
+            throw new BranchDeleteFailedException(
                     "Failed to delete branch: " + branchName, e);
         }
     }

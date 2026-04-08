@@ -1,8 +1,8 @@
 package io.jgitkins.server.application.service;
 
-import io.jgitkins.server.application.common.error.ApplicationErrorCode;
 import io.jgitkins.server.application.dto.result.RepositoryResult;
-import io.jgitkins.server.application.exception.ApplicationException;
+import io.jgitkins.server.application.exception.RepositoryNotFoundException;
+import io.jgitkins.server.application.exception.UserNotFoundException;
 import io.jgitkins.server.application.mapper.RepositoryApplicationMapper;
 import io.jgitkins.server.application.port.in.RepositoryLoadUseCase;
 import io.jgitkins.server.application.port.out.CurrentUserPort;
@@ -37,8 +37,7 @@ public class RepositoryLoadService implements RepositoryLoadUseCase {
     @Transactional(readOnly = true)
     public RepositoryResult loadRepository(Long repositoryId) {
         Repository repository = repositoryPort.findById(RepositoryId.of(repositoryId))
-                .orElseThrow(() -> new ApplicationException(ApplicationErrorCode.REPOSITORY_NOT_FOUND,
-                        "Repository not found: " + repositoryId));
+                .orElseThrow(() -> new RepositoryNotFoundException(repositoryId));
         return repositoryApplicationMapper.toDto(repository);
     }
 
@@ -46,8 +45,7 @@ public class RepositoryLoadService implements RepositoryLoadUseCase {
     @Transactional(readOnly = true)
     public RepositoryResult loadRepositoryByPath(String namespace, String repoName) {
         Repository repository = repositoryLookupService.findByPath(namespace, repoName)
-                .orElseThrow(() -> new ApplicationException(ApplicationErrorCode.REPOSITORY_NOT_FOUND,
-                        String.format("Repository not found: %s/%s", namespace, repoName)));
+                .orElseThrow(() -> new RepositoryNotFoundException(namespace, repoName));
         return repositoryApplicationMapper.toDto(repository);
     }
 
@@ -69,8 +67,7 @@ public class RepositoryLoadService implements RepositoryLoadUseCase {
         String normalizedUsername = username != null ? username.trim() : "";
 
         Long ownerId = userPort.findUserIdByUsername(normalizedUsername)
-                .orElseThrow(() -> new ApplicationException(ApplicationErrorCode.USER_NOT_FOUND,
-                        "User not found: " + normalizedUsername));
+                .orElseThrow(() -> new UserNotFoundException("User not found: " + normalizedUsername));
 
         Optional<Long> requesterId = currentUserPersistencePort.resolveCurrentUserId();
         return repositoryPort.findAllByOwner(OwnerType.USER, OwnerId.of(ownerId)).stream()

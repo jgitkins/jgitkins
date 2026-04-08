@@ -3,7 +3,7 @@ package io.jgitkins.server.infrastructure.adapter.git;
 import io.jgitkins.server.application.dto.pipeline.PipelineConfig;
 import io.jgitkins.server.application.dto.pipeline.PipelineRule;
 import io.jgitkins.server.application.port.out.PipelineConfigPort;
-import io.jgitkins.server.infrastructure.common.error.InfrastructureErrorCode;
+import io.jgitkins.server.infrastructure.exception.FileLoadFailedException;
 import io.jgitkins.server.infrastructure.exception.InfrastructureException;
 import io.jgitkins.server.infrastructure.support.RepositoryResolver;
 import java.io.IOException;
@@ -50,19 +50,15 @@ public class PipelineConfigGitAdapter implements PipelineConfigPort {
         } catch (InfrastructureException e) {
             throw e;
         } catch (Exception e) {
-            throw new InfrastructureException(
-                    InfrastructureErrorCode.FILE_LOAD_FAILED,
-                    "Failed to load pipeline config from " + CONFIG_PATH,
-                    e);
+            throw new FileLoadFailedException("Failed to load pipeline config from " + CONFIG_PATH, e);
         }
     }
+
 
     private RevTree resolveCommitTree(Repository repository, String commitHash) throws IOException {
         ObjectId commitId = repository.resolve(commitHash);
         if (commitId == null) {
-            throw new InfrastructureException(
-                    InfrastructureErrorCode.FILE_LOAD_FAILED,
-                    "Commit not found for pipeline config load: " + commitHash);
+            throw new FileLoadFailedException("Commit not found for pipeline config load: " + commitHash, null);
         }
 
         try (RevWalk revWalk = new RevWalk(repository)) {

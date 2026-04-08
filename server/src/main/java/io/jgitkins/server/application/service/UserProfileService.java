@@ -3,15 +3,14 @@ package io.jgitkins.server.application.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import io.jgitkins.server.application.exception.ApplicationException;
+import io.jgitkins.server.application.exception.UnauthenticatedException;
+import io.jgitkins.server.application.exception.UserNotFoundException;
 import io.jgitkins.server.application.port.in.SignupUseCase;
 import io.jgitkins.server.application.port.out.CurrentUserPort;
 import io.jgitkins.server.application.port.out.UserPersistencePort;
 import io.jgitkins.server.application.validate.ActivationValidator;
-import io.jgitkins.server.application.common.error.ApplicationErrorCode;
 import io.jgitkins.server.domain.model.User;
 import io.jgitkins.server.domain.model.vo.Username;
-import io.jgitkins.server.presentation.common.error.PresentationErrorCode;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -40,11 +39,11 @@ public class UserProfileService implements SignupUseCase {
 
     private Long currentUserId() {
         return currentUserPersistencePort.resolveCurrentUserId()
-                .orElseThrow(() -> new ApplicationException(PresentationErrorCode.UNAUTHORIZED, "Unauthenticated"));
+                .orElseThrow(UnauthenticatedException::new);
     }
 
     private User loadUser(Long userId) {
         return userPort.findById(userId)
-                .orElseThrow(() -> new ApplicationException(ApplicationErrorCode.USER_NOT_FOUND, "User not found"));
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
     }
 }

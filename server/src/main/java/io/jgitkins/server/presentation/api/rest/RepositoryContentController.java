@@ -1,11 +1,10 @@
 package io.jgitkins.server.presentation.api.rest;
 
-import io.jgitkins.server.application.common.error.ApplicationErrorCode;
 import io.jgitkins.server.application.dto.FileEntry;
 import io.jgitkins.server.application.dto.FileUploadInfo;
 import io.jgitkins.server.application.dto.FileUploadRequest;
 import io.jgitkins.server.application.dto.RepositoryKey;
-import io.jgitkins.server.application.exception.ApplicationException;
+import io.jgitkins.server.application.exception.RepositoryNotFoundException;
 import io.jgitkins.server.application.port.in.FileTreeLoadUseCase;
 import io.jgitkins.server.application.port.in.FileUploadUseCase;
 import io.jgitkins.server.application.port.in.RepositoryLoadUseCase;
@@ -75,6 +74,7 @@ public class RepositoryContentController {
         return ApiResponse.ok(files);
     }
 
+    // TODO: 수정 필요
     private RepositoryKey resolveRepositoryKey(Long repositoryId) {
         var repository = repositoryLoadUseCase.loadRepository(repositoryId);
         RepositoryKey key = RepositoryKey.fromPath(repository.clonePath());
@@ -82,9 +82,7 @@ public class RepositoryContentController {
             key = RepositoryKey.fromPath(repository.path());
         }
         if (key == null) {
-            throw new ApplicationException(
-                    ApplicationErrorCode.REPOSITORY_NOT_FOUND,
-                    "Repository path is invalid: " + repositoryId);
+            throw new RepositoryNotFoundException("Repository path is invalid: " + repositoryId);
         }
         return key;
     }

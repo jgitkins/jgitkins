@@ -2,7 +2,7 @@ package io.jgitkins.server.infrastructure.config.security.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jgitkins.server.presentation.common.ApiResponse;
-import io.jgitkins.server.presentation.common.error.PresentationErrorCode;
+import io.jgitkins.server.presentation.common.error.PresentationProblemSpec;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +21,10 @@ public class ApiAnauthorizeHandler implements AuthenticationEntryPoint {
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException {
-        ApiResponse<Void> payload = ApiResponse.failure(PresentationErrorCode.UNAUTHORIZED, "Unauthorized");
+        ApiResponse<Void> payload = ApiResponse.failure(
+                PresentationProblemSpec.UNAUTHORIZED,
+                PresentationProblemSpec.UNAUTHORIZED.getDefaultMessage(),
+                "presentation");
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         objectMapper.writeValue(response.getWriter(), payload);

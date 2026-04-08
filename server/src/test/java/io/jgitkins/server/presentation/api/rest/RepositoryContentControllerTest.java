@@ -134,7 +134,7 @@ class RepositoryContentControllerTest {
                         .param("path", "docs/hello.txt")
                         .param("message", "add file"))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.error.code").value("REPOSITORY_NOT_FOUND"));
+                .andExpect(jsonPath("$.error.code").value("REPO-404"));
     }
 
         @Test

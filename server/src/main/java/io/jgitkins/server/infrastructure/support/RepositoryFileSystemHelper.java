@@ -1,9 +1,7 @@
 package io.jgitkins.server.infrastructure.support;
 
-import io.jgitkins.server.application.common.error.ApplicationErrorCode;
-import io.jgitkins.server.application.exception.ApplicationException;
-import io.jgitkins.server.infrastructure.common.error.InfrastructureErrorCode;
-import io.jgitkins.server.infrastructure.exception.InfrastructureException;
+import io.jgitkins.server.application.exception.RepositoryAlreadyExistsException;
+import io.jgitkins.server.infrastructure.exception.FileSystemAccessFailedException;
 import lombok.experimental.UtilityClass;
 import org.eclipse.jgit.lib.Repository;
 
@@ -14,12 +12,13 @@ import java.io.IOException;
 public class RepositoryFileSystemHelper {
 
     // TODO: refactor
+    // TODO: 음.. 두케이스 예외를 던질때 약간 추상화해서 RepositoryCreationFailedException 이라고 던져야될지 아니면 기존처럼 상세히 던져야될지 검토필요
     public void createRepositoryDir(File gitDir) {
         if (gitDir.exists()) {
-            throw new ApplicationException(ApplicationErrorCode.REPOSITORY_ALREADY_EXISTS, "Repository already exists: " + gitDir.getAbsolutePath());
+            throw new RepositoryAlreadyExistsException("Repository already exists: " + gitDir.getAbsolutePath());
         }
         if (!gitDir.mkdirs() && !gitDir.exists()) {
-            throw new InfrastructureException(InfrastructureErrorCode.REPOSITORY_CREATE_FAILED, "Failed to create directories: " + gitDir.getAbsolutePath());
+            throw new FileSystemAccessFailedException("Failed to create directories: " + gitDir.getAbsolutePath());
         }
     }
 
