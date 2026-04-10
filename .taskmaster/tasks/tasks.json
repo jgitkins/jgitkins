@@ -88,7 +88,7 @@
         "priority": "high",
         "details": "기존 기능별 Task를 카테고리 기반(신규기능/리팩토링/보안)으로 재구성함.",
         "testStrategy": "카테고리별 우선순위에 따라 하위 작업을 순차 수행하고 회귀 테스트를 적용한다.",
-        "updatedAt": "2026-04-08T14:11:31.639Z",
+        "updatedAt": "2026-04-10T13:31:57.985Z",
         "subtasks": [
           {
             "id": 1,
@@ -210,6 +210,17 @@
             "parentTaskId": 2,
             "parentId": "2",
             "updatedAt": "2026-04-02T14:21:45.758Z"
+          },
+          {
+            "id": 12,
+            "title": "[server] PushEventHandleService 분해 및 정책/실행 경계 1차 분리",
+            "description": "`PushEventHandleService`가 직접 수행하던 브랜치 상태 반영, 정책 해석, 실행 요청 생성을 분리해 오케스트레이션 전용 서비스로 얇게 만들고, 향후 PR/branch event 확장을 위한 첫 seam을 만든다.",
+            "details": "[source: jgitkins-server, original subtask: custom]\n대상 범위는 `server/src/main/java/io/jgitkins/server/application/service/PushEventHandleService.java`, `server/src/main/java/io/jgitkins/server/application/support/PushJobCreationPolicy.java`, `server/src/main/java/io/jgitkins/server/application/validate/JobCreationValidator.java`, `server/src/test/java/io/jgitkins/server/application/service/PushEventHandleServiceTest.java`, `server/src/test/java/io/jgitkins/server/application/ArchitecturePackageConventionTest.java`와 신규 support collaborator 패키지다. 1차 목표는 `PushEventHandleService`를 `BranchChangeRecorder`, `EventPolicyResolver`, `ExecutionRequestService` 협력자로 분해하여 브랜치 변경 사실 기록, `ci.yml` 기반 정책 해석, `JobCreateUseCase` 호출 경계를 명확히 나누는 것이다. 이 단계에서는 기존 push 기반 동작과 runner dispatch 흐름을 유지하고, `PushJobCreationPolicy`는 push 전용 구현을 감싼 상태로 두되 향후 일반화 가능한 이름과 테스트 seam을 확보한다. 관련 단위 테스트를 추가하여 오케스트레이션 경계, support package 규칙, execution command 매핑이 유지되는지 검증한다.",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 2,
+            "parentId": "2",
+            "updatedAt": "2026-04-10T13:31:57.985Z"
           }
         ]
       },
@@ -309,9 +320,9 @@
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2026-04-10T06:47:22.000Z",
+      "lastModified": "2026-04-10T13:31:57.988Z",
       "taskCount": 5,
-      "completedCount": 2,
+      "completedCount": 1,
       "tags": [
         "master"
       ]

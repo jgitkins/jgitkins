@@ -1,21 +1,20 @@
 package io.jgitkins.server.application.service;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import io.jgitkins.server.application.dto.command.JobCreateCommand;
 import io.jgitkins.server.application.dto.command.PushEventCommand;
 import io.jgitkins.server.application.dto.result.JobCreationDecision;
 import io.jgitkins.server.application.dto.result.JobPlan;
 import io.jgitkins.server.application.dto.result.PipelineSkipReason;
-import io.jgitkins.server.application.dto.support.PushJobPlanRequest;
-import io.jgitkins.server.application.port.in.JobCreateUseCase;
-import io.jgitkins.server.application.support.PushJobCreationPolicy;
+import io.jgitkins.server.application.support.change.BranchChangeRecorder;
+import io.jgitkins.server.application.support.execution.ExecutionRequestService;
+import io.jgitkins.server.application.support.policy.EventPolicyResolver;
 import io.jgitkins.server.application.validate.JobCreationValidator;
-import io.jgitkins.server.domain.repository.BranchRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -27,16 +26,16 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class PushEventHandleServiceTest {
 
     @Mock
-    private JobCreateUseCase jobCreateUseCase;
-
-    @Mock
-    private BranchRepository branchPort;
+    private BranchChangeRecorder branchChangeRecorder;
 
     @Mock
     private JobCreationValidator jobCreationValidator;
 
     @Mock
-    private PushJobCreationPolicy pushJobCreationPolicy;
+    private EventPolicyResolver eventPolicyResolver;
+
+    @Mock
+    private ExecutionRequestService executionRequestService;
 
     @InjectMocks
     private PushEventHandleService service;
@@ -54,19 +53,15 @@ class PushEventHandleServiceTest {
                 .build();
 
         when(jobCreationValidator.validate(command)).thenReturn(JobCreationDecision.create());
-        when(pushJobCreationPolicy.plan(new PushJobPlanRequest("1", "repo", "main", "abc")))
+        when(eventPolicyResolver.resolvePushPlan(command))
                 .thenReturn(JobPlan.create(".jgitkins/pipelines/main.Jenkinsfile"));
 
         service.handle(command);
 
-        verify(branchPort).save(any());
-
-        ArgumentCaptor<JobCreateCommand> captor = ArgumentCaptor.forClass(JobCreateCommand.class);
-        verify(jobCreateUseCase).create(captor.capture());
-        JobCreateCommand job = captor.getValue();
-        assertEquals("repo", job.repoName());
-        assertEquals(9L, job.repositoryId());
-        assertEquals(".jgitkins/pipelines/main.Jenkinsfile", job.pipelineFilePath());
+        verify(branchChangeRecorder).record(command);
+        ArgumentCaptor<JobPlan> jobPlanCaptor = ArgumentCaptor.forClass(JobPlan.class);
+        verify(executionRequestService).requestPushExecution(org.mockito.ArgumentMatchers.eq(command), jobPlanCaptor.capture());
+        assertEquals(".jgitkins/pipelines/main.Jenkinsfile", jobPlanCaptor.getValue().getPipelineFilePath());
     }
 
     @Test
@@ -81,12 +76,13 @@ class PushEventHandleServiceTest {
                 .build();
 
         when(jobCreationValidator.validate(command)).thenReturn(JobCreationDecision.create());
-        when(pushJobCreationPolicy.plan(new PushJobPlanRequest("1", "repo", "main", "abc")))
+        when(eventPolicyResolver.resolvePushPlan(command))
                 .thenReturn(JobPlan.skip(PipelineSkipReason.SKIPPED_NO_RULE));
 
         service.handle(command);
 
-        verify(jobCreateUseCase, never()).create(any());
+        verify(branchChangeRecorder).record(command);
+        verify(executionRequestService, never()).requestPushExecution(any(), any());
     }
 
     @Test
@@ -101,12 +97,13 @@ class PushEventHandleServiceTest {
                 .build();
 
         when(jobCreationValidator.validate(command)).thenReturn(JobCreationDecision.create());
-        when(pushJobCreationPolicy.plan(new PushJobPlanRequest("1", "repo", "main", "abc")))
+        when(eventPolicyResolver.resolvePushPlan(command))
                 .thenReturn(JobPlan.skip(PipelineSkipReason.SKIPPED_POLICY_ERROR));
 
         service.handle(command);
 
-        verify(jobCreateUseCase, never()).create(any());
+        verify(branchChangeRecorder).record(command);
+        verify(executionRequestService, never()).requestPushExecution(any(), any());
     }
 
     @Test
@@ -124,6 +121,8 @@ class PushEventHandleServiceTest {
 
         service.handle(command);
 
-        verify(jobCreateUseCase, never()).create(any());
+        verify(branchChangeRecorder).record(command);
+        verifyNoInteractions(eventPolicyResolver);
+        verifyNoInteractions(executionRequestService);
     }
 }

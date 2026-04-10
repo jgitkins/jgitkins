@@ -5,6 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.jgitkins.server.application.support.CloneUrlBuilder;
+import io.jgitkins.server.application.support.change.BranchChangeRecorder;
+import io.jgitkins.server.application.support.execution.ExecutionRequestService;
+import io.jgitkins.server.application.support.policy.EventPolicyResolver;
 import io.jgitkins.server.application.service.AdminUserService;
 import io.jgitkins.server.application.service.BranchLoadService;
 import io.jgitkins.server.application.service.BranchManagementService;
@@ -68,6 +71,9 @@ class ArchitecturePackageConventionTest {
     void supportCollaborators_useComponentInsteadOfService() {
         List<Class<?>> supportClasses = List.of(
                 CloneUrlBuilder.class,
+                BranchChangeRecorder.class,
+                EventPolicyResolver.class,
+                ExecutionRequestService.class,
                 UserService.class,
                 RepositoryLookupService.class,
                 RepositoryNamespaceResolver.class,

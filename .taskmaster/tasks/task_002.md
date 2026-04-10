@@ -129,3 +129,15 @@ Repository 생성 후처리에서 `RepositoryProvisionedEventListener` 기반 �
 
 [source: jgitkins-server, original subtask: custom]
 참조 문서: .taskmaster/docs/refactor/task_2_11_plan.md. 검토 범위는 `server/src/main/java/io/jgitkins/server/application/service/BranchService.java`, `server/src/main/java/io/jgitkins/server/application/port/in/BranchLoadUseCase.java`, `server/src/main/java/io/jgitkins/server/application/port/in/BranchCreateUseCase.java`, `server/src/main/java/io/jgitkins/server/application/port/in/BranchDeleteUseCase.java`, `server/src/main/java/io/jgitkins/server/presentation/api/rest/BranchController.java`, `server/src/main/java/io/jgitkins/server/application/service/RepositoryOverviewService.java`, `server/src/test/java/io/jgitkins/server/application/service/BranchServiceTest.java`, `server/src/test/java/io/jgitkins/server/presentation/api/rest/BranchControllerTest.java`, `server/src/test/java/io/jgitkins/server/application/ArchitecturePackageConventionTest.java` 및 관련 조회 호출부 전반이다. 목표는 브랜치 조회와 생성/삭제 오케스트레이션 책임을 분리하여 서비스 응집도를 높이고, `BranchLoadUseCase`의 메서드 명명을 `get*`에서 `load*`로 정렬할지 검토한 뒤 일관된 기준을 문서화하는 것이다.
+
+### 2.12. [server] PushEventHandleService 분해 및 정책/실행 경계 1차 분리
+
+**Status:** pending  
+**Dependencies:** None  
+
+`PushEventHandleService`가 직접 수행하던 브랜치 상태 반영, 정책 해석, 실행 요청 생성을 분리해 오케스트레이션 전용 서비스로 얇게 만들고, 향후 PR/branch event 확장을 위한 첫 seam을 만든다.
+
+**Details:**
+
+[source: jgitkins-server, original subtask: custom]
+대상 범위는 `server/src/main/java/io/jgitkins/server/application/service/PushEventHandleService.java`, `server/src/main/java/io/jgitkins/server/application/support/PushJobCreationPolicy.java`, `server/src/main/java/io/jgitkins/server/application/validate/JobCreationValidator.java`, `server/src/test/java/io/jgitkins/server/application/service/PushEventHandleServiceTest.java`, `server/src/test/java/io/jgitkins/server/application/ArchitecturePackageConventionTest.java`와 신규 support collaborator 패키지다. 1차 목표는 `PushEventHandleService`를 `BranchChangeRecorder`, `EventPolicyResolver`, `ExecutionRequestService` 협력자로 분해하여 브랜치 변경 사실 기록, `ci.yml` 기반 정책 해석, `JobCreateUseCase` 호출 경계를 명확히 나누는 것이다. 이 단계에서는 기존 push 기반 동작과 runner dispatch 흐름을 유지하고, `PushJobCreationPolicy`는 push 전용 구현을 감싼 상태로 두되 향후 일반화 가능한 이름과 테스트 seam을 확보한다. 관련 단위 테스트를 추가하여 오케스트레이션 경계, support package 규칙, execution command 매핑이 유지되는지 검증한다.
