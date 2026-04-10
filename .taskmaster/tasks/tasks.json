@@ -229,12 +229,12 @@
         "id": "4",
         "title": "운영/인프라",
         "description": "배포/모니터링/CI-CD/운영 안정성 개선 작업",
-        "status": "done",
+        "status": "pending",
         "dependencies": [],
         "priority": "high",
         "details": "카테고리 기반 상위 Task",
         "testStrategy": "운영 시나리오 검증",
-        "updatedAt": "2026-03-27T04:51:37.649Z",
+        "updatedAt": "2026-04-10T06:26:03.000Z",
         "subtasks": [
           {
             "id": 1,
@@ -268,6 +268,17 @@
             "parentTaskId": 4,
             "updatedAt": "2026-03-27T04:51:37.649Z",
             "parentId": "undefined"
+          },
+          {
+            "id": 4,
+            "title": "[infra] 이 프로젝트용 하네스 엔지니어링 기반 구성",
+            "description": "Codex 같은 에이전트가 이 리포지터리에서 안정적으로 작업할 수 있도록 문서, 실행 환경, 검증 루프, 관측 가능성, 작업 규약을 정비한다.",
+            "details": "[source: https://openai.com/ko-KR/index/harness-engineering/]\n이 작업의 하네스 엔지니어링은 특정 CI/CD 제품 도입이 아니라, 에이전트가 읽기 쉽고 실행 가능하며 반복 검증 가능한 엔지니어링 환경을 만드는 것이다. 검토 및 구현 범위는 다음을 포함한다. 1) AGENTS.md 를 짧은 목차형 진입점으로 유지하고, 실제 신뢰 가능한 지식은 docs/ 하위에 구조화하여 기록 시스템으로 정리한다. 2) server/web/runner 각 모듈의 실행 방법, 테스트 방법, 주요 아키텍처 제약, 코드 수정 규칙을 에이전트가 탐색하기 쉬운 문서와 스크립트로 정비한다. 3) 변경 단위별로 재현 가능한 검증 루프를 만들기 위해 로컬 실행, 테스트, 로그 확인, 필요 시 브라우저 기반 확인 절차를 표준화한다. 4) 에이전트가 애플리케이션 상태를 읽고 문제를 추론할 수 있도록 로그, 메트릭, 트레이스 또는 그에 준하는 관측 신호 노출 방식을 정리한다. 5) 큰 작업을 더 작은 실행 단위로 분해하고, 계획 문서와 작업 기록이 드리프트하지 않도록 운영 규약을 수립한다. 산출물은 리포지터리 작업 하네스 개선안, 필요한 문서/스크립트/체크리스트 목록, 그리고 후속 구현 backlog 다.",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 4,
+            "parentId": "4",
+            "updatedAt": "2026-04-10T06:47:22.000Z"
           }
         ]
       },
@@ -298,7 +309,7 @@
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2026-04-08T14:11:31.642Z",
+      "lastModified": "2026-04-10T06:47:22.000Z",
       "taskCount": 5,
       "completedCount": 2,
       "tags": [
