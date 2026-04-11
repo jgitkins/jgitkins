@@ -35,80 +35,33 @@ public class MergeGitAdapter implements MergeGitPort {
     }
 
     @Override
-    public MergeResult previewMerge(String namespace, String repoName, String sourceBranch, String targetBranch) throws IOException {
-        File bareRepositoryPath = new File(rootPath + "/" + namespace + "/" + repoName + ".git");
-
-        try (Repository repo = new FileRepositoryBuilder()
-                .setGitDir(bareRepositoryPath)
-                .setMustExist(true)
-                .build()) {
-
-            ObjectId sourceId = resolveRef(repo, GitConstants.REFS_HEADS_PREFIX + sourceBranch);
-            ObjectId targetId = resolveRef(repo, GitConstants.REFS_HEADS_PREFIX + targetBranch);
-            if (sourceId == null) throw new IllegalArgumentException("Source branch not found: " + sourceBranch);
-            if (targetId == null) throw new IllegalArgumentException("Target branch not found: " + targetBranch);
-
+    public MergeResult previewMergeability(String namespace, String repoName, String sourceBranch, String targetBranch) throws IOException {
+        try (Repository repo = openRepository(namespace, repoName)) {
+            MergeRefs refs = resolveMergeRefs(repo, sourceBranch, targetBranch);
             try (RevWalk rw = new RevWalk(repo)) {
-                RevCommit sourceCommit = rw.parseCommit(sourceId);
-                RevCommit targetCommit = rw.parseCommit(targetId);
+                RevCommit sourceCommit = rw.parseCommit(refs.sourceId());
+                RevCommit targetCommit = rw.parseCommit(refs.targetId());
 
-                if (Objects.equals(sourceCommit.getTree().getId(), targetCommit.getTree().getId())
-                        || rw.isMergedInto(sourceCommit, targetCommit)) {
-                    MergeResult r = new MergeResult();
-                    r.setStatus(MergeResult.Status.ALREADY_UP_TO_DATE);
-                    r.setTargetBranch(targetBranch);
-                    r.setSourceBranch(sourceBranch);
-                    r.setResultTreeId(targetCommit.getTree().getId().name());
-                    return r;
+                if (isAlreadyUpToDate(rw, sourceCommit, targetCommit)) {
+                    return alreadyUpToDatePreview(sourceBranch, targetBranch, targetCommit.getTree().getId());
                 }
 
-                rw.reset();
-                rw.markStart(sourceCommit);
-                rw.markStart(targetCommit);
-                rw.setRevFilter(RevFilter.MERGE_BASE);
-                RevCommit base = rw.next();
-                rw.reset();
-
-                if (base == null) {
-                    MergeResult r = new MergeResult();
-                    r.setStatus(MergeResult.Status.NO_COMMON_ANCESTOR);
-                    r.setTargetBranch(targetBranch);
-                    r.setSourceBranch(sourceBranch);
-                    return r;
+                boolean fastForwardPossible = isMergedInto(rw, targetCommit, sourceCommit);
+                if (!hasCommonAncestor(rw, sourceCommit, targetCommit)) {
+                    return noCommonAncestorPreview(sourceBranch, targetBranch);
                 }
 
                 ResolveMerger merger = (ResolveMerger) MergeStrategy.RECURSIVE.newMerger(repo, true);
-                boolean ok = merger.merge(targetCommit, sourceCommit);
-
-                if (!ok) {
-                    List<String> conflicts = new ArrayList<>();
-                    if (merger.getUnmergedPaths() != null) {
-                        conflicts.addAll(merger.getUnmergedPaths());
-                    }
-                    MergeResult r = new MergeResult();
-                    r.setStatus(MergeResult.Status.CONFLICTS);
-                    r.setTargetBranch(targetBranch);
-                    r.setSourceBranch(sourceBranch);
-                    r.setConflicts(conflicts.isEmpty() ? null : conflicts);
-                    return r;
+                if (!merger.merge(targetCommit, sourceCommit)) {
+                    return conflictPreview(sourceBranch, targetBranch, merger, fastForwardPossible);
                 }
 
                 ObjectId mergedTreeId = merger.getResultTreeId();
-                if (mergedTreeId != null && mergedTreeId.equals(targetCommit.getTree().getId())) {
-                    MergeResult r = new MergeResult();
-                    r.setStatus(MergeResult.Status.ALREADY_UP_TO_DATE);
-                    r.setTargetBranch(targetBranch);
-                    r.setSourceBranch(sourceBranch);
-                    r.setResultTreeId(mergedTreeId.name());
-                    return r;
+                if (isTargetTree(mergedTreeId, targetCommit)) {
+                    return alreadyUpToDatePreview(sourceBranch, targetBranch, mergedTreeId);
                 }
 
-                MergeResult r = new MergeResult();
-                r.setStatus(MergeResult.Status.MERGEABLE);
-                r.setTargetBranch(targetBranch);
-                r.setSourceBranch(sourceBranch);
-                r.setResultTreeId(mergedTreeId.name());
-                return r;
+                return mergeablePreview(sourceBranch, targetBranch, mergedTreeId, fastForwardPossible);
             }
         }
     }
@@ -220,5 +173,100 @@ public class MergeGitAdapter implements MergeGitPort {
     private ObjectId resolveRef(Repository repo, String fullRef) throws IOException {
         Ref ref = repo.findRef(fullRef);
         return ref == null ? null : ref.getObjectId();
+    }
+
+    private Repository openRepository(String namespace, String repoName) throws IOException {
+        File bareRepositoryPath = new File(rootPath + "/" + namespace + "/" + repoName + ".git");
+        return new FileRepositoryBuilder()
+                .setGitDir(bareRepositoryPath)
+                .setMustExist(true)
+                .build();
+    }
+
+    private MergeRefs resolveMergeRefs(Repository repo, String sourceBranch, String targetBranch) throws IOException {
+        ObjectId sourceId = resolveRef(repo, GitConstants.REFS_HEADS_PREFIX + sourceBranch);
+        ObjectId targetId = resolveRef(repo, GitConstants.REFS_HEADS_PREFIX + targetBranch);
+        if (sourceId == null) throw new IllegalArgumentException("Source branch not found: " + sourceBranch);
+        if (targetId == null) throw new IllegalArgumentException("Target branch not found: " + targetBranch);
+        return new MergeRefs(sourceId, targetId);
+    }
+
+    private boolean isAlreadyUpToDate(RevWalk rw, RevCommit sourceCommit, RevCommit targetCommit) throws IOException {
+        return Objects.equals(sourceCommit.getTree().getId(), targetCommit.getTree().getId())
+                || isMergedInto(rw, sourceCommit, targetCommit);
+    }
+
+    private boolean isMergedInto(RevWalk rw, RevCommit baseCommit, RevCommit tipCommit) throws IOException {
+        rw.reset();
+        return rw.isMergedInto(baseCommit, tipCommit);
+    }
+
+    private boolean hasCommonAncestor(RevWalk rw, RevCommit sourceCommit, RevCommit targetCommit) throws IOException {
+        rw.reset();
+        rw.markStart(sourceCommit);
+        rw.markStart(targetCommit);
+        rw.setRevFilter(RevFilter.MERGE_BASE);
+        RevCommit base = rw.next();
+        rw.reset();
+        return base != null;
+    }
+
+    private boolean isTargetTree(ObjectId mergedTreeId, RevCommit targetCommit) {
+        return mergedTreeId != null && mergedTreeId.equals(targetCommit.getTree().getId());
+    }
+
+    private MergeResult alreadyUpToDatePreview(String sourceBranch, String targetBranch, ObjectId resultTreeId) {
+        MergeResult result = previewResult(MergeResult.Status.ALREADY_UP_TO_DATE, sourceBranch, targetBranch);
+        result.setResultTreeId(resultTreeId.name());
+        result.setFastForwardPossible(false);
+        result.setMergeCommitRequired(false);
+        return result;
+    }
+
+    private MergeResult noCommonAncestorPreview(String sourceBranch, String targetBranch) {
+        MergeResult result = previewResult(MergeResult.Status.NO_COMMON_ANCESTOR, sourceBranch, targetBranch);
+        result.setFastForwardPossible(false);
+        result.setMergeCommitRequired(false);
+        return result;
+    }
+
+    private MergeResult conflictPreview(
+            String sourceBranch,
+            String targetBranch,
+            ResolveMerger merger,
+            boolean fastForwardPossible) {
+        List<String> conflicts = new ArrayList<>();
+        if (merger.getUnmergedPaths() != null) {
+            conflicts.addAll(merger.getUnmergedPaths());
+        }
+
+        MergeResult result = previewResult(MergeResult.Status.CONFLICTS, sourceBranch, targetBranch);
+        result.setConflicts(conflicts.isEmpty() ? null : conflicts);
+        result.setFastForwardPossible(fastForwardPossible);
+        result.setMergeCommitRequired(false);
+        return result;
+    }
+
+    private MergeResult mergeablePreview(
+            String sourceBranch,
+            String targetBranch,
+            ObjectId mergedTreeId,
+            boolean fastForwardPossible) {
+        MergeResult result = previewResult(MergeResult.Status.MERGEABLE, sourceBranch, targetBranch);
+        result.setResultTreeId(mergedTreeId.name());
+        result.setFastForwardPossible(fastForwardPossible);
+        result.setMergeCommitRequired(!fastForwardPossible);
+        return result;
+    }
+
+    private MergeResult previewResult(MergeResult.Status status, String sourceBranch, String targetBranch) {
+        MergeResult result = new MergeResult();
+        result.setStatus(status);
+        result.setTargetBranch(targetBranch);
+        result.setSourceBranch(sourceBranch);
+        return result;
+    }
+
+    private record MergeRefs(ObjectId sourceId, ObjectId targetId) {
     }
 }

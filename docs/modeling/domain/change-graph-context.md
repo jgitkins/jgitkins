@@ -38,12 +38,14 @@
 - merge 방법 설명
 - target drift 감지
 - PR merge-side 상태 생성
+- PR 경로의 영속 상태와 현재 Git 계산 결과의 경계 정의
 
 ## 책임 밖
 - 어떤 파이프라인을 실행할지 결정하지 않음
 - runner를 선택하거나 job을 생성하지 않음
 - Jenkinsfile을 파싱하지 않음
 - 사용자 승인 권한을 판단하지 않음
+- PR 상세 화면의 최종 readiness를 조합하지 않음
 
 ## 주요 입력
 - repository namespace / repo name
@@ -51,6 +53,7 @@
 - target branch
 - branch head commit
 - merge preview 요청 또는 PR 이벤트
+- 저장된 `PullRequestRoute`
 
 ## 주요 출력
 - `MergeabilityAssessment`
@@ -61,7 +64,9 @@
 ## Aggregate
 ### Aggregate Root
 - `PullRequestRoute`
-  - 하나의 `source -> target` 경로와 그 경로의 현재 병합 상태를 대표한다.
+  - 하나의 repository 안에서 `source -> target` 병합 경로의 영속 상태를 대표한다.
+  - PR 생성, 닫기, 다시 열기, 병합 완료 표시처럼 이력성과 업무 상태가 필요한 행위를 관리한다.
+  - 현재 mergeability 계산 결과를 소유하지 않는다. 필요하면 마지막 계산 결과를 snapshot/cache로만 보관한다.
 
 ### Entities
 - 현재 v1 초안에서는 별도 entity를 강하게 두지 않는다.
@@ -73,12 +78,38 @@
 - `MergeTopologySummary`
 - `TargetDrift`
 
+## 영속성과 계산값 경계
+### 영속화 대상
+- `PullRequestRoute` identity
+- repository identity
+- source branch / target branch
+- route status: `OPEN`, `CLOSED`, `MERGED`
+- 생성 시점의 source / target `BranchHeadSnapshot`
+- 마지막으로 관측한 source / target `BranchHeadSnapshot`
+- target drift 판단에 필요한 기준 snapshot
+
+### 조회 시점 계산 대상
+- 현재 source head
+- 현재 target head
+- `MergeabilityAssessment`
+- `MergeTopologySummary`
+- conflict paths
+- no common ancestor 여부
+
+### 원칙
+- Git repository가 현재 상태의 source of truth다.
+- `MergeabilityAssessment`는 저장된 사실이 아니라 현재 Git 상태를 해석한 결과다.
+- `PullRequestRoute`가 assessment를 저장하더라도 그것은 `lastAssessmentSnapshot` 또는 cache이며, merge 가능 여부의 최종 진실로 사용하지 않는다.
+- PR 상세 조회와 병합 직전 검사는 항상 Git port를 통해 최신 mergeability를 다시 계산한다.
+
 ## 핵심 불변식
 - source와 target은 비어 있을 수 없다.
 - source와 target은 동일 branch일 수 없다.
 - route는 하나의 repository 안에서만 유효하다.
 - 닫힌 route만 `reopen()` 가능하다.
 - 열린 route만 `markMerged()` 가능하다.
+- `MergeabilityAssessment`는 `PullRequestRoute` 상태 전이의 필수 저장값이 아니다.
+- 저장된 assessment snapshot은 현재 Git 상태보다 우선할 수 없다.
 
 ## Class Diagram
 ```mermaid
@@ -90,11 +121,11 @@ classDiagram
         +BranchHeadSnapshot source
         +BranchHeadSnapshot target
         +RouteStatus status
-        +MergeabilityAssessment lastAssessment
+        +MergeabilityAssessment lastAssessmentSnapshot
         +TargetDrift targetDrift
         +create()
         +updateSource()
-        +refreshMergeability()
+        +recordAssessmentSnapshot()
         +markTargetDrifted()
         +close()
         +reopen()
@@ -130,11 +161,11 @@ classDiagram
 
     class MergeabilityService {
         <<Domain Service>>
-        +assess(PullRequestRoute)
+        +assess(PullRequestRoute, BranchHeadSnapshot, BranchHeadSnapshot)
     }
 
     PullRequestRoute *-- BranchHeadSnapshot
-    PullRequestRoute *-- MergeabilityAssessment
+    PullRequestRoute o-- MergeabilityAssessment : lastAssessmentSnapshot
     PullRequestRoute *-- TargetDrift
     MergeabilityAssessment *-- MergeTopologySummary
     MergeabilityService ..> PullRequestRoute
@@ -152,17 +183,24 @@ classDiagram
 ## 주요 시나리오
 ### 1. PR 생성
 - source와 target이 정해진다.
-- 현재 branch head를 기준으로 mergeability를 계산한다.
-- 결과는 readiness 조합의 입력이 된다.
+- 생성 시점의 source / target branch head snapshot을 저장한다.
+- 생성 직후 표시가 필요하면 현재 branch head 기준 mergeability를 계산할 수 있다.
+- 계산 결과는 readiness 조합의 입력이며, route의 영속 상태를 대체하지 않는다.
 
 ### 2. PR 업데이트
 - source branch head가 바뀐다.
-- mergeability를 다시 계산한다.
+- PR 상세 조회 또는 이벤트 처리 시 mergeability를 다시 계산한다.
 - target이 그 사이에 변했다면 stale 여부도 함께 반영한다.
 
 ### 3. 병합 직전 설명
 - UI는 source 위치, target 위치, 병합 가능 여부를 이 context 결과로 설명한다.
 - “FF 가능”, “merge commit 필요”, “충돌 발생”은 이 context의 언어다.
+- 이 설명은 저장된 snapshot이 아니라 병합 직전 Git 상태를 기준으로 생성한다.
+
+### 4. PR 상세 조회 입력 제공
+- PR 상세 조회 유즈케이스는 저장된 `PullRequestRoute`를 먼저 읽는다.
+- 그 다음 현재 source / target head를 Git port로 조회하고 mergeability를 계산한다.
+- Change Graph Context는 계산된 `MergeabilityAssessment`를 제공하고, 최종 readiness 조합은 Pull Request Readiness Context가 담당한다.
 
 ## Domain Service
 - `MergeabilityService`
@@ -178,7 +216,10 @@ classDiagram
 - 현재는 `MergeResult`가 기술 결과와 제품 의미를 같이 들고 있다.
 - fast-forward 가능 여부와 merge commit 필요 여부는 아직 1급 모델로 분리되지 않았다.
 - stale target 개념이 아직 명시적이지 않다.
+- PR route 영속 모델과 조회 시점 계산 모델이 아직 코드에서 분리되지 않았다.
 
 ## 다음 리팩터링 힌트
 - `MergeResult`를 당장 없애기보다, 그 위에 `MergeabilityAssessment` 읽기 모델을 얹는 쪽이 안전하다.
-- PR 기능이 생기면 `PullRequestRoute`와 `TargetDrift`를 별도 모델로 올리는 것이 좋다.
+- PR 기능이 생기면 `PullRequestRoute`를 먼저 영속 Aggregate로 올리고, `TargetDrift`는 route의 snapshot 비교 결과로 도입한다.
+- `PullRequestLoadUseCase`보다 `GetPullRequestDetailUseCase`처럼 조회 목적이 드러나는 이름을 우선 검토한다.
+- PR 상세 조회에서는 저장된 route와 현재 Git 계산값을 조합하되, Change Graph Context는 mergeability 해석까지만 책임진다.

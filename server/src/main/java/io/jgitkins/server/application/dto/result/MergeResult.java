@@ -22,4 +22,6 @@ public class MergeResult {
     private String newCommitId;   // null if not merged
     private String resultTreeId;  // merged tree id
     private List<String> conflicts; // paths
+    private Boolean fastForwardPossible;
+    private Boolean mergeCommitRequired;
 }

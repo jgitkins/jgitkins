@@ -7,6 +7,6 @@ import java.io.IOException;
 
 public interface MergeGitPort {
     MergeResult merge(String namespace, String repoName, MergeRequest request) throws IOException;
-    MergeResult previewMerge(String namespace, String repoName, String sourceBranch, String targetBranch) throws IOException;
+    MergeResult previewMergeability(String namespace, String repoName, String sourceBranch, String targetBranch) throws IOException;
 
 }

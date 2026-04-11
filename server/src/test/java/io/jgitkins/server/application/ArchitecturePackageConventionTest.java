@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.jgitkins.server.application.support.CloneUrlBuilder;
 import io.jgitkins.server.application.support.change.BranchChangeRecorder;
+import io.jgitkins.server.application.support.change.MergeabilityAssessmentAssembler;
 import io.jgitkins.server.application.support.execution.ExecutionRequestService;
 import io.jgitkins.server.application.support.policy.EventPolicyResolver;
 import io.jgitkins.server.application.service.AdminUserService;
@@ -72,6 +73,7 @@ class ArchitecturePackageConventionTest {
         List<Class<?>> supportClasses = List.of(
                 CloneUrlBuilder.class,
                 BranchChangeRecorder.class,
+                MergeabilityAssessmentAssembler.class,
                 EventPolicyResolver.class,
                 ExecutionRequestService.class,
                 UserService.class,

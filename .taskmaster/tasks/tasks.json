@@ -88,7 +88,7 @@
         "priority": "high",
         "details": "기존 기능별 Task를 카테고리 기반(신규기능/리팩토링/보안)으로 재구성함.",
         "testStrategy": "카테고리별 우선순위에 따라 하위 작업을 순차 수행하고 회귀 테스트를 적용한다.",
-        "updatedAt": "2026-04-11T13:08:33.379Z",
+        "updatedAt": "2026-04-11T14:02:33Z",
         "subtasks": [
           {
             "id": 1,
@@ -232,6 +232,17 @@
             "parentTaskId": 2,
             "parentId": "2",
             "updatedAt": "2026-04-11T13:08:33.379Z"
+          },
+          {
+            "id": 14,
+            "title": "[server] Change Graph MergeabilityAssessment 모델 도입",
+            "description": "`docs/modeling/domain/change-graph-context.md` 기준으로 기존 `MergeResult` 위에 제품 언어의 `MergeabilityAssessment`와 `MergeTopologySummary` 모델을 얹고, fast-forward/merge commit 필요 여부를 노출한다.",
+            "details": "[source: docs/modeling/domain/change-graph-context.md]\n이번 작업은 Change Graph Context의 첫 구현 단위다. 기존 `MergeResult` API 계약은 유지하되, domain model 패키지에 `MergeabilityAssessment`, `MergeabilityStatus`, `MergeTopologySummary`를 추가하고 application support assembler를 통해 기존 merge preview 결과를 제품 언어로 변환한다. `MergeService`에는 `MergeabilityEvaluationUseCase`를 추가해 향후 PR readiness 조합에서 raw `MergeResult` 대신 assessment를 사용할 수 있는 seam을 만든다. `MergeGitAdapter.previewMergeability`는 fast-forward 가능 여부와 merge commit 필요 여부를 `MergeResult`에 채워 downstream assembler가 topology를 만들 수 있게 한다. 관련 테스트는 assembler 매핑, MergeService 위임, application package convention을 검증한다.\n\n[review closeout]\nfast-forward 설명은 실제 merge 수행 전략을 약속하지 않도록 topology 설명으로 조정했다. `MergeGitAdapterTest`를 추가해 fast-forward 가능 경로와 diverged 경로의 topology flag를 JGit fixture로 검증했다. 문서에는 `PullRequestRoute` 영속 Aggregate와 `MergeabilityAssessment` 조회 시점 계산값의 경계를 반영했다. 검증: `./gradlew :server:test` 통과.",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 2,
+            "parentId": "2",
+            "updatedAt": "2026-04-11T14:02:33Z"
           }
         ]
       },
@@ -331,7 +342,7 @@
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2026-04-11T13:08:33.379Z",
+      "lastModified": "2026-04-11T14:02:33Z",
       "taskCount": 5,
       "completedCount": 1,
       "tags": [

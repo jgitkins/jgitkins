@@ -144,8 +144,8 @@ Repository 생성 후처리에서 `RepositoryProvisionedEventListener` 기반 �
 
 ### 2.13. [docs] SCM/CI 도메인 모델링 bounded context 명세
 
-**Status:** done  
-**Dependencies:** None  
+**Status:** done
+**Dependencies:** None
 
 `docs/modeling/domain` 아래에 SCM 변경 흐름, CI 정책, 실행, PR readiness bounded context 문서를 작성하고 aggregate/VO/domain service 경계를 명시한다.
 
@@ -153,3 +153,18 @@ Repository 생성 후처리에서 `RepositoryProvisionedEventListener` 기반 �
 
 [source: docs/modeling/domain]
 이번 작업은 구현 전 도메인 명세를 고정하기 위한 문서화 리팩토링이다. 범위는 `docs/modeling/domain/README.md`, `change-graph-context.md`, `ci-policy-context.md`, `pipeline-execution-context.md`, `pull-request-readiness-context.md` 작성이다. 각 bounded context 문서에는 목적, 핵심 질문, 유비쿼터스 언어, Subdomain Classification, 책임/비책임, 주요 입력/출력, Aggregate Root, Entities, Value Objects, 핵심 불변식, mermaid class diagram, domain service 후보, 현재 코드 시드, 다음 리팩터링 힌트를 포함한다. 특히 Change Graph Context는 병합 도메인의 기준 문서로 삼고 `PullRequestRoute`, `BranchHeadSnapshot`, `MergeabilityAssessment`, `MergeTopologySummary`, `TargetDrift`의 의미를 먼저 고정한다.
+
+### 2.14. [server] Change Graph MergeabilityAssessment 모델 도입
+
+**Status:** done
+**Dependencies:** None
+
+`docs/modeling/domain/change-graph-context.md` 기준으로 기존 `MergeResult` 위에 제품 언어의 `MergeabilityAssessment`와 `MergeTopologySummary` 모델을 얹고, fast-forward/merge commit 필요 여부를 노출한다.
+
+**Details:**
+
+[source: docs/modeling/domain/change-graph-context.md]
+이번 작업은 Change Graph Context의 첫 구현 단위다. 기존 `MergeResult` API 계약은 유지하되, domain model 패키지에 `MergeabilityAssessment`, `MergeabilityStatus`, `MergeTopologySummary`를 추가하고 application support assembler를 통해 기존 merge preview 결과를 제품 언어로 변환한다. `MergeService`에는 `MergeabilityEvaluationUseCase`를 추가해 향후 PR readiness 조합에서 raw `MergeResult` 대신 assessment를 사용할 수 있는 seam을 만든다. `MergeGitAdapter.previewMergeability`는 fast-forward 가능 여부와 merge commit 필요 여부를 `MergeResult`에 채워 downstream assembler가 topology를 만들 수 있게 한다. 관련 테스트는 assembler 매핑, MergeService 위임, application package convention을 검증한다.
+
+[review closeout]
+fast-forward 설명은 실제 merge 수행 전략을 약속하지 않도록 topology 설명으로 조정했다. `MergeGitAdapterTest`를 추가해 fast-forward 가능 경로와 diverged 경로의 topology flag를 JGit fixture로 검증했다. 문서에는 `PullRequestRoute` 영속 Aggregate와 `MergeabilityAssessment` 조회 시점 계산값의 경계를 반영했다. 검증: `./gradlew :server:test` 통과.
