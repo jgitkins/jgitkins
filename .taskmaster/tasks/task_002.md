@@ -141,3 +141,15 @@ Repository 생성 후처리에서 `RepositoryProvisionedEventListener` 기반 �
 
 [source: jgitkins-server, original subtask: custom]
 대상 범위는 `server/src/main/java/io/jgitkins/server/application/service/PushEventHandleService.java`, `server/src/main/java/io/jgitkins/server/application/support/PushJobCreationPolicy.java`, `server/src/main/java/io/jgitkins/server/application/validate/JobCreationValidator.java`, `server/src/test/java/io/jgitkins/server/application/service/PushEventHandleServiceTest.java`, `server/src/test/java/io/jgitkins/server/application/ArchitecturePackageConventionTest.java`와 신규 support collaborator 패키지다. 1차 목표는 `PushEventHandleService`를 `BranchChangeRecorder`, `EventPolicyResolver`, `ExecutionRequestService` 협력자로 분해하여 브랜치 변경 사실 기록, `ci.yml` 기반 정책 해석, `JobCreateUseCase` 호출 경계를 명확히 나누는 것이다. 이 단계에서는 기존 push 기반 동작과 runner dispatch 흐름을 유지하고, `PushJobCreationPolicy`는 push 전용 구현을 감싼 상태로 두되 향후 일반화 가능한 이름과 테스트 seam을 확보한다. 관련 단위 테스트를 추가하여 오케스트레이션 경계, support package 규칙, execution command 매핑이 유지되는지 검증한다.
+
+### 2.13. [docs] SCM/CI 도메인 모델링 bounded context 명세
+
+**Status:** done  
+**Dependencies:** None  
+
+`docs/modeling/domain` 아래에 SCM 변경 흐름, CI 정책, 실행, PR readiness bounded context 문서를 작성하고 aggregate/VO/domain service 경계를 명시한다.
+
+**Details:**
+
+[source: docs/modeling/domain]
+이번 작업은 구현 전 도메인 명세를 고정하기 위한 문서화 리팩토링이다. 범위는 `docs/modeling/domain/README.md`, `change-graph-context.md`, `ci-policy-context.md`, `pipeline-execution-context.md`, `pull-request-readiness-context.md` 작성이다. 각 bounded context 문서에는 목적, 핵심 질문, 유비쿼터스 언어, Subdomain Classification, 책임/비책임, 주요 입력/출력, Aggregate Root, Entities, Value Objects, 핵심 불변식, mermaid class diagram, domain service 후보, 현재 코드 시드, 다음 리팩터링 힌트를 포함한다. 특히 Change Graph Context는 병합 도메인의 기준 문서로 삼고 `PullRequestRoute`, `BranchHeadSnapshot`, `MergeabilityAssessment`, `MergeTopologySummary`, `TargetDrift`의 의미를 먼저 고정한다.

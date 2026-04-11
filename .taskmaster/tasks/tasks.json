@@ -88,7 +88,7 @@
         "priority": "high",
         "details": "기존 기능별 Task를 카테고리 기반(신규기능/리팩토링/보안)으로 재구성함.",
         "testStrategy": "카테고리별 우선순위에 따라 하위 작업을 순차 수행하고 회귀 테스트를 적용한다.",
-        "updatedAt": "2026-04-10T13:31:57.985Z",
+        "updatedAt": "2026-04-11T13:08:33.379Z",
         "subtasks": [
           {
             "id": 1,
@@ -221,6 +221,17 @@
             "parentTaskId": 2,
             "parentId": "2",
             "updatedAt": "2026-04-10T13:31:57.985Z"
+          },
+          {
+            "id": 13,
+            "title": "[docs] SCM/CI 도메인 모델링 bounded context 명세",
+            "description": "`docs/modeling/domain` 아래에 SCM 변경 흐름, CI 정책, 실행, PR readiness bounded context 문서를 작성하고 aggregate/VO/domain service 경계를 명시한다.",
+            "details": "[source: docs/modeling/domain]\n이번 작업은 구현 전 도메인 명세를 고정하기 위한 문서화 리팩토링이다. 범위는 `docs/modeling/domain/README.md`, `change-graph-context.md`, `ci-policy-context.md`, `pipeline-execution-context.md`, `pull-request-readiness-context.md` 작성이다. 각 bounded context 문서에는 목적, 핵심 질문, 유비쿼터스 언어, Subdomain Classification, 책임/비책임, 주요 입력/출력, Aggregate Root, Entities, Value Objects, 핵심 불변식, mermaid class diagram, domain service 후보, 현재 코드 시드, 다음 리팩터링 힌트를 포함한다. 특히 Change Graph Context는 병합 도메인의 기준 문서로 삼고 `PullRequestRoute`, `BranchHeadSnapshot`, `MergeabilityAssessment`, `MergeTopologySummary`, `TargetDrift`의 의미를 먼저 고정한다.",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 2,
+            "parentId": "2",
+            "updatedAt": "2026-04-11T13:08:33.379Z"
           }
         ]
       },
@@ -320,7 +331,7 @@
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2026-04-10T13:31:57.988Z",
+      "lastModified": "2026-04-11T13:08:33.379Z",
       "taskCount": 5,
       "completedCount": 1,
       "tags": [
