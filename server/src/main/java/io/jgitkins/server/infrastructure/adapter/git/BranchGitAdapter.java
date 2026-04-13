@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.RefNotFoundException;
+import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Repository;
 import org.springframework.stereotype.Component;
 
@@ -74,6 +75,17 @@ public class BranchGitAdapter implements BranchGitPort {
         } catch (GitAPIException | IOException e) {
             throw new BranchDeleteFailedException(
                     "Failed to delete branch: " + branchName, e);
+        }
+    }
+
+    @Override
+    public String getHeadCommitHash(String namespace, String repoName, String branchName) throws IOException {
+        try (Repository repo = repositoryResolver.openBareRepository(namespace, repoName)) {
+            ObjectId objectId = repo.resolve(branchName);
+            if (objectId == null) {
+                throw new BranchNotFoundException(branchName);
+            }
+            return objectId.name();
         }
     }
 }

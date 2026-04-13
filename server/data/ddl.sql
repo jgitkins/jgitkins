@@ -86,6 +86,32 @@ CREATE TABLE `JOB_HISTORY` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `PULL_REQUEST`
+--
+
+DROP TABLE IF EXISTS `PULL_REQUEST`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8mb4 */;
+CREATE TABLE `PULL_REQUEST` (
+  `ID` bigint(20) NOT NULL AUTO_INCREMENT,
+  `REPOSITORY_ID` bigint(20) NOT NULL,
+  `SOURCE_BRANCH` varchar(255) NOT NULL,
+  `SOURCE_HEAD` varchar(64) NOT NULL,
+  `TARGET_BRANCH` varchar(255) NOT NULL,
+  `TARGET_HEAD` varchar(64) NOT NULL,
+  `STATUS` varchar(32) NOT NULL,
+  `TARGET_DRIFTED` tinyint(1) NOT NULL DEFAULT 0,
+  `PREVIOUS_TARGET_HEAD` varchar(64) DEFAULT NULL,
+  `CURRENT_TARGET_HEAD` varchar(64) DEFAULT NULL,
+  `CREATED_AT` timestamp NOT NULL DEFAULT current_timestamp(),
+  `UPDATED_AT` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`ID`),
+  KEY `IX_PULL_REQUEST_REPOSITORY_STATUS` (`REPOSITORY_ID`,`STATUS`),
+  KEY `IX_PULL_REQUEST_REPOSITORY_TARGET` (`REPOSITORY_ID`,`TARGET_BRANCH`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `ORGANIZE`
 --
 

@@ -2,7 +2,7 @@
 
 **Title:** 리팩토링
 
-**Status:** pending
+**Status:** in-progress
 
 **Dependencies:** None
 
@@ -152,7 +152,7 @@ Repository 생성 후처리에서 `RepositoryProvisionedEventListener` 기반 �
 **Details:**
 
 [source: docs/modeling/domain]
-이번 작업은 구현 전 도메인 명세를 고정하기 위한 문서화 리팩토링이다. 범위는 `docs/modeling/domain/README.md`, `change-graph-context.md`, `ci-policy-context.md`, `pipeline-execution-context.md`, `pull-request-readiness-context.md` 작성이다. 각 bounded context 문서에는 목적, 핵심 질문, 유비쿼터스 언어, Subdomain Classification, 책임/비책임, 주요 입력/출력, Aggregate Root, Entities, Value Objects, 핵심 불변식, mermaid class diagram, domain service 후보, 현재 코드 시드, 다음 리팩터링 힌트를 포함한다. 특히 Change Graph Context는 병합 도메인의 기준 문서로 삼고 `PullRequestRoute`, `BranchHeadSnapshot`, `MergeabilityAssessment`, `MergeTopologySummary`, `TargetDrift`의 의미를 먼저 고정한다.
+이번 작업은 구현 전 도메인 명세를 고정하기 위한 문서화 리팩토링이다. 범위는 `docs/modeling/domain/README.md`, `change-graph-context.md`, `ci-policy-context.md`, `pipeline-execution-context.md`, `pull-request-readiness-context.md` 작성이다. 각 bounded context 문서에는 목적, 핵심 질문, 유비쿼터스 언어, Subdomain Classification, 책임/비책임, 주요 입력/출력, Aggregate Root, Entities, Value Objects, 핵심 불변식, mermaid class diagram, domain service 후보, 현재 코드 시드, 다음 리팩터링 힌트를 포함한다. 특히 Change Graph Context는 병합 도메인의 기준 문서로 삼고 `PullRequest`, `BranchHeadSnapshot`, `MergeabilityAssessment`, `MergeTopologySummary`, `TargetDrift`의 의미를 먼저 고정한다.
 
 ### 2.14. [server] Change Graph MergeabilityAssessment 모델 도입
 
@@ -167,4 +167,37 @@ Repository 생성 후처리에서 `RepositoryProvisionedEventListener` 기반 �
 이번 작업은 Change Graph Context의 첫 구현 단위다. 기존 `MergeResult` API 계약은 유지하되, domain model 패키지에 `MergeabilityAssessment`, `MergeabilityStatus`, `MergeTopologySummary`를 추가하고 application support assembler를 통해 기존 merge preview 결과를 제품 언어로 변환한다. `MergeService`에는 `MergeabilityEvaluationUseCase`를 추가해 향후 PR readiness 조합에서 raw `MergeResult` 대신 assessment를 사용할 수 있는 seam을 만든다. `MergeGitAdapter.previewMergeability`는 fast-forward 가능 여부와 merge commit 필요 여부를 `MergeResult`에 채워 downstream assembler가 topology를 만들 수 있게 한다. 관련 테스트는 assembler 매핑, MergeService 위임, application package convention을 검증한다.
 
 [review closeout]
-fast-forward 설명은 실제 merge 수행 전략을 약속하지 않도록 topology 설명으로 조정했다. `MergeGitAdapterTest`를 추가해 fast-forward 가능 경로와 diverged 경로의 topology flag를 JGit fixture로 검증했다. 문서에는 `PullRequestRoute` 영속 Aggregate와 `MergeabilityAssessment` 조회 시점 계산값의 경계를 반영했다. 검증: `./gradlew :server:test` 통과.
+fast-forward 설명은 실제 merge 수행 전략을 약속하지 않도록 topology 설명으로 조정했다. `MergeGitAdapterTest`를 추가해 fast-forward 가능 경로와 diverged 경로의 topology flag를 JGit fixture로 검증했다. 문서에는 `PullRequest` 영속 Aggregate와 `MergeabilityAssessment` 조회 시점 계산값의 경계를 반영했다. 검증: `./gradlew :server:test` 통과.
+
+### 2.15. [server] PullRequest 도메인/영속성/Application seam 도입
+
+**Status:** done
+**Dependencies:** 2.14
+
+`docs/modeling/domain/change-graph-context.md` 기준으로 PR의 영속 상태를 대표하는 domain aggregate와 MBG 기반 영속성, 생성/상세 조회 application seam을 도입한다.
+
+**Details:**
+
+[source: docs/modeling/domain/change-graph-context.md]
+이번 작업은 presentation API 없이 server 내부 seam까지 진행한다. `domain.pr` 하위에 `PullRequest` Aggregate Root와 `PullRequestId`, `PullRequestStatus`, `BranchHeadSnapshot`, `TargetDrift`, `PullRequestRepository`를 추가한다. source/target 동일 branch 금지, 열린 pull request만 close/markMerged 가능, 닫힌 pull request만 reopen 가능, 저장된 assessment snapshot은 선택적 기록값이라는 불변식을 테스트로 고정한다.
+
+영속성은 JPA가 아니라 기존 MyBatis Generator 흐름을 따른다. `server/data/ddl.sql`과 `server/data/mbg/mbg-config.xml`에 `PULL_REQUEST`를 명세하고, `server/data/mbg/generate.sh`로 생성된 `PullRequestEntity`, `PullRequestEntityCondition`, `PullRequestEntityMbgMapper`, `PullRequestEntityMbgMapper.xml`을 사용한다. 구현체는 `infrastructure.adapter.persistence.pr.PullRequestPersistenceAdapter`로 두고 domain repository를 구현한다.
+
+Application 계층에는 `CreatePullRequestUseCase`와 `GetPullRequestDetailUseCase`를 추가한다. PR 생성은 repository/source/target branch head snapshot만 저장하고, 병합 가능 여부는 저장하지 않는다. 상세 조회는 read-only로 저장된 `PullRequest`와 현재 Git head, `PullRequestMergeabilityResolver`가 매번 재계산한 `MergeabilityAssessment`를 조합해 `PullRequestDetailResult`를 반환한다. 조회 중 target drift가 감지되어도 영속화하지 않으며, status 변경성 command에서만 저장하는 방향을 유지한다.
+
+[implementation closeout]
+`PullRequest` Aggregate와 PR 전용 VO/status/repository를 추가했고, MBG 기반 `PULL_REQUEST` 영속성 객체와 adapter/domain mapper를 연결했다. `BranchGitPort.getHeadCommitHash`를 추가해 생성/상세 조회에서 현재 branch head를 읽을 수 있게 했다. `CreatePullRequestUseCase`는 initial snapshot만 저장하고 mergeability는 저장하지 않으며, `GetPullRequestDetailUseCase`는 read-only로 현재 Git 상태 기준 mergeability를 매번 재계산한다. `PullRequestServiceTest`, `PullRequestDomainMapperTest`, `PullRequestTest`로 생성, 상세 조회 read-only 정책, target drift 응답 계산, assessment 비영속화, domain invariant를 검증했다. 검증: `./gradlew :server:test` 통과.
+
+### 2.16. [server] PullRequest REST API 연결
+
+**Status:** pending
+**Dependencies:** 2.15
+
+`CreatePullRequestUseCase`와 `GetPullRequestDetailUseCase`를 presentation REST API에 연결해 실제 클라이언트가 PR을 생성하고 상세 상태를 조회할 수 있게 한다.
+
+**Details:**
+
+[source: 2.15 implementation]
+`PullRequestController`를 추가하고 `POST /repositories/{namespace}/{repoName}/pull-requests`, `GET /pull-requests/{pullRequestId}` 또는 기존 라우팅 규칙에 맞는 endpoint를 제공한다. request/response DTO와 presentation mapper를 추가해 application DTO와 API 계약을 분리한다. 생성 API는 source/target branch만 받아 PR을 저장하고, 상세 API는 저장된 PR 상태와 현재 Git 기준 mergeability/readiness seed를 반환한다. 상세 조회는 read-only이며 mergeability와 target drift 관측값을 저장하지 않는다.
+
+테스트는 controller slice 또는 service mock 기반 REST 테스트로 happy path, source/target 동일 branch 오류, branch not found 오류, PR not found 오류를 검증한다. 다음 단계의 readiness 조합 확장을 위해 response에는 stored source/target, current source/target, status, targetDrift, mergeability를 명확히 노출한다.

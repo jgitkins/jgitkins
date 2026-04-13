@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.jgitkins.server.infrastructure.persistence.mapper.PullRequestEntityMbgMapper">
+  <resultMap id="BaseResultMap" type="io.jgitkins.server.infrastructure.persistence.model.PullRequestEntity">
+    <id column="ID" jdbcType="BIGINT" property="id" />
+    <result column="REPOSITORY_ID" jdbcType="BIGINT" property="repositoryId" />
+    <result column="SOURCE_BRANCH" jdbcType="VARCHAR" property="sourceBranch" />
+    <result column="SOURCE_HEAD" jdbcType="VARCHAR" property="sourceHead" />
+    <result column="TARGET_BRANCH" jdbcType="VARCHAR" property="targetBranch" />
+    <result column="TARGET_HEAD" jdbcType="VARCHAR" property="targetHead" />
+    <result column="STATUS" jdbcType="VARCHAR" property="status" />
+    <result column="TARGET_DRIFTED" jdbcType="BOOLEAN" property="targetDrifted" />
+    <result column="PREVIOUS_TARGET_HEAD" jdbcType="VARCHAR" property="previousTargetHead" />
+    <result column="CURRENT_TARGET_HEAD" jdbcType="VARCHAR" property="currentTargetHead" />
+    <result column="CREATED_AT" jdbcType="TIMESTAMP" property="createdAt" />
+    <result column="UPDATED_AT" jdbcType="TIMESTAMP" property="updatedAt" />
+  </resultMap>
+  <sql id="Condition_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Condition_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    ID, REPOSITORY_ID, SOURCE_BRANCH, SOURCE_HEAD, TARGET_BRANCH, TARGET_HEAD, STATUS,
+    TARGET_DRIFTED, PREVIOUS_TARGET_HEAD, CURRENT_TARGET_HEAD, CREATED_AT, UPDATED_AT
+  </sql>
+  <select id="selectByCondition" parameterType="io.jgitkins.server.infrastructure.persistence.model.PullRequestEntityCondition" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from PULL_REQUEST
+    <if test="_parameter != null">
+      <include refid="Condition_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from PULL_REQUEST
+    where ID = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from PULL_REQUEST
+    where ID = #{id,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByCondition" parameterType="io.jgitkins.server.infrastructure.persistence.model.PullRequestEntityCondition">
+    delete from PULL_REQUEST
+    <if test="_parameter != null">
+      <include refid="Condition_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" keyColumn="ID" keyProperty="id" parameterType="io.jgitkins.server.infrastructure.persistence.model.PullRequestEntity" useGeneratedKeys="true">
+    insert into PULL_REQUEST (REPOSITORY_ID, SOURCE_BRANCH, SOURCE_HEAD,
+      TARGET_BRANCH, TARGET_HEAD, STATUS,
+      TARGET_DRIFTED, PREVIOUS_TARGET_HEAD, CURRENT_TARGET_HEAD,
+      CREATED_AT, UPDATED_AT)
+    values (#{repositoryId,jdbcType=BIGINT}, #{sourceBranch,jdbcType=VARCHAR}, #{sourceHead,jdbcType=VARCHAR},
+      #{targetBranch,jdbcType=VARCHAR}, #{targetHead,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR},
+      #{targetDrifted,jdbcType=BOOLEAN}, #{previousTargetHead,jdbcType=VARCHAR}, #{currentTargetHead,jdbcType=VARCHAR},
+      #{createdAt,jdbcType=TIMESTAMP}, #{updatedAt,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" keyColumn="ID" keyProperty="id" parameterType="io.jgitkins.server.infrastructure.persistence.model.PullRequestEntity" useGeneratedKeys="true">
+    insert into PULL_REQUEST
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="repositoryId != null">
+        REPOSITORY_ID,
+      </if>
+      <if test="sourceBranch != null">
+        SOURCE_BRANCH,
+      </if>
+      <if test="sourceHead != null">
+        SOURCE_HEAD,
+      </if>
+      <if test="targetBranch != null">
+        TARGET_BRANCH,
+      </if>
+      <if test="targetHead != null">
+        TARGET_HEAD,
+      </if>
+      <if test="status != null">
+        STATUS,
+      </if>
+      <if test="targetDrifted != null">
+        TARGET_DRIFTED,
+      </if>
+      <if test="previousTargetHead != null">
+        PREVIOUS_TARGET_HEAD,
+      </if>
+      <if test="currentTargetHead != null">
+        CURRENT_TARGET_HEAD,
+      </if>
+      <if test="createdAt != null">
+        CREATED_AT,
+      </if>
+      <if test="updatedAt != null">
+        UPDATED_AT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="repositoryId != null">
+        #{repositoryId,jdbcType=BIGINT},
+      </if>
+      <if test="sourceBranch != null">
+        #{sourceBranch,jdbcType=VARCHAR},
+      </if>
+      <if test="sourceHead != null">
+        #{sourceHead,jdbcType=VARCHAR},
+      </if>
+      <if test="targetBranch != null">
+        #{targetBranch,jdbcType=VARCHAR},
+      </if>
+      <if test="targetHead != null">
+        #{targetHead,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="targetDrifted != null">
+        #{targetDrifted,jdbcType=BOOLEAN},
+      </if>
+      <if test="previousTargetHead != null">
+        #{previousTargetHead,jdbcType=VARCHAR},
+      </if>
+      <if test="currentTargetHead != null">
+        #{currentTargetHead,jdbcType=VARCHAR},
+      </if>
+      <if test="createdAt != null">
+        #{createdAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedAt != null">
+        #{updatedAt,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByCondition" parameterType="io.jgitkins.server.infrastructure.persistence.model.PullRequestEntityCondition" resultType="java.lang.Long">
+    select count(*) from PULL_REQUEST
+    <if test="_parameter != null">
+      <include refid="Condition_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByConditionSelective" parameterType="map">
+    update PULL_REQUEST
+    <set>
+      <if test="row.id != null">
+        ID = #{row.id,jdbcType=BIGINT},
+      </if>
+      <if test="row.repositoryId != null">
+        REPOSITORY_ID = #{row.repositoryId,jdbcType=BIGINT},
+      </if>
+      <if test="row.sourceBranch != null">
+        SOURCE_BRANCH = #{row.sourceBranch,jdbcType=VARCHAR},
+      </if>
+      <if test="row.sourceHead != null">
+        SOURCE_HEAD = #{row.sourceHead,jdbcType=VARCHAR},
+      </if>
+      <if test="row.targetBranch != null">
+        TARGET_BRANCH = #{row.targetBranch,jdbcType=VARCHAR},
+      </if>
+      <if test="row.targetHead != null">
+        TARGET_HEAD = #{row.targetHead,jdbcType=VARCHAR},
+      </if>
+      <if test="row.status != null">
+        STATUS = #{row.status,jdbcType=VARCHAR},
+      </if>
+      <if test="row.targetDrifted != null">
+        TARGET_DRIFTED = #{row.targetDrifted,jdbcType=BOOLEAN},
+      </if>
+      <if test="row.previousTargetHead != null">
+        PREVIOUS_TARGET_HEAD = #{row.previousTargetHead,jdbcType=VARCHAR},
+      </if>
+      <if test="row.currentTargetHead != null">
+        CURRENT_TARGET_HEAD = #{row.currentTargetHead,jdbcType=VARCHAR},
+      </if>
+      <if test="row.createdAt != null">
+        CREATED_AT = #{row.createdAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="row.updatedAt != null">
+        UPDATED_AT = #{row.updatedAt,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    <if test="example != null">
+      <include refid="Update_By_Condition_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByCondition" parameterType="map">
+    update PULL_REQUEST
+    set ID = #{row.id,jdbcType=BIGINT},
+      REPOSITORY_ID = #{row.repositoryId,jdbcType=BIGINT},
+      SOURCE_BRANCH = #{row.sourceBranch,jdbcType=VARCHAR},
+      SOURCE_HEAD = #{row.sourceHead,jdbcType=VARCHAR},
+      TARGET_BRANCH = #{row.targetBranch,jdbcType=VARCHAR},
+      TARGET_HEAD = #{row.targetHead,jdbcType=VARCHAR},
+      STATUS = #{row.status,jdbcType=VARCHAR},
+      TARGET_DRIFTED = #{row.targetDrifted,jdbcType=BOOLEAN},
+      PREVIOUS_TARGET_HEAD = #{row.previousTargetHead,jdbcType=VARCHAR},
+      CURRENT_TARGET_HEAD = #{row.currentTargetHead,jdbcType=VARCHAR},
+      CREATED_AT = #{row.createdAt,jdbcType=TIMESTAMP},
+      UPDATED_AT = #{row.updatedAt,jdbcType=TIMESTAMP}
+    <if test="example != null">
+      <include refid="Update_By_Condition_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="io.jgitkins.server.infrastructure.persistence.model.PullRequestEntity">
+    update PULL_REQUEST
+    <set>
+      <if test="repositoryId != null">
+        REPOSITORY_ID = #{repositoryId,jdbcType=BIGINT},
+      </if>
+      <if test="sourceBranch != null">
+        SOURCE_BRANCH = #{sourceBranch,jdbcType=VARCHAR},
+      </if>
+      <if test="sourceHead != null">
+        SOURCE_HEAD = #{sourceHead,jdbcType=VARCHAR},
+      </if>
+      <if test="targetBranch != null">
+        TARGET_BRANCH = #{targetBranch,jdbcType=VARCHAR},
+      </if>
+      <if test="targetHead != null">
+        TARGET_HEAD = #{targetHead,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        STATUS = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="targetDrifted != null">
+        TARGET_DRIFTED = #{targetDrifted,jdbcType=BOOLEAN},
+      </if>
+      <if test="previousTargetHead != null">
+        PREVIOUS_TARGET_HEAD = #{previousTargetHead,jdbcType=VARCHAR},
+      </if>
+      <if test="currentTargetHead != null">
+        CURRENT_TARGET_HEAD = #{currentTargetHead,jdbcType=VARCHAR},
+      </if>
+      <if test="createdAt != null">
+        CREATED_AT = #{createdAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedAt != null">
+        UPDATED_AT = #{updatedAt,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="io.jgitkins.server.infrastructure.persistence.model.PullRequestEntity">
+    update PULL_REQUEST
+    set REPOSITORY_ID = #{repositoryId,jdbcType=BIGINT},
+      SOURCE_BRANCH = #{sourceBranch,jdbcType=VARCHAR},
+      SOURCE_HEAD = #{sourceHead,jdbcType=VARCHAR},
+      TARGET_BRANCH = #{targetBranch,jdbcType=VARCHAR},
+      TARGET_HEAD = #{targetHead,jdbcType=VARCHAR},
+      STATUS = #{status,jdbcType=VARCHAR},
+      TARGET_DRIFTED = #{targetDrifted,jdbcType=BOOLEAN},
+      PREVIOUS_TARGET_HEAD = #{previousTargetHead,jdbcType=VARCHAR},
+      CURRENT_TARGET_HEAD = #{currentTargetHead,jdbcType=VARCHAR},
+      CREATED_AT = #{createdAt,jdbcType=TIMESTAMP},
+      UPDATED_AT = #{updatedAt,jdbcType=TIMESTAMP}
+    where ID = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

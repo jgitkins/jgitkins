@@ -40,10 +40,10 @@
 - policy match 자체 계산
 - 실제 pipeline 실행
 - presentation 래핑
-- `PullRequestRoute`의 생성/닫기/병합 완료 같은 영속 상태 전이
+- `PullRequest`의 생성/닫기/병합 완료 같은 영속 상태 전이
 
 ## 주요 입력
-- 저장된 `PullRequestRoute`
+- 저장된 `PullRequest`
 - source validation 결과
 - mergeability 결과
 - matched policy
@@ -67,11 +67,11 @@
 ### 이유
 - 이 context는 쓰기 모델의 일관성 경계보다 읽기 조합 경계에 가깝다.
 - 따라서 aggregate를 억지로 만들기보다 read model과 assembler 중심으로 두는 편이 자연스럽다.
-- PR 자체의 영속 상태는 Change Graph Context의 `PullRequestRoute`가 관리하고, 이 context는 그 route와 동적 계산 결과를 조합한다.
+- PR 자체의 영속 상태는 Change Graph Context의 `PullRequest`가 관리하고, 이 context는 그 pull request와 동적 계산 결과를 조합한다.
 
 ### Core Models
 - `PullRequestDetail`
-- `PullRequestRouteSummary`
+- `PullRequestSummary`
 - `PullRequestReadinessInput`
 - `PullRequestReadinessResult`
 
@@ -85,7 +85,7 @@
 - source validation이 `FAILING`이면 mergeability와 무관하게 overall은 `FAILING`이다.
 - source validation이 `RUNNING` 또는 `UNKNOWN`이면 overall은 `UNKNOWN`이다.
 - source validation이 `PASSING`이고 mergeability가 `MERGEABLE`일 때만 overall은 `READY`다.
-- PR 상세 조회는 저장된 PR route와 조회 시점의 Git 계산 결과를 함께 사용해야 한다.
+- PR 상세 조회는 저장된 PR과 조회 시점의 Git 계산 결과를 함께 사용해야 한다.
 - 저장된 mergeability snapshot이 있더라도 readiness 계산의 최종 입력은 조회 시점에 재계산된 mergeability다.
 
 ## 조회 조합 원칙
@@ -93,7 +93,7 @@
 - PR id
 - repository id
 - source branch / target branch
-- route status
+- pull request status
 - 생성 시점 source / target head snapshot
 - 승인 상태 또는 승인 요약
 - 연결된 CI execution/check 참조
@@ -108,7 +108,7 @@
 
 ### Application Use Case 경계
 - `GetPullRequestDetailUseCase`는 PR 상세 화면과 CLI 상세 조회의 application orchestration이다.
-- 이 use case는 `PullRequestRoute`를 영속 저장소에서 읽고, Change Graph Context에 현재 mergeability 해석을 요청한다.
+- 이 use case는 `PullRequest`를 영속 저장소에서 읽고, Change Graph Context에 현재 mergeability 해석을 요청한다.
 - 이 use case는 CI Policy / Pipeline Execution 결과를 함께 읽어 readiness result를 만든다.
 - 이름은 기술적인 `load`보다 사용자 목적이 드러나는 `GetPullRequestDetailUseCase`를 우선한다.
 
@@ -122,17 +122,17 @@ classDiagram
 
     class PullRequestDetail {
         <<Application Result>>
-        +PullRequestRouteSummary route
+        +PullRequestSummary pullRequest
         +PullRequestReadinessResult readiness
         +MergeabilityAssessment mergeability
         +String nextAction
     }
 
-    class PullRequestRouteSummary {
+    class PullRequestSummary {
         <<Application Result>>
         +String sourceBranch
         +String targetBranch
-        +String routeStatus
+        +String pullRequestStatus
         +String sourceHead
         +String targetHead
         +boolean targetDrifted
@@ -162,7 +162,7 @@ classDiagram
         +assemble(PullRequestReadinessInput)
     }
 
-    class PullRequestRoute {
+    class PullRequest {
         <<External Aggregate>>
     }
 
@@ -194,11 +194,11 @@ classDiagram
         UNKNOWN
     }
 
-    GetPullRequestDetailUseCase ..> PullRequestRoute
+    GetPullRequestDetailUseCase ..> PullRequest
     GetPullRequestDetailUseCase ..> MergeabilityAssessment
     GetPullRequestDetailUseCase ..> PullRequestReadinessAssembler
     GetPullRequestDetailUseCase ..> PullRequestDetail
-    PullRequestDetail ..> PullRequestRouteSummary
+    PullRequestDetail ..> PullRequestSummary
     PullRequestDetail ..> PullRequestReadinessResult
     PullRequestDetail ..> MergeabilityAssessment
     PullRequestReadinessInput ..> MergeabilityAssessment
@@ -221,7 +221,7 @@ classDiagram
 
 ## 주요 시나리오
 ### 1. PR detail 화면
-- application use case는 저장된 PR route를 읽는다.
+- application use case는 저장된 PR를 읽는다.
 - source / target의 현재 head와 mergeability를 다시 계산한다.
 - 사용자는 현재 PR의 overall readiness를 본다.
 - 그 아래에서 source validation과 mergeability를 분리해서 확인한다.
@@ -246,9 +246,9 @@ classDiagram
 - 아직 실제 PR read use case에 연결되지 않았다.
 - stale target 상태와 partial failure 상태는 아직 명시적으로 반영되지 않았다.
 - reason / next action 문구는 현재 영어 초안 수준이다.
-- PR route 영속 저장소와 현재 Git 계산값을 조합하는 application orchestration이 아직 없다.
+- PR 영속 저장소와 현재 Git 계산값을 조합하는 application orchestration이 아직 없다.
 
 ## 다음 리팩터링 힌트
 - web에서 raw mergeability와 raw job result를 직접 조합하지 않도록, readiness result를 우선 API 응답 기준으로 삼아야 한다.
 - 이후 CLI가 생겨도 같은 result를 재사용하면 된다.
-- 다음 구현은 `PullRequestRoute` 영속 모델을 먼저 만들고, 그 다음 `GetPullRequestDetailUseCase`에서 route, mergeability, source validation을 조합하는 순서가 안전하다.
+- 다음 구현은 `PullRequest` 영속 모델을 먼저 만들고, 그 다음 `GetPullRequestDetailUseCase`에서 pull request, mergeability, source validation을 조합하는 순서가 안전하다.
