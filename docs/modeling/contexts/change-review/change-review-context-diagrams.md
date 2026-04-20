@@ -111,28 +111,23 @@ stateDiagram-v2
 ```mermaid
 sequenceDiagram
     actor Client
-    participant PRS as PullRequestService
-    participant RLS as RepositoryLookupService
-    participant RNS as RepositoryNamespaceResolver
-    participant BGP as BranchGitPort
-    participant PRR as PullRequestRepository
+    participant App as Server(Application)
+    participant FS as File System
+    participant DB as Database
 
-    Client->>PRS: createPullRequest(command)
-    PRS->>RLS: findByPath(namespace, repoName)
-    RLS-->>PRS: repository
-    PRS->>RNS: resolve(repository)
-    RNS-->>PRS: actual namespace
-    PRS->>BGP: getHeadCommitHash(namespace, repoName, sourceBranch)
-    BGP-->>PRS: source head
-    PRS->>BGP: getHeadCommitHash(namespace, repoName, targetBranch)
-    BGP-->>PRS: target head
-    PRS->>PRS: PullRequest.create(repositoryId, sourceSnapshot, targetSnapshot)
-    PRS->>PRR: save(pullRequest)
-    PRR-->>PRS: saved pull request
-    PRS-->>Client: PullRequestResult
+    Client->>App: createPullRequest(command)
+    App->>DB: repository 조회
+    DB-->>App: repository
+    App->>FS: source/target branch head 조회
+    FS-->>App: branch snapshots
+    App->>DB: PullRequest 저장
+    DB-->>App: saved pull request
+    App-->>Client: PullRequestResult
 ```
 
 Pull Request는 branch 자체가 아니라 생성 시점 source/target snapshot을 저장한다.
+
+애플리케이션 내부에서는 repository 경로 해석, branch head 조회, `PullRequest.create(...)` 호출을 수행한다.
 
 - persisted
   - `repositoryId`
@@ -148,39 +143,25 @@ Pull Request는 branch 자체가 아니라 생성 시점 source/target snapshot�
 ```mermaid
 sequenceDiagram
     actor Client
-    participant PRS as PullRequestService
-    participant PRR as PullRequestRepository
-    participant RPP as RepositoryPersistencePort
-    participant PMR as PullRequestMergeabilityResolver
-    participant BGP as BranchGitPort
-    participant MGP as MergeGitPort
+    participant App as Server(Application)
+    participant FS as File System
+    participant DB as Database
 
-    Client->>PRS: getPullRequestDetail(pullRequestId)
-    PRS->>PRR: findById(id)
-    PRR-->>PRS: pull request
-    PRS->>RPP: findById(repositoryId)
-    RPP-->>PRS: repository
-
-    PRS->>PMR: currentSourceHead(repository, pullRequest)
-    PMR->>BGP: getHeadCommitHash(namespace, repoName, sourceBranch)
-    BGP-->>PMR: current source head
-    PMR-->>PRS: current source snapshot
-
-    PRS->>PMR: currentTargetHead(repository, pullRequest)
-    PMR->>BGP: getHeadCommitHash(namespace, repoName, targetBranch)
-    BGP-->>PMR: current target head
-    PMR-->>PRS: current target snapshot
-
-    PRS->>PRS: pullRequest.markTargetDrifted(currentTarget)
-    PRS->>PMR: assess(repository, observedPullRequest)
-    PMR->>MGP: previewMergeability(namespace, repoName, source, target)
-    MGP-->>PMR: MergeResult
-    PMR-->>PRS: MergeabilityAssessment
-
-    PRS-->>Client: PullRequestDetailResult
+    Client->>App: getPullRequestDetail(pullRequestId)
+    App->>DB: PullRequest / Repository 조회
+    DB-->>App: stored snapshots + repository
+    App->>FS: 현재 source/target branch head 조회
+    FS-->>App: current branch snapshots
+    App->>FS: merge preview 조회
+    FS-->>App: MergeResult
+    App-->>Client: PullRequestDetailResult
 ```
 
+<!-- TODO: compute 부분을 섹션으로 표기해서 보여줘도 좋을 것 같아 -->
+
 상세 조회는 저장된 기준점과 현재 Git 상태를 함께 반환한다.
+
+애플리케이션 내부에서는 `TargetDrift` 계산과 `MergeabilityAssessment` 조합을 수행한다.
 
 - persisted
   - 기존 `PullRequest`
@@ -201,13 +182,13 @@ sequenceDiagram
 ```mermaid
 sequenceDiagram
     actor Client
-    participant MS as MergeService
-    participant MGP as MergeGitPort
+    participant App as Server(Application)
+    participant FS as File System
 
-    Client->>MS: performMerge(namespace, repoName, request)
-    MS->>MGP: merge(namespace, repoName, request)
-    MGP-->>MS: MergeResult
-    MS-->>Client: MergeResult
+    Client->>App: performMerge(namespace, repoName, request)
+    App->>FS: merge 실행
+    FS-->>App: MergeResult
+    App-->>Client: MergeResult
 ```
 
 현재 구현은 merge command와 결과 반환까지만 연결한다. merge 성공 후 `MERGED` 상태 저장은 별도 유스케이스로 통합되지 않았다.

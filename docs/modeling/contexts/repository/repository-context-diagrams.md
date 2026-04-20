@@ -116,36 +116,28 @@ stateDiagram-v2
 ```mermaid
 sequenceDiagram
     actor Client
-    participant RMS as RepositoryManagementService
-    participant RV as RepositoryValidator
-    participant RNS as RepositoryNamespaceResolver
-    participant RP as RepositoryPersistencePort
-    participant Prov as RepositoryProvisioner
-    participant RGP as RepositoryGitPort
-    participant BR as BranchRepository
-    participant CGP as CommitGitPort
+    participant App as Server(Application)
+    participant FS as File System
+    participant DB as Database
 
-    Client->>RMS: create(command)
-    RMS->>RV: validateOwnership / validateRepositoryNameUnique
-    RMS->>RNS: resolve(ownerType, ownerId)
-    RMS->>RMS: Repository.create(...)
-    RMS->>RP: save(repository)
-    RP-->>RMS: saved repository
-    RMS->>Prov: provision(saved, initialCommitOptions)
-
-    Prov->>RGP: initialize(namespace, repoName)
-    Prov->>BR: save(defaultBranch)
+    Client->>App: create(command)
+    App->>DB: owner / name 중복 검증
+    DB-->>App: validation basis
+    App->>DB: Repository 저장
+    DB-->>App: saved repository
+    App->>FS: bare repository 생성
+    FS-->>App: initialized repository space
+    App->>DB: default branch 저장
 
     alt requires initial content
-        Prov->>CGP: commit(namespace, repoName, branch, ...)
-        Prov->>RGP: updateHeadReference(namespace, repoName, branch)
-        Prov->>RP: update(repository.markInit(...))
-        RP-->>Prov: initialized repository
+        App->>FS: 초기 commit 생성 + HEAD 갱신
+        FS-->>App: initialized state
+        App->>DB: Repository initialized 상태 반영
+        DB-->>App: updated repository
     else no initial content
-        Prov-->>RMS: provisioned repository
+        App->>App: 초기화 단계 생략
     end
-
-    RMS-->>Client: RepositoryResult
+    App-->>Client: RepositoryResult
 ```
 
-`RepositoryManagementService`가 aggregate를 생성·저장하고, `RepositoryProvisioner`가 Git 초기화와 기본 브랜치 생성, 선택적 초기 commit 반영을 처리한다.
+애플리케이션 내부에서는 ownership 검증, namespace 해석, `Repository.create(...)`, provision orchestration을 수행한다.
