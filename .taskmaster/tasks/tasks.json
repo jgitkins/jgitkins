@@ -282,6 +282,79 @@
             "parentTaskId": 2,
             "parentId": "2",
             "updatedAt": "2026-04-20T13:53:39.868Z"
+          },
+          {
+            "id": 18,
+            "title": "[plan][P0][server, docs] Shared / Cross-Cutting Topics 기준 리팩토링 계획 수립",
+            "description": "`Namespace`, `Pipeline Policy`, `RepositoryPermission`, `MergeabilityAssessment`처럼 여러 context를 가로지르는 계산/정책 seam을 먼저 고정하고 후속 리팩토링의 기준선을 만든다.",
+            "details": "참조 문서: `docs/modeling/overview/domain-overview.md`, `docs/modeling/contexts/shared-cross-cutting/shared-cross-cutting-topics.md`, `docs/modeling/contexts/shared-cross-cutting/shared-cross-cutting-topics-diagrams.md`. 산출물은 `.taskmaster/docs/refactor/task_2_18_plan.md`이며 다음을 포함한다. 1) shared value object / application-level policy / read-side result 분류 확정. 2) `Namespace`, `Pipeline Policy`, `RepositoryPermission`, `MergeabilityAssessment`의 현재 코드 위치와 목표 위치 정리. 3) `Execution`, `Repository`, `Change & Review`가 어떤 seam을 공통으로 사용해야 하는지 정의. 4) 단계별 이관 순서, 영향 범위, 테스트 전략 정리.",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 2,
+            "parentId": "2"
+          },
+          {
+            "id": 19,
+            "title": "[plan][P1][server, docs] Repository Context 기준 리팩토링 계획 수립",
+            "description": "`Repository`, `Branch`, `RepositoryMember`, provisioning lifecycle의 책임을 문서 기준으로 재정렬하는 실행 계획을 수립한다.",
+            "details": "참조 문서: `docs/modeling/contexts/repository/repository-context.md`, `docs/modeling/contexts/repository/repository-context-diagrams.md`. 산출물은 `.taskmaster/docs/refactor/task_2_19_plan.md`이며 다음을 포함한다. 1) `Repository Aggregate`, `Branch Entity`, `RepositoryMember relation model` 기준의 패키지/서비스 재배치안. 2) `RepositoryManagement/Load`, provisioning, branch metadata, Git external state 경계 정리. 3) 선행 shared seam 의존성 반영. 4) 테스트 전략과 점진 이관 단위 정의.",
+            "status": "pending",
+            "dependencies": [
+              18
+            ],
+            "parentTaskId": 2,
+            "parentId": "2"
+          },
+          {
+            "id": 20,
+            "title": "[plan][P2][server, docs] Execution Context 기준 리팩토링 계획 수립",
+            "description": "`Job`, `JobHistory`, `Runner`, dispatch orchestration, pipeline policy 소비 경계를 문서 기준으로 재정렬하는 실행 계획을 수립한다.",
+            "details": "참조 문서: `docs/modeling/contexts/execution/execution-context.md`. 산출물은 `.taskmaster/docs/refactor/task_2_20_plan.md`이며 다음을 포함한다. 1) `Job Aggregate`, `JobHistory Entity`, `Runner Aggregate` 기준의 서비스/포트 재배치안. 2) `PushEventHandleService`, `ExecutionRequestService`, `PushJobCreationPolicy`의 경계 재정의. 3) pipeline policy가 aggregate가 아닌 application-level policy라는 현재 판단 반영. 4) dispatch/result report/runner activation 테스트 전략 정리.",
+            "status": "pending",
+            "dependencies": [
+              18,
+              19
+            ],
+            "parentTaskId": 2,
+            "parentId": "2"
+          },
+          {
+            "id": 21,
+            "title": "[plan][P3][server, docs] Change & Review Context 기준 리팩토링 계획 수립",
+            "description": "`PullRequest` 영속 상태와 `MergeabilityAssessment`, `TargetDrift` 같은 계산 결과의 경계를 더 엄격히 적용하기 위한 실행 계획을 수립한다.",
+            "details": "참조 문서: `docs/modeling/contexts/change-review/change-review-context.md`, `docs/modeling/contexts/change-review/change-review-context-diagrams.md`. 산출물은 `.taskmaster/docs/refactor/task_2_21_plan.md`이며 다음을 포함한다. 1) persisted state와 computed result 분리 원칙 재확인. 2) PR 생성/상세 조회/상태 전이/merge 수행 경계 정리. 3) `Repository`와 shared seam 의존성 반영. 4) MBG 영속성, application seam, API 확장 순서 정의.",
+            "status": "pending",
+            "dependencies": [
+              18,
+              19
+            ],
+            "parentTaskId": 2,
+            "parentId": "2"
+          },
+          {
+            "id": 22,
+            "title": "[plan][P4][server, docs] Identity & Access Context 기준 리팩토링 계획 수립",
+            "description": "`User`, `UserIdentity`, `UserCredential`, activation, PAT 발급/폐기 경계를 문서 기준으로 재정렬하는 실행 계획을 수립한다.",
+            "details": "참조 문서: `docs/modeling/contexts/identity-access/identity-access-context.md`, `docs/modeling/contexts/identity-access/identity-access-context-diagrams.md`. 산출물은 `.taskmaster/docs/refactor/task_2_22_plan.md`이며 다음을 포함한다. 1) `User Aggregate Root Candidate` 확정 여부 검토. 2) `UserIdentity`, `UserCredential`의 종속 모델 유지 또는 분리 기준 정리. 3) activation/credential 흐름의 application service 경계 재배치안. 4) namespace 충돌과 collaboration 연계 포인트 정리.",
+            "status": "pending",
+            "dependencies": [
+              18
+            ],
+            "parentTaskId": 2,
+            "parentId": "2"
+          },
+          {
+            "id": 23,
+            "title": "[plan][P5][server, docs] Collaboration Context 기준 리팩토링 계획 수립",
+            "description": "`Organization`, `Organization Member`, owner/member 기반 접근 경계와 relation model 해석을 문서 기준으로 재정렬하는 실행 계획을 수립한다.",
+            "details": "참조 문서: `docs/modeling/contexts/collaboration/collaboration-context.md`, `docs/modeling/contexts/collaboration/collaboration-context-diagrams.md`. 산출물은 `.taskmaster/docs/refactor/task_2_23_plan.md`이며 다음을 포함한다. 1) `Organization Aggregate`와 `Organization Member relation model` 기준 정리. 2) `Organize` 명명과 문서 용어 정합성 정리. 3) repository ownership, shared permission 계산과의 연결 seam 정리. 4) identity/access 의존성 반영과 점진 이관 순서 정의.",
+            "status": "pending",
+            "dependencies": [
+              18,
+              22
+            ],
+            "parentTaskId": 2,
+            "parentId": "2"
           }
         ]
       },
