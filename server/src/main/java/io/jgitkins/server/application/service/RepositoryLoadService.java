@@ -8,12 +8,13 @@ import io.jgitkins.server.application.port.in.RepositoryLoadUseCase;
 import io.jgitkins.server.application.port.out.CurrentUserPort;
 import io.jgitkins.server.application.port.out.RepositoryPersistencePort;
 import io.jgitkins.server.application.port.out.UserPersistencePort;
-import io.jgitkins.server.application.support.RepositoryLookupService;
 import io.jgitkins.server.domain.aggregate.Repository;
 import io.jgitkins.server.domain.model.vo.OrganizeId;
 import io.jgitkins.server.domain.model.vo.OwnerId;
 import io.jgitkins.server.domain.model.vo.OwnerType;
 import io.jgitkins.server.domain.model.vo.RepositoryId;
+import io.jgitkins.server.repository.application.support.RepositoryLookupService;
+import io.jgitkins.server.shared.application.support.RepositoryAccessibilityService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +29,7 @@ import java.util.Optional;
 public class RepositoryLoadService implements RepositoryLoadUseCase {
 
     private final RepositoryApplicationMapper repositoryApplicationMapper;
+    private final RepositoryAccessibilityService repositoryAccessibilityService;
     private final RepositoryLookupService repositoryLookupService;
     private final RepositoryPersistencePort repositoryPort;
     private final CurrentUserPort currentUserPersistencePort;
@@ -44,11 +46,12 @@ public class RepositoryLoadService implements RepositoryLoadUseCase {
     @Override
     @Transactional(readOnly = true)
     public RepositoryResult loadRepositoryByPath(String namespace, String repoName) {
-        Repository repository = repositoryLookupService.findByPath(namespace, repoName)
+        Repository repository = repositoryLookupService.resolveByPath(namespace, repoName)
                 .orElseThrow(() -> new RepositoryNotFoundException(namespace, repoName));
         return repositoryApplicationMapper.toDto(repository);
     }
 
+    // TODO: 개선 필요
     @Override
     @Transactional(readOnly = true)
     public List<RepositoryResult> loadRepositories() {
@@ -56,7 +59,7 @@ public class RepositoryLoadService implements RepositoryLoadUseCase {
         Map<OrganizeId, Boolean> membershipCache = new HashMap<>();
 
         return repositoryPort.findAll().stream()
-                .filter(repo -> repositoryLookupService.isVisibleToRequester(repo, requesterId, membershipCache))
+                .filter(repo -> repositoryAccessibilityService.isVisibleToRequester(repo, requesterId, membershipCache))
                 .map(repositoryApplicationMapper::toDto)
                 .toList();
     }
@@ -71,7 +74,7 @@ public class RepositoryLoadService implements RepositoryLoadUseCase {
 
         Optional<Long> requesterId = currentUserPersistencePort.resolveCurrentUserId();
         return repositoryPort.findAllByOwner(OwnerType.USER, OwnerId.of(ownerId)).stream()
-                .filter(repo -> repositoryLookupService.isVisibleToUserOwner(repo, requesterId, ownerId))
+                .filter(repo -> repositoryAccessibilityService.isVisibleToUserOwner(repo, requesterId, ownerId))
                 .map(repositoryApplicationMapper::toDto)
                 .toList();
     }

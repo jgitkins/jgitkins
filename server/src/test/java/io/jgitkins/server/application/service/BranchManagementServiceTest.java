@@ -10,7 +10,7 @@ import static org.mockito.Mockito.when;
 import io.jgitkins.server.application.dto.command.BranchCreateCommand;
 import io.jgitkins.server.application.port.out.BranchGitPort;
 import io.jgitkins.server.application.port.out.RepositoryPersistencePort;
-import io.jgitkins.server.application.support.RepositoryNamespaceResolver;
+import io.jgitkins.server.shared.application.support.RepositoryNamespaceResolver;
 import io.jgitkins.server.application.validate.BranchCreationValidator;
 import io.jgitkins.server.application.validate.RepositoryAccessValidator;
 import io.jgitkins.server.common.exception.JgitkinsException;

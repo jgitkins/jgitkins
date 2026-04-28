@@ -1,4 +1,4 @@
-package io.jgitkins.server.application.common;
+package io.jgitkins.server.shared.common;
 
 import lombok.experimental.UtilityClass;
 

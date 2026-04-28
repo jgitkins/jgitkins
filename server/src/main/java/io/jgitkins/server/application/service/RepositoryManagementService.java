@@ -1,6 +1,6 @@
 package io.jgitkins.server.application.service;
 
-import io.jgitkins.server.application.common.RepositoryPathHelper;
+import io.jgitkins.server.shared.common.RepositoryPathHelper;
 import io.jgitkins.server.application.dto.command.RepositoryCreateCommand;
 import io.jgitkins.server.application.dto.result.RepositoryResult;
 import io.jgitkins.server.application.mapper.RepositoryApplicationMapper;
@@ -8,7 +8,7 @@ import io.jgitkins.server.application.port.in.RepositoryCreateUseCase;
 import io.jgitkins.server.application.port.in.RepositoryDeleteUseCase;
 import io.jgitkins.server.application.port.out.RepositoryGitPort;
 import io.jgitkins.server.application.port.out.RepositoryPersistencePort;
-import io.jgitkins.server.application.support.RepositoryNamespaceResolver;
+import io.jgitkins.server.shared.application.support.RepositoryNamespaceResolver;
 import io.jgitkins.server.application.support.RepositoryProvisioner;
 import io.jgitkins.server.application.validate.RepositoryValidator;
 import io.jgitkins.server.application.exception.RepositoryNotFoundException;

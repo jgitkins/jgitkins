@@ -1,4 +1,4 @@
-package io.jgitkins.server.application.support;
+package io.jgitkins.server.shared.application.policy;
 
 import static io.jgitkins.server.application.dto.result.PipelineSkipReason.SKIPPED_NO_RULE;
 import static io.jgitkins.server.application.dto.result.PipelineSkipReason.SKIPPED_PIPELINE_NOT_FOUND;

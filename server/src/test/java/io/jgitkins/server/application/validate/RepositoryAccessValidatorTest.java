@@ -8,7 +8,7 @@ import static org.mockito.Mockito.when;
 import io.jgitkins.server.application.common.error.ApplicationErrorCode;
 import io.jgitkins.server.application.port.in.GitRepositoryAccessUseCase;
 import io.jgitkins.server.application.port.out.CurrentUserPort;
-import io.jgitkins.server.application.support.RepositoryNamespaceResolver;
+import io.jgitkins.server.shared.application.support.RepositoryNamespaceResolver;
 import io.jgitkins.server.common.exception.JgitkinsException;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;

@@ -6,9 +6,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.jgitkins.server.application.support.CloneUrlBuilder;
 import io.jgitkins.server.application.support.change.BranchChangeRecorder;
-import io.jgitkins.server.application.support.change.MergeabilityAssessmentAssembler;
+import io.jgitkins.server.shared.application.change.MergeabilityAssessmentAssembler;
 import io.jgitkins.server.application.support.execution.ExecutionRequestService;
-import io.jgitkins.server.application.support.policy.EventPolicyResolver;
+import io.jgitkins.server.shared.application.policy.EventPolicyResolver;
 import io.jgitkins.server.application.service.AdminUserService;
 import io.jgitkins.server.application.service.BranchLoadService;
 import io.jgitkins.server.application.service.BranchManagementService;
@@ -26,11 +26,13 @@ import io.jgitkins.server.application.service.RepositoryMemberService;
 import io.jgitkins.server.application.service.RepositoryOverviewService;
 import io.jgitkins.server.application.service.UserCredentialService;
 import io.jgitkins.server.application.service.UserProfileService;
-import io.jgitkins.server.application.support.RepositoryLookupService;
-import io.jgitkins.server.application.support.RepositoryNamespaceResolver;
+import io.jgitkins.server.shared.application.support.RepositoryAccessibilityService;
+import io.jgitkins.server.shared.application.support.RepositoryNamespaceResolver;
 import io.jgitkins.server.application.support.RepositoryProvisioner;
 import io.jgitkins.server.application.support.RunnerRuntimeConfigProvider;
 import io.jgitkins.server.application.support.UserService;
+import io.jgitkins.server.repository.application.support.GitRepositoryAccessService;
+import io.jgitkins.server.repository.application.support.RepositoryLookupService;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -76,7 +78,9 @@ class ArchitecturePackageConventionTest {
                 MergeabilityAssessmentAssembler.class,
                 EventPolicyResolver.class,
                 ExecutionRequestService.class,
+                GitRepositoryAccessService.class,
                 UserService.class,
+                RepositoryAccessibilityService.class,
                 RepositoryLookupService.class,
                 RepositoryNamespaceResolver.class,
                 RepositoryProvisioner.class,

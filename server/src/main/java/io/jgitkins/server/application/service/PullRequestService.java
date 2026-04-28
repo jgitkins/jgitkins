@@ -9,8 +9,6 @@ import io.jgitkins.server.application.port.in.CreatePullRequestUseCase;
 import io.jgitkins.server.application.port.in.GetPullRequestDetailUseCase;
 import io.jgitkins.server.application.port.out.BranchGitPort;
 import io.jgitkins.server.application.port.out.RepositoryPersistencePort;
-import io.jgitkins.server.application.support.RepositoryLookupService;
-import io.jgitkins.server.application.support.RepositoryNamespaceResolver;
 import io.jgitkins.server.application.support.pr.PullRequestDetailMapper;
 import io.jgitkins.server.application.support.pr.PullRequestMergeabilityResolver;
 import io.jgitkins.server.application.support.pr.PullRequestResultMapper;
@@ -20,6 +18,8 @@ import io.jgitkins.server.domain.pr.aggregate.PullRequest;
 import io.jgitkins.server.domain.pr.model.BranchHeadSnapshot;
 import io.jgitkins.server.domain.pr.model.vo.PullRequestId;
 import io.jgitkins.server.domain.pr.repository.PullRequestRepository;
+import io.jgitkins.server.repository.application.support.RepositoryLookupService;
+import io.jgitkins.server.shared.application.support.RepositoryNamespaceResolver;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -41,7 +41,7 @@ public class PullRequestService implements CreatePullRequestUseCase, GetPullRequ
     @Override
     @Transactional
     public PullRequestResult createPullRequest(PullRequestCreateCommand command) throws IOException {
-        Repository repository = repositoryLookupService.findByPath(command.namespace(), command.repoName())
+        Repository repository = repositoryLookupService.resolveByPath(command.namespace(), command.repoName())
                 .orElseThrow(() -> new RepositoryNotFoundException(command.namespace(), command.repoName()));
         String namespace = repositoryNamespaceResolver.resolve(repository);
         String repoName = repository.getPath().getValue();

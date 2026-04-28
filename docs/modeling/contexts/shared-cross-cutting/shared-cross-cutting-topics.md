@@ -15,7 +15,7 @@
 - [Read-Side Result](#read-side-result)
 - [Application-Level Resolver / Policy](#application-level-resolver--policy)
 - [주요 시나리오](#주요-시나리오)
-- [1. Namespace 해석](#1-namespace-해석)
+- [1. Namespace 변환](#1-namespace-변환)
 - [2. Repository 경로 조회](#2-repository-경로-조회)
 - [3. Git 접근 권한 계산](#3-git-접근-권한-계산)
 - [4. Mergeability 계산](#4-mergeability-계산)
@@ -32,7 +32,7 @@
 
 이 문서의 범위는 다음과 같다.
 
-- owner namespace 해석
+- owner namespace 문자열 변환
 - repository 경로 조회
 - Git 접근 권한 계산
 - mergeability 계산 결과 조합
@@ -44,7 +44,7 @@
 
 #### Namespace
 
-user 또는 organization을 식별하는 owner 문자열이다.
+repository owner를 표현하는 문자열이다.
 
 #### Repository Lookup
 
@@ -69,7 +69,7 @@ push event에 대해 job 생성 가능 여부와 어떤 pipeline file을 실행�
 현재 shared value object / policy에 가까운 대상은 다음과 같다.
 
 - namespace
-- owner 해석 규칙
+- owner -> namespace 변환 규칙
 - repository path lookup 규칙
 
 #### Read-Side Result
@@ -95,16 +95,14 @@ push event에 대해 job 생성 가능 여부와 어떤 pipeline file을 실행�
 
 ### 주요 시나리오
 
-#### 1. Namespace 해석
+#### 1. Namespace 변환
 
 현재 흐름은 다음과 같다.
 
-1. `RepositoryNamespaceResolver.resolve(namespace)`가 문자열을 받는다.
-2. organize를 먼저 찾는다.
-3. 없으면 user를 찾는다.
-4. 둘 다 없으면 예외를 던진다.
-
-`RepositoryNamespaceResolver.resolve(repository)`는 ownerType과 ownerId를 다시 namespace 문자열로 변환한다.
+1. `RepositoryNamespaceResolver.resolve(repository)`가 `ownerType`, `ownerId`를 읽는다.
+2. owner type이 organization이면 organization 이름을 조회한다.
+3. owner type이 user면 username을 조회한다.
+4. 조회 실패 시 예외를 던진다.
 
 #### 2. Repository 경로 조회
 
@@ -161,7 +159,7 @@ push event에 대해 job 생성 가능 여부와 어떤 pipeline file을 실행�
 
 - 이 문서의 개념은 aggregate보다 계산 규칙, resolver, read model에 가깝다.
 - mergeability와 permission은 저장 상태보다 계산 결과다.
-- namespace 규칙은 user, organization, repository path를 함께 관통한다.
+- namespace 규칙은 user, organization, repository path에 공통으로 사용된다.
 
 ### 다른 Context와의 연결
 
@@ -170,7 +168,7 @@ push event에 대해 job 생성 가능 여부와 어떤 pipeline file을 실행�
 - `Collaboration Context`
   - organization namespace와 organization member가 접근 계산에 사용된다.
 - `Repository Context`
-  - repository path와 owner 해석에 사용된다.
+  - repository path와 owner namespace 변환에 사용된다.
 - `Change & Review Context`
   - mergeability 계산에 사용된다.
 - `Execution Context`
@@ -179,8 +177,8 @@ push event에 대해 job 생성 가능 여부와 어떤 pipeline file을 실행�
 ### 미확정 쟁점
 
 1. namespace 전역 유일성을 어디서 강제할지
-   - 현재 resolver별 우선순위가 다르다.
+   - 현재 lookup 계열과 access 계열의 충돌 처리 규칙이 다르다.
 2. ambiguous namespace 처리 방식을 통일할지
-   - `RepositoryNamespaceResolver`, `RepositoryLookupService`, `GitRepositoryAccessService`의 동작이 다르다.
+   - `RepositoryLookupService`, `GitRepositoryAccessService`의 동작이 다르다.
 3. `RepositoryPermission`을 별도 명시 모델로 끌어올릴지
    - 현재는 서비스 내부 계산 결과다.

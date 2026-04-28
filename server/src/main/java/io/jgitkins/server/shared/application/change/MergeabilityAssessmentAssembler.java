@@ -1,4 +1,4 @@
-package io.jgitkins.server.application.support.change;
+package io.jgitkins.server.shared.application.change;
 
 import io.jgitkins.server.application.dto.result.MergeResult;
 import io.jgitkins.server.domain.model.changegraph.MergeabilityAssessment;

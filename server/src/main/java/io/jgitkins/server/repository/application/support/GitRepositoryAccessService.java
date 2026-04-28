@@ -1,39 +1,29 @@
-package io.jgitkins.server.application.service;
+package io.jgitkins.server.repository.application.support;
 
-import io.jgitkins.server.application.port.in.GitRepositoryAccessUseCase;
 import io.jgitkins.server.application.port.out.OrganizeMemberPersistencePort;
-import io.jgitkins.server.application.port.out.OrganizePersistencePort;
 import io.jgitkins.server.application.port.out.RepositoryMemberPersistencePort;
-import io.jgitkins.server.application.port.out.RepositoryPersistencePort;
-import io.jgitkins.server.application.port.out.UserPersistencePort;
-import io.jgitkins.server.domain.aggregate.Organize;
 import io.jgitkins.server.domain.aggregate.Repository;
 import io.jgitkins.server.domain.model.OrganizeMember;
 import io.jgitkins.server.domain.model.RepositoryMember;
 import io.jgitkins.server.domain.model.vo.OrganizeId;
-import io.jgitkins.server.domain.model.vo.OrganizeName;
-import io.jgitkins.server.domain.model.vo.OwnerId;
 import io.jgitkins.server.domain.model.vo.OwnerType;
-import io.jgitkins.server.domain.model.vo.RepositoryName;
-import io.jgitkins.server.domain.model.vo.RepositoryPath;
-import io.jgitkins.server.domain.model.vo.UserId;
+import io.jgitkins.server.domain.model.vo.RepositoryMemberRole;
 import io.jgitkins.server.domain.model.vo.RepositoryVisibility;
+import io.jgitkins.server.domain.model.vo.UserId;
+import io.jgitkins.server.repository.application.result.RepositoryPermission;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-import java.util.Optional;
-
-@Service
+@Component
 @RequiredArgsConstructor
 @Slf4j
-public class GitRepositoryAccessService implements GitRepositoryAccessUseCase {
+public class GitRepositoryAccessService {
 
-    private final OrganizePersistencePort organizePort;
-    private final RepositoryPersistencePort repositoryPort;
+    private final RepositoryLookupService repositoryLookupService;
     private final OrganizeMemberPersistencePort organizeMemberPort;
     private final RepositoryMemberPersistencePort repositoryMemberPort;
-    private final UserPersistencePort userPort;
 
     public boolean canRead(OwnerType ownerType, String ownerName, String repositoryName, Long userId) {
         Optional<Repository> repository = resolveRepository(ownerType, ownerName, repositoryName);
@@ -79,6 +69,9 @@ public class GitRepositoryAccessService implements GitRepositoryAccessUseCase {
         if (repo == null) {
             return RepositoryPermission.none();
         }
+        if (repo.getVisibility() == RepositoryVisibility.PUBLIC && userId == null) {
+            return new RepositoryPermission("PUBLIC_READ_ONLY", false, true);
+        }
         if (userId == null) {
             return RepositoryPermission.anonymous();
         }
@@ -92,8 +85,8 @@ public class GitRepositoryAccessService implements GitRepositoryAccessUseCase {
         Optional<RepositoryMember> repositoryMember = repositoryMemberPort.findByRepositoryIdAndUserId(repo.getId(), uid);
         if (repositoryMember.isPresent()) {
             var role = repositoryMember.get().getRole();
-            boolean writable = role == io.jgitkins.server.domain.model.vo.RepositoryMemberRole.WRITER
-                    || role == io.jgitkins.server.domain.model.vo.RepositoryMemberRole.MAINTAINER;
+            boolean writable = role == RepositoryMemberRole.WRITER
+                    || role == RepositoryMemberRole.MAINTAINER;
             return new RepositoryPermission("REPOSITORY_" + role.name(), writable, true);
         }
 
@@ -109,7 +102,7 @@ public class GitRepositoryAccessService implements GitRepositoryAccessUseCase {
                 return new RepositoryPermission("ORGANIZATION_" + role.name(), writable, true);
             }
         }
-        return new RepositoryPermission("NONE", false, false);
+        return RepositoryPermission.none();
     }
 
     private Optional<Repository> resolveRepository(OwnerType ownerType, String ownerName, String repositoryName) {
@@ -118,50 +111,8 @@ public class GitRepositoryAccessService implements GitRepositoryAccessUseCase {
             return Optional.empty();
         }
         if (ownerType == null) {
-            return resolveRepositoryByNamespace(ownerName, repositoryName);
+            return repositoryLookupService.resolveByPath(ownerName, repositoryName);
         }
-        if (ownerType == OwnerType.USER) {
-            return userPort.findByUsername(ownerName)
-                    .map(user -> repositoryPort.findByOwnerAndName(OwnerType.USER, OwnerId.of(user.getId()), RepositoryName.from(repositoryName)))
-                    .orElse(Optional.empty());
-        }
-        Optional<Organize> organize = organizePort.findByName(OrganizeName.from(ownerName));
-        if (organize.isEmpty()) {
-            return Optional.empty();
-        }
-        OrganizeId organizeId = organize.get().getId();
-        return repositoryPort.findByOwnerAndPath(OwnerType.ORGANIZATION, OwnerId.of(organizeId.getValue()),
-                RepositoryPath.from(repositoryName));
+        return repositoryLookupService.resolveByOwner(ownerType, ownerName, repositoryName);
     }
-
-    private Optional<Repository> resolveRepositoryByNamespace(String namespace, String repositoryName) {
-        Optional<io.jgitkins.server.domain.model.User> user = userPort.findByUsername(namespace);
-        Optional<Organize> organize = findOrganizeByNamespace(namespace);
-
-        if (user.isPresent() && organize.isPresent()) {
-            log.warn("Ambiguous namespace for git access. namespace=[{}]", namespace);
-            return Optional.empty();
-        }
-        if (user.isPresent()) {
-            return repositoryPort.findByOwnerAndName(OwnerType.USER,
-                    OwnerId.of(user.get().getId()),
-                    RepositoryName.from(repositoryName));
-        }
-        if (organize.isPresent()) {
-            OrganizeId organizeId = organize.get().getId();
-            return repositoryPort.findByOwnerAndPath(OwnerType.ORGANIZATION,
-                    OwnerId.of(organizeId.getValue()),
-                    RepositoryPath.from(repositoryName));
-        }
-        return Optional.empty();
-    }
-
-    private Optional<Organize> findOrganizeByNamespace(String namespace) {
-        try {
-            return organizePort.findByName(OrganizeName.from(namespace));
-        } catch (IllegalArgumentException e) {
-            return Optional.empty();
-        }
-    }
-
 }

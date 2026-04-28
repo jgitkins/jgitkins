@@ -6,7 +6,7 @@ import io.jgitkins.server.application.dto.result.JobPlan;
 import io.jgitkins.server.application.port.in.PushEventHandleUseCase;
 import io.jgitkins.server.application.support.change.BranchChangeRecorder;
 import io.jgitkins.server.application.support.execution.ExecutionRequestService;
-import io.jgitkins.server.application.support.policy.EventPolicyResolver;
+import io.jgitkins.server.shared.application.policy.EventPolicyResolver;
 import io.jgitkins.server.application.validate.JobCreationValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,8 +26,9 @@ public class PushEventHandleService implements PushEventHandleUseCase {
     @Override
     @Transactional
     public void handle(PushEventCommand command) {
+        
+        // Branch 영속화처리 (내부 Application 처리해도되지 않을까..)
         log.debug("Handling push event for repositoryId=[{}], repoName=[{}]", command.getRepositoryId(), command.getRepoName());
-
         branchChangeRecorder.record(command);
 
         JobCreationDecision decision = jobCreationValidator.validate(command);

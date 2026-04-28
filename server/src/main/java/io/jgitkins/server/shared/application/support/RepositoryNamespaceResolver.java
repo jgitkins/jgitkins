@@ -1,4 +1,4 @@
-package io.jgitkins.server.application.support;
+package io.jgitkins.server.shared.application.support;
 
 import io.jgitkins.server.application.exception.OrganizeNotFoundException;
 import io.jgitkins.server.application.exception.UserNotFoundException;

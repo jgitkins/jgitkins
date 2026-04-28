@@ -7,7 +7,6 @@ import io.jgitkins.server.application.port.out.OrganizeMemberPersistencePort;
 import io.jgitkins.server.application.port.out.OrganizePersistencePort;
 import io.jgitkins.server.application.port.out.RepositoryPersistencePort;
 import io.jgitkins.server.application.port.out.UserPersistencePort;
-import io.jgitkins.server.application.support.RepositoryLookupService;
 import io.jgitkins.server.domain.aggregate.Repository;
 import io.jgitkins.server.domain.model.vo.OrganizeId;
 import io.jgitkins.server.domain.model.vo.OwnerId;
@@ -15,6 +14,8 @@ import io.jgitkins.server.domain.model.vo.OwnerType;
 import io.jgitkins.server.domain.model.vo.RepositoryId;
 import io.jgitkins.server.domain.model.vo.RepositoryVisibility;
 import io.jgitkins.server.domain.model.vo.UserId;
+import io.jgitkins.server.repository.application.support.RepositoryLookupService;
+import io.jgitkins.server.shared.application.support.RepositoryAccessibilityService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -48,9 +49,11 @@ class RepositoryLoadServiceTest {
 
     @BeforeEach
     void setUp() {
-        RepositoryLookupService lookupService = new RepositoryLookupService(repositoryPort, userPort, organizePort, organizeMemberPort);
+        RepositoryLookupService lookupService = new RepositoryLookupService(repositoryPort, userPort, organizePort);
+        RepositoryAccessibilityService accessibilityService = new RepositoryAccessibilityService(organizeMemberPort);
         service = new RepositoryLoadService(
                 repositoryApplicationMapper,
+                accessibilityService,
                 lookupService,
                 repositoryPort,
                 currentUserPersistencePort,

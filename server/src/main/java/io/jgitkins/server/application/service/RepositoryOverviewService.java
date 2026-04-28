@@ -16,6 +16,7 @@ import io.jgitkins.server.application.port.in.GitRepositoryAccessUseCase;
 import io.jgitkins.server.application.port.in.RepositoryLoadUseCase;
 import io.jgitkins.server.application.port.in.RepositoryOverviewUseCase;
 import io.jgitkins.server.application.port.out.CurrentUserPort;
+import io.jgitkins.server.repository.application.result.RepositoryPermission;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -45,7 +46,7 @@ public class RepositoryOverviewService implements RepositoryOverviewUseCase {
 
 		Long userId = currentUserPersistencePort.resolveCurrentUserId().orElse(null);
 
-		GitRepositoryAccessUseCase.RepositoryPermission permission = gitRepositoryAccessUseCase.resolvePermission(null,
+		RepositoryPermission permission = gitRepositoryAccessUseCase.resolvePermission(null,
 				key != null ? key.namespace() : null, key != null ? key.repoName() : null, userId);
 
 		return new RepositoryOverviewResult(

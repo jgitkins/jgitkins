@@ -1,6 +1,6 @@
 package io.jgitkins.server.application.support;
 
-import io.jgitkins.server.application.common.RepositoryPathHelper;
+import io.jgitkins.server.shared.common.RepositoryPathHelper;
 import io.jgitkins.server.application.dto.command.PushEventCommand;
 import io.jgitkins.server.application.dto.command.PushHookRequest;
 import io.jgitkins.server.application.exception.RepositoryNotFoundException;

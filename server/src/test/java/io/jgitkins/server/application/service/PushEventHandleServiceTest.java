@@ -13,7 +13,7 @@ import io.jgitkins.server.application.dto.result.JobPlan;
 import io.jgitkins.server.application.dto.result.PipelineSkipReason;
 import io.jgitkins.server.application.support.change.BranchChangeRecorder;
 import io.jgitkins.server.application.support.execution.ExecutionRequestService;
-import io.jgitkins.server.application.support.policy.EventPolicyResolver;
+import io.jgitkins.server.shared.application.policy.EventPolicyResolver;
 import io.jgitkins.server.application.validate.JobCreationValidator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

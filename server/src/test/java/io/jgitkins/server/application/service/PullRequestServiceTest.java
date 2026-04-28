@@ -11,8 +11,6 @@ import io.jgitkins.server.application.dto.result.PullRequestDetailResult;
 import io.jgitkins.server.application.dto.result.PullRequestResult;
 import io.jgitkins.server.application.port.out.BranchGitPort;
 import io.jgitkins.server.application.port.out.RepositoryPersistencePort;
-import io.jgitkins.server.application.support.RepositoryLookupService;
-import io.jgitkins.server.application.support.RepositoryNamespaceResolver;
 import io.jgitkins.server.application.support.pr.PullRequestDetailMapper;
 import io.jgitkins.server.application.support.pr.PullRequestMergeabilityResolver;
 import io.jgitkins.server.application.support.pr.PullRequestResultMapper;
@@ -29,6 +27,8 @@ import io.jgitkins.server.domain.pr.aggregate.PullRequest;
 import io.jgitkins.server.domain.pr.model.BranchHeadSnapshot;
 import io.jgitkins.server.domain.pr.model.vo.PullRequestId;
 import io.jgitkins.server.domain.pr.repository.PullRequestRepository;
+import io.jgitkins.server.repository.application.support.RepositoryLookupService;
+import io.jgitkins.server.shared.application.support.RepositoryNamespaceResolver;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
@@ -77,7 +77,7 @@ class PullRequestServiceTest {
         PullRequestCreateCommand command = new PullRequestCreateCommand("demo-org", "demo", "feature", "main");
         Repository repository = repository();
 
-        when(repositoryLookupService.findByPath("demo-org", "demo")).thenReturn(Optional.of(repository));
+        when(repositoryLookupService.resolveByPath("demo-org", "demo")).thenReturn(Optional.of(repository));
         when(repositoryNamespaceResolver.resolve(repository)).thenReturn("demo-org");
         when(branchGitPort.getHeadCommitHash("demo-org", "demo", "feature")).thenReturn("aaaaaaa");
         when(branchGitPort.getHeadCommitHash("demo-org", "demo", "main")).thenReturn("bbbbbbb");
