@@ -1,11 +1,11 @@
 package io.jgitkins.server.presentation.api.rest;
 
-import io.jgitkins.server.application.dto.command.RepositoryCreateCommand;
+import io.jgitkins.server.repository.application.contract.command.RepositoryCreateCommand;
 import io.jgitkins.server.application.dto.result.RepositoryOverviewResult;
-import io.jgitkins.server.application.dto.result.RepositoryResult;
-import io.jgitkins.server.application.port.in.RepositoryCreateUseCase;
-import io.jgitkins.server.application.port.in.RepositoryDeleteUseCase;
-import io.jgitkins.server.application.port.in.RepositoryLoadUseCase;
+import io.jgitkins.server.repository.application.contract.result.RepositoryResult;
+import io.jgitkins.server.repository.application.port.in.RepositoryCreateUseCase;
+import io.jgitkins.server.repository.application.port.in.RepositoryDeleteUseCase;
+import io.jgitkins.server.repository.application.port.in.RepositoryLoadUseCase;
 import io.jgitkins.server.application.port.in.RepositoryOverviewUseCase;
 import io.jgitkins.server.presentation.common.ApiResponse;
 import io.jgitkins.server.presentation.dto.RepositoryCreateRequest;

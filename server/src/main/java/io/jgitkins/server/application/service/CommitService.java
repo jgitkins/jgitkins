@@ -2,7 +2,7 @@ package io.jgitkins.server.application.service;
 
 import io.jgitkins.server.application.dto.CommitHistory;
 import io.jgitkins.server.application.port.in.CommitLoadUseCase;
-import io.jgitkins.server.application.port.out.CommitGitPort;
+import io.jgitkins.server.repository.application.port.out.CommitGitPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

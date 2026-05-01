@@ -2,7 +2,6 @@ package io.jgitkins.server.domain.aggregate;
 
 import io.jgitkins.server.domain.event.RepositorySynchronizedEvent;
 import io.jgitkins.server.domain.model.vo.BranchName;
-import io.jgitkins.server.domain.model.vo.InitialCommitOptions;
 import io.jgitkins.server.domain.model.vo.OrganizeId;
 import io.jgitkins.server.domain.model.vo.OwnerId;
 import io.jgitkins.server.domain.model.vo.OwnerType;
@@ -77,10 +76,7 @@ public class Repository extends AbstractAggregateRoot<RepositoryId> {
                                     String description,
                                     String clonePath,
                                     String credentialId,
-                                    InitialCommitOptions initialCommitOptions) {
-        if (initialCommitOptions == null) {
-            throw new IllegalArgumentException("InitialCommitOptions must not be null");
-        }
+                                    boolean requiresInitialContent) {
         LocalDateTime now = LocalDateTime.now();
         Repository repository = new Repository(
                 null,
@@ -96,7 +92,7 @@ public class Repository extends AbstractAggregateRoot<RepositoryId> {
                 credentialId,
                 clonePath,
                 null,
-                initialCommitOptions.requiresInitialContent(),
+                requiresInitialContent,
                 false
         );
         return repository;

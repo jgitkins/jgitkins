@@ -1,8 +1,8 @@
 package io.jgitkins.server.application.validate;
 
-import io.jgitkins.server.application.dto.command.RepositoryMemberAddCommand;
+import io.jgitkins.server.repository.application.contract.command.RepositoryMemberAddCommand;
 import io.jgitkins.server.application.exception.MemberIdentifierRequiredException;
-import io.jgitkins.server.application.port.out.RepositoryMemberPersistencePort;
+import io.jgitkins.server.repository.application.port.out.RepositoryMemberPersistencePort;
 import io.jgitkins.server.domain.model.vo.RepositoryId;
 import io.jgitkins.server.domain.model.vo.UserId;
 import lombok.RequiredArgsConstructor;

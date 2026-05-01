@@ -2,7 +2,7 @@ package io.jgitkins.server.presentation.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import io.jgitkins.server.application.dto.command.BranchCreateCommand;
+import io.jgitkins.server.repository.application.contract.command.BranchCreateCommand;
 import io.jgitkins.server.presentation.dto.BranchCreateRequest;
 
 @Mapper(componentModel = "spring")

@@ -1,7 +1,7 @@
 package io.jgitkins.server.presentation.api.web;
 
-import io.jgitkins.server.application.dto.result.RepositoryResult;
-import io.jgitkins.server.application.port.in.RepositoryLoadUseCase;
+import io.jgitkins.server.repository.application.contract.result.RepositoryResult;
+import io.jgitkins.server.repository.application.port.in.RepositoryLoadUseCase;
 import io.jgitkins.server.application.port.in.RepositoryOverviewUseCase;
 import io.jgitkins.server.presentation.common.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;

@@ -1,7 +1,7 @@
 package io.jgitkins.server.repository.application.support;
 
 import io.jgitkins.server.application.port.out.OrganizeMemberPersistencePort;
-import io.jgitkins.server.application.port.out.RepositoryMemberPersistencePort;
+import io.jgitkins.server.repository.application.port.out.RepositoryMemberPersistencePort;
 import io.jgitkins.server.domain.aggregate.Repository;
 import io.jgitkins.server.domain.model.OrganizeMember;
 import io.jgitkins.server.domain.model.RepositoryMember;
@@ -10,7 +10,7 @@ import io.jgitkins.server.domain.model.vo.OwnerType;
 import io.jgitkins.server.domain.model.vo.RepositoryMemberRole;
 import io.jgitkins.server.domain.model.vo.RepositoryVisibility;
 import io.jgitkins.server.domain.model.vo.UserId;
-import io.jgitkins.server.repository.application.result.RepositoryPermission;
+import io.jgitkins.server.repository.application.contract.result.RepositoryPermission;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

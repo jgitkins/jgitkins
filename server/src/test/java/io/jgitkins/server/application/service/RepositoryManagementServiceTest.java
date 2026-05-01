@@ -1,14 +1,14 @@
-package io.jgitkins.server.application.service;
+package io.jgitkins.server.repository.application.service;
 
-import io.jgitkins.server.application.dto.command.RepositoryCreateCommand;
-import io.jgitkins.server.application.dto.result.RepositoryResult;
+import io.jgitkins.server.repository.application.contract.command.RepositoryCreateCommand;
+import io.jgitkins.server.repository.application.contract.result.RepositoryResult;
 import io.jgitkins.server.application.mapper.RepositoryApplicationMapper;
 import io.jgitkins.server.application.port.out.CurrentUserPort;
 import io.jgitkins.server.application.port.out.OrganizeMemberPersistencePort;
-import io.jgitkins.server.application.port.out.RepositoryGitPort;
-import io.jgitkins.server.application.port.out.RepositoryPersistencePort;
+import io.jgitkins.server.repository.application.port.out.RepositoryPersistencePort;
+import io.jgitkins.server.repository.application.support.ownership.RepositoryOwnershipPolicy;
+import io.jgitkins.server.repository.application.support.provisioning.RepositoryProvisioner;
 import io.jgitkins.server.shared.application.support.RepositoryNamespaceResolver;
-import io.jgitkins.server.application.support.RepositoryProvisioner;
 import io.jgitkins.server.application.validate.RepositoryValidator;
 import io.jgitkins.server.common.exception.JgitkinsException;
 import io.jgitkins.server.domain.aggregate.Repository;
@@ -39,32 +39,33 @@ import static org.mockito.Mockito.when;
 class RepositoryManagementServiceTest {
 
     @Mock
-    private RepositoryNamespaceResolver repositoryNamespaceResolver;
-    @Mock
     private RepositoryApplicationMapper repositoryApplicationMapper;
-    @Mock
-    private RepositoryGitPort repositoryGitPort;
     @Mock
     private RepositoryPersistencePort repositoryPort;
     @Mock
     private RepositoryProvisioner repositoryProvisioner;
+    @Mock
+    private RepositoryNamespaceResolver repositoryNamespaceResolver;
     @Mock
     private OrganizeMemberPersistencePort organizeMemberPort;
     @Mock
     private CurrentUserPort currentUserPersistencePort;
 
     private RepositoryManagementService service;
+    private RepositoryValidator repositoryValidator;
 
     @BeforeEach
     void setUp() {
-        RepositoryValidator validator = new RepositoryValidator(repositoryPort, organizeMemberPort, currentUserPersistencePort);
+        repositoryValidator = new RepositoryValidator(repositoryPort, organizeMemberPort, currentUserPersistencePort);
+        RepositoryOwnershipPolicy repositoryOwnershipPolicy = new RepositoryOwnershipPolicy(
+                repositoryValidator,
+                repositoryNamespaceResolver
+        );
         service = new RepositoryManagementService(
-                repositoryNamespaceResolver,
                 repositoryApplicationMapper,
                 repositoryProvisioner,
-                repositoryGitPort,
                 repositoryPort,
-                validator
+                repositoryOwnershipPolicy
         );
     }
 
@@ -133,7 +134,7 @@ class RepositoryManagementServiceTest {
 
         assertThrows(JgitkinsException.class, () -> service.deleteRepository(1L));
 
-        verify(repositoryGitPort, never()).deleteRepository(any(), any());
+        verify(repositoryProvisioner, never()).delete(any(Repository.class));
         verify(repositoryPort, never()).deleteById(any(RepositoryId.class));
     }
 
@@ -142,12 +143,10 @@ class RepositoryManagementServiceTest {
         Repository repository = org.mockito.Mockito.mock(Repository.class);
         when(repositoryPort.findById(RepositoryId.of(1L))).thenReturn(Optional.of(repository));
         when(repository.getOwnerType()).thenReturn(OwnerType.ORGANIZATION);
-        when(repository.getName()).thenReturn(RepositoryName.from("sample-repo"));
-        when(repositoryNamespaceResolver.resolve(repository)).thenReturn("team-a");
 
         service.deleteRepository(1L);
 
-        verify(repositoryGitPort).deleteRepository("team-a", "sample-repo");
+        verify(repositoryProvisioner).delete(repository);
         verify(repositoryPort).deleteById(RepositoryId.of(1L));
     }
 }

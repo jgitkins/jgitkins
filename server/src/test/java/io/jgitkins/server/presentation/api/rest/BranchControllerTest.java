@@ -11,11 +11,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.jgitkins.server.application.dto.command.BranchCreateCommand;
-import io.jgitkins.server.application.dto.result.BranchSearchResult;
-import io.jgitkins.server.application.port.in.BranchCreateUseCase;
-import io.jgitkins.server.application.port.in.BranchDeleteUseCase;
-import io.jgitkins.server.application.port.in.BranchLoadUseCase;
+import io.jgitkins.server.repository.application.contract.command.BranchCreateCommand;
+import io.jgitkins.server.repository.application.contract.result.BranchSearchResult;
+import io.jgitkins.server.repository.application.port.in.BranchCreateUseCase;
+import io.jgitkins.server.repository.application.port.in.BranchDeleteUseCase;
+import io.jgitkins.server.repository.application.port.in.BranchLoadUseCase;
 import io.jgitkins.server.presentation.dto.BranchCreateRequest;
 import io.jgitkins.server.presentation.mapper.BranchRequestMapper;
 import java.util.List;

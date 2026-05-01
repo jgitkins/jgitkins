@@ -1,4 +1,4 @@
-package io.jgitkins.server.application.service;
+package io.jgitkins.server.repository.application.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -7,9 +7,10 @@ import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import io.jgitkins.server.application.dto.command.BranchCreateCommand;
-import io.jgitkins.server.application.port.out.BranchGitPort;
-import io.jgitkins.server.application.port.out.RepositoryPersistencePort;
+import io.jgitkins.server.repository.application.contract.command.BranchCreateCommand;
+import io.jgitkins.server.repository.application.port.out.BranchGitPort;
+import io.jgitkins.server.repository.application.port.out.RepositoryPersistencePort;
+import io.jgitkins.server.repository.application.support.branch.BranchWritePolicy;
 import io.jgitkins.server.shared.application.support.RepositoryNamespaceResolver;
 import io.jgitkins.server.application.validate.BranchCreationValidator;
 import io.jgitkins.server.application.validate.RepositoryAccessValidator;
@@ -20,10 +21,10 @@ import io.jgitkins.server.domain.model.vo.RepositoryId;
 import io.jgitkins.server.domain.model.vo.RepositoryName;
 import io.jgitkins.server.domain.repository.BranchRepository;
 import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -34,8 +35,6 @@ class BranchManagementServiceTest {
     @Mock
     private RepositoryNamespaceResolver repositoryNamespaceResolver;
     @Mock
-    private BranchCreationValidator branchCreationValidator;
-    @Mock
     private RepositoryAccessValidator repositoryAccessValidator;
     @Mock
     private BranchGitPort branchGitPort;
@@ -44,8 +43,21 @@ class BranchManagementServiceTest {
     @Mock
     private RepositoryPersistencePort repositoryPort;
 
-    @InjectMocks
     private BranchManagementService service;
+
+    @BeforeEach
+    void setUp() {
+        BranchCreationValidator branchCreationValidator = new BranchCreationValidator(branchPort);
+        BranchWritePolicy branchWritePolicy = new BranchWritePolicy(branchCreationValidator);
+        service = new BranchManagementService(
+                repositoryNamespaceResolver,
+                branchWritePolicy,
+                repositoryAccessValidator,
+                branchGitPort,
+                branchPort,
+                repositoryPort
+        );
+    }
 
     @Test
     void createBranch_createsBranchInGitAndPersistence() {
@@ -53,6 +65,11 @@ class BranchManagementServiceTest {
         when(repository.getName()).thenReturn(RepositoryName.from("repo"));
         when(repositoryPort.findById(RepositoryId.of(1L))).thenReturn(Optional.of(repository));
         when(repositoryNamespaceResolver.resolve(repository)).thenReturn("org");
+        when(repository.getId()).thenReturn(RepositoryId.of(1L));
+        when(repository.isInitialized()).thenReturn(true);
+        when(branchPort.findByRepositoryIdAndName(1L, "feature")).thenReturn(Optional.empty());
+        when(branchPort.findByRepositoryIdAndName(1L, "main"))
+                .thenReturn(Optional.of(Branch.create(1L, "main", false, true, true)));
 
         BranchCreateCommand command = new BranchCreateCommand(1L, "feature", "main", false);
 

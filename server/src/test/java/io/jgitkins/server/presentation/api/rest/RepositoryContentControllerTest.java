@@ -12,10 +12,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jgitkins.server.application.dto.FileEntry;
 import io.jgitkins.server.application.dto.FileUploadInfo;
-import io.jgitkins.server.application.dto.result.RepositoryResult;
+import io.jgitkins.server.repository.application.contract.result.RepositoryResult;
 import io.jgitkins.server.application.port.in.FileTreeLoadUseCase;
 import io.jgitkins.server.application.port.in.FileUploadUseCase;
-import io.jgitkins.server.application.port.in.RepositoryLoadUseCase;
+import io.jgitkins.server.repository.application.port.in.RepositoryLoadUseCase;
 import io.jgitkins.server.presentation.advice.GlobalExceptionHandler;
 import io.jgitkins.server.presentation.advice.mapper.ApplicationErrorHttpStatusMapper;
 import io.jgitkins.server.presentation.advice.mapper.CompositeErrorHttpStatusMapper;

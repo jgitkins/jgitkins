@@ -1,6 +1,6 @@
 package io.jgitkins.server.application.mapper;
 
-import io.jgitkins.server.application.dto.result.RepositoryResult;
+import io.jgitkins.server.repository.application.contract.result.RepositoryResult;
 import io.jgitkins.server.application.support.CloneUrlBuilder;
 import io.jgitkins.server.domain.aggregate.Repository;
 import org.mapstruct.Mapper;

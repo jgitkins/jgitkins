@@ -1,7 +1,7 @@
 package io.jgitkins.server.repository.application.support;
 
 import io.jgitkins.server.application.port.out.OrganizePersistencePort;
-import io.jgitkins.server.application.port.out.RepositoryPersistencePort;
+import io.jgitkins.server.repository.application.port.out.RepositoryPersistencePort;
 import io.jgitkins.server.application.port.out.UserPersistencePort;
 import io.jgitkins.server.domain.aggregate.Organize;
 import io.jgitkins.server.domain.aggregate.Repository;

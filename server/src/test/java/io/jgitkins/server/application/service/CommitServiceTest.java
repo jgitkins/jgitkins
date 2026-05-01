@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 import io.jgitkins.server.application.dto.CommitHistory;
-import io.jgitkins.server.application.port.out.CommitGitPort;
+import io.jgitkins.server.repository.application.port.out.CommitGitPort;
 import java.io.IOException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -9,8 +9,8 @@ import static org.mockito.Mockito.when;
 import io.jgitkins.server.application.dto.command.PullRequestCreateCommand;
 import io.jgitkins.server.application.dto.result.PullRequestDetailResult;
 import io.jgitkins.server.application.dto.result.PullRequestResult;
-import io.jgitkins.server.application.port.out.BranchGitPort;
-import io.jgitkins.server.application.port.out.RepositoryPersistencePort;
+import io.jgitkins.server.repository.application.port.out.BranchGitPort;
+import io.jgitkins.server.repository.application.port.out.RepositoryPersistencePort;
 import io.jgitkins.server.application.support.pr.PullRequestDetailMapper;
 import io.jgitkins.server.application.support.pr.PullRequestMergeabilityResolver;
 import io.jgitkins.server.application.support.pr.PullRequestResultMapper;
@@ -170,7 +170,7 @@ class PullRequestServiceTest {
                         null,
                         "/demo/demo.git",
                         null,
-                        io.jgitkins.server.domain.model.vo.InitialCommitOptions.of(false, null, null, null))
+                        false)
                 .withIdentity(RepositoryId.of(1L), null, null);
     }
 }

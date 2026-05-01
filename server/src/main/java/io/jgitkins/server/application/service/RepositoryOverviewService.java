@@ -7,16 +7,16 @@ import org.springframework.util.StringUtils;
 
 import io.jgitkins.server.application.dto.FileEntry;
 import io.jgitkins.server.application.dto.RepositoryKey;
-import io.jgitkins.server.application.dto.result.BranchSearchResult;
+import io.jgitkins.server.repository.application.contract.result.BranchSearchResult;
 import io.jgitkins.server.application.dto.result.RepositoryOverviewResult;
-import io.jgitkins.server.application.dto.result.RepositoryResult;
-import io.jgitkins.server.application.port.in.BranchLoadUseCase;
+import io.jgitkins.server.repository.application.contract.result.RepositoryResult;
+import io.jgitkins.server.repository.application.port.in.BranchLoadUseCase;
 import io.jgitkins.server.application.port.in.FileTreeLoadUseCase;
 import io.jgitkins.server.application.port.in.GitRepositoryAccessUseCase;
-import io.jgitkins.server.application.port.in.RepositoryLoadUseCase;
+import io.jgitkins.server.repository.application.port.in.RepositoryLoadUseCase;
 import io.jgitkins.server.application.port.in.RepositoryOverviewUseCase;
 import io.jgitkins.server.application.port.out.CurrentUserPort;
-import io.jgitkins.server.repository.application.result.RepositoryPermission;
+import io.jgitkins.server.repository.application.contract.result.RepositoryPermission;
 import lombok.RequiredArgsConstructor;
 
 @Service

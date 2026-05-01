@@ -1,6 +1,6 @@
 package io.jgitkins.server.presentation.mapper;
 
-import io.jgitkins.server.application.dto.command.RepositoryCreateCommand;
+import io.jgitkins.server.repository.application.contract.command.RepositoryCreateCommand;
 import io.jgitkins.server.application.dto.command.UpdateRepositoryCommand;
 import io.jgitkins.server.domain.model.vo.OwnerType;
 import io.jgitkins.server.domain.model.vo.RepositoryVisibility;

@@ -1,4 +1,4 @@
-package io.jgitkins.server.application.service;
+package io.jgitkins.server.repository.application.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -7,9 +7,10 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import io.jgitkins.server.application.dto.command.RepositoryMemberAddCommand;
-import io.jgitkins.server.application.dto.result.RepositoryMemberSummary;
-import io.jgitkins.server.application.port.out.RepositoryMemberPersistencePort;
+import io.jgitkins.server.repository.application.contract.command.RepositoryMemberAddCommand;
+import io.jgitkins.server.repository.application.contract.result.RepositoryMemberSummary;
+import io.jgitkins.server.repository.application.port.out.RepositoryMemberPersistencePort;
+import io.jgitkins.server.repository.application.support.membership.RepositoryMembershipPolicy;
 import io.jgitkins.server.application.validate.RepositoryMemberValidator;
 import io.jgitkins.server.common.exception.JgitkinsException;
 import io.jgitkins.server.domain.model.RepositoryMember;
@@ -36,7 +37,8 @@ class RepositoryMemberServiceTest {
     @BeforeEach
     void setUp() {
         RepositoryMemberValidator validator = new RepositoryMemberValidator(repositoryMemberPort);
-        service = new RepositoryMemberService(repositoryMemberPort, validator);
+        RepositoryMembershipPolicy repositoryMembershipPolicy = new RepositoryMembershipPolicy(validator);
+        service = new RepositoryMemberService(repositoryMemberPort, repositoryMembershipPolicy);
     }
 
     @Test

@@ -10,8 +10,6 @@ import io.jgitkins.server.shared.application.change.MergeabilityAssessmentAssemb
 import io.jgitkins.server.application.support.execution.ExecutionRequestService;
 import io.jgitkins.server.shared.application.policy.EventPolicyResolver;
 import io.jgitkins.server.application.service.AdminUserService;
-import io.jgitkins.server.application.service.BranchLoadService;
-import io.jgitkins.server.application.service.BranchManagementService;
 import io.jgitkins.server.application.service.CommitService;
 import io.jgitkins.server.application.service.MergeService;
 import io.jgitkins.server.application.service.OAuthLoginService;
@@ -20,15 +18,20 @@ import io.jgitkins.server.application.service.OrganizeService;
 import io.jgitkins.server.application.service.PublicUserQueryService;
 import io.jgitkins.server.application.service.PushEventHandleService;
 import io.jgitkins.server.application.service.RepositoryFileService;
-import io.jgitkins.server.application.service.RepositoryLoadService;
-import io.jgitkins.server.application.service.RepositoryManagementService;
-import io.jgitkins.server.application.service.RepositoryMemberService;
 import io.jgitkins.server.application.service.RepositoryOverviewService;
 import io.jgitkins.server.application.service.UserCredentialService;
 import io.jgitkins.server.application.service.UserProfileService;
+import io.jgitkins.server.repository.application.service.BranchLoadService;
+import io.jgitkins.server.repository.application.service.BranchManagementService;
+import io.jgitkins.server.repository.application.service.RepositoryLoadService;
+import io.jgitkins.server.repository.application.service.RepositoryManagementService;
+import io.jgitkins.server.repository.application.service.RepositoryMemberService;
+import io.jgitkins.server.repository.application.support.branch.BranchWritePolicy;
 import io.jgitkins.server.shared.application.support.RepositoryAccessibilityService;
 import io.jgitkins.server.shared.application.support.RepositoryNamespaceResolver;
-import io.jgitkins.server.application.support.RepositoryProvisioner;
+import io.jgitkins.server.repository.application.support.membership.RepositoryMembershipPolicy;
+import io.jgitkins.server.repository.application.support.ownership.RepositoryOwnershipPolicy;
+import io.jgitkins.server.repository.application.support.provisioning.RepositoryProvisioner;
 import io.jgitkins.server.application.support.RunnerRuntimeConfigProvider;
 import io.jgitkins.server.application.support.UserService;
 import io.jgitkins.server.repository.application.support.GitRepositoryAccessService;
@@ -44,14 +47,13 @@ import org.springframework.stereotype.Service;
 
 class ArchitecturePackageConventionTest {
 
-    private static final String SERVICE_PACKAGE = "io.jgitkins.server.application.service";
+    private static final String APPLICATION_SERVICE_PACKAGE = "io.jgitkins.server.application.service";
+    private static final String REPOSITORY_SERVICE_PACKAGE = "io.jgitkins.server.repository.application.service";
 
     @Test
     void applicationServices_resideInUnifiedServicePackage() {
         List<Class<?>> serviceClasses = List.of(
                 AdminUserService.class,
-                BranchLoadService.class,
-                BranchManagementService.class,
                 CommitService.class,
                 MergeService.class,
                 OAuthLoginService.class,
@@ -60,14 +62,23 @@ class ArchitecturePackageConventionTest {
                 PublicUserQueryService.class,
                 PushEventHandleService.class,
                 RepositoryFileService.class,
-                RepositoryLoadService.class,
-                RepositoryManagementService.class,
-                RepositoryMemberService.class,
                 RepositoryOverviewService.class,
                 UserCredentialService.class,
                 UserProfileService.class);
 
-        serviceClasses.forEach(serviceClass -> assertEquals(SERVICE_PACKAGE, serviceClass.getPackageName()));
+        serviceClasses.forEach(serviceClass -> assertEquals(APPLICATION_SERVICE_PACKAGE, serviceClass.getPackageName()));
+    }
+
+    @Test
+    void repositoryContextServices_resideInRepositoryServicePackage() {
+        List<Class<?>> serviceClasses = List.of(
+                BranchLoadService.class,
+                BranchManagementService.class,
+                RepositoryLoadService.class,
+                RepositoryManagementService.class,
+                RepositoryMemberService.class);
+
+        serviceClasses.forEach(serviceClass -> assertEquals(REPOSITORY_SERVICE_PACKAGE, serviceClass.getPackageName()));
     }
 
     @Test
@@ -79,10 +90,13 @@ class ArchitecturePackageConventionTest {
                 EventPolicyResolver.class,
                 ExecutionRequestService.class,
                 GitRepositoryAccessService.class,
+                BranchWritePolicy.class,
                 UserService.class,
                 RepositoryAccessibilityService.class,
                 RepositoryLookupService.class,
+                RepositoryMembershipPolicy.class,
                 RepositoryNamespaceResolver.class,
+                RepositoryOwnershipPolicy.class,
                 RepositoryProvisioner.class,
                 RunnerRuntimeConfigProvider.class);
 
@@ -95,8 +109,17 @@ class ArchitecturePackageConventionTest {
     @Test
     void applicationSources_doNotImportInfrastructurePackages() throws IOException {
         Path applicationRoot = Path.of("src/main/java/io/jgitkins/server/application");
+        assertNoInfrastructureImports(applicationRoot);
+    }
 
-        try (Stream<Path> files = Files.walk(applicationRoot)) {
+    @Test
+    void repositoryApplicationSources_doNotImportInfrastructurePackages() throws IOException {
+        Path repositoryApplicationRoot = Path.of("src/main/java/io/jgitkins/server/repository/application");
+        assertNoInfrastructureImports(repositoryApplicationRoot);
+    }
+
+    private void assertNoInfrastructureImports(Path root) throws IOException {
+        try (Stream<Path> files = Files.walk(root)) {
             List<Path> javaFiles = files
                     .filter(path -> path.toString().endsWith(".java"))
                     .toList();

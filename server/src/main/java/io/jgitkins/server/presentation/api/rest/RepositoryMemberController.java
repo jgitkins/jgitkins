@@ -1,10 +1,10 @@
 package io.jgitkins.server.presentation.api.rest;
 
-import io.jgitkins.server.application.dto.command.RepositoryMemberAddCommand;
-import io.jgitkins.server.application.dto.result.RepositoryMemberSummary;
-import io.jgitkins.server.application.port.in.RepositoryMemberAddUseCase;
-import io.jgitkins.server.application.port.in.RepositoryMemberQueryUseCase;
-import io.jgitkins.server.application.port.in.RepositoryMemberRemoveUseCase;
+import io.jgitkins.server.repository.application.contract.command.RepositoryMemberAddCommand;
+import io.jgitkins.server.repository.application.contract.result.RepositoryMemberSummary;
+import io.jgitkins.server.repository.application.port.in.RepositoryMemberAddUseCase;
+import io.jgitkins.server.repository.application.port.in.RepositoryMemberQueryUseCase;
+import io.jgitkins.server.repository.application.port.in.RepositoryMemberRemoveUseCase;
 import io.jgitkins.server.presentation.common.ApiResponse;
 import io.jgitkins.server.presentation.dto.RepositoryMemberAddRequest;
 import io.swagger.v3.oas.annotations.Operation;

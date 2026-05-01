@@ -3,7 +3,7 @@ package io.jgitkins.server.application.validate;
 import io.jgitkins.server.application.exception.*;
 import io.jgitkins.server.application.port.out.CurrentUserPort;
 import io.jgitkins.server.application.port.out.OrganizeMemberPersistencePort;
-import io.jgitkins.server.application.port.out.RepositoryPersistencePort;
+import io.jgitkins.server.repository.application.port.out.RepositoryPersistencePort;
 import io.jgitkins.server.domain.aggregate.Repository;
 import io.jgitkins.server.domain.model.vo.*;
 import lombok.RequiredArgsConstructor;

@@ -5,7 +5,7 @@ import io.jgitkins.server.application.exception.ApplicationException;
 import io.jgitkins.server.application.exception.OrganizeAlreadyExistsException;
 import io.jgitkins.server.application.exception.UsernameAlreadyExistsException;
 import io.jgitkins.server.application.port.out.OrganizePersistencePort;
-import io.jgitkins.server.application.port.out.RepositoryPersistencePort;
+import io.jgitkins.server.repository.application.port.out.RepositoryPersistencePort;
 import io.jgitkins.server.application.port.out.UserPersistencePort;
 import io.jgitkins.server.domain.model.vo.OrganizeName;
 import io.jgitkins.server.domain.model.vo.OwnerId;

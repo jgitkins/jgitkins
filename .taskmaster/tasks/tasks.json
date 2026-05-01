@@ -88,7 +88,7 @@
         "priority": "high",
         "details": "기존 기능별 Task를 카테고리 기반(신규기능/리팩토링/보안)으로 재구성함.",
         "testStrategy": "카테고리별 우선순위에 따라 하위 작업을 순차 수행하고 회귀 테스트를 적용한다.",
-        "updatedAt": "2026-04-21T12:09:42.612Z",
+        "updatedAt": "2026-04-30T23:01:53.001Z",
         "subtasks": [
           {
             "id": 1,
@@ -288,23 +288,24 @@
             "title": "[plan][P0][server, docs] Shared / Cross-Cutting Topics 기준 리팩토링 계획 수립",
             "description": "`Namespace`, `Pipeline Policy`, `RepositoryPermission`, `MergeabilityAssessment`처럼 여러 context를 가로지르는 계산/정책 seam을 먼저 고정하고 후속 리팩토링의 기준선을 만든다.",
             "details": "참조 문서: `docs/modeling/overview/domain-overview.md`, `docs/modeling/contexts/shared-cross-cutting/shared-cross-cutting-topics.md`, `docs/modeling/contexts/shared-cross-cutting/shared-cross-cutting-topics-diagrams.md`. 산출물은 `.taskmaster/docs/refactor/task_2_18_plan.md`이며 다음을 포함한다. 1) shared value object / application-level policy / read-side result 분류 확정. 2) `Namespace`, `Pipeline Policy`, `RepositoryPermission`, `MergeabilityAssessment`의 현재 코드 위치와 목표 위치 정리. 3) `Execution`, `Repository`, `Change & Review`가 어떤 seam을 공통으로 사용해야 하는지 정의. 4) 단계별 이관 순서, 영향 범위, 테스트 전략 정리.",
-            "status": "in-progress",
+            "status": "done",
             "dependencies": [],
             "parentTaskId": 2,
             "parentId": "2",
-            "updatedAt": "2026-04-21T12:09:42.612Z"
+            "updatedAt": "2026-04-30T21:03:13.002Z"
           },
           {
             "id": 19,
             "title": "[plan][P1][server, docs] Repository Context 기준 리팩토링 계획 수립",
             "description": "`Repository`, `Branch`, `RepositoryMember`, provisioning lifecycle의 책임을 문서 기준으로 재정렬하는 실행 계획을 수립한다.",
             "details": "참조 문서: `docs/modeling/contexts/repository/repository-context.md`, `docs/modeling/contexts/repository/repository-context-diagrams.md`. 산출물은 `.taskmaster/docs/refactor/task_2_19_plan.md`이며 다음을 포함한다. 1) `Repository Aggregate`, `Branch Entity`, `RepositoryMember relation model` 기준의 패키지/서비스 재배치안. 2) `RepositoryManagement/Load`, provisioning, branch metadata, Git external state 경계 정리. 3) 선행 shared seam 의존성 반영. 4) 테스트 전략과 점진 이관 단위 정의.",
-            "status": "pending",
+            "status": "done",
             "dependencies": [
               18
             ],
             "parentTaskId": 2,
-            "parentId": "2"
+            "parentId": "2",
+            "updatedAt": "2026-04-30T23:01:53.001Z"
           },
           {
             "id": 20,
@@ -455,7 +456,7 @@
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2026-04-21T12:09:42.615Z",
+      "lastModified": "2026-04-30T23:01:53.001Z",
       "taskCount": 5,
       "completedCount": 1,
       "tags": [

@@ -2,7 +2,6 @@ package io.jgitkins.server.domain.aggregate;
 
 import io.jgitkins.server.domain.event.RepositorySynchronizedEvent;
 import io.jgitkins.server.domain.model.vo.BranchName;
-import io.jgitkins.server.domain.model.vo.InitialCommitOptions;
 import io.jgitkins.server.domain.model.vo.OwnerId;
 import io.jgitkins.server.domain.model.vo.OwnerType;
 import io.jgitkins.server.domain.model.vo.RepositoryId;
@@ -29,7 +28,7 @@ class RepositoryTest {
                 " Demo repository ",
                 "/demo/demo-path.git",
                 "cred-1",
-                InitialCommitOptions.of(true, "init repo", "author", "author@example.com")
+                true
         );
 
         assertThat(repository.getId()).isNull();
@@ -54,7 +53,7 @@ class RepositoryTest {
                 null,
                 "/demo/demo.git",
                 null,
-                InitialCommitOptions.of(true, "init repo", "author", "author@example.com")
+                true
         );
         LocalDateTime syncedAt = LocalDateTime.now();
 
@@ -79,7 +78,7 @@ class RepositoryTest {
                                                   null,
                                                   "/demo/demo-path.git",
                                                   null,
-                                                  InitialCommitOptions.of(false, null, null, null));
+                                                  false);
 
         LocalDateTime createdAt = LocalDateTime.now().minusDays(1);
         LocalDateTime updatedAt = LocalDateTime.now();

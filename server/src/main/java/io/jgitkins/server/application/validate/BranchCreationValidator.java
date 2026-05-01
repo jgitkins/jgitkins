@@ -1,9 +1,9 @@
 package io.jgitkins.server.application.validate;
 
-import io.jgitkins.server.application.dto.command.BranchCreateCommand;
-import io.jgitkins.server.application.exception.BranchAlreadyExistsException;
+import io.jgitkins.server.repository.application.contract.command.BranchCreateCommand;
+import io.jgitkins.server.repository.application.exception.BranchAlreadyExistsException;
 import io.jgitkins.server.application.exception.RepositoryNotInitializedException;
-import io.jgitkins.server.application.exception.SourceBranchNotFoundException;
+import io.jgitkins.server.repository.application.exception.SourceBranchNotFoundException;
 import io.jgitkins.server.domain.aggregate.Repository;
 import io.jgitkins.server.domain.repository.BranchRepository;
 import lombok.RequiredArgsConstructor;

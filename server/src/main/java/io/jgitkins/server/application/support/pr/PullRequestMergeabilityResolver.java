@@ -1,7 +1,7 @@
 package io.jgitkins.server.application.support.pr;
 
 import io.jgitkins.server.application.dto.result.MergeResult;
-import io.jgitkins.server.application.port.out.BranchGitPort;
+import io.jgitkins.server.repository.application.port.out.BranchGitPort;
 import io.jgitkins.server.application.port.out.MergeGitPort;
 import io.jgitkins.server.shared.application.change.MergeabilityAssessmentAssembler;
 import io.jgitkins.server.shared.application.support.RepositoryNamespaceResolver;

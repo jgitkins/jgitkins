@@ -6,7 +6,7 @@ import io.jgitkins.server.application.dto.FileUploadInfo;
 import io.jgitkins.server.application.port.in.FileLoadUseCase;
 import io.jgitkins.server.application.port.in.FileTreeLoadUseCase;
 import io.jgitkins.server.application.port.in.FileUploadUseCase;
-import io.jgitkins.server.application.port.out.CommitGitPort;
+import io.jgitkins.server.repository.application.port.out.CommitGitPort;
 import io.jgitkins.server.application.port.out.FileGitPort;
 import io.jgitkins.server.application.validate.RepositoryAccessValidator;
 import io.jgitkins.server.common.factory.CommitFileFactory;

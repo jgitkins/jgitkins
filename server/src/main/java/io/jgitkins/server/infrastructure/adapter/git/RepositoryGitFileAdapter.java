@@ -1,7 +1,7 @@
 package io.jgitkins.server.infrastructure.adapter.git;
 
 import io.jgitkins.server.application.dto.FileEntry;
-import io.jgitkins.server.application.exception.BranchNotFoundException;
+import io.jgitkins.server.repository.application.exception.BranchNotFoundException;
 import io.jgitkins.server.application.port.out.FileGitPort;
 import io.jgitkins.server.infrastructure.exception.FileLoadFailedException;
 import io.jgitkins.server.infrastructure.support.RepositoryResolver;

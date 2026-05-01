@@ -1,9 +1,10 @@
-package io.jgitkins.server.infrastructure.adapter.git;
+package io.jgitkins.server.repository.infrastructure.adapter.git;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.jgitkins.server.application.dto.CommitFile;
 import io.jgitkins.server.application.dto.CommitHistory;
+import io.jgitkins.server.infrastructure.adapter.git.RepositoryGitFileAdapter;
 import io.jgitkins.server.infrastructure.support.RepositoryResolver;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;

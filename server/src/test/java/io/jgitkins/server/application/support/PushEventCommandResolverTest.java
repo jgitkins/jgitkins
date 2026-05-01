@@ -7,7 +7,7 @@ import static org.mockito.Mockito.when;
 import io.jgitkins.server.application.dto.command.PushEventCommand;
 import io.jgitkins.server.application.dto.command.PushHookRequest;
 import io.jgitkins.server.application.exception.ApplicationException;
-import io.jgitkins.server.application.port.out.RepositoryPersistencePort;
+import io.jgitkins.server.repository.application.port.out.RepositoryPersistencePort;
 import io.jgitkins.server.domain.aggregate.Repository;
 import io.jgitkins.server.domain.model.vo.OwnerId;
 import io.jgitkins.server.domain.model.vo.OwnerType;

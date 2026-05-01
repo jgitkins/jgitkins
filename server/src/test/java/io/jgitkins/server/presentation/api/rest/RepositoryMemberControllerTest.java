@@ -9,10 +9,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.jgitkins.server.application.dto.result.RepositoryMemberSummary;
-import io.jgitkins.server.application.port.in.RepositoryMemberAddUseCase;
-import io.jgitkins.server.application.port.in.RepositoryMemberQueryUseCase;
-import io.jgitkins.server.application.port.in.RepositoryMemberRemoveUseCase;
+import io.jgitkins.server.repository.application.contract.result.RepositoryMemberSummary;
+import io.jgitkins.server.repository.application.port.in.RepositoryMemberAddUseCase;
+import io.jgitkins.server.repository.application.port.in.RepositoryMemberQueryUseCase;
+import io.jgitkins.server.repository.application.port.in.RepositoryMemberRemoveUseCase;
 import io.jgitkins.server.domain.model.vo.RepositoryMemberRole;
 import java.time.LocalDateTime;
 import java.util.List;
