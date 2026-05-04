@@ -10,7 +10,7 @@ import static org.mockito.Mockito.when;
 import io.jgitkins.server.repository.application.contract.command.BranchCreateCommand;
 import io.jgitkins.server.repository.application.port.out.BranchGitPort;
 import io.jgitkins.server.repository.application.port.out.RepositoryPersistencePort;
-import io.jgitkins.server.repository.application.support.branch.BranchWritePolicy;
+import io.jgitkins.server.repository.application.support.branch.BranchFactory;
 import io.jgitkins.server.shared.application.support.RepositoryNamespaceResolver;
 import io.jgitkins.server.application.validate.BranchCreationValidator;
 import io.jgitkins.server.application.validate.RepositoryAccessValidator;
@@ -48,14 +48,14 @@ class BranchManagementServiceTest {
     @BeforeEach
     void setUp() {
         BranchCreationValidator branchCreationValidator = new BranchCreationValidator(branchPort);
-        BranchWritePolicy branchWritePolicy = new BranchWritePolicy(branchCreationValidator);
+        BranchFactory branchFactory = new BranchFactory(branchCreationValidator, branchPort, branchGitPort);
         service = new BranchManagementService(
                 repositoryNamespaceResolver,
-                branchWritePolicy,
                 repositoryAccessValidator,
+                repositoryPort,
+                branchFactory,
                 branchGitPort,
-                branchPort,
-                repositoryPort
+                branchPort
         );
     }
 

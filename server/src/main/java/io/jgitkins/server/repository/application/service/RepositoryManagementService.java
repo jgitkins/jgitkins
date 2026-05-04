@@ -6,8 +6,8 @@ import io.jgitkins.server.repository.application.port.in.RepositoryCreateUseCase
 import io.jgitkins.server.repository.application.port.in.RepositoryDeleteUseCase;
 import io.jgitkins.server.application.mapper.RepositoryApplicationMapper;
 import io.jgitkins.server.repository.application.port.out.RepositoryPersistencePort;
+import io.jgitkins.server.repository.application.contract.internal.RepositoryCreationPlan;
 import io.jgitkins.server.repository.application.support.ownership.RepositoryOwnershipPolicy;
-import io.jgitkins.server.repository.application.support.ownership.RepositoryOwnershipPolicy.RepositoryCreationPlan;
 import io.jgitkins.server.repository.application.support.provisioning.RepositoryProvisioner;
 import io.jgitkins.server.repository.application.exception.RepositoryNotFoundException;
 import io.jgitkins.server.domain.aggregate.Repository;

@@ -1,14 +1,13 @@
 package io.jgitkins.server.repository.application.service;
 
 import io.jgitkins.server.repository.application.contract.command.BranchCreateCommand;
-import io.jgitkins.server.repository.application.contract.command.BranchCreationContext;
 import io.jgitkins.server.repository.application.exception.BranchNotFoundException;
 import io.jgitkins.server.repository.application.exception.RepositoryNotFoundException;
 import io.jgitkins.server.repository.application.port.in.BranchCreateUseCase;
 import io.jgitkins.server.repository.application.port.in.BranchDeleteUseCase;
 import io.jgitkins.server.repository.application.port.out.BranchGitPort;
 import io.jgitkins.server.repository.application.port.out.RepositoryPersistencePort;
-import io.jgitkins.server.repository.application.support.branch.BranchWritePolicy;
+import io.jgitkins.server.repository.application.support.branch.BranchFactory;
 import io.jgitkins.server.shared.application.support.RepositoryNamespaceResolver;
 import io.jgitkins.server.application.validate.RepositoryAccessValidator;
 import io.jgitkins.server.domain.Branch;
@@ -24,28 +23,17 @@ import org.springframework.transaction.annotation.Transactional;
 public class BranchManagementService implements BranchCreateUseCase, BranchDeleteUseCase {
 
     private final RepositoryNamespaceResolver repositoryNamespaceResolver;
-    private final BranchWritePolicy branchWritePolicy;
     private final RepositoryAccessValidator repositoryAccessValidator;
-
+    private final RepositoryPersistencePort repositoryPort;
+    private final BranchFactory branchFactory;
     private final BranchGitPort branchGitPort;
     private final BranchRepository branchRepository;
-    private final RepositoryPersistencePort repositoryPort;
 
     @Override
     @Transactional
     public void createBranch(BranchCreateCommand command) {
         BranchWriteContext context = loadWriteContext(command.repositoryId());
-        String sourceBranch = branchWritePolicy.resolveSourceBranch(command, context.repository());
-        Branch branch = branchWritePolicy.createBranchMetadata(command);
-        BranchCreationContext creationContext = BranchCreationContext.of(
-                command,
-                context.namespace(),
-                context.repository(),
-                sourceBranch
-        );
-
-        branchRepository.save(branch);
-        branchGitPort.createBranch(creationContext);
+        branchFactory.create(command, context.namespace(), context.repository());
     }
 
     @Override

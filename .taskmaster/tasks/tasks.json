@@ -88,7 +88,7 @@
         "priority": "high",
         "details": "기존 기능별 Task를 카테고리 기반(신규기능/리팩토링/보안)으로 재구성함.",
         "testStrategy": "카테고리별 우선순위에 따라 하위 작업을 순차 수행하고 회귀 테스트를 적용한다.",
-        "updatedAt": "2026-04-30T23:01:53.001Z",
+        "updatedAt": "2026-05-04T13:14:39.567Z",
         "subtasks": [
           {
             "id": 1,
@@ -357,6 +357,19 @@
             ],
             "parentTaskId": 2,
             "parentId": "2"
+          },
+          {
+            "id": 24,
+            "title": "[plan][P1][server, docs] Repository Support collaborator 책임 분해 계획 수립",
+            "description": "`RepositoryOwnershipPolicy`, `BranchWritePolicy`, `RepositoryMembershipPolicy`의 책임을 재검토하고 policy/factory/support 경계를 문서 기준으로 재정의하는 실행 계획을 수립한다.",
+            "details": "참조 문서: `docs/modeling/contexts/repository/repository-context.md`, `.taskmaster/docs/refactor/task_2_19_plan.md`, `.taskmaster/docs/refactor/task_2_24_plan.md`. 산출물은 `.taskmaster/docs/refactor/task_2_24_plan.md`이며 다음을 포함한다. 1) `RepositoryOwnershipPolicy`의 ownership validation, repository draft 생성, initial commit options 조립, deletion permission 검증 책임을 분리할지 기준 정리. 2) `BranchWritePolicy`의 source branch 결정과 branch metadata 생성 책임을 policy/factory/support 중 어떤 형태로 둘지 결정. 3) `RepositoryMembershipPolicy`의 입력 검증, 기본 role 결정, member 생성 책임을 유지 또는 support/factory로 재명명할지 정리. 4) 실제 클래스명, 목표 패키지, 점진 이관 순서, 테스트 전략 정의.",
+            "status": "done",
+            "dependencies": [
+              19
+            ],
+            "parentTaskId": 2,
+            "parentId": "2",
+            "updatedAt": "2026-05-04T13:14:39.567Z"
           }
         ]
       },
@@ -456,7 +469,7 @@
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2026-04-30T23:01:53.001Z",
+      "lastModified": "2026-05-04T13:14:39.567Z",
       "taskCount": 5,
       "completedCount": 1,
       "tags": [

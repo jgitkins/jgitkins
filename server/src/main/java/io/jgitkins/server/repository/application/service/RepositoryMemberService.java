@@ -6,7 +6,8 @@ import io.jgitkins.server.repository.application.port.in.RepositoryMemberAddUseC
 import io.jgitkins.server.repository.application.port.in.RepositoryMemberQueryUseCase;
 import io.jgitkins.server.repository.application.port.in.RepositoryMemberRemoveUseCase;
 import io.jgitkins.server.repository.application.port.out.RepositoryMemberPersistencePort;
-import io.jgitkins.server.repository.application.support.membership.RepositoryMembershipPolicy;
+import io.jgitkins.server.repository.application.support.membership.RepositoryMembershipFactory;
+import io.jgitkins.server.application.validate.RepositoryMemberValidator;
 import io.jgitkins.server.domain.model.RepositoryMember;
 import io.jgitkins.server.domain.model.vo.RepositoryId;
 import java.util.List;
@@ -21,13 +22,16 @@ public class RepositoryMemberService implements RepositoryMemberAddUseCase,
                                                 RepositoryMemberQueryUseCase {
 
     private final RepositoryMemberPersistencePort repositoryMemberPort;
-    private final RepositoryMembershipPolicy repositoryMembershipPolicy;
+    private final RepositoryMemberValidator repositoryMemberValidator;
+    private final RepositoryMembershipFactory repositoryMembershipFactory;
 
     @Override
     @Transactional
     public void addRepositoryMember(RepositoryMemberAddCommand command) {
-        RepositoryMember member = repositoryMembershipPolicy.createMember(command);
-        if (repositoryMembershipPolicy.isAlreadyMember(member.getRepositoryId(), member.getUserId())) {
+        repositoryMemberValidator.validateAddCommand(command);
+
+        RepositoryMember member = repositoryMembershipFactory.createMember(command);
+        if (repositoryMemberValidator.isAlreadyMember(member.getRepositoryId(), member.getUserId())) {
             return;
         }
         repositoryMemberPort.save(member);
@@ -36,7 +40,7 @@ public class RepositoryMemberService implements RepositoryMemberAddUseCase,
     @Override
     @Transactional
     public void removeRepositoryMember(Long repositoryId, Long userId) {
-        repositoryMembershipPolicy.validateMemberIdentifiers(repositoryId, userId);
+        repositoryMemberValidator.validateMemberIdentifiers(repositoryId, userId);
         repositoryMemberPort.deleteByRepositoryIdAndUserId(
                 RepositoryId.of(repositoryId),
                 io.jgitkins.server.domain.model.vo.UserId.of(userId)
@@ -46,7 +50,7 @@ public class RepositoryMemberService implements RepositoryMemberAddUseCase,
     @Override
     @Transactional(readOnly = true)
     public List<RepositoryMemberSummary> getRepositoryMembers(Long repositoryId) {
-        repositoryMembershipPolicy.validateRepositoryId(repositoryId);
+        repositoryMemberValidator.validateRepositoryId(repositoryId);
         return repositoryMemberPort.findAllByRepositoryId(RepositoryId.of(repositoryId))
                 .stream()
                 .map(member -> new RepositoryMemberSummary(

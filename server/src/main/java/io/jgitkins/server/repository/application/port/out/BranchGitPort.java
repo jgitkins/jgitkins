@@ -1,6 +1,6 @@
 package io.jgitkins.server.repository.application.port.out;
 
-import io.jgitkins.server.repository.application.contract.command.BranchCreationContext;
+import io.jgitkins.server.repository.application.contract.internal.BranchCreationContext;
 import java.io.IOException;
 
 public interface BranchGitPort {

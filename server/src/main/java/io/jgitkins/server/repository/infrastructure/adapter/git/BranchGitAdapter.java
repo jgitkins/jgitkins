@@ -1,6 +1,6 @@
 package io.jgitkins.server.repository.infrastructure.adapter.git;
 
-import io.jgitkins.server.repository.application.contract.command.BranchCreationContext;
+import io.jgitkins.server.repository.application.contract.internal.BranchCreationContext;
 import io.jgitkins.server.repository.application.exception.BranchAlreadyExistsException;
 import io.jgitkins.server.repository.application.exception.BranchNotFoundException;
 import io.jgitkins.server.repository.application.exception.SourceBranchNotFoundException;
@@ -28,10 +28,10 @@ public class BranchGitAdapter implements BranchGitPort {
 
     @Override
     public void createBranch(BranchCreationContext context) {
-        String namespace = context.getNamespace();
-        String repoName = context.getRepositoryName();
-        String sourceBranch = context.getSourceBranch();
-        String branchName = context.getBranchName();
+        String namespace = context.namespace();
+        String repoName = context.repositoryName();
+        String sourceBranch = context.sourceBranch();
+        String branchName = context.branchName();
 
         try (Repository repo = repositoryResolver.openBareRepository(namespace, repoName)) {
             try (Git git = new Git(repo)) {

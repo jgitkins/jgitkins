@@ -1,6 +1,7 @@
 package io.jgitkins.server.repository.application.support.ownership;
 
 import io.jgitkins.server.repository.application.contract.command.RepositoryCreateCommand;
+import io.jgitkins.server.repository.application.contract.internal.RepositoryCreationPlan;
 import io.jgitkins.server.application.validate.RepositoryValidator;
 import io.jgitkins.server.domain.aggregate.Repository;
 import io.jgitkins.server.domain.model.vo.BranchName;
@@ -63,8 +64,5 @@ public class RepositoryOwnershipPolicy {
             return OwnerId.of(organizeId);
         }
         return OwnerId.of(repositoryValidator.requireCurrentUserId());
-    }
-
-    public record RepositoryCreationPlan(Repository repository, InitialCommitOptions initialCommitOptions) {
     }
 }

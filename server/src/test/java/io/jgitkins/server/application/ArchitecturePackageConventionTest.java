@@ -26,10 +26,10 @@ import io.jgitkins.server.repository.application.service.BranchManagementService
 import io.jgitkins.server.repository.application.service.RepositoryLoadService;
 import io.jgitkins.server.repository.application.service.RepositoryManagementService;
 import io.jgitkins.server.repository.application.service.RepositoryMemberService;
-import io.jgitkins.server.repository.application.support.branch.BranchWritePolicy;
+import io.jgitkins.server.repository.application.support.branch.BranchFactory;
 import io.jgitkins.server.shared.application.support.RepositoryAccessibilityService;
 import io.jgitkins.server.shared.application.support.RepositoryNamespaceResolver;
-import io.jgitkins.server.repository.application.support.membership.RepositoryMembershipPolicy;
+import io.jgitkins.server.repository.application.support.membership.RepositoryMembershipFactory;
 import io.jgitkins.server.repository.application.support.ownership.RepositoryOwnershipPolicy;
 import io.jgitkins.server.repository.application.support.provisioning.RepositoryProvisioner;
 import io.jgitkins.server.application.support.RunnerRuntimeConfigProvider;
@@ -90,11 +90,11 @@ class ArchitecturePackageConventionTest {
                 EventPolicyResolver.class,
                 ExecutionRequestService.class,
                 GitRepositoryAccessService.class,
-                BranchWritePolicy.class,
+                BranchFactory.class,
                 UserService.class,
                 RepositoryAccessibilityService.class,
                 RepositoryLookupService.class,
-                RepositoryMembershipPolicy.class,
+                RepositoryMembershipFactory.class,
                 RepositoryNamespaceResolver.class,
                 RepositoryOwnershipPolicy.class,
                 RepositoryProvisioner.class,
