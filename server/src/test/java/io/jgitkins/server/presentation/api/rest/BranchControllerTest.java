@@ -13,9 +13,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jgitkins.server.repository.application.contract.command.BranchCreateCommand;
 import io.jgitkins.server.repository.application.contract.result.BranchSearchResult;
-import io.jgitkins.server.repository.application.port.in.BranchCreateUseCase;
-import io.jgitkins.server.repository.application.port.in.BranchDeleteUseCase;
 import io.jgitkins.server.repository.application.port.in.BranchLoadUseCase;
+import io.jgitkins.server.repository.application.port.in.BranchManagementUseCase;
 import io.jgitkins.server.presentation.dto.BranchCreateRequest;
 import io.jgitkins.server.presentation.mapper.BranchRequestMapper;
 import java.util.List;
@@ -41,10 +40,7 @@ class BranchControllerTest {
     private BranchLoadUseCase branchLoadUseCase;
 
     @MockBean
-    private BranchCreateUseCase branchCreateUseCase;
-
-    @MockBean
-    private BranchDeleteUseCase branchDeleteUseCase;
+    private BranchManagementUseCase branchManagementUseCase;
 
     @MockBean
     private BranchRequestMapper branchRequestMapper;
@@ -63,7 +59,7 @@ class BranchControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(header().string("Location", org.hamcrest.Matchers.containsString("feature")));
 
-        verify(branchCreateUseCase).createBranch(command);
+        verify(branchManagementUseCase).createBranch(command);
     }
 
     @Test
@@ -80,7 +76,7 @@ class BranchControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(header().string("Location", org.hamcrest.Matchers.containsString("feature-alias")));
 
-        verify(branchCreateUseCase).createBranch(command);
+        verify(branchManagementUseCase).createBranch(command);
     }
 
     @Test
@@ -117,6 +113,6 @@ class BranchControllerTest {
         mockMvc.perform(delete("/api/repositories/1/branches/feature"))
                 .andExpect(status().isNoContent());
 
-        verify(branchDeleteUseCase).deleteBranch(1L, "feature");
+        verify(branchManagementUseCase).deleteBranch(1L, "feature");
     }
 }

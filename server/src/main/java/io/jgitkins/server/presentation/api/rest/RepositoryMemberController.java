@@ -2,9 +2,8 @@ package io.jgitkins.server.presentation.api.rest;
 
 import io.jgitkins.server.repository.application.contract.command.RepositoryMemberAddCommand;
 import io.jgitkins.server.repository.application.contract.result.RepositoryMemberSummary;
-import io.jgitkins.server.repository.application.port.in.RepositoryMemberAddUseCase;
-import io.jgitkins.server.repository.application.port.in.RepositoryMemberQueryUseCase;
-import io.jgitkins.server.repository.application.port.in.RepositoryMemberRemoveUseCase;
+import io.jgitkins.server.repository.application.port.in.RepositoryMemberLoadUseCase;
+import io.jgitkins.server.repository.application.port.in.RepositoryMemberManagementUseCase;
 import io.jgitkins.server.presentation.common.ApiResponse;
 import io.jgitkins.server.presentation.dto.RepositoryMemberAddRequest;
 import io.swagger.v3.oas.annotations.Operation;
@@ -25,16 +24,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/repositories/{repositoryId}/members")
 public class RepositoryMemberController {
 
-    private final RepositoryMemberAddUseCase repositoryMemberAddUseCase;
-    private final RepositoryMemberQueryUseCase repositoryMemberQueryUseCase;
-    private final RepositoryMemberRemoveUseCase repositoryMemberRemoveUseCase;
+    private final RepositoryMemberManagementUseCase repositoryMemberManagementUseCase;
+    private final RepositoryMemberLoadUseCase repositoryMemberLoadUseCase;
 
     @Operation(summary = "Add repository member")
     @PostMapping
     public ResponseEntity<ApiResponse<Void>> addMember(@PathVariable Long repositoryId,
                                                        @RequestBody RepositoryMemberAddRequest request) {
         RepositoryMemberAddCommand command = new RepositoryMemberAddCommand(repositoryId, request.userId(), request.role());
-        repositoryMemberAddUseCase.addRepositoryMember(command);
+        repositoryMemberManagementUseCase.addRepositoryMember(command);
         return ApiResponse.ok();
     }
 
@@ -42,13 +40,13 @@ public class RepositoryMemberController {
     @DeleteMapping("/{userId}")
     public ResponseEntity<ApiResponse<Void>> removeMember(@PathVariable Long repositoryId,
                                                           @PathVariable Long userId) {
-        repositoryMemberRemoveUseCase.removeRepositoryMember(repositoryId, userId);
+        repositoryMemberManagementUseCase.removeRepositoryMember(repositoryId, userId);
         return ApiResponse.noContent();
     }
 
     @Operation(summary = "List repository members")
     @GetMapping
     public ResponseEntity<ApiResponse<java.util.List<RepositoryMemberSummary>>> listMembers(@PathVariable Long repositoryId) {
-        return ApiResponse.ok(repositoryMemberQueryUseCase.getRepositoryMembers(repositoryId));
+        return ApiResponse.ok(repositoryMemberLoadUseCase.getRepositoryMembers(repositoryId));
     }
 }

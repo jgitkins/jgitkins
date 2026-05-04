@@ -10,9 +10,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jgitkins.server.repository.application.contract.result.RepositoryMemberSummary;
-import io.jgitkins.server.repository.application.port.in.RepositoryMemberAddUseCase;
-import io.jgitkins.server.repository.application.port.in.RepositoryMemberQueryUseCase;
-import io.jgitkins.server.repository.application.port.in.RepositoryMemberRemoveUseCase;
+import io.jgitkins.server.repository.application.port.in.RepositoryMemberLoadUseCase;
+import io.jgitkins.server.repository.application.port.in.RepositoryMemberManagementUseCase;
 import io.jgitkins.server.domain.model.vo.RepositoryMemberRole;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -35,13 +34,10 @@ class RepositoryMemberControllerTest {
     private ObjectMapper objectMapper;
 
     @MockBean
-    private RepositoryMemberAddUseCase repositoryMemberAddUseCase;
+    private RepositoryMemberManagementUseCase repositoryMemberManagementUseCase;
 
     @MockBean
-    private RepositoryMemberQueryUseCase repositoryMemberQueryUseCase;
-
-    @MockBean
-    private RepositoryMemberRemoveUseCase repositoryMemberRemoveUseCase;
+    private RepositoryMemberLoadUseCase repositoryMemberLoadUseCase;
 
     @Test
     void addMember_returnsOk() throws Exception {
@@ -55,7 +51,7 @@ class RepositoryMemberControllerTest {
                         .content(body))
                 .andExpect(status().isOk());
 
-        verify(repositoryMemberAddUseCase).addRepositoryMember(org.mockito.ArgumentMatchers.argThat(cmd ->
+        verify(repositoryMemberManagementUseCase).addRepositoryMember(org.mockito.ArgumentMatchers.argThat(cmd ->
                 cmd.repositoryId().equals(1L)
                         && cmd.userId().equals(2L)
                         && cmd.role() == RepositoryMemberRole.WRITER
@@ -73,7 +69,7 @@ class RepositoryMemberControllerTest {
                         .content(body))
                 .andExpect(status().isOk());
 
-        verify(repositoryMemberAddUseCase).addRepositoryMember(org.mockito.ArgumentMatchers.argThat(cmd ->
+        verify(repositoryMemberManagementUseCase).addRepositoryMember(org.mockito.ArgumentMatchers.argThat(cmd ->
                 cmd.repositoryId().equals(1L)
                         && cmd.userId().equals(3L)
                         && cmd.role() == null
@@ -85,12 +81,12 @@ class RepositoryMemberControllerTest {
         mockMvc.perform(delete("/api/repositories/1/members/2"))
                 .andExpect(status().isNoContent());
 
-        verify(repositoryMemberRemoveUseCase).removeRepositoryMember(1L, 2L);
+        verify(repositoryMemberManagementUseCase).removeRepositoryMember(1L, 2L);
     }
 
     @Test
     void listMembers_returnsMemberSummaries() throws Exception {
-        when(repositoryMemberQueryUseCase.getRepositoryMembers(1L)).thenReturn(List.of(
+        when(repositoryMemberLoadUseCase.getRepositoryMembers(1L)).thenReturn(List.of(
                 new RepositoryMemberSummary(2L, RepositoryMemberRole.MAINTAINER, LocalDateTime.of(2026, 1, 1, 0, 0))
         ));
 
@@ -99,6 +95,6 @@ class RepositoryMemberControllerTest {
                 .andExpect(jsonPath("$.data[0].userId").value(2L))
                 .andExpect(jsonPath("$.data[0].role").value("MAINTAINER"));
 
-        verify(repositoryMemberQueryUseCase).getRepositoryMembers(1L);
+        verify(repositoryMemberLoadUseCase).getRepositoryMembers(1L);
     }
 }

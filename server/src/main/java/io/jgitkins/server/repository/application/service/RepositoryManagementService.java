@@ -2,8 +2,7 @@ package io.jgitkins.server.repository.application.service;
 
 import io.jgitkins.server.repository.application.contract.command.RepositoryCreateCommand;
 import io.jgitkins.server.repository.application.contract.result.RepositoryResult;
-import io.jgitkins.server.repository.application.port.in.RepositoryCreateUseCase;
-import io.jgitkins.server.repository.application.port.in.RepositoryDeleteUseCase;
+import io.jgitkins.server.repository.application.port.in.RepositoryManagementUseCase;
 import io.jgitkins.server.application.mapper.RepositoryApplicationMapper;
 import io.jgitkins.server.repository.application.port.out.RepositoryPersistencePort;
 import io.jgitkins.server.repository.application.contract.internal.RepositoryCreationPlan;
@@ -18,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class RepositoryManagementService implements RepositoryCreateUseCase, RepositoryDeleteUseCase {
+public class RepositoryManagementService implements RepositoryManagementUseCase {
 
     private final RepositoryApplicationMapper repositoryApplicationMapper;
     private final RepositoryProvisioner repositoryProvisioner;

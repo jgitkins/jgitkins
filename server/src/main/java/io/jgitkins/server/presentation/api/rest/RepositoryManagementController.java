@@ -3,9 +3,8 @@ package io.jgitkins.server.presentation.api.rest;
 import io.jgitkins.server.repository.application.contract.command.RepositoryCreateCommand;
 import io.jgitkins.server.application.dto.result.RepositoryOverviewResult;
 import io.jgitkins.server.repository.application.contract.result.RepositoryResult;
-import io.jgitkins.server.repository.application.port.in.RepositoryCreateUseCase;
-import io.jgitkins.server.repository.application.port.in.RepositoryDeleteUseCase;
 import io.jgitkins.server.repository.application.port.in.RepositoryLoadUseCase;
+import io.jgitkins.server.repository.application.port.in.RepositoryManagementUseCase;
 import io.jgitkins.server.application.port.in.RepositoryOverviewUseCase;
 import io.jgitkins.server.presentation.common.ApiResponse;
 import io.jgitkins.server.presentation.dto.RepositoryCreateRequest;
@@ -28,9 +27,8 @@ import java.util.List;
 @Validated
 public class RepositoryManagementController {
 
-    private final RepositoryCreateUseCase repositoryCreateUseCase;
+    private final RepositoryManagementUseCase repositoryManagementUseCase;
     private final RepositoryLoadUseCase repositoryLoadUseCase;
-    private final RepositoryDeleteUseCase repositoryDeleteUseCase;
     private final RepositoryOverviewUseCase repositoryOverviewUseCase;
 
     private final RepositoryRequestMapper repositoryRequestMapper;
@@ -39,7 +37,7 @@ public class RepositoryManagementController {
     @PostMapping
     public ResponseEntity<ApiResponse<RepositoryResult>> create(@Valid @RequestBody RepositoryCreateRequest request) {
         RepositoryCreateCommand createCommand = repositoryRequestMapper.toCommand(request);
-        RepositoryResult result = repositoryCreateUseCase.create(createCommand);
+        RepositoryResult result = repositoryManagementUseCase.create(createCommand);
         return ApiResponse.created(result.id(), result);
     }
 
@@ -64,7 +62,7 @@ public class RepositoryManagementController {
     @Operation(summary = "Delete Repository")
     @DeleteMapping("/{repositoryId}")
     public ResponseEntity<ApiResponse<Void>> deleteRepository(@PathVariable Long repositoryId) {
-        repositoryDeleteUseCase.deleteRepository(repositoryId);
+        repositoryManagementUseCase.deleteRepository(repositoryId);
         return ApiResponse.noContent();
     }
 

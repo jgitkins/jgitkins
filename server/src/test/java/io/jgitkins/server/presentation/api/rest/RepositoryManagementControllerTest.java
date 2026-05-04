@@ -13,9 +13,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jgitkins.server.repository.application.contract.command.RepositoryCreateCommand;
 import io.jgitkins.server.repository.application.contract.result.RepositoryResult;
-import io.jgitkins.server.repository.application.port.in.RepositoryCreateUseCase;
-import io.jgitkins.server.repository.application.port.in.RepositoryDeleteUseCase;
 import io.jgitkins.server.repository.application.port.in.RepositoryLoadUseCase;
+import io.jgitkins.server.repository.application.port.in.RepositoryManagementUseCase;
 import io.jgitkins.server.application.port.in.RepositoryOverviewUseCase;
 import io.jgitkins.server.domain.model.vo.OwnerType;
 import io.jgitkins.server.presentation.dto.RepositoryCreateRequest;
@@ -40,13 +39,10 @@ class RepositoryManagementControllerTest {
     private ObjectMapper objectMapper;
 
     @MockBean
-    private RepositoryCreateUseCase repositoryCreateUseCase;
+    private RepositoryManagementUseCase repositoryManagementUseCase;
 
     @MockBean
     private RepositoryLoadUseCase repositoryLoadUseCase;
-
-    @MockBean
-    private RepositoryDeleteUseCase repositoryDeleteUseCase;
 
     @MockBean
     private RepositoryOverviewUseCase repositoryOverviewUseCase;
@@ -64,7 +60,7 @@ class RepositoryManagementControllerTest {
         RepositoryResult result = new RepositoryResult(100L, "USER", "sample-repo", null, null, null, null, null, null, null, null, false, null, null, null);
 
         when(repositoryRequestMapper.toCommand(any(RepositoryCreateRequest.class))).thenReturn(command);
-        when(repositoryCreateUseCase.create(command)).thenReturn(result);
+        when(repositoryManagementUseCase.create(command)).thenReturn(result);
 
         mockMvc.perform(post("/api/repositories")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -78,7 +74,7 @@ class RepositoryManagementControllerTest {
                 .andExpect(jsonPath("$.data.id").value(100L))
                 .andExpect(jsonPath("$.data.name").value("sample-repo"));
 
-        verify(repositoryCreateUseCase).create(command);
+        verify(repositoryManagementUseCase).create(command);
     }
 
     @Test
@@ -127,6 +123,6 @@ class RepositoryManagementControllerTest {
         mockMvc.perform(delete("/api/repositories/9"))
                 .andExpect(status().isNoContent());
 
-        verify(repositoryDeleteUseCase).deleteRepository(9L);
+        verify(repositoryManagementUseCase).deleteRepository(9L);
     }
 }

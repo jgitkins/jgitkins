@@ -6,9 +6,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import io.jgitkins.server.repository.application.contract.command.BranchCreateCommand;
 import io.jgitkins.server.repository.application.contract.result.BranchSearchResult;
-import io.jgitkins.server.repository.application.port.in.BranchCreateUseCase;
-import io.jgitkins.server.repository.application.port.in.BranchDeleteUseCase;
 import io.jgitkins.server.repository.application.port.in.BranchLoadUseCase;
+import io.jgitkins.server.repository.application.port.in.BranchManagementUseCase;
 import io.jgitkins.server.presentation.common.ApiResponse;
 import io.jgitkins.server.presentation.dto.BranchCreateRequest;
 import io.jgitkins.server.presentation.util.LocationUriBuilder;
@@ -25,8 +24,7 @@ import java.util.List;
 public class BranchController {
 
     private final BranchLoadUseCase branchLoadUseCase;
-    private final BranchCreateUseCase branchCreateUseCase;
-    private final BranchDeleteUseCase branchDeleteUseCase;
+    private final BranchManagementUseCase branchManagementUseCase;
     private final BranchRequestMapper branchRequestMapper;
 
     @Operation(summary = "Create branch")
@@ -35,7 +33,7 @@ public class BranchController {
                                        @RequestBody BranchCreateRequest request) {
 
         BranchCreateCommand createCommand = branchRequestMapper.toCommand(repositoryId, request);
-        branchCreateUseCase.createBranch(createCommand);
+        branchManagementUseCase.createBranch(createCommand);
 
         URI location = LocationUriBuilder.create(request.branchName());
         return ResponseEntity.created(location).build();
@@ -59,7 +57,7 @@ public class BranchController {
     public ResponseEntity<ApiResponse<Void>> deleteBranch(@PathVariable Long repositoryId,
                                                           @PathVariable String branchName) {
 
-        branchDeleteUseCase.deleteBranch(repositoryId, branchName);
+        branchManagementUseCase.deleteBranch(repositoryId, branchName);
         return ApiResponse.noContent();
     }
 }

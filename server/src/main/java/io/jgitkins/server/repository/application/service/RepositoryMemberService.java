@@ -2,9 +2,8 @@ package io.jgitkins.server.repository.application.service;
 
 import io.jgitkins.server.repository.application.contract.command.RepositoryMemberAddCommand;
 import io.jgitkins.server.repository.application.contract.result.RepositoryMemberSummary;
-import io.jgitkins.server.repository.application.port.in.RepositoryMemberAddUseCase;
-import io.jgitkins.server.repository.application.port.in.RepositoryMemberQueryUseCase;
-import io.jgitkins.server.repository.application.port.in.RepositoryMemberRemoveUseCase;
+import io.jgitkins.server.repository.application.port.in.RepositoryMemberLoadUseCase;
+import io.jgitkins.server.repository.application.port.in.RepositoryMemberManagementUseCase;
 import io.jgitkins.server.repository.application.port.out.RepositoryMemberPersistencePort;
 import io.jgitkins.server.repository.application.support.membership.RepositoryMembershipFactory;
 import io.jgitkins.server.application.validate.RepositoryMemberValidator;
@@ -17,9 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class RepositoryMemberService implements RepositoryMemberAddUseCase,
-                                                RepositoryMemberRemoveUseCase,
-                                                RepositoryMemberQueryUseCase {
+public class RepositoryMemberService implements RepositoryMemberManagementUseCase,
+                                                RepositoryMemberLoadUseCase {
 
     private final RepositoryMemberPersistencePort repositoryMemberPort;
     private final RepositoryMemberValidator repositoryMemberValidator;

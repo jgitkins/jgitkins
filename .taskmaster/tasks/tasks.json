@@ -88,7 +88,7 @@
         "priority": "high",
         "details": "기존 기능별 Task를 카테고리 기반(신규기능/리팩토링/보안)으로 재구성함.",
         "testStrategy": "카테고리별 우선순위에 따라 하위 작업을 순차 수행하고 회귀 테스트를 적용한다.",
-        "updatedAt": "2026-05-04T13:14:39.567Z",
+        "updatedAt": "2026-05-04T15:52:03.440Z",
         "subtasks": [
           {
             "id": 1,
@@ -370,6 +370,20 @@
             "parentTaskId": 2,
             "parentId": "2",
             "updatedAt": "2026-05-04T13:14:39.567Z"
+          },
+          {
+            "id": 25,
+            "title": "[plan][P1][server, docs] Repository Context inbound UseCase 포트 통합 계획 수립",
+            "description": "`repository.application.port.in` 아래에 세분화된 UseCase 포트를 `Management`와 `Load` 축으로 재구성하는 실행 계획을 수립한다.",
+            "details": "참조 문서: `.taskmaster/docs/refactor/task_2_19_plan.md`, `.taskmaster/docs/refactor/task_2_24_plan.md`, `docs/modeling/contexts/repository/repository-context.md`. 산출물은 `.taskmaster/docs/refactor/task_2_25_plan.md`이며 다음을 포함한다. 1) `BranchCreate/DeleteUseCase`, `RepositoryCreate/DeleteUseCase`, `RepositoryMemberAdd/Remove/QueryUseCase`를 `ManagementUseCase`/`LoadUseCase` 기준으로 묶는 기준 정리. 2) controller, web adapter, overview service, 테스트 주입점 영향 범위 정리. 3) 기존 service 구현체가 어떤 통합 포트를 구현하게 되는지 TO-BE 구조와 상세 코드 스니펫 제시. 4) 네이밍, package 유지 여부, 점진 이관 순서, 검증 전략 정의.",
+            "status": "done",
+            "dependencies": [
+              19,
+              24
+            ],
+            "parentTaskId": 2,
+            "parentId": "2",
+            "updatedAt": "2026-05-04T15:52:03.440Z"
           }
         ]
       },
@@ -469,7 +483,7 @@
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2026-05-04T13:14:39.567Z",
+      "lastModified": "2026-05-04T15:52:03.441Z",
       "taskCount": 5,
       "completedCount": 1,
       "tags": [
