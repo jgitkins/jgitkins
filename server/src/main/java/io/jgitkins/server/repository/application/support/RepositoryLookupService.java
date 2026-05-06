@@ -1,7 +1,7 @@
 package io.jgitkins.server.repository.application.support;
 
 import io.jgitkins.server.application.port.out.OrganizePersistencePort;
-import io.jgitkins.server.repository.application.port.out.RepositoryPersistencePort;
+import io.jgitkins.server.repository.application.port.out.RepositoryQueryPort;
 import io.jgitkins.server.application.port.out.UserPersistencePort;
 import io.jgitkins.server.domain.aggregate.Organize;
 import io.jgitkins.server.domain.aggregate.Repository;
@@ -22,7 +22,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class RepositoryLookupService {
 
-    private final RepositoryPersistencePort repositoryPort;
+    private final RepositoryQueryPort repositoryQueryPort;
     private final UserPersistencePort userPort;
     private final OrganizePersistencePort organizePort;
 
@@ -54,7 +54,7 @@ public class RepositoryLookupService {
 
     private Optional<Repository> findByClonePath(String namespace, String repoName) {
         String clonePath = RepositoryPathHelper.buildClonePath(namespace, repoName);
-        return repositoryPort.findByClonePath(clonePath);
+        return repositoryQueryPort.findByClonePath(clonePath);
     }
 
     private Optional<Repository> findUserOwned(String namespace, String repoName) {
@@ -63,7 +63,7 @@ public class RepositoryLookupService {
             return Optional.empty();
         }
 
-        return repositoryPort.findByOwnerAndName(
+        return repositoryQueryPort.findByOwnerAndName(
                 OwnerType.USER,
                 OwnerId.of(user.get().getId()),
                 RepositoryName.from(repoName));
@@ -75,7 +75,7 @@ public class RepositoryLookupService {
             return Optional.empty();
         }
 
-        return repositoryPort.findByOwnerAndPath(
+        return repositoryQueryPort.findByOwnerAndPath(
                 OwnerType.ORGANIZATION,
                 OwnerId.of(organize.get().getId().getValue()),
                 RepositoryPath.from(repoName));

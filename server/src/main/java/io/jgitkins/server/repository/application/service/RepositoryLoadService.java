@@ -6,7 +6,7 @@ import io.jgitkins.server.application.exception.UserNotFoundException;
 import io.jgitkins.server.application.mapper.RepositoryApplicationMapper;
 import io.jgitkins.server.repository.application.port.in.RepositoryLoadUseCase;
 import io.jgitkins.server.application.port.out.CurrentUserPort;
-import io.jgitkins.server.repository.application.port.out.RepositoryPersistencePort;
+import io.jgitkins.server.repository.application.port.out.RepositoryQueryPort;
 import io.jgitkins.server.application.port.out.UserPersistencePort;
 import io.jgitkins.server.domain.aggregate.Repository;
 import io.jgitkins.server.domain.model.vo.OrganizeId;
@@ -31,14 +31,14 @@ public class RepositoryLoadService implements RepositoryLoadUseCase {
     private final RepositoryApplicationMapper repositoryApplicationMapper;
     private final RepositoryAccessibilityService repositoryAccessibilityService;
     private final RepositoryLookupService repositoryLookupService;
-    private final RepositoryPersistencePort repositoryPort;
+    private final RepositoryQueryPort repositoryQueryPort;
     private final CurrentUserPort currentUserPersistencePort;
     private final UserPersistencePort userPort;
 
     @Override
     @Transactional(readOnly = true)
     public RepositoryResult loadRepository(Long repositoryId) {
-        Repository repository = repositoryPort.findById(RepositoryId.of(repositoryId))
+        Repository repository = repositoryQueryPort.findById(RepositoryId.of(repositoryId))
                 .orElseThrow(() -> new RepositoryNotFoundException(repositoryId));
         return repositoryApplicationMapper.toDto(repository);
     }
@@ -58,7 +58,7 @@ public class RepositoryLoadService implements RepositoryLoadUseCase {
         Optional<Long> requesterId = currentUserPersistencePort.resolveCurrentUserId();
         Map<OrganizeId, Boolean> membershipCache = new HashMap<>();
 
-        return repositoryPort.findAll().stream()
+        return repositoryQueryPort.findAll().stream()
                 .filter(repo -> repositoryAccessibilityService.isVisibleToRequester(repo, requesterId, membershipCache))
                 .map(repositoryApplicationMapper::toDto)
                 .toList();
@@ -73,7 +73,7 @@ public class RepositoryLoadService implements RepositoryLoadUseCase {
                 .orElseThrow(() -> new UserNotFoundException("User not found: " + normalizedUsername));
 
         Optional<Long> requesterId = currentUserPersistencePort.resolveCurrentUserId();
-        return repositoryPort.findAllByOwner(OwnerType.USER, OwnerId.of(ownerId)).stream()
+        return repositoryQueryPort.findAllByOwner(OwnerType.USER, OwnerId.of(ownerId)).stream()
                 .filter(repo -> repositoryAccessibilityService.isVisibleToUserOwner(repo, requesterId, ownerId))
                 .map(repositoryApplicationMapper::toDto)
                 .toList();

@@ -9,7 +9,6 @@ import static org.mockito.Mockito.when;
 import io.jgitkins.server.application.dto.CommitFile;
 import io.jgitkins.server.repository.application.port.out.CommitGitPort;
 import io.jgitkins.server.repository.application.port.out.RepositoryGitPort;
-import io.jgitkins.server.repository.application.port.out.RepositoryPersistencePort;
 import io.jgitkins.server.common.factory.CommitFileFactory;
 import io.jgitkins.server.domain.Branch;
 import io.jgitkins.server.domain.aggregate.Repository;
@@ -18,6 +17,7 @@ import io.jgitkins.server.domain.model.vo.InitialCommitOptions;
 import io.jgitkins.server.domain.model.vo.RepositoryId;
 import io.jgitkins.server.domain.model.vo.RepositoryName;
 import io.jgitkins.server.domain.repository.BranchRepository;
+import io.jgitkins.server.domain.repository.RepositoryRepository;
 import io.jgitkins.server.shared.application.support.RepositoryNamespaceResolver;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,7 +32,7 @@ class RepositoryProvisionerTest {
     @Mock
     private CommitFileFactory commitFileFactory;
     @Mock
-    private RepositoryPersistencePort repositoryPort;
+    private RepositoryRepository repositoryRepository;
     @Mock
     private BranchRepository branchPort;
     @Mock
@@ -48,7 +48,7 @@ class RepositoryProvisionerTest {
     void setUp() {
         repositoryProvisioner = new RepositoryProvisioner(
                 commitFileFactory,
-                repositoryPort,
+                repositoryRepository,
                 branchPort,
                 repositoryNamespaceResolver,
                 commitGitPort,
@@ -74,7 +74,7 @@ class RepositoryProvisionerTest {
         verify(branchPort).save(any(Branch.class));
         verify(commitGitPort, never()).commit(any(), any(), any(), any(), any(), any(), any());
         verify(repositoryGitPort, never()).updateHeadReference(any(), any(), any());
-        verify(repositoryPort, never()).update(any(Repository.class));
+        verify(repositoryRepository, never()).update(any(Repository.class));
     }
 
     @Test
@@ -89,7 +89,7 @@ class RepositoryProvisionerTest {
         when(repositoryNamespaceResolver.resolve(repository)).thenReturn("alice");
         when(commitFileFactory.prepareInitialFile("sample-repo")).thenReturn(files);
         when(repository.markInit(any())).thenReturn(initialized);
-        when(repositoryPort.update(initialized)).thenReturn(initialized);
+        when(repositoryRepository.update(initialized)).thenReturn(initialized);
 
         Repository provisioned = repositoryProvisioner.provision(
                 repository,
@@ -109,6 +109,6 @@ class RepositoryProvisionerTest {
                 files
         );
         verify(repositoryGitPort).updateHeadReference("alice", "sample-repo", "main");
-        verify(repositoryPort).update(initialized);
+        verify(repositoryRepository).update(initialized);
     }
 }

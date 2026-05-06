@@ -4,7 +4,7 @@ import io.jgitkins.server.shared.common.RepositoryPathHelper;
 import io.jgitkins.server.application.dto.command.PushEventCommand;
 import io.jgitkins.server.application.dto.command.PushHookRequest;
 import io.jgitkins.server.repository.application.exception.RepositoryNotFoundException;
-import io.jgitkins.server.repository.application.port.out.RepositoryPersistencePort;
+import io.jgitkins.server.repository.application.port.out.RepositoryQueryPort;
 import io.jgitkins.server.domain.aggregate.Repository;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -16,13 +16,13 @@ import org.springframework.util.StringUtils;
 @Component
 public class PushEventCommandResolver {
 
-    private final RepositoryPersistencePort repositoryPort;
+    private final RepositoryQueryPort repositoryQueryPort;
     private final Path repoRootPath;
 
     public PushEventCommandResolver(
-            RepositoryPersistencePort repositoryPort,
+            RepositoryQueryPort repositoryQueryPort,
             @Value("${jgitkins.server.runtime.volume:${user.home}}") String runtimeVolume) {
-        this.repositoryPort = repositoryPort;
+        this.repositoryQueryPort = repositoryQueryPort;
         this.repoRootPath = Paths.get(runtimeVolume).toAbsolutePath().normalize();
     }
 
@@ -48,13 +48,13 @@ public class PushEventCommandResolver {
     }
 
     private Optional<Repository> resolveRepository(String gitDirPath) {
-        Optional<Repository> byStoredPath = repositoryPort.findByPath(gitDirPath);
+        Optional<Repository> byStoredPath = repositoryQueryPort.findByPath(gitDirPath);
         if (byStoredPath.isPresent()) {
             return byStoredPath;
         }
 
         return toClonePath(gitDirPath)
-                .flatMap(repositoryPort::findByClonePath);
+                .flatMap(repositoryQueryPort::findByClonePath);
     }
 
     private Optional<String> extractNamespace(Repository repository) {

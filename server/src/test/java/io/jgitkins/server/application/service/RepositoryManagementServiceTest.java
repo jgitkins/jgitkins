@@ -5,9 +5,9 @@ import io.jgitkins.server.repository.application.contract.result.RepositoryResul
 import io.jgitkins.server.application.mapper.RepositoryApplicationMapper;
 import io.jgitkins.server.application.port.out.CurrentUserPort;
 import io.jgitkins.server.application.port.out.OrganizeMemberPersistencePort;
-import io.jgitkins.server.repository.application.port.out.RepositoryPersistencePort;
 import io.jgitkins.server.repository.application.support.ownership.RepositoryOwnershipPolicy;
 import io.jgitkins.server.repository.application.support.provisioning.RepositoryProvisioner;
+import io.jgitkins.server.repository.application.port.out.RepositoryQueryPort;
 import io.jgitkins.server.shared.application.support.RepositoryNamespaceResolver;
 import io.jgitkins.server.application.validate.RepositoryValidator;
 import io.jgitkins.server.common.exception.JgitkinsException;
@@ -20,6 +20,7 @@ import io.jgitkins.server.domain.model.vo.RepositoryId;
 import io.jgitkins.server.domain.model.vo.RepositoryName;
 import io.jgitkins.server.domain.model.vo.RepositoryVisibility;
 import io.jgitkins.server.domain.model.vo.UserId;
+import io.jgitkins.server.domain.repository.RepositoryRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -41,7 +42,9 @@ class RepositoryManagementServiceTest {
     @Mock
     private RepositoryApplicationMapper repositoryApplicationMapper;
     @Mock
-    private RepositoryPersistencePort repositoryPort;
+    private RepositoryRepository repositoryRepository;
+    @Mock
+    private RepositoryQueryPort repositoryQueryPort;
     @Mock
     private RepositoryProvisioner repositoryProvisioner;
     @Mock
@@ -56,7 +59,7 @@ class RepositoryManagementServiceTest {
 
     @BeforeEach
     void setUp() {
-        repositoryValidator = new RepositoryValidator(repositoryPort, organizeMemberPort, currentUserPersistencePort);
+        repositoryValidator = new RepositoryValidator(repositoryQueryPort, organizeMemberPort, currentUserPersistencePort);
         RepositoryOwnershipPolicy repositoryOwnershipPolicy = new RepositoryOwnershipPolicy(
                 repositoryValidator,
                 repositoryNamespaceResolver
@@ -64,7 +67,8 @@ class RepositoryManagementServiceTest {
         service = new RepositoryManagementService(
                 repositoryApplicationMapper,
                 repositoryProvisioner,
-                repositoryPort,
+                repositoryRepository,
+                repositoryQueryPort,
                 repositoryOwnershipPolicy
         );
     }
@@ -79,7 +83,7 @@ class RepositoryManagementServiceTest {
                 .build();
 
         assertThrows(JgitkinsException.class, () -> service.create(command));
-        verify(repositoryPort, never()).save(any(Repository.class));
+        verify(repositoryRepository, never()).save(any(Repository.class));
     }
 
     @Test
@@ -95,7 +99,7 @@ class RepositoryManagementServiceTest {
         when(organizeMemberPort.existsByOrganizeIdAndUserId(OrganizeId.of(10L), UserId.of(7L))).thenReturn(false);
 
         assertThrows(JgitkinsException.class, () -> service.create(command));
-        verify(repositoryPort, never()).save(any(Repository.class));
+        verify(repositoryRepository, never()).save(any(Repository.class));
     }
 
     @Test
@@ -111,10 +115,10 @@ class RepositoryManagementServiceTest {
         RepositoryResult result = new RepositoryResult(100L, null, "sample-repo", null, null, null, null, null, null, null, null, false, null, null, null);
 
         when(currentUserPersistencePort.resolveCurrentUserId()).thenReturn(Optional.of(7L));
-        when(repositoryPort.findByOwnerAndName(OwnerType.USER, OwnerId.of(7L), RepositoryName.from("sample-repo")))
+        when(repositoryQueryPort.findByOwnerAndName(OwnerType.USER, OwnerId.of(7L), RepositoryName.from("sample-repo")))
                 .thenReturn(Optional.empty());
         when(repositoryNamespaceResolver.resolve(OwnerType.USER, OwnerId.of(7L))).thenReturn("alice");
-        when(repositoryPort.save(any(Repository.class))).thenReturn(saved);
+        when(repositoryRepository.save(any(Repository.class))).thenReturn(saved);
         when(repositoryProvisioner.provision(any(Repository.class), any(InitialCommitOptions.class))).thenReturn(saved);
         when(repositoryApplicationMapper.toDto(saved)).thenReturn(result);
 
@@ -127,7 +131,7 @@ class RepositoryManagementServiceTest {
     @Test
     void deleteRepository_throwsWhenDeletingOtherUsersRepository() {
         Repository repository = org.mockito.Mockito.mock(Repository.class);
-        when(repositoryPort.findById(RepositoryId.of(1L))).thenReturn(Optional.of(repository));
+        when(repositoryQueryPort.findById(RepositoryId.of(1L))).thenReturn(Optional.of(repository));
         when(repository.getOwnerType()).thenReturn(OwnerType.USER);
         when(repository.getOwnerId()).thenReturn(OwnerId.of(10L));
         when(currentUserPersistencePort.resolveCurrentUserId()).thenReturn(Optional.of(20L));
@@ -135,18 +139,18 @@ class RepositoryManagementServiceTest {
         assertThrows(JgitkinsException.class, () -> service.deleteRepository(1L));
 
         verify(repositoryProvisioner, never()).delete(any(Repository.class));
-        verify(repositoryPort, never()).deleteById(any(RepositoryId.class));
+        verify(repositoryRepository, never()).deleteById(any(RepositoryId.class));
     }
 
     @Test
     void deleteRepository_deletesWhenAccessible() {
         Repository repository = org.mockito.Mockito.mock(Repository.class);
-        when(repositoryPort.findById(RepositoryId.of(1L))).thenReturn(Optional.of(repository));
+        when(repositoryQueryPort.findById(RepositoryId.of(1L))).thenReturn(Optional.of(repository));
         when(repository.getOwnerType()).thenReturn(OwnerType.ORGANIZATION);
 
         service.deleteRepository(1L);
 
         verify(repositoryProvisioner).delete(repository);
-        verify(repositoryPort).deleteById(RepositoryId.of(1L));
+        verify(repositoryRepository).deleteById(RepositoryId.of(1L));
     }
 }

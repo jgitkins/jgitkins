@@ -7,7 +7,7 @@ import static org.mockito.Mockito.when;
 import io.jgitkins.server.application.dto.command.PushEventCommand;
 import io.jgitkins.server.application.dto.command.PushHookRequest;
 import io.jgitkins.server.application.exception.ApplicationException;
-import io.jgitkins.server.repository.application.port.out.RepositoryPersistencePort;
+import io.jgitkins.server.repository.application.port.out.RepositoryQueryPort;
 import io.jgitkins.server.domain.aggregate.Repository;
 import io.jgitkins.server.domain.model.vo.OwnerId;
 import io.jgitkins.server.domain.model.vo.OwnerType;
@@ -25,12 +25,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class PushEventCommandResolverTest {
 
     @Mock
-    private RepositoryPersistencePort repositoryPort;
+    private RepositoryQueryPort repositoryQueryPort;
 
     @Test
     void resolve_buildsPushEventCommandFromPushHookRequest() {
-        PushEventCommandResolver resolver = new PushEventCommandResolver(repositoryPort, "/bare");
-        when(repositoryPort.findByPath("/bare/users/alice/repo.git"))
+        PushEventCommandResolver resolver = new PushEventCommandResolver(repositoryQueryPort, "/bare");
+        when(repositoryQueryPort.findByPath("/bare/users/alice/repo.git"))
                 .thenReturn(Optional.of(repository()));
 
         PushHookRequest request = new PushHookRequest(
@@ -54,8 +54,8 @@ class PushEventCommandResolverTest {
 
     @Test
     void resolve_throwsWhenRepositoryCannotBeResolved() {
-        PushEventCommandResolver resolver = new PushEventCommandResolver(repositoryPort, "/bare");
-        when(repositoryPort.findByPath("/bare/users/alice/repo.git")).thenReturn(Optional.empty());
+        PushEventCommandResolver resolver = new PushEventCommandResolver(repositoryQueryPort, "/bare");
+        when(repositoryQueryPort.findByPath("/bare/users/alice/repo.git")).thenReturn(Optional.empty());
 
         PushHookRequest request = new PushHookRequest(
                 "/bare/users/alice/repo.git",
@@ -71,10 +71,10 @@ class PushEventCommandResolverTest {
 
     @Test
     void resolve_fallsBackToClonePathWhenAbsoluteGitDirIsProvided() {
-        PushEventCommandResolver resolver = new PushEventCommandResolver(repositoryPort, "/Users/hwiryungkim/jgitkins/bare");
-        when(repositoryPort.findByPath("/Users/hwiryungkim/jgitkins/bare/hrk11mmmm/private-m2.git"))
+        PushEventCommandResolver resolver = new PushEventCommandResolver(repositoryQueryPort, "/Users/hwiryungkim/jgitkins/bare");
+        when(repositoryQueryPort.findByPath("/Users/hwiryungkim/jgitkins/bare/hrk11mmmm/private-m2.git"))
                 .thenReturn(Optional.empty());
-        when(repositoryPort.findByClonePath("/hrk11mmmm/private-m2.git"))
+        when(repositoryQueryPort.findByClonePath("/hrk11mmmm/private-m2.git"))
                 .thenReturn(Optional.of(privateRepository()));
 
         PushHookRequest request = new PushHookRequest(

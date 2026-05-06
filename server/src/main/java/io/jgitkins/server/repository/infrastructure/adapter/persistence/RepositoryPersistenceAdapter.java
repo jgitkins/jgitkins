@@ -1,12 +1,12 @@
 package io.jgitkins.server.repository.infrastructure.adapter.persistence;
 
-import io.jgitkins.server.repository.application.port.out.RepositoryPersistencePort;
 import io.jgitkins.server.domain.aggregate.Repository;
 import io.jgitkins.server.domain.model.vo.OwnerId;
 import io.jgitkins.server.domain.model.vo.OwnerType;
 import io.jgitkins.server.domain.model.vo.RepositoryId;
 import io.jgitkins.server.domain.model.vo.RepositoryName;
 import io.jgitkins.server.domain.model.vo.RepositoryPath;
+import io.jgitkins.server.domain.repository.RepositoryRepository;
 import io.jgitkins.server.infrastructure.common.error.InfrastructureErrorCode;
 import io.jgitkins.server.infrastructure.exception.InfrastructureException;
 import io.jgitkins.server.infrastructure.mapper.RepositoryDomainMapper;
@@ -15,6 +15,7 @@ import io.jgitkins.server.infrastructure.persistence.mapper.RepositoryEntityMbgM
 import io.jgitkins.server.infrastructure.persistence.mapper.UserEntityMbgMapper;
 import io.jgitkins.server.infrastructure.persistence.model.RepositoryEntity;
 import io.jgitkins.server.infrastructure.persistence.model.RepositoryEntityCondition;
+import io.jgitkins.server.repository.application.port.out.RepositoryQueryPort;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -26,7 +27,7 @@ import java.util.Optional;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class RepositoryPersistenceAdapter implements RepositoryPersistencePort {
+public class RepositoryPersistenceAdapter implements RepositoryRepository, RepositoryQueryPort {
 
     private final OrganizeEntityMbgMapper organizeEntityMbgMapper;
     private final RepositoryEntityMbgMapper repositoryEntityMbgMapper;

@@ -5,7 +5,7 @@ import io.jgitkins.server.application.exception.ApplicationException;
 import io.jgitkins.server.application.exception.OrganizeAlreadyExistsException;
 import io.jgitkins.server.application.exception.UsernameAlreadyExistsException;
 import io.jgitkins.server.application.port.out.OrganizePersistencePort;
-import io.jgitkins.server.repository.application.port.out.RepositoryPersistencePort;
+import io.jgitkins.server.repository.application.port.out.RepositoryQueryPort;
 import io.jgitkins.server.application.port.out.UserPersistencePort;
 import io.jgitkins.server.domain.model.vo.OrganizeName;
 import io.jgitkins.server.domain.model.vo.OwnerId;
@@ -20,7 +20,7 @@ public class ActivationValidator {
 
     private final UserPersistencePort userPort;
     private final OrganizePersistencePort organizePort;
-    private final RepositoryPersistencePort repositoryPort;
+    private final RepositoryQueryPort repositoryQueryPort;
 
     public Username validateUsername(String username) {
         return Username.from(username);
@@ -45,7 +45,7 @@ public class ActivationValidator {
     }
 
     public void validateUserHasNoRepositories(Long userId) {
-        long count = repositoryPort.countByOwner(OwnerType.USER, OwnerId.of(userId));
+        long count = repositoryQueryPort.countByOwner(OwnerType.USER, OwnerId.of(userId));
         if (count > 0) {
             throw new ApplicationException(ApplicationErrorCode.UNPROCESSABLE,
                     "Cannot rename user with existing repositories");

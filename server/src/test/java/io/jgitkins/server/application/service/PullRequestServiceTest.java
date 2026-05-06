@@ -10,7 +10,7 @@ import io.jgitkins.server.application.dto.command.PullRequestCreateCommand;
 import io.jgitkins.server.application.dto.result.PullRequestDetailResult;
 import io.jgitkins.server.application.dto.result.PullRequestResult;
 import io.jgitkins.server.repository.application.port.out.BranchGitPort;
-import io.jgitkins.server.repository.application.port.out.RepositoryPersistencePort;
+import io.jgitkins.server.repository.application.port.out.RepositoryQueryPort;
 import io.jgitkins.server.application.support.pr.PullRequestDetailMapper;
 import io.jgitkins.server.application.support.pr.PullRequestMergeabilityResolver;
 import io.jgitkins.server.application.support.pr.PullRequestResultMapper;
@@ -43,7 +43,7 @@ class PullRequestServiceTest {
     private PullRequestRepository pullRequestRepository;
 
     @Mock
-    private RepositoryPersistencePort repositoryPersistencePort;
+    private RepositoryQueryPort repositoryQueryPort;
 
     @Mock
     private RepositoryLookupService repositoryLookupService;
@@ -63,7 +63,7 @@ class PullRequestServiceTest {
     void setUp() {
         service = new PullRequestService(
                 pullRequestRepository,
-                repositoryPersistencePort,
+                repositoryQueryPort,
                 repositoryLookupService,
                 repositoryNamespaceResolver,
                 branchGitPort,
@@ -116,7 +116,7 @@ class PullRequestServiceTest {
                 "mergeable");
 
         when(pullRequestRepository.findById(pullRequestId)).thenReturn(Optional.of(pullRequest));
-        when(repositoryPersistencePort.findById(RepositoryId.of(1L))).thenReturn(Optional.of(repository));
+        when(repositoryQueryPort.findById(RepositoryId.of(1L))).thenReturn(Optional.of(repository));
         when(mergeabilityResolver.currentSourceHead(repository, pullRequest)).thenReturn(currentSource);
         when(mergeabilityResolver.currentTargetHead(repository, pullRequest)).thenReturn(currentTarget);
         when(mergeabilityResolver.assess(any(), any())).thenReturn(assessment);
@@ -147,7 +147,7 @@ class PullRequestServiceTest {
                 "mergeable");
 
         when(pullRequestRepository.findById(pullRequestId)).thenReturn(Optional.of(pullRequest));
-        when(repositoryPersistencePort.findById(RepositoryId.of(1L))).thenReturn(Optional.of(repository));
+        when(repositoryQueryPort.findById(RepositoryId.of(1L))).thenReturn(Optional.of(repository));
         when(mergeabilityResolver.currentSourceHead(repository, pullRequest)).thenReturn(currentSource);
         when(mergeabilityResolver.currentTargetHead(repository, pullRequest)).thenReturn(currentTarget);
         when(mergeabilityResolver.assess(any(), any())).thenReturn(assessment);

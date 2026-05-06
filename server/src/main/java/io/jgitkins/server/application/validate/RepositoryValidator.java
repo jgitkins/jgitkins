@@ -3,7 +3,7 @@ package io.jgitkins.server.application.validate;
 import io.jgitkins.server.application.exception.*;
 import io.jgitkins.server.application.port.out.CurrentUserPort;
 import io.jgitkins.server.application.port.out.OrganizeMemberPersistencePort;
-import io.jgitkins.server.repository.application.port.out.RepositoryPersistencePort;
+import io.jgitkins.server.repository.application.port.out.RepositoryQueryPort;
 import io.jgitkins.server.domain.aggregate.Repository;
 import io.jgitkins.server.domain.model.vo.*;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class RepositoryValidator {
 
-    private final RepositoryPersistencePort repositoryPort;
+    private final RepositoryQueryPort repositoryQueryPort;
     private final OrganizeMemberPersistencePort organizeMemberPort;
     private final CurrentUserPort currentUserPersistencePort;
 
@@ -24,7 +24,7 @@ public class RepositoryValidator {
     }
 
     public void validateRepositoryNameUnique(OwnerType ownerType, OwnerId ownerId, RepositoryName name) {
-        repositoryPort.findByOwnerAndName(ownerType, ownerId, name)
+        repositoryQueryPort.findByOwnerAndName(ownerType, ownerId, name)
                 .ifPresent(existing -> {
                     throw new RepositoryAlreadyExistsException(
                             "Repository name already exists for owner: " + name.getValue());

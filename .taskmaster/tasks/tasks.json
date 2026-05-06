@@ -88,7 +88,7 @@
         "priority": "high",
         "details": "기존 기능별 Task를 카테고리 기반(신규기능/리팩토링/보안)으로 재구성함.",
         "testStrategy": "카테고리별 우선순위에 따라 하위 작업을 순차 수행하고 회귀 테스트를 적용한다.",
-        "updatedAt": "2026-05-04T15:52:03.440Z",
+        "updatedAt": "2026-05-06T12:40:51.530Z",
         "subtasks": [
           {
             "id": 1,
@@ -384,6 +384,20 @@
             "parentTaskId": 2,
             "parentId": "2",
             "updatedAt": "2026-05-04T15:52:03.440Z"
+          },
+          {
+            "id": 26,
+            "title": "[plan][P1][server, docs] Repository Persistence/Query/Git 포트 분리 계획 수립",
+            "description": "`RepositoryPersistencePort`를 aggregate 저장소, 조회 포트, repository-level git 포트 기준으로 재정렬하는 실행 계획을 수립한다.",
+            "details": "참조 문서: `docs/modeling/contexts/repository/repository-context.md`, `.taskmaster/docs/refactor/task_2_19_plan.md`, `.taskmaster/docs/refactor/task_2_26_plan.md`. 산출물은 `.taskmaster/docs/refactor/task_2_26_plan.md`이며 다음을 포함한다. 1) `RepositoryPersistencePort`의 메서드를 `domain.repository.RepositoryRepository`, `repository.application.port.out.RepositoryQueryPort`, `repository.application.port.out.RepositoryGitPort`로 어떻게 나눌지 기준 정리. 2) `RepositoryLookupService`, `RepositoryLoadService`, `RepositoryValidator`, `RepositoryProvisioner`, `PushEventCommandResolver`, `PullRequestService` 등 호출부 영향 범위와 이동 기준 정리. 3) `RepositoryGitPort`는 repository-level git seam만 유지하고 `BranchGitPort`, `CommitGitPort`와 합치지 않는 원칙을 명시. 4) 단계별 이관 순서, adapter 구현 방향, 테스트 전략을 상세 코드 스니펫과 함께 정의.",
+            "status": "done",
+            "dependencies": [
+              19,
+              25
+            ],
+            "parentTaskId": 2,
+            "parentId": "2",
+            "updatedAt": "2026-05-06T12:40:51.530Z"
           }
         ]
       },
@@ -483,7 +497,7 @@
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2026-05-04T15:52:03.441Z",
+      "lastModified": "2026-05-06T12:40:51.530Z",
       "taskCount": 5,
       "completedCount": 1,
       "tags": [

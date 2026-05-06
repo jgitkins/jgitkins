@@ -9,7 +9,7 @@ import static org.mockito.Mockito.when;
 
 import io.jgitkins.server.repository.application.contract.command.BranchCreateCommand;
 import io.jgitkins.server.repository.application.port.out.BranchGitPort;
-import io.jgitkins.server.repository.application.port.out.RepositoryPersistencePort;
+import io.jgitkins.server.repository.application.port.out.RepositoryQueryPort;
 import io.jgitkins.server.repository.application.support.branch.BranchFactory;
 import io.jgitkins.server.shared.application.support.RepositoryNamespaceResolver;
 import io.jgitkins.server.application.validate.BranchCreationValidator;
@@ -41,7 +41,7 @@ class BranchManagementServiceTest {
     @Mock
     private BranchRepository branchPort;
     @Mock
-    private RepositoryPersistencePort repositoryPort;
+    private RepositoryQueryPort repositoryQueryPort;
 
     private BranchManagementService service;
 
@@ -52,7 +52,7 @@ class BranchManagementServiceTest {
         service = new BranchManagementService(
                 repositoryNamespaceResolver,
                 repositoryAccessValidator,
-                repositoryPort,
+                repositoryQueryPort,
                 branchFactory,
                 branchGitPort,
                 branchPort
@@ -63,7 +63,7 @@ class BranchManagementServiceTest {
     void createBranch_createsBranchInGitAndPersistence() {
         Repository repository = org.mockito.Mockito.mock(Repository.class);
         when(repository.getName()).thenReturn(RepositoryName.from("repo"));
-        when(repositoryPort.findById(RepositoryId.of(1L))).thenReturn(Optional.of(repository));
+        when(repositoryQueryPort.findById(RepositoryId.of(1L))).thenReturn(Optional.of(repository));
         when(repositoryNamespaceResolver.resolve(repository)).thenReturn("org");
         when(repository.getId()).thenReturn(RepositoryId.of(1L));
         when(repository.isInitialized()).thenReturn(true);
@@ -90,7 +90,7 @@ class BranchManagementServiceTest {
         Branch branch = Branch.create(1L, "feature");
 
         when(repository.getName()).thenReturn(RepositoryName.from("repo"));
-        when(repositoryPort.findById(RepositoryId.of(1L))).thenReturn(Optional.of(repository));
+        when(repositoryQueryPort.findById(RepositoryId.of(1L))).thenReturn(Optional.of(repository));
         when(repositoryNamespaceResolver.resolve(repository)).thenReturn("org");
         when(branchPort.findByRepositoryIdAndName(1L, "feature")).thenReturn(Optional.of(branch));
 
@@ -106,7 +106,7 @@ class BranchManagementServiceTest {
     void deleteBranch_throwsWhenBranchMissing() {
         Repository repository = org.mockito.Mockito.mock(Repository.class);
         when(repository.getName()).thenReturn(RepositoryName.from("repo"));
-        when(repositoryPort.findById(RepositoryId.of(1L))).thenReturn(Optional.of(repository));
+        when(repositoryQueryPort.findById(RepositoryId.of(1L))).thenReturn(Optional.of(repository));
         when(repositoryNamespaceResolver.resolve(repository)).thenReturn("org");
         when(branchPort.findByRepositoryIdAndName(1L, "missing")).thenReturn(Optional.empty());
 
@@ -119,7 +119,7 @@ class BranchManagementServiceTest {
         Branch defaultBranch = Branch.create(1L, "main", false, false, true);
 
         when(repository.getName()).thenReturn(RepositoryName.from("repo"));
-        when(repositoryPort.findById(RepositoryId.of(1L))).thenReturn(Optional.of(repository));
+        when(repositoryQueryPort.findById(RepositoryId.of(1L))).thenReturn(Optional.of(repository));
         when(repositoryNamespaceResolver.resolve(repository)).thenReturn("org");
         when(branchPort.findByRepositoryIdAndName(1L, "main")).thenReturn(Optional.of(defaultBranch));
 

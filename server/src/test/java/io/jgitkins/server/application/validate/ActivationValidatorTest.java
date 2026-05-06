@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 import io.jgitkins.server.application.port.out.OrganizePersistencePort;
-import io.jgitkins.server.repository.application.port.out.RepositoryPersistencePort;
+import io.jgitkins.server.repository.application.port.out.RepositoryQueryPort;
 import io.jgitkins.server.application.port.out.UserPersistencePort;
 import io.jgitkins.server.domain.model.vo.OwnerId;
 import io.jgitkins.server.domain.model.vo.OwnerType;
@@ -24,7 +24,7 @@ class ActivationValidatorTest {
     private OrganizePersistencePort organizePort;
 
     @Mock
-    private RepositoryPersistencePort repositoryPort;
+    private RepositoryQueryPort repositoryQueryPort;
 
     @InjectMocks
     private ActivationValidator validator;
@@ -36,7 +36,7 @@ class ActivationValidatorTest {
 
     @Test
     void validateUserHasNoRepositories_throwsWhenOwnedRepositoriesExist() {
-        when(repositoryPort.countByOwner(OwnerType.USER, OwnerId.of(1L))).thenReturn(1L);
+        when(repositoryQueryPort.countByOwner(OwnerType.USER, OwnerId.of(1L))).thenReturn(1L);
 
         assertThrows(RuntimeException.class, () -> validator.validateUserHasNoRepositories(1L));
     }

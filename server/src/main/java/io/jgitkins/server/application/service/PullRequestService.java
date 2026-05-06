@@ -8,7 +8,7 @@ import io.jgitkins.server.repository.application.exception.RepositoryNotFoundExc
 import io.jgitkins.server.application.port.in.CreatePullRequestUseCase;
 import io.jgitkins.server.application.port.in.GetPullRequestDetailUseCase;
 import io.jgitkins.server.repository.application.port.out.BranchGitPort;
-import io.jgitkins.server.repository.application.port.out.RepositoryPersistencePort;
+import io.jgitkins.server.repository.application.port.out.RepositoryQueryPort;
 import io.jgitkins.server.application.support.pr.PullRequestDetailMapper;
 import io.jgitkins.server.application.support.pr.PullRequestMergeabilityResolver;
 import io.jgitkins.server.application.support.pr.PullRequestResultMapper;
@@ -30,7 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class PullRequestService implements CreatePullRequestUseCase, GetPullRequestDetailUseCase {
 
     private final PullRequestRepository pullRequestRepository;
-    private final RepositoryPersistencePort repositoryPersistencePort;
+    private final RepositoryQueryPort repositoryQueryPort;
     private final RepositoryLookupService repositoryLookupService;
     private final RepositoryNamespaceResolver repositoryNamespaceResolver;
     private final BranchGitPort branchGitPort;
@@ -58,7 +58,7 @@ public class PullRequestService implements CreatePullRequestUseCase, GetPullRequ
     public PullRequestDetailResult getPullRequestDetail(PullRequestId pullRequestId) throws IOException {
         PullRequest pullRequest = pullRequestRepository.findById(pullRequestId)
                 .orElseThrow(() -> new PullRequestNotFoundException(pullRequestId));
-        Repository repository = repositoryPersistencePort.findById(pullRequest.getRepositoryId())
+        Repository repository = repositoryQueryPort.findById(pullRequest.getRepositoryId())
                 .orElseThrow(() -> new RepositoryNotFoundException(pullRequest.getRepositoryId().getValue()));
 
         BranchHeadSnapshot currentSource = mergeabilityResolver.currentSourceHead(repository, pullRequest);

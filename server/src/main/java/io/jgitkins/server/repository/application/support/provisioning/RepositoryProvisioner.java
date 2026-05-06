@@ -3,12 +3,12 @@ package io.jgitkins.server.repository.application.support.provisioning;
 import io.jgitkins.server.application.dto.CommitFile;
 import io.jgitkins.server.repository.application.port.out.CommitGitPort;
 import io.jgitkins.server.repository.application.port.out.RepositoryGitPort;
-import io.jgitkins.server.repository.application.port.out.RepositoryPersistencePort;
 import io.jgitkins.server.common.factory.CommitFileFactory;
 import io.jgitkins.server.domain.Branch;
 import io.jgitkins.server.domain.aggregate.Repository;
 import io.jgitkins.server.domain.model.vo.InitialCommitOptions;
 import io.jgitkins.server.domain.repository.BranchRepository;
+import io.jgitkins.server.domain.repository.RepositoryRepository;
 import io.jgitkins.server.shared.application.support.RepositoryNamespaceResolver;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component;
 public class RepositoryProvisioner {
 
     private final CommitFileFactory commitFileFactory;
-    private final RepositoryPersistencePort repositoryPort;
+    private final RepositoryRepository repositoryRepository;
     private final BranchRepository branchPort;
     private final RepositoryNamespaceResolver repositoryNamespaceResolver;
     private final CommitGitPort commitGitPort;
@@ -78,6 +78,6 @@ public class RepositoryProvisioner {
         );
         repositoryGitPort.updateHeadReference(namespace, repoName, branchName);
 
-        return repositoryPort.update(repository.markInit(LocalDateTime.now()));
+        return repositoryRepository.update(repository.markInit(LocalDateTime.now()));
     }
 }
