@@ -1,21 +1,10 @@
 package io.jgitkins.server.repository.application.service;
 
 import io.jgitkins.server.repository.application.contract.result.RepositoryResult;
-import io.jgitkins.server.application.mapper.RepositoryApplicationMapper;
 import io.jgitkins.server.application.port.out.CurrentUserPort;
-import io.jgitkins.server.application.port.out.OrganizeMemberPersistencePort;
 import io.jgitkins.server.application.port.out.OrganizePersistencePort;
 import io.jgitkins.server.repository.application.port.out.RepositoryQueryPort;
 import io.jgitkins.server.application.port.out.UserPersistencePort;
-import io.jgitkins.server.domain.aggregate.Repository;
-import io.jgitkins.server.domain.model.vo.OrganizeId;
-import io.jgitkins.server.domain.model.vo.OwnerId;
-import io.jgitkins.server.domain.model.vo.OwnerType;
-import io.jgitkins.server.domain.model.vo.RepositoryId;
-import io.jgitkins.server.domain.model.vo.RepositoryVisibility;
-import io.jgitkins.server.domain.model.vo.UserId;
-import io.jgitkins.server.repository.application.support.RepositoryLookupService;
-import io.jgitkins.server.shared.application.support.RepositoryAccessibilityService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,40 +22,23 @@ import static org.mockito.Mockito.when;
 class RepositoryLoadServiceTest {
 
     @Mock
-    private RepositoryApplicationMapper repositoryApplicationMapper;
-    @Mock
     private RepositoryQueryPort repositoryQueryPort;
     @Mock
-    private CurrentUserPort currentUserPersistencePort;
+    private CurrentUserPort currentUserPort;
     @Mock
     private UserPersistencePort userPort;
-    @Mock
-    private OrganizePersistencePort organizePort;
-    @Mock
-    private OrganizeMemberPersistencePort organizeMemberPort;
 
     private RepositoryLoadService service;
 
     @BeforeEach
     void setUp() {
-        RepositoryLookupService lookupService = new RepositoryLookupService(repositoryQueryPort, userPort, organizePort);
-        RepositoryAccessibilityService accessibilityService = new RepositoryAccessibilityService(organizeMemberPort);
-        service = new RepositoryLoadService(
-                repositoryApplicationMapper,
-                accessibilityService,
-                lookupService,
-                repositoryQueryPort,
-                currentUserPersistencePort,
-                userPort
-        );
+        service = new RepositoryLoadService(repositoryQueryPort, currentUserPort, userPort);
     }
 
     @Test
-    void loadRepository_returnsMappedResult() {
-        Repository repository = org.mockito.Mockito.mock(Repository.class);
-        when(repositoryQueryPort.findById(RepositoryId.of(1L))).thenReturn(Optional.of(repository));
+    void loadRepository_returnsQueryResult() {
         RepositoryResult result = new RepositoryResult(1L, null, null, null, null, null, null, null, null, null, null, false, null, null, null);
-        when(repositoryApplicationMapper.toDto(repository)).thenReturn(result);
+        when(repositoryQueryPort.loadRepository(1L)).thenReturn(Optional.of(result));
 
         RepositoryResult response = service.loadRepository(1L);
 
@@ -74,57 +46,32 @@ class RepositoryLoadServiceTest {
     }
 
     @Test
-    void loadRepositories_returnsOnlyVisibleRepositoriesForRequester() {
-        Repository publicRepo = org.mockito.Mockito.mock(Repository.class);
-        Repository myPrivateRepo = org.mockito.Mockito.mock(Repository.class);
-        Repository orgPrivateRepo = org.mockito.Mockito.mock(Repository.class);
-        Repository notVisibleRepo = org.mockito.Mockito.mock(Repository.class);
+    void loadRepositories_delegatesToQueryPortWithRequesterId() {
+        List<RepositoryResult> expected = List.of(
+                new RepositoryResult(1L, null, "public", null, null, null, null, null, null, null, null, false, null, null, null),
+                new RepositoryResult(2L, null, "mine", null, null, null, null, null, null, null, null, false, null, null, null),
+                new RepositoryResult(3L, null, "org", null, null, null, null, null, null, null, null, false, null, null, null)
+        );
 
-        when(publicRepo.getVisibility()).thenReturn(RepositoryVisibility.PUBLIC);
-
-        when(myPrivateRepo.getVisibility()).thenReturn(RepositoryVisibility.PRIVATE);
-        when(myPrivateRepo.getOwnerType()).thenReturn(OwnerType.USER);
-        when(myPrivateRepo.getOwnerId()).thenReturn(OwnerId.of(7L));
-
-        when(orgPrivateRepo.getVisibility()).thenReturn(RepositoryVisibility.PRIVATE);
-        when(orgPrivateRepo.getOwnerType()).thenReturn(OwnerType.ORGANIZATION);
-        when(orgPrivateRepo.getOwnerId()).thenReturn(OwnerId.of(10L));
-
-        when(notVisibleRepo.getVisibility()).thenReturn(RepositoryVisibility.PRIVATE);
-        when(notVisibleRepo.getOwnerType()).thenReturn(OwnerType.USER);
-        when(notVisibleRepo.getOwnerId()).thenReturn(OwnerId.of(99L));
-
-        when(currentUserPersistencePort.resolveCurrentUserId()).thenReturn(Optional.of(7L));
-        when(repositoryQueryPort.findAll()).thenReturn(List.of(publicRepo, myPrivateRepo, orgPrivateRepo, notVisibleRepo));
-        when(organizeMemberPort.existsByOrganizeIdAndUserId(OrganizeId.of(10L), UserId.of(7L))).thenReturn(true);
-
-        when(repositoryApplicationMapper.toDto(publicRepo)).thenReturn(new RepositoryResult(1L, null, "public", null, null, null, null, null, null, null, null, false, null, null, null));
-        when(repositoryApplicationMapper.toDto(myPrivateRepo)).thenReturn(new RepositoryResult(2L, null, "mine", null, null, null, null, null, null, null, null, false, null, null, null));
-        when(repositoryApplicationMapper.toDto(orgPrivateRepo)).thenReturn(new RepositoryResult(3L, null, "org", null, null, null, null, null, null, null, null, false, null, null, null));
+        when(currentUserPort.resolveCurrentUserId()).thenReturn(Optional.of(7L));
+        when(repositoryQueryPort.loadVisibleRepositories(7L)).thenReturn(expected);
 
         List<RepositoryResult> response = service.loadRepositories();
 
-        assertEquals(3, response.size());
-        assertEquals(List.of("public", "mine", "org"), response.stream().map(RepositoryResult::name).toList());
+        assertEquals(expected, response);
     }
 
     @Test
-    void loadUserRepositories_excludesPrivateWhenRequesterIsDifferentUser() {
-        Repository publicRepo = org.mockito.Mockito.mock(Repository.class);
-        Repository privateRepo = org.mockito.Mockito.mock(Repository.class);
-
+    void loadUserRepositories_delegatesToQueryPortAfterUserExistenceCheck() {
+        List<RepositoryResult> expected = List.of(
+                new RepositoryResult(1L, null, "public", null, null, null, null, null, null, null, null, false, null, null, null)
+        );
         when(userPort.findUserIdByUsername("alice")).thenReturn(Optional.of(7L));
-        when(currentUserPersistencePort.resolveCurrentUserId()).thenReturn(Optional.of(9L));
-        when(repositoryQueryPort.findAllByOwner(OwnerType.USER, OwnerId.of(7L))).thenReturn(List.of(publicRepo, privateRepo));
-        when(publicRepo.getVisibility()).thenReturn(RepositoryVisibility.PUBLIC);
-        when(privateRepo.getVisibility()).thenReturn(RepositoryVisibility.PRIVATE);
-        when(repositoryApplicationMapper.toDto(publicRepo))
-                .thenReturn(new RepositoryResult(1L, null, "public", null, null, null, null, null, null, null, null, false, null, null, null));
+        when(currentUserPort.resolveCurrentUserId()).thenReturn(Optional.of(9L));
+        when(repositoryQueryPort.loadUserRepositories("alice", 9L)).thenReturn(expected);
 
         List<RepositoryResult> response = service.loadUserRepositories("alice");
 
-        assertEquals(1, response.size());
-        assertEquals("public", response.get(0).name());
-        org.mockito.Mockito.verify(repositoryApplicationMapper, never()).toDto(privateRepo);
+        assertEquals(expected, response);
     }
 }

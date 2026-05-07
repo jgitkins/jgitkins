@@ -1,31 +1,20 @@
 package io.jgitkins.server.repository.application.port.out;
 
-import io.jgitkins.server.domain.aggregate.Repository;
 import io.jgitkins.server.domain.model.vo.OwnerId;
 import io.jgitkins.server.domain.model.vo.OwnerType;
-import io.jgitkins.server.domain.model.vo.RepositoryId;
-import io.jgitkins.server.domain.model.vo.RepositoryName;
-import io.jgitkins.server.domain.model.vo.RepositoryPath;
+import io.jgitkins.server.repository.application.contract.result.RepositoryResult;
 import java.util.List;
 import java.util.Optional;
 
 public interface RepositoryQueryPort {
 
-    Optional<Repository> findById(RepositoryId id);
+    Optional<RepositoryResult> loadRepository(Long repositoryId);
 
-    List<Repository> findAll();
+    Optional<RepositoryResult> loadRepositoryByPath(String namespace, String repoName);
 
-    Optional<Repository> findByOwnerAndPath(OwnerType ownerType, OwnerId ownerId, RepositoryPath path);
+    List<RepositoryResult> loadVisibleRepositories(Long requesterId);
 
-    Optional<Repository> findByClonePath(String clonePath);
-
-    Optional<Repository> findByPath(String path);
-
-    Optional<Repository> findByOwnerAndName(OwnerType ownerType, OwnerId ownerId, RepositoryName name);
-
-    Optional<Long> findIdByOwnerAndName(OwnerType ownerType, OwnerId ownerId, String repoName);
-
-    List<Repository> findAllByOwner(OwnerType ownerType, OwnerId ownerId);
+    List<RepositoryResult> loadUserRepositories(String username, Long requesterId);
 
     long countByOwner(OwnerType ownerType, OwnerId ownerId);
 }

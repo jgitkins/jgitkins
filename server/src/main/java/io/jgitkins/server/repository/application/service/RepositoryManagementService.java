@@ -5,7 +5,6 @@ import io.jgitkins.server.repository.application.contract.result.RepositoryResul
 import io.jgitkins.server.repository.application.port.in.RepositoryManagementUseCase;
 import io.jgitkins.server.application.mapper.RepositoryApplicationMapper;
 import io.jgitkins.server.repository.application.contract.internal.RepositoryCreationPlan;
-import io.jgitkins.server.repository.application.port.out.RepositoryQueryPort;
 import io.jgitkins.server.repository.application.support.ownership.RepositoryOwnershipPolicy;
 import io.jgitkins.server.repository.application.support.provisioning.RepositoryProvisioner;
 import io.jgitkins.server.repository.application.exception.RepositoryNotFoundException;
@@ -23,7 +22,6 @@ public class RepositoryManagementService implements RepositoryManagementUseCase 
     private final RepositoryApplicationMapper repositoryApplicationMapper;
     private final RepositoryProvisioner repositoryProvisioner;
     private final RepositoryRepository repositoryRepository;
-    private final RepositoryQueryPort repositoryQueryPort;
     private final RepositoryOwnershipPolicy repositoryOwnershipPolicy;
 
     @Override
@@ -39,7 +37,7 @@ public class RepositoryManagementService implements RepositoryManagementUseCase 
     @Transactional
     public void deleteRepository(Long repositoryId) {
         RepositoryId id = RepositoryId.of(repositoryId);
-        Repository repository = repositoryQueryPort.findById(id)
+        Repository repository = repositoryRepository.findById(id)
                 .orElseThrow(() -> new RepositoryNotFoundException(repositoryId));
 
         repositoryOwnershipPolicy.validateDeletion(repository);

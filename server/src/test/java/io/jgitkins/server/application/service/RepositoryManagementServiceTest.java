@@ -7,7 +7,6 @@ import io.jgitkins.server.application.port.out.CurrentUserPort;
 import io.jgitkins.server.application.port.out.OrganizeMemberPersistencePort;
 import io.jgitkins.server.repository.application.support.ownership.RepositoryOwnershipPolicy;
 import io.jgitkins.server.repository.application.support.provisioning.RepositoryProvisioner;
-import io.jgitkins.server.repository.application.port.out.RepositoryQueryPort;
 import io.jgitkins.server.shared.application.support.RepositoryNamespaceResolver;
 import io.jgitkins.server.application.validate.RepositoryValidator;
 import io.jgitkins.server.common.exception.JgitkinsException;
@@ -44,8 +43,6 @@ class RepositoryManagementServiceTest {
     @Mock
     private RepositoryRepository repositoryRepository;
     @Mock
-    private RepositoryQueryPort repositoryQueryPort;
-    @Mock
     private RepositoryProvisioner repositoryProvisioner;
     @Mock
     private RepositoryNamespaceResolver repositoryNamespaceResolver;
@@ -59,7 +56,7 @@ class RepositoryManagementServiceTest {
 
     @BeforeEach
     void setUp() {
-        repositoryValidator = new RepositoryValidator(repositoryQueryPort, organizeMemberPort, currentUserPersistencePort);
+        repositoryValidator = new RepositoryValidator(repositoryRepository, organizeMemberPort, currentUserPersistencePort);
         RepositoryOwnershipPolicy repositoryOwnershipPolicy = new RepositoryOwnershipPolicy(
                 repositoryValidator,
                 repositoryNamespaceResolver
@@ -68,7 +65,6 @@ class RepositoryManagementServiceTest {
                 repositoryApplicationMapper,
                 repositoryProvisioner,
                 repositoryRepository,
-                repositoryQueryPort,
                 repositoryOwnershipPolicy
         );
     }
@@ -115,7 +111,7 @@ class RepositoryManagementServiceTest {
         RepositoryResult result = new RepositoryResult(100L, null, "sample-repo", null, null, null, null, null, null, null, null, false, null, null, null);
 
         when(currentUserPersistencePort.resolveCurrentUserId()).thenReturn(Optional.of(7L));
-        when(repositoryQueryPort.findByOwnerAndName(OwnerType.USER, OwnerId.of(7L), RepositoryName.from("sample-repo")))
+        when(repositoryRepository.findByOwnerAndName(OwnerType.USER, OwnerId.of(7L), RepositoryName.from("sample-repo")))
                 .thenReturn(Optional.empty());
         when(repositoryNamespaceResolver.resolve(OwnerType.USER, OwnerId.of(7L))).thenReturn("alice");
         when(repositoryRepository.save(any(Repository.class))).thenReturn(saved);
@@ -131,7 +127,7 @@ class RepositoryManagementServiceTest {
     @Test
     void deleteRepository_throwsWhenDeletingOtherUsersRepository() {
         Repository repository = org.mockito.Mockito.mock(Repository.class);
-        when(repositoryQueryPort.findById(RepositoryId.of(1L))).thenReturn(Optional.of(repository));
+        when(repositoryRepository.findById(RepositoryId.of(1L))).thenReturn(Optional.of(repository));
         when(repository.getOwnerType()).thenReturn(OwnerType.USER);
         when(repository.getOwnerId()).thenReturn(OwnerId.of(10L));
         when(currentUserPersistencePort.resolveCurrentUserId()).thenReturn(Optional.of(20L));
@@ -145,7 +141,7 @@ class RepositoryManagementServiceTest {
     @Test
     void deleteRepository_deletesWhenAccessible() {
         Repository repository = org.mockito.Mockito.mock(Repository.class);
-        when(repositoryQueryPort.findById(RepositoryId.of(1L))).thenReturn(Optional.of(repository));
+        when(repositoryRepository.findById(RepositoryId.of(1L))).thenReturn(Optional.of(repository));
         when(repository.getOwnerType()).thenReturn(OwnerType.ORGANIZATION);
 
         service.deleteRepository(1L);

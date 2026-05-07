@@ -7,13 +7,13 @@ import static org.mockito.Mockito.when;
 import io.jgitkins.server.application.dto.command.PushEventCommand;
 import io.jgitkins.server.application.dto.command.PushHookRequest;
 import io.jgitkins.server.application.exception.ApplicationException;
-import io.jgitkins.server.repository.application.port.out.RepositoryQueryPort;
 import io.jgitkins.server.domain.aggregate.Repository;
 import io.jgitkins.server.domain.model.vo.OwnerId;
 import io.jgitkins.server.domain.model.vo.OwnerType;
 import io.jgitkins.server.domain.model.vo.RepositoryId;
 import io.jgitkins.server.domain.model.vo.RepositoryName;
 import io.jgitkins.server.domain.model.vo.RepositoryPath;
+import io.jgitkins.server.domain.repository.RepositoryRepository;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -25,12 +25,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class PushEventCommandResolverTest {
 
     @Mock
-    private RepositoryQueryPort repositoryQueryPort;
+    private RepositoryRepository repositoryRepository;
 
     @Test
     void resolve_buildsPushEventCommandFromPushHookRequest() {
-        PushEventCommandResolver resolver = new PushEventCommandResolver(repositoryQueryPort, "/bare");
-        when(repositoryQueryPort.findByPath("/bare/users/alice/repo.git"))
+        PushEventCommandResolver resolver = new PushEventCommandResolver(repositoryRepository, "/bare");
+        when(repositoryRepository.findByPath("/bare/users/alice/repo.git"))
                 .thenReturn(Optional.of(repository()));
 
         PushHookRequest request = new PushHookRequest(
@@ -54,8 +54,8 @@ class PushEventCommandResolverTest {
 
     @Test
     void resolve_throwsWhenRepositoryCannotBeResolved() {
-        PushEventCommandResolver resolver = new PushEventCommandResolver(repositoryQueryPort, "/bare");
-        when(repositoryQueryPort.findByPath("/bare/users/alice/repo.git")).thenReturn(Optional.empty());
+        PushEventCommandResolver resolver = new PushEventCommandResolver(repositoryRepository, "/bare");
+        when(repositoryRepository.findByPath("/bare/users/alice/repo.git")).thenReturn(Optional.empty());
 
         PushHookRequest request = new PushHookRequest(
                 "/bare/users/alice/repo.git",
@@ -71,10 +71,10 @@ class PushEventCommandResolverTest {
 
     @Test
     void resolve_fallsBackToClonePathWhenAbsoluteGitDirIsProvided() {
-        PushEventCommandResolver resolver = new PushEventCommandResolver(repositoryQueryPort, "/Users/hwiryungkim/jgitkins/bare");
-        when(repositoryQueryPort.findByPath("/Users/hwiryungkim/jgitkins/bare/hrk11mmmm/private-m2.git"))
+        PushEventCommandResolver resolver = new PushEventCommandResolver(repositoryRepository, "/Users/hwiryungkim/jgitkins/bare");
+        when(repositoryRepository.findByPath("/Users/hwiryungkim/jgitkins/bare/hrk11mmmm/private-m2.git"))
                 .thenReturn(Optional.empty());
-        when(repositoryQueryPort.findByClonePath("/hrk11mmmm/private-m2.git"))
+        when(repositoryRepository.findByClonePath("/hrk11mmmm/private-m2.git"))
                 .thenReturn(Optional.of(privateRepository()));
 
         PushHookRequest request = new PushHookRequest(

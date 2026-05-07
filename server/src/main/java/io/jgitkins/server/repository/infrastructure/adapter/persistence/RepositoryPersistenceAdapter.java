@@ -7,20 +7,29 @@ import io.jgitkins.server.domain.model.vo.RepositoryId;
 import io.jgitkins.server.domain.model.vo.RepositoryName;
 import io.jgitkins.server.domain.model.vo.RepositoryPath;
 import io.jgitkins.server.domain.repository.RepositoryRepository;
+import io.jgitkins.server.infrastructure.persistence.mapper.OrganizeMemberEntityMbgMapper;
 import io.jgitkins.server.infrastructure.common.error.InfrastructureErrorCode;
 import io.jgitkins.server.infrastructure.exception.InfrastructureException;
 import io.jgitkins.server.infrastructure.mapper.RepositoryDomainMapper;
 import io.jgitkins.server.infrastructure.persistence.mapper.OrganizeEntityMbgMapper;
 import io.jgitkins.server.infrastructure.persistence.mapper.RepositoryEntityMbgMapper;
 import io.jgitkins.server.infrastructure.persistence.mapper.UserEntityMbgMapper;
+import io.jgitkins.server.infrastructure.persistence.model.OrganizeEntity;
+import io.jgitkins.server.infrastructure.persistence.model.OrganizeEntityCondition;
+import io.jgitkins.server.infrastructure.persistence.model.OrganizeMemberEntityCondition;
 import io.jgitkins.server.infrastructure.persistence.model.RepositoryEntity;
 import io.jgitkins.server.infrastructure.persistence.model.RepositoryEntityCondition;
+import io.jgitkins.server.infrastructure.persistence.model.UserEntity;
+import io.jgitkins.server.infrastructure.persistence.model.UserEntityCondition;
+import io.jgitkins.server.repository.application.contract.result.RepositoryResult;
 import io.jgitkins.server.repository.application.port.out.RepositoryQueryPort;
+import io.jgitkins.server.application.support.CloneUrlBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,9 +39,11 @@ import java.util.Optional;
 public class RepositoryPersistenceAdapter implements RepositoryRepository, RepositoryQueryPort {
 
     private final OrganizeEntityMbgMapper organizeEntityMbgMapper;
+    private final OrganizeMemberEntityMbgMapper organizeMemberEntityMbgMapper;
     private final RepositoryEntityMbgMapper repositoryEntityMbgMapper;
     private final UserEntityMbgMapper userEntityMbgMapper;
 
+    private final CloneUrlBuilder cloneUrlBuilder;
     private final RepositoryDomainMapper repositoryDomainMapper;
 
     @Override
@@ -91,19 +102,6 @@ public class RepositoryPersistenceAdapter implements RepositoryRepository, Repos
         } catch (Exception e) {
             throw new InfrastructureException(InfrastructureErrorCode.PERSISTENCE_OPERATION_FAILED,
                     "Database operation failed during find repository by id", e);
-        }
-    }
-
-    @Override
-    public List<Repository> findAll() {
-        try {
-            return repositoryEntityMbgMapper.selectByConditionWithBLOBs(new RepositoryEntityCondition())
-                    .stream()
-                    .map(repositoryDomainMapper::toDomain)
-                    .toList();
-        } catch (Exception e) {
-            throw new InfrastructureException(InfrastructureErrorCode.PERSISTENCE_OPERATION_FAILED,
-                    "Database operation failed during find all repositories", e);
         }
     }
 
@@ -172,38 +170,90 @@ public class RepositoryPersistenceAdapter implements RepositoryRepository, Repos
     }
 
     @Override
-    public Optional<Long> findIdByOwnerAndName(OwnerType ownerType, OwnerId ownerId, String repoName) {
+    public Optional<RepositoryResult> loadRepository(Long repositoryId) {
         try {
-            RepositoryEntityCondition repositoryCondition = new RepositoryEntityCondition();
-            repositoryCondition.createCriteria()
-                    .andOwnerTypeEqualTo(ownerType.name())
-                    .andOwnerIdEqualTo(ownerId.getValue())
-                    .andNameEqualTo(repoName);
-
-            List<RepositoryEntity> repositories = repositoryEntityMbgMapper.selectByCondition(repositoryCondition);
-            return repositories.stream()
-                    .findFirst()
-                    .map(RepositoryEntity::getId);
+            return Optional.ofNullable(repositoryEntityMbgMapper.selectByPrimaryKey(repositoryId))
+                    .map(this::toResult);
         } catch (Exception e) {
             throw new InfrastructureException(InfrastructureErrorCode.PERSISTENCE_OPERATION_FAILED,
-                    "Database operation failed during find repository id", e);
+                    "Database operation failed during load repository", e);
         }
     }
 
     @Override
-    public List<Repository> findAllByOwner(OwnerType ownerType, OwnerId ownerId) {
+    public Optional<RepositoryResult> loadRepositoryByPath(String namespace, String repoName) {
+        try {
+            String normalizedNamespace = trimSlashes(namespace);
+            String normalizedRepoName = trimSlashes(repoName);
+
+            return findEntityByClonePath(buildClonePath(normalizedNamespace, normalizedRepoName))
+                    .or(() -> findUserOwnedEntity(normalizedNamespace, normalizedRepoName))
+                    .or(() -> findOrganizationOwnedEntity(normalizedNamespace, normalizedRepoName))
+                    .map(this::toResult);
+        } catch (Exception e) {
+            throw new InfrastructureException(InfrastructureErrorCode.PERSISTENCE_OPERATION_FAILED,
+                    "Database operation failed during load repository by path", e);
+        }
+    }
+
+    @Override
+    public List<RepositoryResult> loadVisibleRepositories(Long requesterId) {
         try {
             RepositoryEntityCondition condition = new RepositoryEntityCondition();
-            condition.createCriteria()
-                    .andOwnerTypeEqualTo(ownerType.name())
-                    .andOwnerIdEqualTo(ownerId.getValue());
+            condition.setDistinct(true);
+            condition.setOrderByClause("UPDATED_AT desc");
+
+            condition.or().andVisibilityEqualTo("PUBLIC");
+
+            if (requesterId != null) {
+                condition.or()
+                        .andOwnerTypeEqualTo(OwnerType.USER.name())
+                        .andOwnerIdEqualTo(requesterId);
+
+                List<Long> organizeIds = findOrganizationIdsByUserId(requesterId);
+                if (!organizeIds.isEmpty()) {
+                    condition.or()
+                            .andOwnerTypeEqualTo(OwnerType.ORGANIZATION.name())
+                            .andOwnerIdIn(organizeIds);
+                }
+            }
+
             return repositoryEntityMbgMapper.selectByConditionWithBLOBs(condition)
                     .stream()
-                    .map(repositoryDomainMapper::toDomain)
+                    .map(this::toResult)
                     .toList();
         } catch (Exception e) {
             throw new InfrastructureException(InfrastructureErrorCode.PERSISTENCE_OPERATION_FAILED,
-                    "Database operation failed during find all repositories by owner", e);
+                    "Database operation failed during load visible repositories", e);
+        }
+    }
+
+    @Override
+    public List<RepositoryResult> loadUserRepositories(String username, Long requesterId) {
+        try {
+            Optional<UserEntity> userEntity = findUserEntityByUsername(username);
+            if (userEntity.isEmpty()) {
+                return List.of();
+            }
+
+            Long ownerId = userEntity.get().getId();
+            RepositoryEntityCondition condition = new RepositoryEntityCondition();
+            condition.setOrderByClause("UPDATED_AT desc");
+            RepositoryEntityCondition.Criteria criteria = condition.createCriteria()
+                    .andOwnerTypeEqualTo(OwnerType.USER.name())
+                    .andOwnerIdEqualTo(ownerId);
+
+            if (requesterId == null || !requesterId.equals(ownerId)) {
+                criteria.andVisibilityEqualTo("PUBLIC");
+            }
+
+            return repositoryEntityMbgMapper.selectByConditionWithBLOBs(condition)
+                    .stream()
+                    .map(this::toResult)
+                    .toList();
+        } catch (Exception e) {
+            throw new InfrastructureException(InfrastructureErrorCode.PERSISTENCE_OPERATION_FAILED,
+                    "Database operation failed during load user repositories", e);
         }
     }
 
@@ -219,5 +269,107 @@ public class RepositoryPersistenceAdapter implements RepositoryRepository, Repos
             throw new InfrastructureException(InfrastructureErrorCode.PERSISTENCE_OPERATION_FAILED,
                     "Database operation failed during count repositories by owner", e);
         }
+    }
+
+    private Optional<RepositoryEntity> findEntityByClonePath(String clonePath) {
+        if (clonePath == null || clonePath.isBlank()) {
+            return Optional.empty();
+        }
+        RepositoryEntityCondition condition = new RepositoryEntityCondition();
+        condition.createCriteria().andClonePathEqualTo(clonePath.trim());
+        return repositoryEntityMbgMapper.selectByConditionWithBLOBs(condition).stream().findFirst();
+    }
+
+    private Optional<RepositoryEntity> findUserOwnedEntity(String namespace, String repoName) {
+        return findUserEntityByUsername(namespace)
+                .flatMap(user -> {
+                    RepositoryEntityCondition condition = new RepositoryEntityCondition();
+                    condition.createCriteria()
+                            .andOwnerTypeEqualTo(OwnerType.USER.name())
+                            .andOwnerIdEqualTo(user.getId())
+                            .andNameEqualTo(repoName);
+                    return repositoryEntityMbgMapper.selectByConditionWithBLOBs(condition).stream().findFirst();
+                });
+    }
+
+    private Optional<RepositoryEntity> findOrganizationOwnedEntity(String namespace, String repoName) {
+        return findOrganizationEntityByName(namespace)
+                .flatMap(organize -> {
+                    RepositoryEntityCondition condition = new RepositoryEntityCondition();
+                    condition.createCriteria()
+                            .andOwnerTypeEqualTo(OwnerType.ORGANIZATION.name())
+                            .andOwnerIdEqualTo(organize.getId())
+                            .andPathEqualTo(repoName);
+                    return repositoryEntityMbgMapper.selectByConditionWithBLOBs(condition).stream().findFirst();
+                });
+    }
+
+    private Optional<UserEntity> findUserEntityByUsername(String username) {
+        if (username == null || username.isBlank()) {
+            return Optional.empty();
+        }
+        UserEntityCondition condition = new UserEntityCondition();
+        condition.createCriteria().andUsernameEqualTo(username.trim());
+        return userEntityMbgMapper.selectByCondition(condition).stream().findFirst();
+    }
+
+    private Optional<OrganizeEntity> findOrganizationEntityByName(String name) {
+        if (name == null || name.isBlank()) {
+            return Optional.empty();
+        }
+        OrganizeEntityCondition condition = new OrganizeEntityCondition();
+        condition.createCriteria().andNameEqualTo(name.trim());
+        return organizeEntityMbgMapper.selectByCondition(condition).stream().findFirst();
+    }
+
+    private List<Long> findOrganizationIdsByUserId(Long requesterId) {
+        if (requesterId == null) {
+            return List.of();
+        }
+        OrganizeMemberEntityCondition condition = new OrganizeMemberEntityCondition();
+        condition.createCriteria().andUserIdEqualTo(requesterId);
+        return organizeMemberEntityMbgMapper.selectByCondition(condition)
+                .stream()
+                .map(member -> member.getOrganizeId())
+                .distinct()
+                .toList();
+    }
+
+    private RepositoryResult toResult(RepositoryEntity entity) {
+        return new RepositoryResult(
+                entity.getId(),
+                entity.getOwnerType(),
+                entity.getName(),
+                entity.getPath(),
+                entity.getDefaultBranch(),
+                entity.getVisibility(),
+                entity.getDescription(),
+                entity.getOwnerId(),
+                entity.getCredentialId(),
+                entity.getClonePath(),
+                cloneUrlBuilder.build(entity.getClonePath()),
+                entity.getLastSyncedAt() == null,
+                entity.getLastSyncedAt(),
+                entity.getCreatedAt(),
+                entity.getUpdatedAt()
+        );
+    }
+
+    private String trimSlashes(String value) {
+        if (value == null) {
+            throw new IllegalArgumentException("path segment must not be null");
+        }
+        return value.trim().replaceAll("^/+", "").replaceAll("/+$", "");
+    }
+
+    private String buildClonePath(String namespace, String repoName) {
+        List<String> segments = new ArrayList<>();
+        if (!namespace.isBlank()) {
+            segments.add(namespace);
+        }
+        if (!repoName.isBlank()) {
+            segments.add(repoName);
+        }
+        return "/" + String.join("/", segments) + ".git";
     }
 }

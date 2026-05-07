@@ -88,7 +88,7 @@
         "priority": "high",
         "details": "기존 기능별 Task를 카테고리 기반(신규기능/리팩토링/보안)으로 재구성함.",
         "testStrategy": "카테고리별 우선순위에 따라 하위 작업을 순차 수행하고 회귀 테스트를 적용한다.",
-        "updatedAt": "2026-05-06T12:40:51.530Z",
+        "updatedAt": "2026-05-07T01:59:53.537Z",
         "subtasks": [
           {
             "id": 1,
@@ -398,6 +398,20 @@
             "parentTaskId": 2,
             "parentId": "2",
             "updatedAt": "2026-05-06T12:40:51.530Z"
+          },
+          {
+            "id": 27,
+            "title": "[plan][P1][server, docs] Repository aggregate load와 read model query seam 재설계 계획 수립",
+            "description": "`RepositoryRepository`가 aggregate 복원 메서드를 소유하도록 되돌리고, 순수 조회 흐름은 application read model을 직접 반환하는 query seam으로 재설계하는 실행 계획을 수립한다.",
+            "details": "참조 문서: `docs/modeling/contexts/repository/repository-context.md`, `.taskmaster/docs/refactor/task_2_19_plan.md`, `.taskmaster/docs/refactor/task_2_26_plan.md`. 산출물은 `.taskmaster/docs/refactor/task_2_27_plan.md`이며 다음을 포함한다. 1) `RepositoryRepository`에 `findById`, `findByOwnerAndName` 등 aggregate 복원 메서드를 다시 귀속시키는 기준 정리. 2) `RepositoryLoadService`, `ActivationValidator`, 이후 화면/API 조회 시나리오처럼 순수 조회용 흐름은 `RepositoryResult` 또는 전용 read model을 직접 반환하는 `RepositoryReadModelQueryPort` 계열로 재설계하는 방안 정리. 3) `RepositoryLookupService`, `PullRequestService`, `RepositoryValidator`가 aggregate seam과 read model seam 중 무엇을 써야 하는지 호출부별 기준 정의. 4) 현재 2.26 구현을 checkpoint로 두고, 다음 리팩토링 단계의 이행 순서와 테스트 전략을 상세 코드 스니펫과 함께 정의.",
+            "status": "done",
+            "dependencies": [
+              19,
+              26
+            ],
+            "parentTaskId": 2,
+            "parentId": "2",
+            "updatedAt": "2026-05-07T01:59:53.537Z"
           }
         ]
       },
@@ -497,7 +511,7 @@
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2026-05-06T12:40:51.530Z",
+      "lastModified": "2026-05-07T01:59:53.537Z",
       "taskCount": 5,
       "completedCount": 1,
       "tags": [

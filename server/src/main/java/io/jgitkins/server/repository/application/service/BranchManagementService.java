@@ -5,7 +5,6 @@ import io.jgitkins.server.repository.application.exception.BranchNotFoundExcepti
 import io.jgitkins.server.repository.application.exception.RepositoryNotFoundException;
 import io.jgitkins.server.repository.application.port.in.BranchManagementUseCase;
 import io.jgitkins.server.repository.application.port.out.BranchGitPort;
-import io.jgitkins.server.repository.application.port.out.RepositoryQueryPort;
 import io.jgitkins.server.repository.application.support.branch.BranchFactory;
 import io.jgitkins.server.shared.application.support.RepositoryNamespaceResolver;
 import io.jgitkins.server.application.validate.RepositoryAccessValidator;
@@ -13,6 +12,7 @@ import io.jgitkins.server.domain.Branch;
 import io.jgitkins.server.domain.aggregate.Repository;
 import io.jgitkins.server.domain.model.vo.RepositoryId;
 import io.jgitkins.server.domain.repository.BranchRepository;
+import io.jgitkins.server.domain.repository.RepositoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,7 +23,7 @@ public class BranchManagementService implements BranchManagementUseCase {
 
     private final RepositoryNamespaceResolver repositoryNamespaceResolver;
     private final RepositoryAccessValidator repositoryAccessValidator;
-    private final RepositoryQueryPort repositoryQueryPort;
+    private final RepositoryRepository repositoryRepository;
     private final BranchFactory branchFactory;
     private final BranchGitPort branchGitPort;
     private final BranchRepository branchRepository;
@@ -51,7 +51,7 @@ public class BranchManagementService implements BranchManagementUseCase {
     }
 
     private BranchRepositoryContext loadWriteContext(Long repositoryId) {
-        Repository repository = repositoryQueryPort.findById(RepositoryId.of(repositoryId))
+        Repository repository = repositoryRepository.findById(RepositoryId.of(repositoryId))
                 .orElseThrow(() -> new RepositoryNotFoundException(repositoryId));
 
         String namespace = repositoryNamespaceResolver.resolve(repository);

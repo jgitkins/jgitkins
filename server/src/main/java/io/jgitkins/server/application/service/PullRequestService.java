@@ -8,7 +8,6 @@ import io.jgitkins.server.repository.application.exception.RepositoryNotFoundExc
 import io.jgitkins.server.application.port.in.CreatePullRequestUseCase;
 import io.jgitkins.server.application.port.in.GetPullRequestDetailUseCase;
 import io.jgitkins.server.repository.application.port.out.BranchGitPort;
-import io.jgitkins.server.repository.application.port.out.RepositoryQueryPort;
 import io.jgitkins.server.application.support.pr.PullRequestDetailMapper;
 import io.jgitkins.server.application.support.pr.PullRequestMergeabilityResolver;
 import io.jgitkins.server.application.support.pr.PullRequestResultMapper;
@@ -18,6 +17,7 @@ import io.jgitkins.server.domain.pr.aggregate.PullRequest;
 import io.jgitkins.server.domain.pr.model.BranchHeadSnapshot;
 import io.jgitkins.server.domain.pr.model.vo.PullRequestId;
 import io.jgitkins.server.domain.pr.repository.PullRequestRepository;
+import io.jgitkins.server.domain.repository.RepositoryRepository;
 import io.jgitkins.server.repository.application.support.RepositoryLookupService;
 import io.jgitkins.server.shared.application.support.RepositoryNamespaceResolver;
 import java.io.IOException;
@@ -30,7 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class PullRequestService implements CreatePullRequestUseCase, GetPullRequestDetailUseCase {
 
     private final PullRequestRepository pullRequestRepository;
-    private final RepositoryQueryPort repositoryQueryPort;
+    private final RepositoryRepository repositoryRepository;
     private final RepositoryLookupService repositoryLookupService;
     private final RepositoryNamespaceResolver repositoryNamespaceResolver;
     private final BranchGitPort branchGitPort;
@@ -58,7 +58,7 @@ public class PullRequestService implements CreatePullRequestUseCase, GetPullRequ
     public PullRequestDetailResult getPullRequestDetail(PullRequestId pullRequestId) throws IOException {
         PullRequest pullRequest = pullRequestRepository.findById(pullRequestId)
                 .orElseThrow(() -> new PullRequestNotFoundException(pullRequestId));
-        Repository repository = repositoryQueryPort.findById(pullRequest.getRepositoryId())
+        Repository repository = repositoryRepository.findById(pullRequest.getRepositoryId())
                 .orElseThrow(() -> new RepositoryNotFoundException(pullRequest.getRepositoryId().getValue()));
 
         BranchHeadSnapshot currentSource = mergeabilityResolver.currentSourceHead(repository, pullRequest);

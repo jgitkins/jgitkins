@@ -1,7 +1,6 @@
 package io.jgitkins.server.repository.application.support;
 
 import io.jgitkins.server.application.port.out.OrganizePersistencePort;
-import io.jgitkins.server.repository.application.port.out.RepositoryQueryPort;
 import io.jgitkins.server.application.port.out.UserPersistencePort;
 import io.jgitkins.server.domain.aggregate.Organize;
 import io.jgitkins.server.domain.aggregate.Repository;
@@ -11,6 +10,7 @@ import io.jgitkins.server.domain.model.vo.OwnerId;
 import io.jgitkins.server.domain.model.vo.OwnerType;
 import io.jgitkins.server.domain.model.vo.RepositoryName;
 import io.jgitkins.server.domain.model.vo.RepositoryPath;
+import io.jgitkins.server.domain.repository.RepositoryRepository;
 import io.jgitkins.server.shared.common.RepositoryPathHelper;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +22,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class RepositoryLookupService {
 
-    private final RepositoryQueryPort repositoryQueryPort;
+    private final RepositoryRepository repositoryRepository;
     private final UserPersistencePort userPort;
     private final OrganizePersistencePort organizePort;
 
@@ -54,7 +54,7 @@ public class RepositoryLookupService {
 
     private Optional<Repository> findByClonePath(String namespace, String repoName) {
         String clonePath = RepositoryPathHelper.buildClonePath(namespace, repoName);
-        return repositoryQueryPort.findByClonePath(clonePath);
+        return repositoryRepository.findByClonePath(clonePath);
     }
 
     private Optional<Repository> findUserOwned(String namespace, String repoName) {
@@ -63,7 +63,7 @@ public class RepositoryLookupService {
             return Optional.empty();
         }
 
-        return repositoryQueryPort.findByOwnerAndName(
+        return repositoryRepository.findByOwnerAndName(
                 OwnerType.USER,
                 OwnerId.of(user.get().getId()),
                 RepositoryName.from(repoName));
@@ -75,7 +75,7 @@ public class RepositoryLookupService {
             return Optional.empty();
         }
 
-        return repositoryQueryPort.findByOwnerAndPath(
+        return repositoryRepository.findByOwnerAndPath(
                 OwnerType.ORGANIZATION,
                 OwnerId.of(organize.get().getId().getValue()),
                 RepositoryPath.from(repoName));
