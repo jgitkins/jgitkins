@@ -4,9 +4,9 @@ import io.jgitkins.server.application.validate.BranchCreationValidator;
 import io.jgitkins.server.repository.application.contract.command.BranchCreateCommand;
 import io.jgitkins.server.repository.application.contract.internal.BranchCreationContext;
 import io.jgitkins.server.repository.application.port.out.BranchGitPort;
-import io.jgitkins.server.domain.Branch;
 import io.jgitkins.server.domain.aggregate.Repository;
-import io.jgitkins.server.domain.repository.BranchRepository;
+import io.jgitkins.server.repository.domain.entity.Branch;
+import io.jgitkins.server.repository.domain.repository.BranchRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

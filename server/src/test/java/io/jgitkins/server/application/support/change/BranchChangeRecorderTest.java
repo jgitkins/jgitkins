@@ -4,7 +4,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import io.jgitkins.server.application.dto.command.PushEventCommand;
-import io.jgitkins.server.domain.repository.BranchRepository;
+import io.jgitkins.server.repository.domain.repository.BranchRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

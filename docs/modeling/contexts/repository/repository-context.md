@@ -108,7 +108,7 @@ Repository는 저장소 메타데이터와 초기화 상태를 소유한다. Git
 
 `Branch`는 Repository에 종속된 Entity로 본다.
 
-- 코드 근거: `server/domain/Branch.java`
+- 코드 근거: `server/repository/domain/entity/Branch.java`
 - 식별 근거: `repositoryId + branch name`
 - 규칙 근거: 기본 브랜치 삭제 금지, 중복 브랜치명 금지
 

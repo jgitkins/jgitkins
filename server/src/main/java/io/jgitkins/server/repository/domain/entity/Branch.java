@@ -1,4 +1,4 @@
-package io.jgitkins.server.domain;
+package io.jgitkins.server.repository.domain.entity;
 
 import io.jgitkins.server.domain.exception.DefaultBranchDeletionNotAllowedException;
 import lombok.Getter;

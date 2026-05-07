@@ -1,7 +1,7 @@
 package io.jgitkins.server.repository.infrastructure.adapter.persistence.repository;
 
-import io.jgitkins.server.domain.Branch;
-import io.jgitkins.server.domain.repository.BranchRepository;
+import io.jgitkins.server.repository.domain.entity.Branch;
+import io.jgitkins.server.repository.domain.repository.BranchRepository;
 import io.jgitkins.server.infrastructure.common.error.InfrastructureErrorCode;
 import io.jgitkins.server.infrastructure.exception.InfrastructureException;
 import io.jgitkins.server.infrastructure.mapper.BranchDomainMapper;

@@ -1,6 +1,6 @@
 package io.jgitkins.server.infrastructure.mapper;
 
-import io.jgitkins.server.domain.Branch;
+import io.jgitkins.server.repository.domain.entity.Branch;
 import io.jgitkins.server.infrastructure.persistence.model.BranchEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

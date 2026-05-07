@@ -95,7 +95,7 @@
 
 - 정의: `Repository` 안의 Git branch와 branch 메타데이터.
 - 현재 분류: Entity 후보.
-- 코드 근거: `server/domain/Branch.java`, `BranchName.java`, `BranchCreateUseCase`, `BranchLoadUseCase`, `BranchManagementService`.
+- 코드 근거: `server/repository/domain/entity/Branch.java`, `BranchName.java`, `BranchCreateUseCase`, `BranchLoadUseCase`, `BranchManagementService`.
 - 테이블 근거: `BRANCH`.
 - 메모: `Repository`에 종속된 Entity로 본다.
 

@@ -1,7 +1,7 @@
 package io.jgitkins.server.application.mapper;
 
 import io.jgitkins.server.repository.application.contract.result.BranchSearchResult;
-import io.jgitkins.server.domain.Branch;
+import io.jgitkins.server.repository.domain.entity.Branch;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")

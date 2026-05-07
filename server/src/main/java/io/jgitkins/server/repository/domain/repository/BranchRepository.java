@@ -1,6 +1,6 @@
-package io.jgitkins.server.domain.repository;
+package io.jgitkins.server.repository.domain.repository;
 
-import io.jgitkins.server.domain.Branch;
+import io.jgitkins.server.repository.domain.entity.Branch;
 import java.util.Optional;
 
 public interface BranchRepository {

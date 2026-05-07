@@ -14,7 +14,7 @@ import io.jgitkins.server.application.support.change.BranchChangeRecorder;
 import io.jgitkins.server.application.support.execution.ExecutionRequestService;
 import io.jgitkins.server.shared.application.policy.EventPolicyResolver;
 import io.jgitkins.server.application.validate.JobCreationValidator;
-import io.jgitkins.server.domain.repository.BranchRepository;
+import io.jgitkins.server.repository.domain.repository.BranchRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

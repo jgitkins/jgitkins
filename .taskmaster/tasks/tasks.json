@@ -88,7 +88,7 @@
         "priority": "high",
         "details": "기존 기능별 Task를 카테고리 기반(신규기능/리팩토링/보안)으로 재구성함.",
         "testStrategy": "카테고리별 우선순위에 따라 하위 작업을 순차 수행하고 회귀 테스트를 적용한다.",
-        "updatedAt": "2026-05-07T01:59:53.537Z",
+        "updatedAt": "2026-05-07T03:12:37.733Z",
         "subtasks": [
           {
             "id": 1,
@@ -412,6 +412,20 @@
             "parentTaskId": 2,
             "parentId": "2",
             "updatedAt": "2026-05-07T01:59:53.537Z"
+          },
+          {
+            "id": 28,
+            "title": "[plan][P1][server, docs] Repository Context에서 Branch 귀속 수준 정리 계획 수립",
+            "description": "`Branch`를 Repository Context 내부 Entity로 유지하되, `Repository` aggregate가 branch 컬렉션을 직접 소유하지 않는 방향으로 경계와 이관 계획을 수립한다.",
+            "details": "참조 문서: `docs/modeling/contexts/repository/repository-context.md`, `docs/modeling/contexts/repository/repository-context-diagrams.md`, `.taskmaster/docs/refactor/task_2_19_plan.md`. 산출물은 `.taskmaster/docs/refactor/task_2_28_plan.md`이며 다음을 포함한다. 1) `Branch`의 소속을 `Repository Context`로 확정하되 `Repository` aggregate 내부 컬렉션으로는 편입하지 않는 이유와 기준 정리. 2) `Branch`, `BranchRepository`, `BranchManagementService`, `BranchLoadService`, `BranchFactory`, `BranchGitPort`, `BranchQueryPort`의 목표 패키지와 책임 경계 정리. 3) `Repository`가 직접 가져야 할 브랜치 관련 규칙과, 별도 branch entity/service가 계속 가져갈 절차를 분리. 4) 점진 이관 순서, 테스트 전략, before/after 코드 스니펫 정의.",
+            "status": "done",
+            "dependencies": [
+              19,
+              27
+            ],
+            "parentTaskId": 2,
+            "parentId": "2",
+            "updatedAt": "2026-05-07T03:12:37.733Z"
           }
         ]
       },
@@ -511,7 +525,7 @@
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2026-05-07T01:59:53.537Z",
+      "lastModified": "2026-05-07T03:12:37.733Z",
       "taskCount": 5,
       "completedCount": 1,
       "tags": [

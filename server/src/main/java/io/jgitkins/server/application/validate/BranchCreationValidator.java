@@ -5,7 +5,7 @@ import io.jgitkins.server.repository.application.exception.BranchAlreadyExistsEx
 import io.jgitkins.server.application.exception.RepositoryNotInitializedException;
 import io.jgitkins.server.repository.application.exception.SourceBranchNotFoundException;
 import io.jgitkins.server.domain.aggregate.Repository;
-import io.jgitkins.server.domain.repository.BranchRepository;
+import io.jgitkins.server.repository.domain.repository.BranchRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
