@@ -1,4 +1,4 @@
-package io.jgitkins.server.presentation.api.rest;
+package io.jgitkins.server.repository.presentation.api.rest;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;

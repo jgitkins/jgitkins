@@ -1,6 +1,5 @@
-package io.jgitkins.server.presentation.api.rest;
+package io.jgitkins.server.repository.presentation.api.rest;
 
-import io.jgitkins.server.presentation.mapper.BranchRequestMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -9,8 +8,9 @@ import io.jgitkins.server.repository.application.contract.result.BranchSearchRes
 import io.jgitkins.server.repository.application.port.in.BranchLoadUseCase;
 import io.jgitkins.server.repository.application.port.in.BranchManagementUseCase;
 import io.jgitkins.server.presentation.common.ApiResponse;
-import io.jgitkins.server.presentation.dto.BranchCreateRequest;
 import io.jgitkins.server.presentation.util.LocationUriBuilder;
+import io.jgitkins.server.repository.presentation.dto.BranchCreateRequest;
+import io.jgitkins.server.repository.presentation.mapper.BranchRequestMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

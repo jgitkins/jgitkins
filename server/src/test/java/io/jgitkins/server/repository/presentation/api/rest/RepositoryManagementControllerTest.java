@@ -1,4 +1,4 @@
-package io.jgitkins.server.presentation.api.rest;
+package io.jgitkins.server.repository.presentation.api.rest;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -17,8 +17,8 @@ import io.jgitkins.server.repository.application.port.in.RepositoryLoadUseCase;
 import io.jgitkins.server.repository.application.port.in.RepositoryManagementUseCase;
 import io.jgitkins.server.application.port.in.RepositoryOverviewUseCase;
 import io.jgitkins.server.domain.model.vo.OwnerType;
-import io.jgitkins.server.presentation.dto.RepositoryCreateRequest;
-import io.jgitkins.server.presentation.mapper.RepositoryRequestMapper;
+import io.jgitkins.server.repository.presentation.dto.RepositoryCreateRequest;
+import io.jgitkins.server.repository.presentation.mapper.RepositoryRequestMapper;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

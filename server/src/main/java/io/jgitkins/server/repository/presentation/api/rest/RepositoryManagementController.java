@@ -1,4 +1,4 @@
-package io.jgitkins.server.presentation.api.rest;
+package io.jgitkins.server.repository.presentation.api.rest;
 
 import io.jgitkins.server.repository.application.contract.command.RepositoryCreateCommand;
 import io.jgitkins.server.application.dto.result.RepositoryOverviewResult;
@@ -7,8 +7,8 @@ import io.jgitkins.server.repository.application.port.in.RepositoryLoadUseCase;
 import io.jgitkins.server.repository.application.port.in.RepositoryManagementUseCase;
 import io.jgitkins.server.application.port.in.RepositoryOverviewUseCase;
 import io.jgitkins.server.presentation.common.ApiResponse;
-import io.jgitkins.server.presentation.dto.RepositoryCreateRequest;
-import io.jgitkins.server.presentation.mapper.RepositoryRequestMapper;
+import io.jgitkins.server.repository.presentation.dto.RepositoryCreateRequest;
+import io.jgitkins.server.repository.presentation.mapper.RepositoryRequestMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;

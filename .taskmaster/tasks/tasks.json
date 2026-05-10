@@ -427,23 +427,53 @@
             "parentId": "2",
             "updatedAt": "2026-05-07T03:12:37.733Z"
           },
-          {
-            "id": 29,
-            "title": "[plan][P1][server, docs] Repository Context domain aggregate/entity/VO 이관 계획 수립",
-            "description": "`Repository Context`가 소유하는 aggregate, relation model, repository, repository-prefixed VO를 `repository.domain` 하위로 정렬하는 실행 계획을 수립한다.",
-            "details": "참조 문서: `docs/modeling/contexts/repository/repository-context.md`, `docs/modeling/contexts/repository/repository-context-diagrams.md`, `.taskmaster/docs/refactor/task_2_19_plan.md`, `.taskmaster/docs/refactor/task_2_28_plan.md`. 산출물은 `.taskmaster/docs/refactor/task_2_29_plan.md`이며 다음을 포함한다. 1) `Repository`, `RepositoryRepository`, `RepositoryMember`, `RepositorySynchronizedEvent`, `RepositoryId/Name/Path/Visibility`, `RepositoryMemberRole`의 목표 패키지와 이동 기준 정리. 2) `OwnerId`, `OwnerType`, `OrganizeId`, `UserId`처럼 cross-context 성격이 있는 식별자는 이번 범위에서 유지하는 이유를 명시. 3) repository/application/shared/infrastructure/test 전반의 import 영향 범위와 점진 이관 순서 정의. 4) 문서는 간결하게 유지하되 before/after 코드 스니펫은 상세하게 제시한다.",
-            "status": "done",
-            "dependencies": [
-              19,
-              27,
-              28
-            ],
-            "parentTaskId": 2,
-            "parentId": "2",
-            "updatedAt": "2026-05-10T12:41:29.074Z"
-          }
-        ]
+      {
+        "id": 29,
+        "title": "[plan][P1][server, docs] Repository Context domain aggregate/entity/VO 이관 계획 수립",
+        "description": "`Repository Context`가 소유하는 aggregate, relation model, repository, repository-prefixed VO를 `repository.domain` 하위로 정렬하는 실행 계획을 수립한다.",
+        "details": "참조 문서: `docs/modeling/contexts/repository/repository-context.md`, `docs/modeling/contexts/repository/repository-context-diagrams.md`, `.taskmaster/docs/refactor/task_2_19_plan.md`, `.taskmaster/docs/refactor/task_2_28_plan.md`. 산출물은 `.taskmaster/docs/refactor/task_2_29_plan.md`이며 다음을 포함한다. 1) `Repository`, `RepositoryRepository`, `RepositoryMember`, `RepositorySynchronizedEvent`, `RepositoryId/Name/Path/Visibility`, `RepositoryMemberRole`의 목표 패키지와 이동 기준 정리. 2) `OwnerId`, `OwnerType`, `OrganizeId`, `UserId`처럼 cross-context 성격이 있는 식별자는 이번 범위에서 유지하는 이유를 명시. 3) repository/application/shared/infrastructure/test 전반의 import 영향 범위와 점진 이관 순서 정의. 4) 문서는 간결하게 유지하되 before/after 코드 스니펫은 상세하게 제시한다.",
+        "status": "done",
+        "dependencies": [
+          19,
+          27,
+          28
+        ],
+        "parentTaskId": 2,
+        "parentId": "2",
+        "updatedAt": "2026-05-10T12:41:29.074Z"
       },
+      {
+        "id": 30,
+        "title": "[server] Repository Git adapter의 application exception 의존 제거",
+        "description": "`repository.infrastructure.adapter.git`가 `application.exception`을 직접 참조하지 않도록 예외 경계를 정리하고, 기술 실패와 도메인/애플리케이션 해석 책임을 분리한다.",
+        "details": "대상 범위는 `server/src/main/java/io/jgitkins/server/repository/infrastructure/adapter/git/BranchGitAdapter.java`, `RepositoryGitCommitAdapter.java`, 필요 시 `RepositoryGitAdapter.java`, 대응하는 `repository.application.port.out.*`, `repository.application.service/*`, `repository.application.support/*`, 관련 exception 패키지와 테스트다. 목표는 adapter가 `BranchNotFoundException`, `BranchAlreadyExistsException`, `SourceBranchNotFoundException`, `CommitNotFoundException` 같은 application exception을 직접 알지 않도록 바꾸는 것이다. 방안은 1) infrastructure exception 또는 adapter-local result로 기술 실패를 표현하고, 2) application/service/factory가 이를 해석해 application exception으로 변환하는 구조를 우선 검토한다. `BranchGitPort`, `CommitGitPort`, `RepositoryGitPort`의 계약 변경이 필요한지 평가하고, 테스트에서는 branch not found, source branch not found, duplicate branch, commit not found, ref update failure 시나리오를 adapter/서비스 경계 기준으로 분리 검증한다.",
+        "status": "pending",
+        "dependencies": [
+          24,
+          26,
+          28,
+          29,
+          31
+        ],
+        "parentTaskId": 2,
+        "parentId": "2"
+      },
+      {
+        "id": 31,
+        "title": "[plan][P1][server, docs] Repository Context presentation adapter 패키지 재정렬 계획 수립",
+        "description": "`repository` context 하위에 `presentation` 패키지를 추가하고, repository 관련 controller/request mapper/request dto를 함께 이관하는 실행 계획을 수립한다.",
+        "details": "참조 문서: `docs/modeling/contexts/repository/repository-context.md`, `.taskmaster/docs/refactor/task_2_19_plan.md`, `.taskmaster/docs/refactor/task_2_25_plan.md`, `.taskmaster/docs/refactor/task_2_29_plan.md`. 산출물은 `.taskmaster/docs/refactor/task_2_31_plan.md`이며 다음을 포함한다. 1) `RepositoryManagementController`, `BranchController`, `RepositoryMemberController`, `RepositoryContentController`, `RepositoryCommitController`, `RepositoryFileController`, `WebRepositoryController`를 `server/repository/presentation` 하위로 재배치하는 기준 정리. 2) `RepositoryCreateRequest`, `RepositoryUpdateRequest`, `RepositoryMemberAddRequest`, `BranchCreateRequest`, `RepositoryRequestMapper`, `BranchRequestMapper`처럼 repository 전용 request model과 mapper를 같이 이관하는 기준 정의. 3) `ApiResponse`, `GlobalExceptionHandler`, 공통 에러/유틸은 top-level `presentation`에 유지하고, repository 전용 presentation 자산만 context 하위로 이동하는 경계 정리. 4) `RepositoryOverviewUseCase/Service`가 아직 generic application 패키지에 남아 있어 controller 책임이 섞여 보이는 지점을 분석하되, 이번 단계는 presentation 재정렬에 집중하는 범위 제어와 점진 이관 순서, 테스트 전략을 상세 코드 스니펫과 함께 정리한다.",
+        "status": "done",
+        "dependencies": [
+          19,
+          25,
+          29
+        ],
+        "parentTaskId": 2,
+        "parentId": "2"
+      }
+    ]
+  },
       {
         "id": "3",
         "title": "보안",

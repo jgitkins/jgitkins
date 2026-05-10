@@ -1,11 +1,11 @@
-package io.jgitkins.server.presentation.api.rest;
+package io.jgitkins.server.repository.presentation.api.rest;
 
 import io.jgitkins.server.repository.application.contract.command.RepositoryMemberAddCommand;
 import io.jgitkins.server.repository.application.contract.result.RepositoryMemberSummary;
 import io.jgitkins.server.repository.application.port.in.RepositoryMemberLoadUseCase;
 import io.jgitkins.server.repository.application.port.in.RepositoryMemberManagementUseCase;
 import io.jgitkins.server.presentation.common.ApiResponse;
-import io.jgitkins.server.presentation.dto.RepositoryMemberAddRequest;
+import io.jgitkins.server.repository.presentation.dto.RepositoryMemberAddRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

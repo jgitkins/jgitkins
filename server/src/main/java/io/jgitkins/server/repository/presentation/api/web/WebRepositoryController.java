@@ -1,4 +1,4 @@
-package io.jgitkins.server.presentation.api.web;
+package io.jgitkins.server.repository.presentation.api.web;
 
 import io.jgitkins.server.repository.application.contract.result.RepositoryResult;
 import io.jgitkins.server.repository.application.port.in.RepositoryLoadUseCase;

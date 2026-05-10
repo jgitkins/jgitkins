@@ -1,4 +1,4 @@
-package io.jgitkins.server.presentation.api.rest;
+package io.jgitkins.server.repository.presentation.api.rest;
 
 import io.jgitkins.server.application.dto.CommitHistory;
 import io.jgitkins.server.application.port.in.CommitLoadUseCase;

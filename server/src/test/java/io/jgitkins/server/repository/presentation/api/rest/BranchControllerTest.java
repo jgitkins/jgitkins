@@ -1,4 +1,4 @@
-package io.jgitkins.server.presentation.api.rest;
+package io.jgitkins.server.repository.presentation.api.rest;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -15,8 +15,8 @@ import io.jgitkins.server.repository.application.contract.command.BranchCreateCo
 import io.jgitkins.server.repository.application.contract.result.BranchSearchResult;
 import io.jgitkins.server.repository.application.port.in.BranchLoadUseCase;
 import io.jgitkins.server.repository.application.port.in.BranchManagementUseCase;
-import io.jgitkins.server.presentation.dto.BranchCreateRequest;
-import io.jgitkins.server.presentation.mapper.BranchRequestMapper;
+import io.jgitkins.server.repository.presentation.dto.BranchCreateRequest;
+import io.jgitkins.server.repository.presentation.mapper.BranchRequestMapper;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
