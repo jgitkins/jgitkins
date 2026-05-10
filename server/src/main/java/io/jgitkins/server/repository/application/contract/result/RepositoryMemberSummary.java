@@ -1,6 +1,6 @@
 package io.jgitkins.server.repository.application.contract.result;
 
-import io.jgitkins.server.domain.model.vo.RepositoryMemberRole;
+import io.jgitkins.server.repository.domain.vo.RepositoryMemberRole;
 import java.time.LocalDateTime;
 
 public record RepositoryMemberSummary(

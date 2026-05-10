@@ -1,7 +1,7 @@
 package io.jgitkins.server.infrastructure.mapper;
 
 import io.jgitkins.server.domain.model.vo.CommitHash;
-import io.jgitkins.server.domain.model.vo.RepositoryId;
+import io.jgitkins.server.repository.domain.vo.RepositoryId;
 import io.jgitkins.server.domain.pr.aggregate.PullRequest;
 import io.jgitkins.server.domain.pr.model.BranchHeadSnapshot;
 import io.jgitkins.server.domain.pr.model.PullRequestStatus;

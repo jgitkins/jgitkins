@@ -1,9 +1,9 @@
-package io.jgitkins.server.domain.aggregate;
+package io.jgitkins.server.repository.domain.aggregate;
 
 import io.jgitkins.server.domain.model.vo.BranchName;
-import io.jgitkins.server.domain.model.vo.RepositoryName;
-import io.jgitkins.server.domain.model.vo.RepositoryPath;
-import io.jgitkins.server.domain.model.vo.RepositoryVisibility;
+import io.jgitkins.server.repository.domain.vo.RepositoryName;
+import io.jgitkins.server.repository.domain.vo.RepositoryPath;
+import io.jgitkins.server.repository.domain.vo.RepositoryVisibility;
 import io.jgitkins.server.domain.model.vo.UserId;
 import org.junit.jupiter.api.Test;
 

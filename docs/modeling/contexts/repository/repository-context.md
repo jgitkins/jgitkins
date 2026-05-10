@@ -84,7 +84,7 @@ Repository 안의 변경 흐름을 식별하는 브랜치 메타데이터다.
 
 `Repository`는 이 context의 root다.
 
-- 코드 근거: `server/domain/aggregate/Repository.java`
+- 코드 근거: `server/repository/domain/aggregate/Repository.java`
 - 유스케이스 근거: `RepositoryCreateUseCase`, `RepositoryLoadUseCase`, `RepositoryDeleteUseCase`
 - 서비스 근거: `RepositoryManagementService`, `RepositoryLoadService`
 
@@ -122,7 +122,7 @@ Branch head는 Git에 있고 DB에는 메타데이터만 있다. 따라서 Branc
 
 `Repository Member`는 Repository 내부 Entity보다 `Repository`와 `User` 사이의 관계 모델에 가깝다.
 
-- 코드 근거: `server/domain/model/RepositoryMember.java`
+- 코드 근거: `server/repository/domain/model/RepositoryMember.java`
 - 서비스 근거: `RepositoryMemberService`
 - 특징: `repositoryId + userId + role + addedAt` 중심으로 관리되고, Repository aggregate를 직접 로드하지 않고 추가/삭제된다.
 

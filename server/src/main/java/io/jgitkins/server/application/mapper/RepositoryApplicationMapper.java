@@ -2,7 +2,7 @@ package io.jgitkins.server.application.mapper;
 
 import io.jgitkins.server.repository.application.contract.result.RepositoryResult;
 import io.jgitkins.server.application.support.CloneUrlBuilder;
-import io.jgitkins.server.domain.aggregate.Repository;
+import io.jgitkins.server.repository.domain.aggregate.Repository;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;

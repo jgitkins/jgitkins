@@ -5,7 +5,7 @@ import io.jgitkins.server.repository.application.port.out.BranchGitPort;
 import io.jgitkins.server.application.port.out.MergeGitPort;
 import io.jgitkins.server.shared.application.change.MergeabilityAssessmentAssembler;
 import io.jgitkins.server.shared.application.support.RepositoryNamespaceResolver;
-import io.jgitkins.server.domain.aggregate.Repository;
+import io.jgitkins.server.repository.domain.aggregate.Repository;
 import io.jgitkins.server.domain.model.changegraph.MergeabilityAssessment;
 import io.jgitkins.server.domain.pr.aggregate.PullRequest;
 import io.jgitkins.server.domain.pr.model.BranchHeadSnapshot;

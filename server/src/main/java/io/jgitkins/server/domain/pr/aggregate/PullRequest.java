@@ -2,7 +2,7 @@ package io.jgitkins.server.domain.pr.aggregate;
 
 import io.jgitkins.server.domain.aggregate.AbstractAggregateRoot;
 import io.jgitkins.server.domain.model.changegraph.MergeabilityAssessment;
-import io.jgitkins.server.domain.model.vo.RepositoryId;
+import io.jgitkins.server.repository.domain.vo.RepositoryId;
 import io.jgitkins.server.domain.pr.model.BranchHeadSnapshot;
 import io.jgitkins.server.domain.pr.model.PullRequestStatus;
 import io.jgitkins.server.domain.pr.model.TargetDrift;

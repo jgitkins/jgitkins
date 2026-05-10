@@ -1,8 +1,8 @@
 package io.jgitkins.server.repository.infrastructure.adapter.persistence;
 
 import io.jgitkins.server.repository.application.port.out.RepositoryMemberPersistencePort;
-import io.jgitkins.server.domain.model.RepositoryMember;
-import io.jgitkins.server.domain.model.vo.RepositoryId;
+import io.jgitkins.server.repository.domain.model.RepositoryMember;
+import io.jgitkins.server.repository.domain.vo.RepositoryId;
 import io.jgitkins.server.domain.model.vo.UserId;
 import io.jgitkins.server.infrastructure.common.error.InfrastructureErrorCode;
 import io.jgitkins.server.infrastructure.exception.InfrastructureException;

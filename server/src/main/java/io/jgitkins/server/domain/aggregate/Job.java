@@ -3,6 +3,7 @@ package io.jgitkins.server.domain.aggregate;
 import io.jgitkins.server.domain.event.JobQueuedEvent;
 import io.jgitkins.server.domain.model.JobHistory;
 import io.jgitkins.server.domain.model.vo.*;
+import io.jgitkins.server.repository.domain.vo.RepositoryId;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

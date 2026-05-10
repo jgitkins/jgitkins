@@ -1,8 +1,8 @@
 package io.jgitkins.server.infrastructure.mapper;
 
-import io.jgitkins.server.domain.model.RepositoryMember;
-import io.jgitkins.server.domain.model.vo.RepositoryId;
-import io.jgitkins.server.domain.model.vo.RepositoryMemberRole;
+import io.jgitkins.server.repository.domain.model.RepositoryMember;
+import io.jgitkins.server.repository.domain.vo.RepositoryId;
+import io.jgitkins.server.repository.domain.vo.RepositoryMemberRole;
 import io.jgitkins.server.domain.model.vo.UserId;
 import io.jgitkins.server.infrastructure.persistence.model.RepositoryMemberEntity;
 import org.mapstruct.Mapper;

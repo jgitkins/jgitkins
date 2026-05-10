@@ -3,9 +3,10 @@ package io.jgitkins.server.application.validate;
 import io.jgitkins.server.application.exception.*;
 import io.jgitkins.server.application.port.out.CurrentUserPort;
 import io.jgitkins.server.application.port.out.OrganizeMemberPersistencePort;
-import io.jgitkins.server.domain.aggregate.Repository;
+import io.jgitkins.server.repository.domain.aggregate.Repository;
 import io.jgitkins.server.domain.model.vo.*;
-import io.jgitkins.server.domain.repository.RepositoryRepository;
+import io.jgitkins.server.repository.domain.vo.RepositoryName;
+import io.jgitkins.server.repository.domain.repository.RepositoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

@@ -1,12 +1,12 @@
 package io.jgitkins.server.repository.infrastructure.adapter.persistence;
 
-import io.jgitkins.server.domain.aggregate.Repository;
+import io.jgitkins.server.repository.domain.aggregate.Repository;
 import io.jgitkins.server.domain.model.vo.OwnerId;
 import io.jgitkins.server.domain.model.vo.OwnerType;
-import io.jgitkins.server.domain.model.vo.RepositoryId;
-import io.jgitkins.server.domain.model.vo.RepositoryName;
-import io.jgitkins.server.domain.model.vo.RepositoryPath;
-import io.jgitkins.server.domain.repository.RepositoryRepository;
+import io.jgitkins.server.repository.domain.vo.RepositoryId;
+import io.jgitkins.server.repository.domain.vo.RepositoryName;
+import io.jgitkins.server.repository.domain.vo.RepositoryPath;
+import io.jgitkins.server.repository.domain.repository.RepositoryRepository;
 import io.jgitkins.server.infrastructure.persistence.mapper.OrganizeMemberEntityMbgMapper;
 import io.jgitkins.server.infrastructure.common.error.InfrastructureErrorCode;
 import io.jgitkins.server.infrastructure.exception.InfrastructureException;

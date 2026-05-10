@@ -1,4 +1,4 @@
-package io.jgitkins.server.domain.model.vo;
+package io.jgitkins.server.repository.domain.vo;
 
 public enum RepositoryMemberRole {
     READER,

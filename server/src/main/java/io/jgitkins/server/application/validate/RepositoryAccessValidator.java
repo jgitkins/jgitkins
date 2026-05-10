@@ -4,7 +4,7 @@ import io.jgitkins.server.application.port.out.CurrentUserPort;
 import io.jgitkins.server.application.port.in.GitRepositoryAccessUseCase;
 import io.jgitkins.server.application.common.error.ApplicationErrorCode;
 import io.jgitkins.server.application.exception.ApplicationException;
-import io.jgitkins.server.domain.aggregate.Repository;
+import io.jgitkins.server.repository.domain.aggregate.Repository;
 import io.jgitkins.server.repository.application.contract.result.RepositoryPermission;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

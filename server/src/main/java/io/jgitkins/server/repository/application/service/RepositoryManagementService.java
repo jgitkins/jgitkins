@@ -8,9 +8,9 @@ import io.jgitkins.server.repository.application.contract.internal.RepositoryCre
 import io.jgitkins.server.repository.application.support.ownership.RepositoryOwnershipPolicy;
 import io.jgitkins.server.repository.application.support.provisioning.RepositoryProvisioner;
 import io.jgitkins.server.repository.application.exception.RepositoryNotFoundException;
-import io.jgitkins.server.domain.aggregate.Repository;
-import io.jgitkins.server.domain.model.vo.RepositoryId;
-import io.jgitkins.server.domain.repository.RepositoryRepository;
+import io.jgitkins.server.repository.domain.aggregate.Repository;
+import io.jgitkins.server.repository.domain.vo.RepositoryId;
+import io.jgitkins.server.repository.domain.repository.RepositoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

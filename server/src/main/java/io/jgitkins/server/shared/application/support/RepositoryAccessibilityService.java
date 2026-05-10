@@ -1,10 +1,10 @@
 package io.jgitkins.server.shared.application.support;
 
 import io.jgitkins.server.application.port.out.OrganizeMemberPersistencePort;
-import io.jgitkins.server.domain.aggregate.Repository;
+import io.jgitkins.server.repository.domain.aggregate.Repository;
 import io.jgitkins.server.domain.model.vo.OrganizeId;
 import io.jgitkins.server.domain.model.vo.OwnerType;
-import io.jgitkins.server.domain.model.vo.RepositoryVisibility;
+import io.jgitkins.server.repository.domain.vo.RepositoryVisibility;
 import io.jgitkins.server.domain.model.vo.UserId;
 import java.util.Map;
 import java.util.Optional;

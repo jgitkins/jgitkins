@@ -6,6 +6,7 @@ import io.jgitkins.server.domain.model.vo.*;
 import io.jgitkins.server.infrastructure.persistence.model.DispatchableJobRow;
 import io.jgitkins.server.infrastructure.persistence.model.JobEntity;
 import io.jgitkins.server.infrastructure.persistence.model.JobHistoryEntity;
+import io.jgitkins.server.repository.domain.vo.RepositoryId;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.slf4j.Logger;

@@ -6,7 +6,7 @@ import io.jgitkins.server.application.port.out.JobPersistencePort;
 import io.jgitkins.server.domain.aggregate.Job;
 import io.jgitkins.server.domain.model.vo.BranchName;
 import io.jgitkins.server.domain.model.vo.CommitHash;
-import io.jgitkins.server.domain.model.vo.RepositoryId;
+import io.jgitkins.server.repository.domain.vo.RepositoryId;
 import io.jgitkins.server.domain.model.vo.UserId;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

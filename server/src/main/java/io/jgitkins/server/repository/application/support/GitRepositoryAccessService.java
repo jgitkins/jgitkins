@@ -2,13 +2,13 @@ package io.jgitkins.server.repository.application.support;
 
 import io.jgitkins.server.application.port.out.OrganizeMemberPersistencePort;
 import io.jgitkins.server.repository.application.port.out.RepositoryMemberPersistencePort;
-import io.jgitkins.server.domain.aggregate.Repository;
+import io.jgitkins.server.repository.domain.aggregate.Repository;
 import io.jgitkins.server.domain.model.OrganizeMember;
-import io.jgitkins.server.domain.model.RepositoryMember;
+import io.jgitkins.server.repository.domain.model.RepositoryMember;
 import io.jgitkins.server.domain.model.vo.OrganizeId;
 import io.jgitkins.server.domain.model.vo.OwnerType;
-import io.jgitkins.server.domain.model.vo.RepositoryMemberRole;
-import io.jgitkins.server.domain.model.vo.RepositoryVisibility;
+import io.jgitkins.server.repository.domain.vo.RepositoryMemberRole;
+import io.jgitkins.server.repository.domain.vo.RepositoryVisibility;
 import io.jgitkins.server.domain.model.vo.UserId;
 import io.jgitkins.server.repository.application.contract.result.RepositoryPermission;
 import java.util.Optional;
@@ -31,7 +31,7 @@ public class GitRepositoryAccessService {
             return false;
         }
         Repository repo = repository.get();
-        if (repo.getVisibility() == io.jgitkins.server.domain.model.vo.RepositoryVisibility.PUBLIC) {
+        if (repo.getVisibility() == io.jgitkins.server.repository.domain.vo.RepositoryVisibility.PUBLIC) {
             return true;
         }
         return resolvePermission(repo, userId).member();
@@ -55,7 +55,7 @@ public class GitRepositoryAccessService {
 
     public boolean isPublicRepo(OwnerType ownerType, String ownerName, String repositoryName) {
         return resolveRepository(ownerType, ownerName, repositoryName)
-                .map(repo -> repo.getVisibility() == io.jgitkins.server.domain.model.vo.RepositoryVisibility.PUBLIC)
+                .map(repo -> repo.getVisibility() == io.jgitkins.server.repository.domain.vo.RepositoryVisibility.PUBLIC)
                 .orElse(false);
     }
 

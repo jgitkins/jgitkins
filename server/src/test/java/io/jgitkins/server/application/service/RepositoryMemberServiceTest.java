@@ -13,9 +13,9 @@ import io.jgitkins.server.repository.application.port.out.RepositoryMemberPersis
 import io.jgitkins.server.repository.application.support.membership.RepositoryMembershipFactory;
 import io.jgitkins.server.application.validate.RepositoryMemberValidator;
 import io.jgitkins.server.common.exception.JgitkinsException;
-import io.jgitkins.server.domain.model.RepositoryMember;
-import io.jgitkins.server.domain.model.vo.RepositoryId;
-import io.jgitkins.server.domain.model.vo.RepositoryMemberRole;
+import io.jgitkins.server.repository.domain.model.RepositoryMember;
+import io.jgitkins.server.repository.domain.vo.RepositoryId;
+import io.jgitkins.server.repository.domain.vo.RepositoryMemberRole;
 import io.jgitkins.server.domain.model.vo.UserId;
 import java.time.LocalDateTime;
 import java.util.List;

@@ -78,7 +78,7 @@
 
 - 정의: Git 저장소와 서비스 메타데이터를 함께 가지는 작업 단위.
 - 현재 분류: Aggregate Root.
-- 코드 근거: `server/domain/aggregate/Repository.java`, `RepositoryCreateUseCase`, `RepositoryLoadUseCase`, `RepositoryManagementService`.
+- 코드 근거: `server/repository/domain/aggregate/Repository.java`, `RepositoryCreateUseCase`, `RepositoryLoadUseCase`, `RepositoryManagementService`.
 - 테이블 근거: `REPOSITORY`.
 - 주요 값: `RepositoryId`, `RepositoryName`, `RepositoryPath`, `RepositoryVisibility`, `OwnerType`, `OwnerId`, `BranchName`.
 - 메모: Git object graph 자체는 외부 상태다.
@@ -87,7 +87,7 @@
 
 - 정의: 특정 `Repository`에 접근 가능한 사용자와 역할.
 - 현재 분류: Entity 또는 관계 모델.
-- 코드 근거: `server/domain/model/RepositoryMember.java`, `RepositoryMemberRole.java`, `RepositoryMember*UseCase`.
+- 코드 근거: `server/repository/domain/model/RepositoryMember.java`, `RepositoryMemberRole.java`, `RepositoryMember*UseCase`.
 - 테이블 근거: `REPOSITORY_MEMBER`.
 - 메모: 현재는 `Repository` 내부 Entity보다 관계 모델에 가깝다.
 

@@ -12,7 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jgitkins.server.repository.application.contract.result.RepositoryMemberSummary;
 import io.jgitkins.server.repository.application.port.in.RepositoryMemberLoadUseCase;
 import io.jgitkins.server.repository.application.port.in.RepositoryMemberManagementUseCase;
-import io.jgitkins.server.domain.model.vo.RepositoryMemberRole;
+import io.jgitkins.server.repository.domain.vo.RepositoryMemberRole;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.Test;

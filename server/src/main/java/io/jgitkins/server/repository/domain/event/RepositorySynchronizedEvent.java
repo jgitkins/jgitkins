@@ -1,9 +1,10 @@
-package io.jgitkins.server.domain.event;
+package io.jgitkins.server.repository.domain.event;
 
-import io.jgitkins.server.domain.aggregate.Repository;
-import io.jgitkins.server.domain.model.vo.RepositoryId;
-import io.jgitkins.server.domain.model.vo.RepositoryName;
-import io.jgitkins.server.domain.model.vo.RepositoryPath;
+import io.jgitkins.server.domain.event.DomainEvent;
+import io.jgitkins.server.repository.domain.aggregate.Repository;
+import io.jgitkins.server.repository.domain.vo.RepositoryId;
+import io.jgitkins.server.repository.domain.vo.RepositoryName;
+import io.jgitkins.server.repository.domain.vo.RepositoryPath;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

@@ -1,7 +1,7 @@
 package io.jgitkins.server.repository.application.contract.command;
 
 import io.jgitkins.server.domain.model.vo.OwnerType;
-import io.jgitkins.server.domain.model.vo.RepositoryVisibility;
+import io.jgitkins.server.repository.domain.vo.RepositoryVisibility;
 import lombok.Builder;
 
 @Builder

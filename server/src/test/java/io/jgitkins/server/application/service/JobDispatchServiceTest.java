@@ -21,7 +21,7 @@ import io.jgitkins.server.domain.model.vo.CommitHash;
 import io.jgitkins.server.domain.model.vo.JobHistoryId;
 import io.jgitkins.server.domain.model.vo.JobId;
 import io.jgitkins.server.domain.model.vo.JobStatus;
-import io.jgitkins.server.domain.model.vo.RepositoryId;
+import io.jgitkins.server.repository.domain.vo.RepositoryId;
 import io.jgitkins.server.domain.model.vo.RunnerScopeType;
 import io.jgitkins.server.domain.model.vo.RunnerStatus;
 import io.jgitkins.server.domain.model.vo.SequenceNumber;

@@ -88,7 +88,7 @@
         "priority": "high",
         "details": "기존 기능별 Task를 카테고리 기반(신규기능/리팩토링/보안)으로 재구성함.",
         "testStrategy": "카테고리별 우선순위에 따라 하위 작업을 순차 수행하고 회귀 테스트를 적용한다.",
-        "updatedAt": "2026-05-07T03:12:37.733Z",
+        "updatedAt": "2026-05-10T12:41:29.074Z",
         "subtasks": [
           {
             "id": 1,
@@ -426,6 +426,21 @@
             "parentTaskId": 2,
             "parentId": "2",
             "updatedAt": "2026-05-07T03:12:37.733Z"
+          },
+          {
+            "id": 29,
+            "title": "[plan][P1][server, docs] Repository Context domain aggregate/entity/VO 이관 계획 수립",
+            "description": "`Repository Context`가 소유하는 aggregate, relation model, repository, repository-prefixed VO를 `repository.domain` 하위로 정렬하는 실행 계획을 수립한다.",
+            "details": "참조 문서: `docs/modeling/contexts/repository/repository-context.md`, `docs/modeling/contexts/repository/repository-context-diagrams.md`, `.taskmaster/docs/refactor/task_2_19_plan.md`, `.taskmaster/docs/refactor/task_2_28_plan.md`. 산출물은 `.taskmaster/docs/refactor/task_2_29_plan.md`이며 다음을 포함한다. 1) `Repository`, `RepositoryRepository`, `RepositoryMember`, `RepositorySynchronizedEvent`, `RepositoryId/Name/Path/Visibility`, `RepositoryMemberRole`의 목표 패키지와 이동 기준 정리. 2) `OwnerId`, `OwnerType`, `OrganizeId`, `UserId`처럼 cross-context 성격이 있는 식별자는 이번 범위에서 유지하는 이유를 명시. 3) repository/application/shared/infrastructure/test 전반의 import 영향 범위와 점진 이관 순서 정의. 4) 문서는 간결하게 유지하되 before/after 코드 스니펫은 상세하게 제시한다.",
+            "status": "done",
+            "dependencies": [
+              19,
+              27,
+              28
+            ],
+            "parentTaskId": 2,
+            "parentId": "2",
+            "updatedAt": "2026-05-10T12:41:29.074Z"
           }
         ]
       },
@@ -525,7 +540,7 @@
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2026-05-07T03:12:37.733Z",
+      "lastModified": "2026-05-10T12:41:29.074Z",
       "taskCount": 5,
       "completedCount": 1,
       "tags": [
