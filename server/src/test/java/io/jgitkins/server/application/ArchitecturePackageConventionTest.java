@@ -118,7 +118,17 @@ class ArchitecturePackageConventionTest {
         assertNoInfrastructureImports(repositoryApplicationRoot);
     }
 
+    @Test
+    void repositoryGitAdapters_doNotImportRepositoryApplicationExceptions() throws IOException {
+        Path repositoryGitAdapterRoot = Path.of("src/main/java/io/jgitkins/server/repository/infrastructure/adapter/git");
+        assertNoImports(repositoryGitAdapterRoot, "import io.jgitkins.server.repository.application.exception.");
+    }
+
     private void assertNoInfrastructureImports(Path root) throws IOException {
+        assertNoImports(root, "import io.jgitkins.server.infrastructure.");
+    }
+
+    private void assertNoImports(Path root, String disallowedImportPrefix) throws IOException {
         try (Stream<Path> files = Files.walk(root)) {
             List<Path> javaFiles = files
                     .filter(path -> path.toString().endsWith(".java"))
@@ -126,8 +136,8 @@ class ArchitecturePackageConventionTest {
 
             for (Path javaFile : javaFiles) {
                 String source = Files.readString(javaFile);
-                assertFalse(source.lines().anyMatch(line -> line.startsWith("import io.jgitkins.server.infrastructure.")),
-                        () -> "Application source must not import infrastructure package: " + javaFile);
+                assertFalse(source.lines().anyMatch(line -> line.startsWith(disallowedImportPrefix)),
+                        () -> "Source must not import " + disallowedImportPrefix + ": " + javaFile);
             }
         }
     }

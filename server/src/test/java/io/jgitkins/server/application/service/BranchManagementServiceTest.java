@@ -3,12 +3,19 @@ package io.jgitkins.server.repository.application.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import io.jgitkins.server.repository.application.contract.command.BranchCreateCommand;
+import io.jgitkins.server.repository.application.exception.BranchAlreadyExistsException;
+import io.jgitkins.server.repository.application.exception.BranchNotFoundException;
+import io.jgitkins.server.repository.application.exception.SourceBranchNotFoundException;
 import io.jgitkins.server.repository.application.port.out.BranchGitPort;
+import io.jgitkins.server.repository.application.port.out.exception.GitBranchRefAlreadyExistsException;
+import io.jgitkins.server.repository.application.port.out.exception.GitBranchRefMissingException;
+import io.jgitkins.server.repository.application.port.out.exception.GitSourceBranchRefMissingException;
 import io.jgitkins.server.repository.application.support.branch.BranchFactory;
 import io.jgitkins.server.shared.application.support.RepositoryNamespaceResolver;
 import io.jgitkins.server.application.validate.BranchCreationValidator;
@@ -85,6 +92,44 @@ class BranchManagementServiceTest {
     }
 
     @Test
+    void createBranch_translatesGitSourceBranchRefMissingToApplicationException() {
+        Repository repository = org.mockito.Mockito.mock(Repository.class);
+        when(repository.getName()).thenReturn(RepositoryName.from("repo"));
+        when(repositoryRepository.findById(RepositoryId.of(1L))).thenReturn(Optional.of(repository));
+        when(repositoryNamespaceResolver.resolve(repository)).thenReturn("org");
+        when(repository.getId()).thenReturn(RepositoryId.of(1L));
+        when(repository.isInitialized()).thenReturn(true);
+        when(branchPort.findByRepositoryIdAndName(1L, "feature")).thenReturn(Optional.empty());
+        when(branchPort.findByRepositoryIdAndName(1L, "main"))
+                .thenReturn(Optional.of(Branch.create(1L, "main", false, true, true)));
+        doThrow(new GitSourceBranchRefMissingException("main"))
+                .when(branchGitPort).createBranch(any());
+
+        BranchCreateCommand command = new BranchCreateCommand(1L, "feature", "main", false);
+
+        assertThrows(SourceBranchNotFoundException.class, () -> service.createBranch(command));
+    }
+
+    @Test
+    void createBranch_translatesGitBranchRefAlreadyExistsToApplicationException() {
+        Repository repository = org.mockito.Mockito.mock(Repository.class);
+        when(repository.getName()).thenReturn(RepositoryName.from("repo"));
+        when(repositoryRepository.findById(RepositoryId.of(1L))).thenReturn(Optional.of(repository));
+        when(repositoryNamespaceResolver.resolve(repository)).thenReturn("org");
+        when(repository.getId()).thenReturn(RepositoryId.of(1L));
+        when(repository.isInitialized()).thenReturn(true);
+        when(branchPort.findByRepositoryIdAndName(1L, "feature")).thenReturn(Optional.empty());
+        when(branchPort.findByRepositoryIdAndName(1L, "main"))
+                .thenReturn(Optional.of(Branch.create(1L, "main", false, true, true)));
+        doThrow(new GitBranchRefAlreadyExistsException("feature"))
+                .when(branchGitPort).createBranch(any());
+
+        BranchCreateCommand command = new BranchCreateCommand(1L, "feature", "main", false);
+
+        assertThrows(BranchAlreadyExistsException.class, () -> service.createBranch(command));
+    }
+
+    @Test
     void deleteBranch_deletesInGitAndPersistenceWhenNotDefaultBranch() {
         Repository repository = org.mockito.Mockito.mock(Repository.class);
         Branch branch = Branch.create(1L, "feature");
@@ -100,6 +145,21 @@ class BranchManagementServiceTest {
         InOrder inOrder = inOrder(branchPort, branchGitPort);
         inOrder.verify(branchPort).delete(branch);
         inOrder.verify(branchGitPort).deleteBranch("org", "repo", "feature");
+    }
+
+    @Test
+    void deleteBranch_translatesGitBranchRefMissingToApplicationException() {
+        Repository repository = org.mockito.Mockito.mock(Repository.class);
+        Branch branch = Branch.create(1L, "feature");
+
+        when(repository.getName()).thenReturn(RepositoryName.from("repo"));
+        when(repositoryRepository.findById(RepositoryId.of(1L))).thenReturn(Optional.of(repository));
+        when(repositoryNamespaceResolver.resolve(repository)).thenReturn("org");
+        when(branchPort.findByRepositoryIdAndName(1L, "feature")).thenReturn(Optional.of(branch));
+        doThrow(new GitBranchRefMissingException("feature"))
+                .when(branchGitPort).deleteBranch("org", "repo", "feature");
+
+        assertThrows(BranchNotFoundException.class, () -> service.deleteBranch(1L, "feature"));
     }
 
     @Test

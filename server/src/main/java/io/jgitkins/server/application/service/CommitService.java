@@ -2,7 +2,9 @@ package io.jgitkins.server.application.service;
 
 import io.jgitkins.server.application.dto.CommitHistory;
 import io.jgitkins.server.application.port.in.CommitLoadUseCase;
+import io.jgitkins.server.repository.application.exception.CommitNotFoundException;
 import io.jgitkins.server.repository.application.port.out.CommitGitPort;
+import io.jgitkins.server.repository.application.port.out.exception.GitCommitObjectMissingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,7 +22,11 @@ public class CommitService implements CommitLoadUseCase {
     public CommitHistory getCommit(String namespace,
                                    String repoName,
                                    String commitHash) {
-        return commitGitPort.loadCommit(namespace, repoName, commitHash);
+        try {
+            return commitGitPort.loadCommit(namespace, repoName, commitHash);
+        } catch (GitCommitObjectMissingException e) {
+            throw new CommitNotFoundException(e.getCommitHash());
+        }
     }
 
     @Override

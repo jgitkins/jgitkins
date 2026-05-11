@@ -1,12 +1,18 @@
 package io.jgitkins.server.repository.infrastructure.adapter.git;
 
+import java.io.IOException;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import io.jgitkins.server.application.dto.CommitFile;
 import io.jgitkins.server.application.dto.CommitHistory;
-import io.jgitkins.server.repository.application.exception.CommitNotFoundException;
-import io.jgitkins.server.repository.application.port.out.CommitGitPort;
 import io.jgitkins.server.infrastructure.exception.CommitFailedException;
 import io.jgitkins.server.infrastructure.exception.CommitLoadFailedException;
 import io.jgitkins.server.infrastructure.support.RepositoryResolver;
+import io.jgitkins.server.repository.application.port.out.CommitGitPort;
+import io.jgitkins.server.repository.application.port.out.exception.GitCommitObjectMissingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jgit.api.Git;
@@ -14,18 +20,13 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.dircache.DirCache;
 import org.eclipse.jgit.dircache.DirCacheBuilder;
 import org.eclipse.jgit.dircache.DirCacheEntry;
+import org.eclipse.jgit.errors.IncorrectObjectTypeException;
+import org.eclipse.jgit.errors.MissingObjectException;
 import org.eclipse.jgit.lib.*;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-
-import java.io.IOException;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -38,15 +39,16 @@ public class RepositoryGitCommitAdapter implements CommitGitPort {
     public CommitHistory loadCommit(String namespace, String repoName, String commitHash) {
         try (Repository repository = repositoryResolver.openBareRepository(namespace, repoName)) {
             ObjectId commitId = repository.resolve(commitHash);
-            // TODO: refactor do not known ApplicationException from adpater
             if (commitId == null) {
-                throw new CommitNotFoundException(commitHash);
+                throw new GitCommitObjectMissingException(commitHash);
             }
 
             try (RevWalk revWalk = new RevWalk(repository)) {
                 RevCommit revCommit = revWalk.parseCommit(commitId);
                 return toHistory(revCommit);
             }
+        } catch (MissingObjectException | IncorrectObjectTypeException e) {
+            throw new GitCommitObjectMissingException(commitHash, e);
         } catch (IOException e) {
             throw new CommitLoadFailedException(
                     "Failed to load commit: " + commitHash, e);

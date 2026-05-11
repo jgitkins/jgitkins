@@ -10,6 +10,7 @@ public enum InfrastructureProblemSpec implements ProblemSpec<InfrastructureError
     FILE_LOAD_FAILED(InfrastructureErrorCode.JGIT_OPERATION_FAILED, "JGIT-500-FILE-LOAD", "File load failed", "jgit.fileLoadFailed"),
     FILE_READ_FAILED(InfrastructureErrorCode.FILESYSTEM_ACCESS_FAILED, "FS-500-FILE-READ", "File read failed", "filesystem.fileReadFailed"),
     FILESYSTEM_ACCESS_FAILED(InfrastructureErrorCode.FILESYSTEM_ACCESS_FAILED, "FS-500-ACCESS", "Filesystem access failed", "filesystem.accessFailed"),
+    HEAD_REFERENCE_RESOLVE_FAILED(InfrastructureErrorCode.JGIT_OPERATION_FAILED, "JGIT-500-HEAD-RESOLVE", "Head reference resolve failed", "jgit.headReferenceResolveFailed"),
     HEAD_REFERENCE_UPDATE_FAILED(InfrastructureErrorCode.JGIT_OPERATION_FAILED, "JGIT-500-HEAD-UPDATE", "Head reference update failed", "jgit.headReferenceUpdateFailed"),
     REPOSITORY_CREATE_FAILED(InfrastructureErrorCode.JGIT_OPERATION_FAILED, "JGIT-500-REPO-CREATE", "Repository creation failed", "jgit.repositoryCreateFailed"),
     REPOSITORY_DELETE_FAILED(InfrastructureErrorCode.FILESYSTEM_ACCESS_FAILED, "FS-500-REPO-DELETE", "Repository deletion failed", "filesystem.repositoryDeleteFailed"),

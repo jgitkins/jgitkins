@@ -3,7 +3,11 @@ package io.jgitkins.server.repository.application.support.branch;
 import io.jgitkins.server.application.validate.BranchCreationValidator;
 import io.jgitkins.server.repository.application.contract.command.BranchCreateCommand;
 import io.jgitkins.server.repository.application.contract.internal.BranchCreationContext;
+import io.jgitkins.server.repository.application.exception.BranchAlreadyExistsException;
+import io.jgitkins.server.repository.application.exception.SourceBranchNotFoundException;
 import io.jgitkins.server.repository.application.port.out.BranchGitPort;
+import io.jgitkins.server.repository.application.port.out.exception.GitBranchRefAlreadyExistsException;
+import io.jgitkins.server.repository.application.port.out.exception.GitSourceBranchRefMissingException;
 import io.jgitkins.server.repository.domain.aggregate.Repository;
 import io.jgitkins.server.repository.domain.entity.Branch;
 import io.jgitkins.server.repository.domain.repository.BranchRepository;
@@ -33,7 +37,13 @@ public class BranchFactory {
         );
 
         branchRepository.save(branch);
-        branchGitPort.createBranch(creationContext);
+        try {
+            branchGitPort.createBranch(creationContext);
+        } catch (GitSourceBranchRefMissingException e) {
+            throw new SourceBranchNotFoundException(e.getBranchName());
+        } catch (GitBranchRefAlreadyExistsException e) {
+            throw new BranchAlreadyExistsException(e.getBranchName());
+        }
         return branch;
     }
 }

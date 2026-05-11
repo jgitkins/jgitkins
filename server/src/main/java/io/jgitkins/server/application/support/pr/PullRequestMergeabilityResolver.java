@@ -1,14 +1,16 @@
 package io.jgitkins.server.application.support.pr;
 
 import io.jgitkins.server.application.dto.result.MergeResult;
-import io.jgitkins.server.repository.application.port.out.BranchGitPort;
 import io.jgitkins.server.application.port.out.MergeGitPort;
-import io.jgitkins.server.shared.application.change.MergeabilityAssessmentAssembler;
-import io.jgitkins.server.shared.application.support.RepositoryNamespaceResolver;
-import io.jgitkins.server.repository.domain.aggregate.Repository;
 import io.jgitkins.server.domain.model.changegraph.MergeabilityAssessment;
 import io.jgitkins.server.domain.pr.aggregate.PullRequest;
 import io.jgitkins.server.domain.pr.model.BranchHeadSnapshot;
+import io.jgitkins.server.repository.application.exception.BranchNotFoundException;
+import io.jgitkins.server.repository.application.port.out.BranchGitPort;
+import io.jgitkins.server.repository.application.port.out.exception.GitBranchRefMissingException;
+import io.jgitkins.server.repository.domain.aggregate.Repository;
+import io.jgitkins.server.shared.application.change.MergeabilityAssessmentAssembler;
+import io.jgitkins.server.shared.application.support.RepositoryNamespaceResolver;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -22,11 +24,11 @@ public class PullRequestMergeabilityResolver {
     private final RepositoryNamespaceResolver repositoryNamespaceResolver;
     private final MergeabilityAssessmentAssembler mergeabilityAssessmentAssembler;
 
-    public BranchHeadSnapshot currentSourceHead(Repository repository, PullRequest pullRequest) throws IOException {
+    public BranchHeadSnapshot currentSourceHead(Repository repository, PullRequest pullRequest) {
         return currentHead(repository, pullRequest.getSource().branchName().getValue());
     }
 
-    public BranchHeadSnapshot currentTargetHead(Repository repository, PullRequest pullRequest) throws IOException {
+    public BranchHeadSnapshot currentTargetHead(Repository repository, PullRequest pullRequest) {
         return currentHead(repository, pullRequest.getTarget().branchName().getValue());
     }
 
@@ -41,10 +43,14 @@ public class PullRequestMergeabilityResolver {
         return mergeabilityAssessmentAssembler.toAssessment(result);
     }
 
-    private BranchHeadSnapshot currentHead(Repository repository, String branchName) throws IOException {
+    private BranchHeadSnapshot currentHead(Repository repository, String branchName) {
         String namespace = repositoryNamespaceResolver.resolve(repository);
         String repoName = repository.getPath().getValue();
-        String commitHash = branchGitPort.getHeadCommitHash(namespace, repoName, branchName);
-        return BranchHeadSnapshot.of(branchName, commitHash);
+        try {
+            String commitHash = branchGitPort.getHeadCommitHash(namespace, repoName, branchName);
+            return BranchHeadSnapshot.of(branchName, commitHash);
+        } catch (GitBranchRefMissingException e) {
+            throw new BranchNotFoundException(e.getBranchName());
+        }
     }
 }

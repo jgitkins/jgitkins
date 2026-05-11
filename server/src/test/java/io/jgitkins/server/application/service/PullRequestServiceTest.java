@@ -9,7 +9,9 @@ import static org.mockito.Mockito.when;
 import io.jgitkins.server.application.dto.command.PullRequestCreateCommand;
 import io.jgitkins.server.application.dto.result.PullRequestDetailResult;
 import io.jgitkins.server.application.dto.result.PullRequestResult;
+import io.jgitkins.server.repository.application.exception.BranchNotFoundException;
 import io.jgitkins.server.repository.application.port.out.BranchGitPort;
+import io.jgitkins.server.repository.application.port.out.exception.GitBranchRefMissingException;
 import io.jgitkins.server.application.support.pr.PullRequestDetailMapper;
 import io.jgitkins.server.application.support.pr.PullRequestMergeabilityResolver;
 import io.jgitkins.server.application.support.pr.PullRequestResultMapper;
@@ -96,6 +98,21 @@ class PullRequestServiceTest {
         assertThat(result.getTarget().commitHash().getValue()).isEqualTo("bbbbbbb");
         verify(pullRequestRepository).save(any(PullRequest.class));
         verify(mergeabilityResolver, never()).assess(any(), any());
+    }
+
+    @Test
+    void createPullRequest_translatesMissingGitBranchRefToBranchNotFound() {
+        PullRequestCreateCommand command = new PullRequestCreateCommand("demo-org", "demo", "missing", "main");
+        Repository repository = repository();
+
+        when(repositoryLookupService.resolveByPath("demo-org", "demo")).thenReturn(Optional.of(repository));
+        when(repositoryNamespaceResolver.resolve(repository)).thenReturn("demo-org");
+        when(branchGitPort.getHeadCommitHash("demo-org", "demo", "missing"))
+                .thenThrow(new GitBranchRefMissingException("missing"));
+
+        org.junit.jupiter.api.Assertions.assertThrows(
+                BranchNotFoundException.class,
+                () -> service.createPullRequest(command));
     }
 
     @Test

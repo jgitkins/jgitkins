@@ -5,6 +5,7 @@ import io.jgitkins.server.repository.application.exception.BranchNotFoundExcepti
 import io.jgitkins.server.repository.application.exception.RepositoryNotFoundException;
 import io.jgitkins.server.repository.application.port.in.BranchManagementUseCase;
 import io.jgitkins.server.repository.application.port.out.BranchGitPort;
+import io.jgitkins.server.repository.application.port.out.exception.GitBranchRefMissingException;
 import io.jgitkins.server.repository.application.support.branch.BranchFactory;
 import io.jgitkins.server.shared.application.support.RepositoryNamespaceResolver;
 import io.jgitkins.server.application.validate.RepositoryAccessValidator;
@@ -43,11 +44,15 @@ public class BranchManagementService implements BranchManagementUseCase {
 
         branch.delete();
         branchRepository.delete(branch);
-        branchGitPort.deleteBranch(
-                context.namespace(),
-                context.repository().getName().getValue(),
-                branchName
-        );
+        try {
+            branchGitPort.deleteBranch(
+                    context.namespace(),
+                    context.repository().getName().getValue(),
+                    branchName
+            );
+        } catch (GitBranchRefMissingException e) {
+            throw new BranchNotFoundException(e.getBranchName());
+        }
     }
 
     private BranchRepositoryContext loadWriteContext(Long repositoryId) {

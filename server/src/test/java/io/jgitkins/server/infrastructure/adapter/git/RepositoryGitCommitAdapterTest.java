@@ -1,11 +1,13 @@
 package io.jgitkins.server.repository.infrastructure.adapter.git;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.jgitkins.server.application.dto.CommitFile;
 import io.jgitkins.server.application.dto.CommitHistory;
 import io.jgitkins.server.infrastructure.adapter.git.RepositoryGitFileAdapter;
 import io.jgitkins.server.infrastructure.support.RepositoryResolver;
+import io.jgitkins.server.repository.application.port.out.exception.GitCommitObjectMissingException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.List;
@@ -58,5 +60,17 @@ class RepositoryGitCommitAdapterTest {
         List<CommitHistory> histories = commitAdapter.listCommitHistory("team", "empty-repo", "main");
 
         assertThat(histories).isEmpty();
+    }
+
+    @Test
+    void loadCommit_throwsGitCommitObjectMissingWhenCommitDoesNotExist() {
+        RepositoryResolver repositoryResolver = new RepositoryResolver(tempDir.toString());
+        RepositoryGitAdapter repositoryGitAdapter = new RepositoryGitAdapter(repositoryResolver);
+        RepositoryGitCommitAdapter commitAdapter = new RepositoryGitCommitAdapter(repositoryResolver);
+
+        repositoryGitAdapter.initialize("team", "empty-repo");
+
+        assertThatThrownBy(() -> commitAdapter.loadCommit("team", "empty-repo", "deadbeef"))
+                .isInstanceOf(GitCommitObjectMissingException.class);
     }
 }
