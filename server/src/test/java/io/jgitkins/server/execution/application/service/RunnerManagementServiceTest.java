@@ -1,4 +1,4 @@
-package io.jgitkins.server.application.service;
+package io.jgitkins.server.execution.application.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -8,15 +8,15 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import io.jgitkins.server.application.common.error.ApplicationErrorCode;
-import io.jgitkins.server.application.dto.RunnerRuntimeConfig;
-import io.jgitkins.server.application.dto.command.RunnerRegisterCommand;
-import io.jgitkins.server.application.dto.result.RunnerActivateResult;
-import io.jgitkins.server.application.dto.result.RunnerRegistrationResult;
-import io.jgitkins.server.application.mapper.RunnerApplicationMapper;
+import io.jgitkins.server.execution.application.contract.result.RunnerRuntimeConfig;
+import io.jgitkins.server.execution.application.contract.command.RunnerRegisterCommand;
+import io.jgitkins.server.execution.application.contract.result.RunnerActivateResult;
+import io.jgitkins.server.execution.application.contract.result.RunnerRegistrationResult;
+import io.jgitkins.server.execution.application.mapper.RunnerApplicationMapper;
 import io.jgitkins.server.execution.domain.repository.RunnerRepository;
-import io.jgitkins.server.application.support.RunnerRuntimeConfigProvider;
+import io.jgitkins.server.execution.application.support.RunnerRuntimeConfigProvider;
 import io.jgitkins.server.common.exception.JgitkinsException;
-import io.jgitkins.server.application.exception.RunnerNotFoundException;
+import io.jgitkins.server.execution.application.exception.RunnerNotFoundException;
 import io.jgitkins.server.infrastructure.common.error.InfrastructureErrorCode;
 import io.jgitkins.server.domain.error.DomainProblemSpec;
 import io.jgitkins.server.infrastructure.exception.RunnerActivationFailedException;

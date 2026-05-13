@@ -1,6 +1,6 @@
 package io.jgitkins.server.presentation.mapper;
 
-import io.jgitkins.server.application.dto.result.RunnerDetailResult;
+import io.jgitkins.server.execution.application.contract.result.RunnerDetailResult;
 import io.jgitkins.server.presentation.dto.RunnerResponse;
 import java.util.List;
 import org.mapstruct.Mapper;

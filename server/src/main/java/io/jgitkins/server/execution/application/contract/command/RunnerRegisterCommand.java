@@ -1,4 +1,4 @@
-package io.jgitkins.server.application.dto.command;
+package io.jgitkins.server.execution.application.contract.command;
 
 import io.jgitkins.server.execution.domain.vo.RunnerScopeType;
 

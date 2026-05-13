@@ -11,12 +11,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.jgitkins.server.application.dto.RunnerExecutionConfig;
-import io.jgitkins.server.application.dto.RunnerRuntimeConfig;
-import io.jgitkins.server.application.dto.command.RunnerRegisterCommand;
-import io.jgitkins.server.application.dto.result.RunnerActivateResult;
-import io.jgitkins.server.application.dto.result.RunnerDetailResult;
-import io.jgitkins.server.application.dto.result.RunnerRegistrationResult;
+import io.jgitkins.server.execution.application.contract.result.RunnerExecutionConfig;
+import io.jgitkins.server.execution.application.contract.result.RunnerRuntimeConfig;
+import io.jgitkins.server.execution.application.contract.command.RunnerRegisterCommand;
+import io.jgitkins.server.execution.application.contract.result.RunnerActivateResult;
+import io.jgitkins.server.execution.application.contract.result.RunnerDetailResult;
+import io.jgitkins.server.execution.application.contract.result.RunnerRegistrationResult;
 import io.jgitkins.server.execution.application.port.in.RunnerActivateUseCase;
 import io.jgitkins.server.execution.application.port.in.RunnerDeleteUseCase;
 import io.jgitkins.server.execution.application.port.in.RunnerLoadUseCase;

@@ -32,7 +32,7 @@ import io.jgitkins.server.shared.application.support.RepositoryNamespaceResolver
 import io.jgitkins.server.repository.application.support.membership.RepositoryMembershipFactory;
 import io.jgitkins.server.repository.application.support.ownership.RepositoryOwnershipPolicy;
 import io.jgitkins.server.repository.application.support.provisioning.RepositoryProvisioner;
-import io.jgitkins.server.application.support.RunnerRuntimeConfigProvider;
+import io.jgitkins.server.execution.application.support.RunnerRuntimeConfigProvider;
 import io.jgitkins.server.application.support.UserService;
 import io.jgitkins.server.repository.application.support.GitRepositoryAccessService;
 import io.jgitkins.server.repository.application.support.RepositoryLookupService;

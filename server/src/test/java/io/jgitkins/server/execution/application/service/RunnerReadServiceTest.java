@@ -1,4 +1,4 @@
-package io.jgitkins.server.application.service;
+package io.jgitkins.server.execution.application.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -7,9 +7,9 @@ import static org.mockito.Mockito.when;
 
 import io.jgitkins.server.common.exception.JgitkinsException;
 import io.jgitkins.server.application.common.error.ApplicationErrorCode;
-import io.jgitkins.server.application.exception.RunnerNotFoundException;
-import io.jgitkins.server.application.dto.result.RunnerDetailResult;
-import io.jgitkins.server.application.mapper.RunnerApplicationMapper;
+import io.jgitkins.server.execution.application.exception.RunnerNotFoundException;
+import io.jgitkins.server.execution.application.contract.result.RunnerDetailResult;
+import io.jgitkins.server.execution.application.mapper.RunnerApplicationMapper;
 import io.jgitkins.server.execution.domain.repository.RunnerRepository;
 import io.jgitkins.server.execution.domain.aggregate.Runner;
 import io.jgitkins.server.execution.domain.vo.RunnerScopeType;

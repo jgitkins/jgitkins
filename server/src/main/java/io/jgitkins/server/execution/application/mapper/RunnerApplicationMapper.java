@@ -1,7 +1,7 @@
-package io.jgitkins.server.application.mapper;
+package io.jgitkins.server.execution.application.mapper;
 
-import io.jgitkins.server.application.dto.result.RunnerDetailResult;
-import io.jgitkins.server.application.dto.result.RunnerRegistrationResult;
+import io.jgitkins.server.execution.application.contract.result.RunnerDetailResult;
+import io.jgitkins.server.execution.application.contract.result.RunnerRegistrationResult;
 import io.jgitkins.server.execution.domain.aggregate.Runner;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
