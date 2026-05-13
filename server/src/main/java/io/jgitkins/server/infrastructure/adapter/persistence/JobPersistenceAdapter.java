@@ -2,9 +2,10 @@ package io.jgitkins.server.infrastructure.adapter.persistence;
 
 import io.jgitkins.server.application.dto.DispatchableJob;
 import io.jgitkins.server.application.dto.RunnerDispatchContext;
-import io.jgitkins.server.application.port.out.JobPersistencePort;
+import io.jgitkins.server.execution.application.port.out.JobDispatchQueryPort;
 import io.jgitkins.server.execution.domain.aggregate.Job;
 import io.jgitkins.server.execution.domain.entity.JobHistory;
+import io.jgitkins.server.execution.domain.repository.JobRepository;
 import io.jgitkins.server.infrastructure.common.error.InfrastructureErrorCode;
 import io.jgitkins.server.infrastructure.exception.InfrastructureException;
 import io.jgitkins.server.infrastructure.mapper.JobDomainMapper;
@@ -23,7 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @RequiredArgsConstructor
-public class JobPersistenceAdapter implements JobPersistencePort {
+public class JobPersistenceAdapter implements JobRepository, JobDispatchQueryPort {
 
     private final JobDispatchQueryMapper jobDispatchQueryMapper;
     private final JobEntityMbgMapper jobEntityMbgMapper;
@@ -85,7 +86,7 @@ public class JobPersistenceAdapter implements JobPersistencePort {
 
     @Override
     @Transactional
-    public Optional<Long> saveHistory(Job job, JobHistory previousHistory) {
+    public Optional<Long> appendHistoryIfCurrent(Job job, JobHistory previousHistory) {
         try {
             // Optimistic locking: check if the previous history is still the latest
             Long jobIdLong = Long.parseLong(job.getId().getValue());

@@ -1,6 +1,6 @@
 package io.jgitkins.server.infrastructure.adapter.persistence;
 
-import io.jgitkins.server.application.port.out.RunnerPersistencePort;
+import io.jgitkins.server.execution.domain.repository.RunnerRepository;
 import io.jgitkins.server.execution.domain.aggregate.Runner;
 import org.springframework.context.annotation.Profile;
 
@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Profile("test")
-public class FakeRunnerPersistenceAdapter implements RunnerPersistencePort {
+public class FakeRunnerPersistenceAdapter implements RunnerRepository {
 
     @Override
     public Runner save(Runner runner) {
@@ -18,11 +18,6 @@ public class FakeRunnerPersistenceAdapter implements RunnerPersistencePort {
     @Override
     public void deleteById(Long runnerId) {
 
-    }
-
-    @Override
-    public Runner update(Runner runner) {
-        return null;
     }
 
     @Override

@@ -10,7 +10,7 @@ import io.jgitkins.server.application.common.error.ApplicationErrorCode;
 import io.jgitkins.server.application.exception.RunnerNotFoundException;
 import io.jgitkins.server.application.dto.result.RunnerDetailResult;
 import io.jgitkins.server.application.mapper.RunnerApplicationMapper;
-import io.jgitkins.server.application.port.out.RunnerPersistencePort;
+import io.jgitkins.server.execution.domain.repository.RunnerRepository;
 import io.jgitkins.server.execution.domain.aggregate.Runner;
 import io.jgitkins.server.execution.domain.vo.RunnerScopeType;
 import io.jgitkins.server.execution.domain.vo.RunnerStatus;
@@ -30,7 +30,7 @@ class RunnerReadServiceTest {
     private RunnerApplicationMapper runnerApplicationMapper;
 
     @Mock
-    private RunnerPersistencePort runnerPort;
+    private RunnerRepository runnerPort;
 
     @InjectMocks
     private RunnerReadService service;

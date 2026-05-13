@@ -1,4 +1,4 @@
-package io.jgitkins.server.application.port.out;
+package io.jgitkins.server.execution.application.port.out;
 
 import io.jgitkins.server.application.dto.pipeline.PipelineConfig;
 

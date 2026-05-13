@@ -1,7 +1,7 @@
 package io.jgitkins.server.infrastructure.adapter.persistence;
 
-import io.jgitkins.server.application.port.out.RunnerPersistencePort;
 import io.jgitkins.server.execution.domain.aggregate.Runner;
+import io.jgitkins.server.execution.domain.repository.RunnerRepository;
 import io.jgitkins.server.execution.domain.vo.RunnerScopeType;
 import io.jgitkins.server.infrastructure.common.error.InfrastructureErrorCode;
 import io.jgitkins.server.infrastructure.exception.InfrastructureException;
@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
-public class RunnerPersistenceAdapter implements RunnerPersistencePort {
+public class RunnerPersistenceAdapter implements RunnerRepository {
 
     private final RunnerEntityMbgMapper runnerEntityMbgMapper;
     private final RunnerAssignmentEntityMbgMapper runnerAssignmentEntityMbgMapper;
@@ -64,19 +64,6 @@ public class RunnerPersistenceAdapter implements RunnerPersistencePort {
         } catch (Exception e) {
             throw new InfrastructureException(InfrastructureErrorCode.PERSISTENCE_OPERATION_FAILED,
                     "Database operation failed during delete runner", e);
-        }
-    }
-
-    @Override
-    public Runner update(Runner runner) {
-        try {
-            RunnerEntity entity = runnerDomainMapper.toEntity(runner);
-            runnerEntityMbgMapper.updateByPrimaryKeySelective(entity);
-            RunnerEntity updated = runnerEntityMbgMapper.selectByPrimaryKey(runner.getId());
-            return restoreRunner(updated);
-        } catch (Exception e) {
-            throw new InfrastructureException(InfrastructureErrorCode.PERSISTENCE_OPERATION_FAILED,
-                    "Database operation failed during update runner", e);
         }
     }
 

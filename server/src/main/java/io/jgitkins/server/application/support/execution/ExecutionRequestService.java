@@ -3,7 +3,7 @@ package io.jgitkins.server.application.support.execution;
 import io.jgitkins.server.application.dto.command.JobCreateCommand;
 import io.jgitkins.server.application.dto.command.PushEventCommand;
 import io.jgitkins.server.application.dto.result.JobPlan;
-import io.jgitkins.server.application.port.in.JobCreateUseCase;
+import io.jgitkins.server.execution.application.port.in.JobCreateUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

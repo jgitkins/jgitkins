@@ -1,4 +1,4 @@
-package io.jgitkins.server.application.port.in;
+package io.jgitkins.server.execution.application.port.in;
 
 import io.jgitkins.server.application.dto.result.RunnerDetailResult;
 import java.util.List;

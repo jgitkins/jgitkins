@@ -6,7 +6,7 @@ import static org.mockito.Mockito.verify;
 import io.jgitkins.server.application.dto.command.JobCreateCommand;
 import io.jgitkins.server.application.dto.command.PushEventCommand;
 import io.jgitkins.server.application.dto.result.JobPlan;
-import io.jgitkins.server.application.port.in.JobCreateUseCase;
+import io.jgitkins.server.execution.application.port.in.JobCreateUseCase;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;

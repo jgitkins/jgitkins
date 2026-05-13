@@ -5,13 +5,14 @@ import io.jgitkins.server.application.dto.JobDispatchScope;
 import io.jgitkins.server.application.dto.RunnerDispatchContext;
 import io.jgitkins.server.application.dto.command.DispatchJobCommand;
 import io.jgitkins.server.application.dto.result.JobDispatchResult;
-import io.jgitkins.server.application.port.in.JobDispatchUseCase;
-import io.jgitkins.server.application.port.out.JobPersistencePort;
-import io.jgitkins.server.application.port.out.RunnerPersistencePort;
+import io.jgitkins.server.execution.application.port.in.JobDispatchUseCase;
+import io.jgitkins.server.execution.application.port.out.JobDispatchQueryPort;
 import io.jgitkins.server.application.support.CloneUrlBuilder;
 import io.jgitkins.server.execution.domain.aggregate.Job;
 import io.jgitkins.server.execution.domain.aggregate.Runner;
 import io.jgitkins.server.execution.domain.entity.JobHistory;
+import io.jgitkins.server.execution.domain.repository.JobRepository;
+import io.jgitkins.server.execution.domain.repository.RunnerRepository;
 import io.jgitkins.server.execution.domain.vo.RunnerId;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -25,8 +26,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class JobDispatchService implements JobDispatchUseCase {
 
-    private final JobPersistencePort jobPort;
-    private final RunnerPersistencePort runnerPort;
+    private final JobDispatchQueryPort jobDispatchQueryPort;
+    private final JobRepository jobRepository;
+    private final RunnerRepository runnerRepository;
     private final CloneUrlBuilder cloneUrlBuilder;
 
     @Override
@@ -37,7 +39,7 @@ public class JobDispatchService implements JobDispatchUseCase {
             return Optional.empty();
         }
 
-        Optional<DispatchableJob> dispatchedJob = jobPort.findNextDispatchableJob(runnerContext.get());
+        Optional<DispatchableJob> dispatchedJob = jobDispatchQueryPort.findNextDispatchableJob(runnerContext.get());
         if (dispatchedJob.isEmpty()) {
             return Optional.empty();
         }
@@ -51,7 +53,7 @@ public class JobDispatchService implements JobDispatchUseCase {
             return Optional.empty();
         }
 
-        Optional<Runner> runner = runnerPort.findByToken(runnerToken);
+        Optional<Runner> runner = runnerRepository.findByToken(runnerToken);
         if (runner.isEmpty()) {
             log.warn("Runner not found for token={}", runnerToken);
             return Optional.empty();
@@ -75,7 +77,7 @@ public class JobDispatchService implements JobDispatchUseCase {
         RunnerId runnerId = RunnerId.of(String.valueOf(runnerContext.runnerId()));
         job.publish(runnerId);
 
-        Optional<Long> historyId = jobPort.saveHistory(job, previousHistory);
+        Optional<Long> historyId = jobRepository.appendHistoryIfCurrent(job, previousHistory);
         if (historyId.isEmpty()) {
             log.debug("Job {} was already processed by another dispatcher", job.getId().getValue());
             return Optional.empty();

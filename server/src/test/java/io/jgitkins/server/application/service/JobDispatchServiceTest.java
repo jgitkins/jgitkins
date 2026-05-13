@@ -10,8 +10,9 @@ import io.jgitkins.server.application.dto.DispatchableJob;
 import io.jgitkins.server.application.dto.RunnerDispatchContext;
 import io.jgitkins.server.application.dto.command.DispatchJobCommand;
 import io.jgitkins.server.application.dto.result.JobDispatchResult;
-import io.jgitkins.server.application.port.out.JobPersistencePort;
-import io.jgitkins.server.application.port.out.RunnerPersistencePort;
+import io.jgitkins.server.execution.application.port.out.JobDispatchQueryPort;
+import io.jgitkins.server.execution.domain.repository.JobRepository;
+import io.jgitkins.server.execution.domain.repository.RunnerRepository;
 import io.jgitkins.server.application.support.CloneUrlBuilder;
 import io.jgitkins.server.execution.domain.aggregate.Job;
 import io.jgitkins.server.execution.domain.aggregate.Runner;
@@ -40,10 +41,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class JobDispatchServiceTest {
 
     @Mock
-    private JobPersistencePort jobPort;
+    private JobDispatchQueryPort jobDispatchQueryPort;
 
     @Mock
-    private RunnerPersistencePort runnerPort;
+    private JobRepository jobRepository;
+
+    @Mock
+    private RunnerRepository runnerPort;
 
     @Mock
     private CloneUrlBuilder cloneUrlBuilder;
@@ -58,7 +62,7 @@ class JobDispatchServiceTest {
         Optional<JobDispatchResult> result = service.dispatch(command);
 
         assertThat(result).isEmpty();
-        verifyNoInteractions(runnerPort, jobPort, cloneUrlBuilder);
+        verifyNoInteractions(runnerPort, jobDispatchQueryPort, jobRepository, cloneUrlBuilder);
     }
 
     @Test
@@ -70,7 +74,7 @@ class JobDispatchServiceTest {
 
         assertThat(result).isEmpty();
         verify(runnerPort).findByToken("token");
-        verifyNoInteractions(jobPort, cloneUrlBuilder);
+        verifyNoInteractions(jobDispatchQueryPort, jobRepository, cloneUrlBuilder);
     }
 
     @Test
@@ -79,13 +83,13 @@ class JobDispatchServiceTest {
         Runner runner = runner(7L);
 
         when(runnerPort.findByToken("token")).thenReturn(Optional.of(runner));
-        when(jobPort.findNextDispatchableJob(any(RunnerDispatchContext.class))).thenReturn(Optional.empty());
+        when(jobDispatchQueryPort.findNextDispatchableJob(any(RunnerDispatchContext.class))).thenReturn(Optional.empty());
 
         Optional<JobDispatchResult> result = service.dispatch(command);
 
         assertThat(result).isEmpty();
         verify(runnerPort).findByToken("token");
-        verify(jobPort).findNextDispatchableJob(any(RunnerDispatchContext.class));
+        verify(jobDispatchQueryPort).findNextDispatchableJob(any(RunnerDispatchContext.class));
         verifyNoInteractions(cloneUrlBuilder);
     }
 
@@ -96,8 +100,8 @@ class JobDispatchServiceTest {
         DispatchableJob dispatchableJob = dispatchableJob(101L, 55L, "org/repo.git");
 
         when(runnerPort.findByToken("token")).thenReturn(Optional.of(runner));
-        when(jobPort.findNextDispatchableJob(any(RunnerDispatchContext.class))).thenReturn(Optional.of(dispatchableJob));
-        when(jobPort.saveHistory(any(Job.class), any(JobHistory.class))).thenReturn(Optional.of(999L));
+        when(jobDispatchQueryPort.findNextDispatchableJob(any(RunnerDispatchContext.class))).thenReturn(Optional.of(dispatchableJob));
+        when(jobRepository.appendHistoryIfCurrent(any(Job.class), any(JobHistory.class))).thenReturn(Optional.of(999L));
         when(cloneUrlBuilder.build("org/repo.git")).thenReturn("https://git.example/org/repo.git");
 
         Optional<JobDispatchResult> result = service.dispatch(command);
@@ -113,7 +117,7 @@ class JobDispatchServiceTest {
         assertThat(result.get().triggeredBy()).isEqualTo(3L);
         assertThat(result.get().cloneUrl()).isEqualTo("https://git.example/org/repo.git");
 
-        verify(jobPort).saveHistory(any(Job.class), any(JobHistory.class));
+        verify(jobRepository).appendHistoryIfCurrent(any(Job.class), any(JobHistory.class));
         verify(cloneUrlBuilder).build("org/repo.git");
     }
 
@@ -124,13 +128,13 @@ class JobDispatchServiceTest {
         DispatchableJob dispatchableJob = dispatchableJob(101L, 55L, "org/repo.git");
 
         when(runnerPort.findByToken("token")).thenReturn(Optional.of(runner));
-        when(jobPort.findNextDispatchableJob(any(RunnerDispatchContext.class))).thenReturn(Optional.of(dispatchableJob));
-        when(jobPort.saveHistory(any(Job.class), any(JobHistory.class))).thenReturn(Optional.empty());
+        when(jobDispatchQueryPort.findNextDispatchableJob(any(RunnerDispatchContext.class))).thenReturn(Optional.of(dispatchableJob));
+        when(jobRepository.appendHistoryIfCurrent(any(Job.class), any(JobHistory.class))).thenReturn(Optional.empty());
 
         Optional<JobDispatchResult> result = service.dispatch(command);
 
         assertThat(result).isEmpty();
-        verify(jobPort).saveHistory(any(Job.class), any(JobHistory.class));
+        verify(jobRepository).appendHistoryIfCurrent(any(Job.class), any(JobHistory.class));
         verifyNoInteractions(cloneUrlBuilder);
     }
 

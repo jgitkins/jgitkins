@@ -2,12 +2,12 @@ package io.jgitkins.server.application.service;
 
 import io.jgitkins.server.application.dto.JobResultStatus;
 import io.jgitkins.server.application.dto.command.JobResultReportCommand;
-import io.jgitkins.server.application.port.in.JobResultReportUseCase;
-import io.jgitkins.server.application.port.out.JobPersistencePort;
-import io.jgitkins.server.application.port.out.RunnerPersistencePort;
+import io.jgitkins.server.execution.application.port.in.JobResultReportUseCase;
 import io.jgitkins.server.execution.domain.aggregate.Job;
 import io.jgitkins.server.execution.domain.aggregate.Runner;
 import io.jgitkins.server.execution.domain.entity.JobHistory;
+import io.jgitkins.server.execution.domain.repository.JobRepository;
+import io.jgitkins.server.execution.domain.repository.RunnerRepository;
 import io.jgitkins.server.execution.domain.vo.RunnerId;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,16 +21,16 @@ import java.util.Optional;
 @Slf4j
 public class JobResultReportService implements JobResultReportUseCase {
 
-    private final JobPersistencePort jobPort;
-    private final RunnerPersistencePort runnerPort;
+    private final JobRepository jobRepository;
+    private final RunnerRepository runnerRepository;
 
     @Override
     @Transactional
     public void reportJobResult(JobResultReportCommand command) {
-        Runner runner = runnerPort.findByToken(command.runnerToken())
+        Runner runner = runnerRepository.findByToken(command.runnerToken())
                                        .orElseThrow(() -> new IllegalArgumentException("Runner not found for token"));
 
-        Job job = jobPort.findById(command.jobId())
+        Job job = jobRepository.findById(command.jobId())
                               .orElseThrow(() -> new IllegalArgumentException("Job not found for id " + command.jobId()));
 
         JobHistory previousHistory = job.getLatestHistory();
@@ -42,7 +42,7 @@ public class JobResultReportService implements JobResultReportUseCase {
             job.completeFailure(runnerId);
         }
 
-        Optional<Long> persistedId = jobPort.saveHistory(job, previousHistory);
+        Optional<Long> persistedId = jobRepository.appendHistoryIfCurrent(job, previousHistory);
         if (persistedId.isEmpty()) {
             throw new IllegalStateException("Failed to persist job result history for job " + command.jobId());
         }

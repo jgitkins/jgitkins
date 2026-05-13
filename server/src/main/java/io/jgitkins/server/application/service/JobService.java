@@ -1,11 +1,11 @@
 package io.jgitkins.server.application.service;
 
 import io.jgitkins.server.application.dto.command.JobCreateCommand;
-import io.jgitkins.server.application.port.in.JobCreateUseCase;
-import io.jgitkins.server.application.port.out.JobPersistencePort;
+import io.jgitkins.server.execution.application.port.in.JobCreateUseCase;
 import io.jgitkins.server.execution.domain.aggregate.Job;
 import io.jgitkins.server.domain.model.vo.BranchName;
 import io.jgitkins.server.domain.model.vo.CommitHash;
+import io.jgitkins.server.execution.domain.repository.JobRepository;
 import io.jgitkins.server.repository.domain.vo.RepositoryId;
 import io.jgitkins.server.domain.model.vo.UserId;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class JobService implements JobCreateUseCase {
 
-    private final JobPersistencePort jobPort;
+    private final JobRepository jobRepository;
 
     @Override
     @Transactional
@@ -31,7 +31,7 @@ public class JobService implements JobCreateUseCase {
                              BranchName.of(command.branchName()),
                              UserId.of(command.triggeredBy()));
 
-        jobPort.save(job);
+        jobRepository.save(job);
 
         log.info("Job created successfully. JobId: {}", job.getId());
 

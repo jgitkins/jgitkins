@@ -9,7 +9,7 @@ import io.jgitkins.server.application.dto.result.JobPlan;
 import io.jgitkins.server.application.dto.result.PipelineSkipReason;
 import io.jgitkins.server.application.dto.support.PushJobPlanRequest;
 import io.jgitkins.server.application.port.out.FileGitPort;
-import io.jgitkins.server.application.port.out.PipelineConfigPort;
+import io.jgitkins.server.execution.application.port.out.PipelineConfigPort;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
