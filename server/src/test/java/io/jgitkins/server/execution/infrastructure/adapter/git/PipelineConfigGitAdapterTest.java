@@ -1,4 +1,4 @@
-package io.jgitkins.server.infrastructure.adapter.git;
+package io.jgitkins.server.execution.infrastructure.adapter.git;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;

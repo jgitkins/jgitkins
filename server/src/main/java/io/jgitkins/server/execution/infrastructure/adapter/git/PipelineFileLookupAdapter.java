@@ -1,4 +1,4 @@
-package io.jgitkins.server.infrastructure.adapter.git;
+package io.jgitkins.server.execution.infrastructure.adapter.git;
 
 import io.jgitkins.server.application.port.out.FileGitPort;
 import io.jgitkins.server.execution.application.port.out.PipelineFileLookupPort;

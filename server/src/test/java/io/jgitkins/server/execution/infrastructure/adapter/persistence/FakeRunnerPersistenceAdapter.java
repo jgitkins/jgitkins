@@ -1,4 +1,4 @@
-package io.jgitkins.server.infrastructure.adapter.persistence;
+package io.jgitkins.server.execution.infrastructure.adapter.persistence;
 
 import io.jgitkins.server.execution.domain.repository.RunnerRepository;
 import io.jgitkins.server.execution.domain.aggregate.Runner;

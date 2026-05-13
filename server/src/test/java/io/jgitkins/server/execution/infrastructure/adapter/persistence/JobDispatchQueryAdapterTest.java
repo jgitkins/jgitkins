@@ -1,4 +1,4 @@
-package io.jgitkins.server.infrastructure.adapter.persistence;
+package io.jgitkins.server.execution.infrastructure.adapter.persistence;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -11,7 +11,7 @@ import io.jgitkins.server.execution.application.contract.internal.JobDispatchSco
 import io.jgitkins.server.execution.application.contract.internal.RunnerDispatchContext;
 import io.jgitkins.server.execution.domain.aggregate.Job;
 import io.jgitkins.server.execution.domain.entity.JobHistory;
-import io.jgitkins.server.infrastructure.mapper.JobDomainMapper;
+import io.jgitkins.server.execution.infrastructure.mapper.JobDomainMapper;
 import io.jgitkins.server.infrastructure.persistence.mapper.JobDispatchQueryMapper;
 import io.jgitkins.server.infrastructure.persistence.mapper.JobEntityMbgMapper;
 import io.jgitkins.server.infrastructure.persistence.mapper.JobHistoryEntityMbgMapper;
@@ -26,7 +26,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class JobPersistenceAdapterTest {
+class JobDispatchQueryAdapterTest {
 
     @Mock
     private JobDispatchQueryMapper jobDispatchQueryMapper;
@@ -41,7 +41,7 @@ class JobPersistenceAdapterTest {
     private JobDomainMapper jobDomainMapper;
 
     @InjectMocks
-    private JobPersistenceAdapter adapter;
+    private JobDispatchQueryAdapter adapter;
 
     @Test
     void findNextDispatchableJob_returnsPendingJobWithinRunnerScope() {

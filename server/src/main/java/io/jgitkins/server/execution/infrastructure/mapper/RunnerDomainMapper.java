@@ -1,4 +1,4 @@
-package io.jgitkins.server.infrastructure.mapper;
+package io.jgitkins.server.execution.infrastructure.mapper;
 
 import io.jgitkins.server.execution.domain.aggregate.Runner;
 import io.jgitkins.server.execution.domain.vo.RunnerScopeType;

@@ -1,4 +1,4 @@
-package io.jgitkins.server.infrastructure.mapper;
+package io.jgitkins.server.execution.infrastructure.mapper;
 
 import io.jgitkins.server.execution.domain.aggregate.Job;
 import io.jgitkins.server.execution.domain.entity.JobHistory;

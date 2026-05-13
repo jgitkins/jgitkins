@@ -1,12 +1,12 @@
-package io.jgitkins.server.infrastructure.adapter.persistence;
+package io.jgitkins.server.execution.infrastructure.adapter.persistence;
 
 import io.jgitkins.server.execution.domain.aggregate.Runner;
 import io.jgitkins.server.execution.domain.repository.RunnerRepository;
 import io.jgitkins.server.execution.domain.vo.RunnerScopeType;
 import io.jgitkins.server.infrastructure.common.error.InfrastructureErrorCode;
 import io.jgitkins.server.infrastructure.exception.InfrastructureException;
-import io.jgitkins.server.infrastructure.mapper.RunnerAssignmentDomainMapper;
-import io.jgitkins.server.infrastructure.mapper.RunnerDomainMapper;
+import io.jgitkins.server.execution.infrastructure.mapper.RunnerAssignmentDomainMapper;
+import io.jgitkins.server.execution.infrastructure.mapper.RunnerDomainMapper;
 import io.jgitkins.server.infrastructure.persistence.mapper.RunnerAssignmentEntityMbgMapper;
 import io.jgitkins.server.infrastructure.persistence.mapper.RunnerEntityMbgMapper;
 import io.jgitkins.server.infrastructure.persistence.model.RunnerAssignmentEntity;

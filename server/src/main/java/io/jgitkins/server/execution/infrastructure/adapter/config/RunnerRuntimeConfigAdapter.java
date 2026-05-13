@@ -1,4 +1,4 @@
-package io.jgitkins.server.infrastructure.adapter.config;
+package io.jgitkins.server.execution.infrastructure.adapter.config;
 
 import io.jgitkins.server.application.port.out.RuntimeConfigPort;
 import io.jgitkins.server.infrastructure.config.RunnerRuntimeProperties;
