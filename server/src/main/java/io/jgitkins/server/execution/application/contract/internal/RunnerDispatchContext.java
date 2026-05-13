@@ -1,4 +1,4 @@
-package io.jgitkins.server.application.dto;
+package io.jgitkins.server.execution.application.contract.internal;
 
 public record RunnerDispatchContext(Long runnerId,
                                     JobDispatchScope dispatchScope,

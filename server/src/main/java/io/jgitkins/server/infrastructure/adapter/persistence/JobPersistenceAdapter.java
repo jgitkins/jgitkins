@@ -1,7 +1,7 @@
 package io.jgitkins.server.infrastructure.adapter.persistence;
 
-import io.jgitkins.server.application.dto.DispatchableJob;
-import io.jgitkins.server.application.dto.RunnerDispatchContext;
+import io.jgitkins.server.execution.application.contract.internal.DispatchableJob;
+import io.jgitkins.server.execution.application.contract.internal.RunnerDispatchContext;
 import io.jgitkins.server.execution.application.port.out.JobDispatchQueryPort;
 import io.jgitkins.server.execution.domain.aggregate.Job;
 import io.jgitkins.server.execution.domain.entity.JobHistory;

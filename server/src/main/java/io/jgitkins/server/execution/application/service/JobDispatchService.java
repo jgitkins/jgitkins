@@ -1,10 +1,10 @@
-package io.jgitkins.server.application.service;
+package io.jgitkins.server.execution.application.service;
 
-import io.jgitkins.server.application.dto.DispatchableJob;
-import io.jgitkins.server.application.dto.JobDispatchScope;
-import io.jgitkins.server.application.dto.RunnerDispatchContext;
-import io.jgitkins.server.application.dto.command.DispatchJobCommand;
-import io.jgitkins.server.application.dto.result.JobDispatchResult;
+import io.jgitkins.server.execution.application.contract.internal.DispatchableJob;
+import io.jgitkins.server.execution.application.contract.internal.JobDispatchScope;
+import io.jgitkins.server.execution.application.contract.internal.RunnerDispatchContext;
+import io.jgitkins.server.execution.application.contract.command.DispatchJobCommand;
+import io.jgitkins.server.execution.application.contract.result.JobDispatchResult;
 import io.jgitkins.server.execution.application.port.in.JobDispatchUseCase;
 import io.jgitkins.server.execution.application.port.out.JobDispatchQueryPort;
 import io.jgitkins.server.application.support.CloneUrlBuilder;

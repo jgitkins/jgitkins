@@ -1,6 +1,6 @@
-package io.jgitkins.server.application.service;
+package io.jgitkins.server.execution.application.service;
 
-import io.jgitkins.server.application.dto.command.JobCreateCommand;
+import io.jgitkins.server.execution.application.contract.command.JobCreateCommand;
 import io.jgitkins.server.execution.application.port.in.JobCreateUseCase;
 import io.jgitkins.server.execution.domain.aggregate.Job;
 import io.jgitkins.server.domain.model.vo.BranchName;

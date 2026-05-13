@@ -7,8 +7,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-import io.jgitkins.server.application.dto.JobDispatchScope;
-import io.jgitkins.server.application.dto.RunnerDispatchContext;
+import io.jgitkins.server.execution.application.contract.internal.JobDispatchScope;
+import io.jgitkins.server.execution.application.contract.internal.RunnerDispatchContext;
 import io.jgitkins.server.execution.domain.aggregate.Job;
 import io.jgitkins.server.execution.domain.entity.JobHistory;
 import io.jgitkins.server.infrastructure.mapper.JobDomainMapper;
