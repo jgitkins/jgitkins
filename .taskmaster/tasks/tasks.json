@@ -88,7 +88,7 @@
         "priority": "high",
         "details": "기존 기능별 Task를 카테고리 기반(신규기능/리팩토링/보안)으로 재구성함.",
         "testStrategy": "카테고리별 우선순위에 따라 하위 작업을 순차 수행하고 회귀 테스트를 적용한다.",
-        "updatedAt": "2026-05-11T14:55:50.596Z",
+        "updatedAt": "2026-05-13T13:52:01.557Z",
         "subtasks": [
           {
             "id": 1,
@@ -312,13 +312,14 @@
             "title": "[plan][P2][server, docs] Execution Context 기준 리팩토링 계획 수립",
             "description": "`Job`, `JobHistory`, `Runner`, dispatch orchestration, pipeline policy 소비 경계를 문서 기준으로 재정렬하는 실행 계획을 수립한다.",
             "details": "참조 문서: `docs/modeling/contexts/execution/execution-context.md`. 산출물은 `.taskmaster/docs/refactor/task_2_20_plan.md`이며 다음을 포함한다. 1) `Job Aggregate`, `JobHistory Entity`, `Runner Aggregate` 기준의 서비스/포트 재배치안. 2) `PushEventHandleService`, `ExecutionRequestService`, `PushJobCreationPolicy`의 경계 재정의. 3) pipeline policy가 aggregate가 아닌 application-level policy라는 현재 판단 반영. 4) dispatch/result report/runner activation 테스트 전략 정리.",
-            "status": "pending",
+            "status": "in-progress",
             "dependencies": [
               18,
               19
             ],
             "parentTaskId": 2,
-            "parentId": "2"
+            "parentId": "2",
+            "updatedAt": "2026-05-13T13:52:01.557Z"
           },
           {
             "id": 21,
@@ -571,7 +572,7 @@
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2026-05-11T14:55:50.600Z",
+      "lastModified": "2026-05-13T13:52:01.559Z",
       "taskCount": 5,
       "completedCount": 1,
       "tags": [
