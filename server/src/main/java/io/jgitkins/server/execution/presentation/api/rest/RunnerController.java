@@ -1,4 +1,4 @@
-package io.jgitkins.server.presentation.api.rest;
+package io.jgitkins.server.execution.presentation.api.rest;
 
 import io.jgitkins.server.execution.application.contract.result.RunnerActivateResult;
 import io.jgitkins.server.execution.application.contract.result.RunnerDetailResult;
@@ -9,11 +9,11 @@ import io.jgitkins.server.execution.application.port.in.RunnerDeleteUseCase;
 import io.jgitkins.server.execution.application.port.in.RunnerLoadUseCase;
 import io.jgitkins.server.execution.application.port.in.RunnerRegisterUseCase;
 import io.jgitkins.server.presentation.common.ApiResponse;
-import io.jgitkins.server.presentation.dto.RunnerActivateRequest;
-import io.jgitkins.server.presentation.dto.RunnerCreateRequest;
-import io.jgitkins.server.presentation.dto.RunnerResponse;
-import io.jgitkins.server.presentation.mapper.RunnerRequestMapper;
-import io.jgitkins.server.presentation.mapper.RunnerResponseMapper;
+import io.jgitkins.server.execution.presentation.dto.RunnerActivateRequest;
+import io.jgitkins.server.execution.presentation.dto.RunnerCreateRequest;
+import io.jgitkins.server.execution.presentation.dto.RunnerResponse;
+import io.jgitkins.server.execution.presentation.mapper.RunnerRequestMapper;
+import io.jgitkins.server.execution.presentation.mapper.RunnerResponseMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;

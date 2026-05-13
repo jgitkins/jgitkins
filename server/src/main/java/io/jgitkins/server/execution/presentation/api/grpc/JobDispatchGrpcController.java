@@ -1,4 +1,4 @@
-package io.jgitkins.server.presentation.api.grpc;
+package io.jgitkins.server.execution.presentation.api.grpc;
 
 import io.grpc.stub.StreamObserver;
 import io.jgitkins.server.execution.application.contract.command.JobResultReportCommand;

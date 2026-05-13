@@ -1,4 +1,4 @@
-package io.jgitkins.server.presentation.dto;
+package io.jgitkins.server.execution.presentation.dto;
 
 import io.jgitkins.server.execution.domain.vo.RunnerScopeType;
 import jakarta.validation.constraints.NotBlank;
