@@ -1,15 +1,15 @@
-package io.jgitkins.server.shared.application.policy;
+package io.jgitkins.server.execution.application.policy;
 
-import static io.jgitkins.server.application.dto.result.PipelineSkipReason.SKIPPED_NO_RULE;
-import static io.jgitkins.server.application.dto.result.PipelineSkipReason.SKIPPED_PIPELINE_NOT_FOUND;
+import static io.jgitkins.server.execution.application.contract.result.PipelineSkipReason.SKIPPED_NO_RULE;
+import static io.jgitkins.server.execution.application.contract.result.PipelineSkipReason.SKIPPED_PIPELINE_NOT_FOUND;
 
-import io.jgitkins.server.application.dto.pipeline.PipelineConfig;
-import io.jgitkins.server.application.dto.pipeline.PipelineRule;
-import io.jgitkins.server.application.dto.result.JobPlan;
-import io.jgitkins.server.application.dto.result.PipelineSkipReason;
-import io.jgitkins.server.application.dto.support.PushJobPlanRequest;
-import io.jgitkins.server.application.port.out.FileGitPort;
+import io.jgitkins.server.execution.application.contract.pipeline.PipelineConfig;
+import io.jgitkins.server.execution.application.contract.pipeline.PipelineRule;
+import io.jgitkins.server.execution.application.contract.result.JobPlan;
+import io.jgitkins.server.execution.application.contract.result.PipelineSkipReason;
+import io.jgitkins.server.execution.application.contract.internal.PushJobPlanRequest;
 import io.jgitkins.server.execution.application.port.out.PipelineConfigPort;
+import io.jgitkins.server.execution.application.port.out.PipelineFileLookupPort;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -22,7 +22,7 @@ public class PushJobCreationPolicy {
     private static final String PIPELINE_ROOT = ".jgitkins/";
 
     private final PipelineConfigPort configPort;
-    private final FileGitPort fileGitPort;
+    private final PipelineFileLookupPort pipelineFileLookupPort;
 
     public JobPlan plan(PushJobPlanRequest request) {
         try {
@@ -33,7 +33,7 @@ public class PushJobCreationPolicy {
             }
 
             String pipelineFilePath = toPipelineFilePath(rule.getFile());
-            if (!fileGitPort.exists(request.namespace(), request.repoName(), request.commitHash(), pipelineFilePath)) {
+            if (!pipelineFileLookupPort.exists(request.namespace(), request.repoName(), request.commitHash(), pipelineFilePath)) {
                 return JobPlan.skip(SKIPPED_PIPELINE_NOT_FOUND);
             }
 

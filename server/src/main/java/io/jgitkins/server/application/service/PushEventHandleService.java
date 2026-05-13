@@ -1,13 +1,13 @@
 package io.jgitkins.server.application.service;
 
 import io.jgitkins.server.application.dto.command.PushEventCommand;
-import io.jgitkins.server.application.dto.result.JobCreationDecision;
-import io.jgitkins.server.application.dto.result.JobPlan;
+import io.jgitkins.server.execution.application.contract.result.JobCreationDecision;
+import io.jgitkins.server.execution.application.contract.result.JobPlan;
 import io.jgitkins.server.application.port.in.PushEventHandleUseCase;
 import io.jgitkins.server.application.support.change.BranchChangeRecorder;
-import io.jgitkins.server.application.support.execution.ExecutionRequestService;
-import io.jgitkins.server.shared.application.policy.EventPolicyResolver;
-import io.jgitkins.server.application.validate.JobCreationValidator;
+import io.jgitkins.server.execution.application.support.ExecutionRequestService;
+import io.jgitkins.server.execution.application.policy.EventPolicyResolver;
+import io.jgitkins.server.execution.application.validate.JobCreationValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

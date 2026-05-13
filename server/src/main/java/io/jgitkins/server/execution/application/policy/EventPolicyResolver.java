@@ -1,8 +1,8 @@
-package io.jgitkins.server.shared.application.policy;
+package io.jgitkins.server.execution.application.policy;
 
 import io.jgitkins.server.application.dto.command.PushEventCommand;
-import io.jgitkins.server.application.dto.result.JobPlan;
-import io.jgitkins.server.application.dto.support.PushJobPlanRequest;
+import io.jgitkins.server.execution.application.contract.result.JobPlan;
+import io.jgitkins.server.execution.application.contract.internal.PushJobPlanRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

@@ -1,16 +1,15 @@
-package io.jgitkins.server.application.support;
+package io.jgitkins.server.execution.application.policy;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
-import io.jgitkins.server.application.dto.pipeline.PipelineConfig;
-import io.jgitkins.server.application.dto.pipeline.PipelineRule;
-import io.jgitkins.server.application.dto.result.JobPlan;
-import io.jgitkins.server.application.dto.result.PipelineSkipReason;
-import io.jgitkins.server.application.dto.support.PushJobPlanRequest;
-import io.jgitkins.server.application.port.out.FileGitPort;
+import io.jgitkins.server.execution.application.contract.pipeline.PipelineConfig;
+import io.jgitkins.server.execution.application.contract.pipeline.PipelineRule;
+import io.jgitkins.server.execution.application.contract.result.JobPlan;
+import io.jgitkins.server.execution.application.contract.result.PipelineSkipReason;
+import io.jgitkins.server.execution.application.contract.internal.PushJobPlanRequest;
 import io.jgitkins.server.execution.application.port.out.PipelineConfigPort;
-import io.jgitkins.server.shared.application.policy.PushJobCreationPolicy;
+import io.jgitkins.server.execution.application.port.out.PipelineFileLookupPort;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,7 +24,7 @@ class PushJobCreationPolicyTest {
     private PipelineConfigPort configPort;
 
     @Mock
-    private FileGitPort fileGitPort;
+    private PipelineFileLookupPort pipelineFileLookupPort;
 
     @InjectMocks
     private PushJobCreationPolicy policy;
@@ -34,7 +33,7 @@ class PushJobCreationPolicyTest {
     void plan_returnsCreate_whenRuleMatchesAndFileExists() {
         when(configPort.read("1", "repo", "abc"))
                 .thenReturn(new PipelineConfig(List.of(new PipelineRule(List.of("main"), "pipelines/main.Jenkinsfile"))));
-        when(fileGitPort.exists("1", "repo", "abc", ".jgitkins/pipelines/main.Jenkinsfile"))
+        when(pipelineFileLookupPort.exists("1", "repo", "abc", ".jgitkins/pipelines/main.Jenkinsfile"))
                 .thenReturn(true);
 
         JobPlan result = policy.plan(new PushJobPlanRequest("1", "repo", "main", "abc"));
@@ -58,7 +57,7 @@ class PushJobCreationPolicyTest {
     void plan_returnsSkipPipelineNotFound_whenFileDoesNotExist() {
         when(configPort.read("1", "repo", "abc"))
                 .thenReturn(new PipelineConfig(List.of(new PipelineRule(List.of("main"), "pipelines/main.Jenkinsfile"))));
-        when(fileGitPort.exists("1", "repo", "abc", ".jgitkins/pipelines/main.Jenkinsfile"))
+        when(pipelineFileLookupPort.exists("1", "repo", "abc", ".jgitkins/pipelines/main.Jenkinsfile"))
                 .thenReturn(false);
 
         JobPlan result = policy.plan(new PushJobPlanRequest("1", "repo", "main", "abc"));

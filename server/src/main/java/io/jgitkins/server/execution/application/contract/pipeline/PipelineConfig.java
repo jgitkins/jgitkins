@@ -1,4 +1,4 @@
-package io.jgitkins.server.application.dto.pipeline;
+package io.jgitkins.server.execution.application.contract.pipeline;
 
 import java.util.List;
 import java.util.Optional;

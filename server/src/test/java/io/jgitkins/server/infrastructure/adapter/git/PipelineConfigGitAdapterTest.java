@@ -3,7 +3,7 @@ package io.jgitkins.server.infrastructure.adapter.git;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import io.jgitkins.server.application.dto.pipeline.PipelineConfig;
+import io.jgitkins.server.execution.application.contract.pipeline.PipelineConfig;
 import io.jgitkins.server.infrastructure.exception.InfrastructureException;
 import io.jgitkins.server.infrastructure.support.RepositoryResolver;
 import java.io.IOException;

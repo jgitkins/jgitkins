@@ -1,4 +1,4 @@
-package io.jgitkins.server.application.dto.support;
+package io.jgitkins.server.execution.application.contract.internal;
 
 import io.jgitkins.server.application.dto.command.PushEventCommand;
 

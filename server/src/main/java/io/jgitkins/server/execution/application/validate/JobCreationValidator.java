@@ -1,7 +1,7 @@
-package io.jgitkins.server.application.validate;
+package io.jgitkins.server.execution.application.validate;
 
 import io.jgitkins.server.application.dto.command.PushEventCommand;
-import io.jgitkins.server.application.dto.result.JobCreationDecision;
+import io.jgitkins.server.execution.application.contract.result.JobCreationDecision;
 import org.springframework.stereotype.Component;
 
 @Component

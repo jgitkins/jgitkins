@@ -1,11 +1,11 @@
-package io.jgitkins.server.application.support.execution;
+package io.jgitkins.server.execution.application.support;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
 
 import io.jgitkins.server.execution.application.contract.command.JobCreateCommand;
 import io.jgitkins.server.application.dto.command.PushEventCommand;
-import io.jgitkins.server.application.dto.result.JobPlan;
+import io.jgitkins.server.execution.application.contract.result.JobPlan;
 import io.jgitkins.server.execution.application.port.in.JobCreateUseCase;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

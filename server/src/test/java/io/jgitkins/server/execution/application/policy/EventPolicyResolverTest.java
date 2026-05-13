@@ -1,13 +1,13 @@
-package io.jgitkins.server.application.support.policy;
+package io.jgitkins.server.execution.application.policy;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 import io.jgitkins.server.application.dto.command.PushEventCommand;
-import io.jgitkins.server.application.dto.result.JobPlan;
-import io.jgitkins.server.application.dto.support.PushJobPlanRequest;
-import io.jgitkins.server.shared.application.policy.EventPolicyResolver;
-import io.jgitkins.server.shared.application.policy.PushJobCreationPolicy;
+import io.jgitkins.server.execution.application.contract.result.JobPlan;
+import io.jgitkins.server.execution.application.contract.internal.PushJobPlanRequest;
+import io.jgitkins.server.execution.application.policy.EventPolicyResolver;
+import io.jgitkins.server.execution.application.policy.PushJobCreationPolicy;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
