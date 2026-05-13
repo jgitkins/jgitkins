@@ -5,7 +5,7 @@ import io.jgitkins.server.application.exception.RunnerNotFoundException;
 import io.jgitkins.server.application.mapper.RunnerApplicationMapper;
 import io.jgitkins.server.application.port.in.RunnerLoadUseCase;
 import io.jgitkins.server.application.port.out.RunnerPersistencePort;
-import io.jgitkins.server.domain.aggregate.Runner;
+import io.jgitkins.server.execution.domain.aggregate.Runner;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

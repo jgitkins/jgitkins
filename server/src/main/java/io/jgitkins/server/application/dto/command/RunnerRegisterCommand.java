@@ -1,6 +1,6 @@
 package io.jgitkins.server.application.dto.command;
 
-import io.jgitkins.server.domain.model.vo.RunnerScopeType;
+import io.jgitkins.server.execution.domain.vo.RunnerScopeType;
 
 public record RunnerRegisterCommand(
         String description,

@@ -2,8 +2,8 @@ package io.jgitkins.server.application.port.out;
 
 import io.jgitkins.server.application.dto.DispatchableJob;
 import io.jgitkins.server.application.dto.RunnerDispatchContext;
-import io.jgitkins.server.domain.aggregate.Job;
-import io.jgitkins.server.domain.model.JobHistory;
+import io.jgitkins.server.execution.domain.aggregate.Job;
+import io.jgitkins.server.execution.domain.entity.JobHistory;
 import java.util.Optional;
 
 public interface JobPersistencePort {

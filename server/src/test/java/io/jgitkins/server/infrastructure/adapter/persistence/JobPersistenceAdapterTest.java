@@ -9,8 +9,8 @@ import static org.mockito.Mockito.when;
 
 import io.jgitkins.server.application.dto.JobDispatchScope;
 import io.jgitkins.server.application.dto.RunnerDispatchContext;
-import io.jgitkins.server.domain.aggregate.Job;
-import io.jgitkins.server.domain.model.JobHistory;
+import io.jgitkins.server.execution.domain.aggregate.Job;
+import io.jgitkins.server.execution.domain.entity.JobHistory;
 import io.jgitkins.server.infrastructure.mapper.JobDomainMapper;
 import io.jgitkins.server.infrastructure.persistence.mapper.JobDispatchQueryMapper;
 import io.jgitkins.server.infrastructure.persistence.mapper.JobEntityMbgMapper;

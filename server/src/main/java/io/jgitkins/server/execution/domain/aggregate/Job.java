@@ -1,8 +1,14 @@
-package io.jgitkins.server.domain.aggregate;
+package io.jgitkins.server.execution.domain.aggregate;
 
-import io.jgitkins.server.domain.event.JobQueuedEvent;
-import io.jgitkins.server.domain.model.JobHistory;
-import io.jgitkins.server.domain.model.vo.*;
+import io.jgitkins.server.domain.aggregate.AbstractAggregateRoot;
+import io.jgitkins.server.domain.model.vo.BranchName;
+import io.jgitkins.server.domain.model.vo.CommitHash;
+import io.jgitkins.server.domain.model.vo.UserId;
+import io.jgitkins.server.execution.domain.event.JobQueuedEvent;
+import io.jgitkins.server.execution.domain.entity.JobHistory;
+import io.jgitkins.server.execution.domain.vo.JobId;
+import io.jgitkins.server.execution.domain.vo.JobStatus;
+import io.jgitkins.server.execution.domain.vo.RunnerId;
 import io.jgitkins.server.repository.domain.vo.RepositoryId;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

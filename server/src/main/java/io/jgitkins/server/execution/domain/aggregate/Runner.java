@@ -1,11 +1,12 @@
-package io.jgitkins.server.domain.aggregate;
+package io.jgitkins.server.execution.domain.aggregate;
 
-import io.jgitkins.server.domain.event.RunnerActivatedEvent;
-import io.jgitkins.server.domain.exception.RunnerAlreadyActiveException;
-import io.jgitkins.server.domain.exception.RunnerTokenMismatchException;
-import io.jgitkins.server.domain.exception.RunnerTokenMissingException;
-import io.jgitkins.server.domain.model.vo.RunnerScopeType;
-import io.jgitkins.server.domain.model.vo.RunnerStatus;
+import io.jgitkins.server.domain.aggregate.AbstractAggregateRoot;
+import io.jgitkins.server.execution.domain.event.RunnerActivatedEvent;
+import io.jgitkins.server.execution.domain.exception.RunnerAlreadyActiveException;
+import io.jgitkins.server.execution.domain.exception.RunnerTokenMismatchException;
+import io.jgitkins.server.execution.domain.exception.RunnerTokenMissingException;
+import io.jgitkins.server.execution.domain.vo.RunnerScopeType;
+import io.jgitkins.server.execution.domain.vo.RunnerStatus;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.AccessLevel;

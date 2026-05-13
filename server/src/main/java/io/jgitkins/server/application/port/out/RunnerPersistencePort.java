@@ -1,6 +1,6 @@
 package io.jgitkins.server.application.port.out;
 
-import io.jgitkins.server.domain.aggregate.Runner;
+import io.jgitkins.server.execution.domain.aggregate.Runner;
 
 import java.util.List;
 import java.util.Optional;

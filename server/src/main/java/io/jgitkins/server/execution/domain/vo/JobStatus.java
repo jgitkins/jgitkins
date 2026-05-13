@@ -1,4 +1,4 @@
-package io.jgitkins.server.domain.model.vo;
+package io.jgitkins.server.execution.domain.vo;
 
 /**
  * Job 실행 상태 Value Object

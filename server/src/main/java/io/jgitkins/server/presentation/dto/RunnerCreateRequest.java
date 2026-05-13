@@ -1,6 +1,6 @@
 package io.jgitkins.server.presentation.dto;
 
-import io.jgitkins.server.domain.model.vo.RunnerScopeType;
+import io.jgitkins.server.execution.domain.vo.RunnerScopeType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 

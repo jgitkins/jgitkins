@@ -1,8 +1,9 @@
-package io.jgitkins.server.domain.event;
+package io.jgitkins.server.execution.domain.event;
 
-import io.jgitkins.server.domain.aggregate.Runner;
-import io.jgitkins.server.domain.model.vo.RunnerScopeType;
-import io.jgitkins.server.domain.model.vo.RunnerStatus;
+import io.jgitkins.server.domain.event.DomainEvent;
+import io.jgitkins.server.execution.domain.aggregate.Runner;
+import io.jgitkins.server.execution.domain.vo.RunnerScopeType;
+import io.jgitkins.server.execution.domain.vo.RunnerStatus;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

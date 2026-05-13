@@ -1,6 +1,6 @@
 package io.jgitkins.server.infrastructure.mapper;
 
-import io.jgitkins.server.domain.aggregate.Runner;
+import io.jgitkins.server.execution.domain.aggregate.Runner;
 import io.jgitkins.server.infrastructure.persistence.model.RunnerAssignmentEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

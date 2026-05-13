@@ -1,8 +1,8 @@
 package io.jgitkins.server.infrastructure.mapper;
 
-import io.jgitkins.server.domain.aggregate.Runner;
-import io.jgitkins.server.domain.model.vo.RunnerScopeType;
-import io.jgitkins.server.domain.model.vo.RunnerStatus;
+import io.jgitkins.server.execution.domain.aggregate.Runner;
+import io.jgitkins.server.execution.domain.vo.RunnerScopeType;
+import io.jgitkins.server.execution.domain.vo.RunnerStatus;
 import io.jgitkins.server.infrastructure.persistence.model.RunnerEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

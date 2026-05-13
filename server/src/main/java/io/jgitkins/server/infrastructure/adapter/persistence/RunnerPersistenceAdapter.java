@@ -1,8 +1,8 @@
 package io.jgitkins.server.infrastructure.adapter.persistence;
 
 import io.jgitkins.server.application.port.out.RunnerPersistencePort;
-import io.jgitkins.server.domain.aggregate.Runner;
-import io.jgitkins.server.domain.model.vo.RunnerScopeType;
+import io.jgitkins.server.execution.domain.aggregate.Runner;
+import io.jgitkins.server.execution.domain.vo.RunnerScopeType;
 import io.jgitkins.server.infrastructure.common.error.InfrastructureErrorCode;
 import io.jgitkins.server.infrastructure.exception.InfrastructureException;
 import io.jgitkins.server.infrastructure.mapper.RunnerAssignmentDomainMapper;

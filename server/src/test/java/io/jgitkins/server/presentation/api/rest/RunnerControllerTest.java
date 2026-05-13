@@ -21,7 +21,7 @@ import io.jgitkins.server.application.port.in.RunnerActivateUseCase;
 import io.jgitkins.server.application.port.in.RunnerDeleteUseCase;
 import io.jgitkins.server.application.port.in.RunnerLoadUseCase;
 import io.jgitkins.server.application.port.in.RunnerRegisterUseCase;
-import io.jgitkins.server.domain.model.vo.RunnerScopeType;
+import io.jgitkins.server.execution.domain.vo.RunnerScopeType;
 import io.jgitkins.server.presentation.advice.GlobalExceptionHandler;
 import io.jgitkins.server.presentation.advice.mapper.ApplicationErrorHttpStatusMapper;
 import io.jgitkins.server.presentation.advice.mapper.CompositeErrorHttpStatusMapper;

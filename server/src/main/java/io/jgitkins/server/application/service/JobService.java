@@ -3,7 +3,7 @@ package io.jgitkins.server.application.service;
 import io.jgitkins.server.application.dto.command.JobCreateCommand;
 import io.jgitkins.server.application.port.in.JobCreateUseCase;
 import io.jgitkins.server.application.port.out.JobPersistencePort;
-import io.jgitkins.server.domain.aggregate.Job;
+import io.jgitkins.server.execution.domain.aggregate.Job;
 import io.jgitkins.server.domain.model.vo.BranchName;
 import io.jgitkins.server.domain.model.vo.CommitHash;
 import io.jgitkins.server.repository.domain.vo.RepositoryId;

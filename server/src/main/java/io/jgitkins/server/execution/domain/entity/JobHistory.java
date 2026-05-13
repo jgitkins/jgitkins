@@ -1,6 +1,11 @@
-package io.jgitkins.server.domain.model;
+package io.jgitkins.server.execution.domain.entity;
 
-import io.jgitkins.server.domain.model.vo.*;
+import io.jgitkins.server.domain.model.vo.SequenceNumber;
+import io.jgitkins.server.domain.model.vo.SystemUser;
+import io.jgitkins.server.execution.domain.vo.JobHistoryId;
+import io.jgitkins.server.execution.domain.vo.JobId;
+import io.jgitkins.server.execution.domain.vo.JobStatus;
+import io.jgitkins.server.execution.domain.vo.RunnerId;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
