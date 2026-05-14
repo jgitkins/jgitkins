@@ -44,7 +44,7 @@ class JobDispatchQueryAdapterTest {
     private JobDispatchQueryAdapter adapter;
 
     @Test
-    void findNextDispatchableJob_returnsPendingJobWithinRunnerScope() {
+    void fetchNextJob_returnsPendingJobWithinRunnerScope() {
         RunnerDispatchContext context = new RunnerDispatchContext(7L, JobDispatchScope.ORGANIZE, 33L);
         DispatchableJobRow row = dispatchableJobRow(100L, 10L, "ORGANIZATION", 33L, "/org/repo.git");
         JobHistoryEntity latestPending = jobHistoryEntity(100L, "PENDING", LocalDateTime.of(2026, 3, 12, 10, 5));
@@ -56,9 +56,10 @@ class JobDispatchQueryAdapterTest {
         when(jobDomainMapper.toHistoryDomain(any(JobHistoryEntity.class))).thenReturn(mappedHistory);
         when(jobDomainMapper.toDomain(any(DispatchableJobRow.class), any())).thenReturn(mappedJob);
 
-        var result = adapter.findNextDispatchableJob(context);
+        var result = adapter.fetchNextJob(context);
 
         assertThat(result).isPresent();
+        assertThat(result.get().jobId()).isEqualTo(100L);
         assertThat(result.get().job()).isSameAs(mappedJob);
         assertThat(result.get().organizeId()).isEqualTo(33L);
         assertThat(result.get().repositoryClonePath()).isEqualTo("/org/repo.git");
@@ -66,11 +67,11 @@ class JobDispatchQueryAdapterTest {
     }
 
     @Test
-    void findNextDispatchableJob_returnsEmpty_whenNoDispatchableJobExists() {
+    void fetchNextJob_returnsEmpty_whenNoDispatchableJobExists() {
         RunnerDispatchContext context = new RunnerDispatchContext(7L, JobDispatchScope.REPOSITORY, 10L);
         when(jobDispatchQueryMapper.selectNextDispatchableJob("REPOSITORY", 10L)).thenReturn(null);
 
-        var result = adapter.findNextDispatchableJob(context);
+        var result = adapter.fetchNextJob(context);
 
         assertThat(result).isEmpty();
         verify(jobDispatchQueryMapper).selectNextDispatchableJob("REPOSITORY", 10L);

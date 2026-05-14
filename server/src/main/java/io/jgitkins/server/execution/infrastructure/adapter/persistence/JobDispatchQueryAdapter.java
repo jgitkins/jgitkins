@@ -27,9 +27,9 @@ public class JobDispatchQueryAdapter implements JobDispatchQueryPort {
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<DispatchableJob> findNextDispatchableJob(RunnerDispatchContext context) {
+    public Optional<DispatchableJob> fetchNextJob(RunnerDispatchContext context) {
         try {
-            return Optional.ofNullable(findNextDispatchableJobRow(context))
+            return Optional.ofNullable(fetchNextJobRow(context))
                     .flatMap(this::toDispatchableJob);
         } catch (Exception e) {
             throw new InfrastructureException(InfrastructureErrorCode.PERSISTENCE_OPERATION_FAILED,
@@ -37,7 +37,7 @@ public class JobDispatchQueryAdapter implements JobDispatchQueryPort {
         }
     }
 
-    private DispatchableJobRow findNextDispatchableJobRow(RunnerDispatchContext context) {
+    private DispatchableJobRow fetchNextJobRow(RunnerDispatchContext context) {
         return jobDispatchQueryMapper.selectNextDispatchableJob(
                 context.dispatchScope().name(),
                 context.scopeTargetId()
@@ -45,17 +45,18 @@ public class JobDispatchQueryAdapter implements JobDispatchQueryPort {
     }
 
     private Optional<DispatchableJob> toDispatchableJob(DispatchableJobRow row) {
-        List<JobHistory> histories = loadHistories(row.jobId());
+        List<JobHistory> histories = getHistories(row.jobId());
         Long organizeId = "ORGANIZATION".equals(row.repositoryOwnerType()) ? row.repositoryOwnerId() : null;
 
         return Optional.of(new DispatchableJob(
+                row.jobId(),
                 jobDomainMapper.toDomain(row, histories),
                 organizeId,
                 row.repositoryClonePath()
         ));
     }
 
-    private List<JobHistory> loadHistories(Long jobId) {
+    private List<JobHistory> getHistories(Long jobId) {
         JobHistoryEntityCondition condition = new JobHistoryEntityCondition();
         condition.createCriteria().andJobIdEqualTo(jobId);
         condition.setOrderByClause("CREATED_AT ASC, ID ASC");

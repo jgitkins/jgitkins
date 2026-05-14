@@ -216,6 +216,16 @@ Task 2.20은 구현 그 자체보다 P2 리팩토링 계획 수립이다. 실제
 - 테스트 추가/수정 기준
 - 완료 기준
 
+추가 검수 결과, dispatch payload 정합성에 대한 후속 문서를 별도로 둔다.
+
+```text
+.taskmaster/docs/refactor/task_2_20/
+├── 09_execution_dispatch_payload_integrity.md
+└── 10_execution_dispatch_controller_and_service_split.md
+```
+
+이 문서들은 기존 1~7 문서의 패키지 이관이 끝난 뒤 진행하는 cleanup 계획이다.
+
 ## 단계별 계획
 
 ### 1단계: Execution domain model 이동 계획

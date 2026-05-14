@@ -5,5 +5,5 @@ import io.jgitkins.server.execution.application.contract.internal.RunnerDispatch
 import java.util.Optional;
 
 public interface JobDispatchQueryPort {
-    Optional<DispatchableJob> findNextDispatchableJob(RunnerDispatchContext context);
+    Optional<DispatchableJob> fetchNextJob(RunnerDispatchContext context);
 }

@@ -51,7 +51,7 @@ public class JobRepositoryAdapter implements JobRepository {
                 return Optional.empty();
             }
 
-            return Optional.ofNullable(jobDomainMapper.toDomain(entity, loadHistories(jobId)));
+            return Optional.ofNullable(jobDomainMapper.toDomain(entity, getHistories(jobId)));
         } catch (Exception e) {
             throw new InfrastructureException(InfrastructureErrorCode.PERSISTENCE_OPERATION_FAILED,
                     "Database operation failed during job loading", e);
@@ -80,7 +80,7 @@ public class JobRepositoryAdapter implements JobRepository {
         }
     }
 
-    private List<JobHistory> loadHistories(Long jobId) {
+    private List<JobHistory> getHistories(Long jobId) {
         JobHistoryEntityCondition condition = new JobHistoryEntityCondition();
         condition.createCriteria().andJobIdEqualTo(jobId);
         condition.setOrderByClause("CREATED_AT ASC, ID ASC");
