@@ -600,7 +600,7 @@ void executionContextServices_resideInExecutionServicePackage() {
 
 ## 완료 기준
 
-- Task 2.20 상태가 `in-progress`다.
+- Task 2.20 상태가 `done`이다.
 - `.taskmaster/docs/refactor/task_2_20_plan.md`가 존재한다.
 - Execution Context 리팩토링을 7개 이하의 작은 상세 계획 단위로 나눴다.
 - 각 상세 계획 단위가 구현 가능한 파일 범위와 테스트 기준을 가진다.
