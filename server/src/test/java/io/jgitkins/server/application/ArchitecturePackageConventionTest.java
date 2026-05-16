@@ -20,12 +20,30 @@ import io.jgitkins.server.application.service.PushEventHandleService;
 import io.jgitkins.server.application.service.RepositoryFileService;
 import io.jgitkins.server.application.service.UserCredentialService;
 import io.jgitkins.server.application.service.UserProfileService;
+import io.jgitkins.server.execution.presentation.api.rest.RunnerController;
+import io.jgitkins.server.presentation.api.rest.AdminUserController;
+import io.jgitkins.server.presentation.api.rest.MergeController;
+import io.jgitkins.server.presentation.api.rest.OAuthController;
+import io.jgitkins.server.presentation.api.rest.OrganizeController;
+import io.jgitkins.server.presentation.api.rest.OrganizeMemberController;
+import io.jgitkins.server.presentation.api.rest.SignupController;
+import io.jgitkins.server.presentation.api.rest.UserController;
+import io.jgitkins.server.presentation.api.rest.UserCredentialController;
+import io.jgitkins.server.presentation.api.web.WebOrganizeController;
+import io.jgitkins.server.presentation.api.web.WebRepositoryController;
+import io.jgitkins.server.presentation.common.ApiResponse;
 import io.jgitkins.server.repository.application.service.BranchLoadService;
 import io.jgitkins.server.repository.application.service.BranchManagementService;
 import io.jgitkins.server.repository.application.service.RepositoryLoadService;
 import io.jgitkins.server.repository.application.service.RepositoryManagementService;
 import io.jgitkins.server.repository.application.service.RepositoryMemberService;
 import io.jgitkins.server.repository.application.service.RepositoryOverviewService;
+import io.jgitkins.server.repository.presentation.api.rest.BranchController;
+import io.jgitkins.server.repository.presentation.api.rest.RepositoryCommitController;
+import io.jgitkins.server.repository.presentation.api.rest.RepositoryContentController;
+import io.jgitkins.server.repository.presentation.api.rest.RepositoryFileController;
+import io.jgitkins.server.repository.presentation.api.rest.RepositoryManagementController;
+import io.jgitkins.server.repository.presentation.api.rest.RepositoryMemberController;
 import io.jgitkins.server.repository.application.support.branch.BranchFactory;
 import io.jgitkins.server.shared.application.support.RepositoryAccessibilityService;
 import io.jgitkins.server.shared.application.support.RepositoryNamespaceResolver;
@@ -37,11 +55,16 @@ import io.jgitkins.server.application.support.UserService;
 import io.jgitkins.server.repository.application.support.GitRepositoryAccessService;
 import io.jgitkins.server.repository.application.support.RepositoryLookupService;
 import java.io.IOException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
@@ -107,6 +130,33 @@ class ArchitecturePackageConventionTest {
     }
 
     @Test
+    void restAndWebApiControllers_returnApiResponseEnvelope() {
+        List<Class<?>> controllerClasses = List.of(
+                AdminUserController.class,
+                MergeController.class,
+                OAuthController.class,
+                OrganizeController.class,
+                OrganizeMemberController.class,
+                SignupController.class,
+                UserController.class,
+                UserCredentialController.class,
+                WebOrganizeController.class,
+                WebRepositoryController.class,
+                RunnerController.class,
+                BranchController.class,
+                RepositoryCommitController.class,
+                RepositoryContentController.class,
+                RepositoryFileController.class,
+                RepositoryManagementController.class,
+                RepositoryMemberController.class);
+
+        controllerClasses.stream()
+                .flatMap(controllerClass -> Stream.of(controllerClass.getDeclaredMethods()))
+                .filter(method -> Modifier.isPublic(method.getModifiers()))
+                .forEach(this::assertReturnsApiResponseEntity);
+    }
+
+    @Test
     void applicationSources_doNotImportInfrastructurePackages() throws IOException {
         Path applicationRoot = Path.of("src/main/java/io/jgitkins/server/application");
         assertNoInfrastructureImports(applicationRoot);
@@ -126,6 +176,21 @@ class ArchitecturePackageConventionTest {
 
     private void assertNoInfrastructureImports(Path root) throws IOException {
         assertNoImports(root, "import io.jgitkins.server.infrastructure.");
+    }
+
+    private void assertReturnsApiResponseEntity(Method method) {
+        assertEquals(ResponseEntity.class, method.getReturnType(),
+                () -> "API method must return ResponseEntity<ApiResponse<...>>: " + method);
+
+        Type genericReturnType = method.getGenericReturnType();
+        assertTrue(genericReturnType instanceof ParameterizedType,
+                () -> "API method must declare generic response body: " + method);
+
+        Type responseBodyType = ((ParameterizedType) genericReturnType).getActualTypeArguments()[0];
+        assertTrue(responseBodyType instanceof ParameterizedType,
+                () -> "API method response body must be ApiResponse<...>: " + method);
+        assertEquals(ApiResponse.class, ((ParameterizedType) responseBodyType).getRawType(),
+                () -> "API method response body must be ApiResponse<...>: " + method);
     }
 
     private void assertNoImports(Path root, String disallowedImportPrefix) throws IOException {

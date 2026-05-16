@@ -21,7 +21,7 @@ public class ApiAnauthorizeHandler implements AuthenticationEntryPoint {
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException {
-        ApiResponse<Void> payload = ApiResponse.failure(
+        ApiResponse<Void> payload = ApiResponse.errorBody(
                 PresentationProblemSpec.UNAUTHORIZED,
                 PresentationProblemSpec.UNAUTHORIZED.getDefaultMessage(),
                 "presentation");

@@ -21,39 +21,23 @@ public final class ApiResponse<T> {
         this.error = error;
     }
 
-    public static <T> ApiResponse<T> success(T data) {
+    private static <T> ApiResponse<T> success(T data) {
         return new ApiResponse<>(data, null);
     }
 
-    public static ApiResponse<Void> success() {
+    private static ApiResponse<Void> success() {
         return new ApiResponse<>(null, null);
     }
 
-    public static <T> ApiResponse<T> failure(ErrorCode errorCode) {
-        return new ApiResponse<>(null, ApiError.of(errorCode));
-    }
-
-    public static <T> ApiResponse<T> failure(ProblemSpec<? extends ErrorCode> problemSpec) {
-        return new ApiResponse<>(null, ApiError.of(problemSpec));
-    }
-
-    public static <T> ApiResponse<T> failure(ErrorCode errorCode, String message) {
-        return new ApiResponse<>(null, ApiError.of(errorCode, message));
-    }
-
-    public static <T> ApiResponse<T> failure(ProblemSpec<? extends ErrorCode> problemSpec, String message) {
-        return new ApiResponse<>(null, ApiError.of(problemSpec, message));
-    }
-
-    public static <T> ApiResponse<T> failure(ErrorCode errorCode, String message, String source) {
+    private static ApiResponse<Void> failure(ErrorCode errorCode, String message, String source) {
         return new ApiResponse<>(null, ApiError.of(errorCode, message, source));
     }
 
-    public static <T> ApiResponse<T> failure(ProblemSpec<? extends ErrorCode> problemSpec, String message, String source) {
+    private static ApiResponse<Void> failure(ProblemSpec<? extends ErrorCode> problemSpec, String message, String source) {
         return new ApiResponse<>(null, ApiError.of(problemSpec, message, source));
     }
 
-    public static <T> ApiResponse<T> failure(String code, String message, String source) {
+    private static ApiResponse<Void> failure(String code, String message, String source) {
         return new ApiResponse<>(null, ApiError.of(code, message, source));
     }
 
@@ -84,6 +68,33 @@ public final class ApiResponse<T> {
 
     public static ResponseEntity<ApiResponse<Void>> noContent() {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponse.success());
+    }
+
+    public static ResponseEntity<ApiResponse<Void>> error(HttpStatus status,
+                                                          ErrorCode errorCode,
+                                                          String message,
+                                                          String source) {
+        return ResponseEntity.status(status).body(failure(errorCode, message, source));
+    }
+
+    public static ResponseEntity<ApiResponse<Void>> error(HttpStatus status,
+                                                          ProblemSpec<? extends ErrorCode> problemSpec,
+                                                          String message,
+                                                          String source) {
+        return ResponseEntity.status(status).body(failure(problemSpec, message, source));
+    }
+
+    public static ResponseEntity<ApiResponse<Void>> error(HttpStatus status,
+                                                          String code,
+                                                          String message,
+                                                          String source) {
+        return ResponseEntity.status(status).body(failure(code, message, source));
+    }
+
+    public static ApiResponse<Void> errorBody(ProblemSpec<? extends ErrorCode> problemSpec,
+                                              String message,
+                                              String source) {
+        return failure(problemSpec, message, source);
     }
 
     public T getData() {

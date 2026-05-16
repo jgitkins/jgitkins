@@ -106,8 +106,7 @@ public class GlobalExceptionHandler {
             HttpStatus status,
             String source) {
         String responseMessage = resolveMessage(exception, exception.getMessage());
-        return ResponseEntity.status(status)
-                .body(ApiResponse.failure(exception.getProblemCode(), responseMessage, source));
+        return ApiResponse.error(status, exception.getProblemCode(), responseMessage, source);
     }
 
     private ResponseEntity<ApiResponse<Void>> buildResponse(ErrorCode errorCode,
@@ -117,7 +116,7 @@ public class GlobalExceptionHandler {
         String responseMessage = (message == null || message.isBlank())
                 ? errorCode.getDefaultMessage()
                 : message;
-        return ResponseEntity.status(status).body(ApiResponse.failure(errorCode, responseMessage, source));
+        return ApiResponse.error(status, errorCode, responseMessage, source);
     }
 
     private ResponseEntity<ApiResponse<Void>> buildResponse(PresentationProblemSpec problemSpec,
@@ -125,8 +124,7 @@ public class GlobalExceptionHandler {
             String message,
             String source) {
         String responseMessage = resolveMessage(problemSpec, message);
-        return ResponseEntity.status(status)
-                .body(ApiResponse.failure(problemSpec.getCode(), responseMessage, source));
+        return ApiResponse.error(status, problemSpec.getCode(), responseMessage, source);
     }
 
     private String resolveMessage(JgitkinsException exception, String message) {

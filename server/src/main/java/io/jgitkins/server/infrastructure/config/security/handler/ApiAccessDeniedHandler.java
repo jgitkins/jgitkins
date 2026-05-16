@@ -21,7 +21,7 @@ public class ApiAccessDeniedHandler implements AccessDeniedHandler {
 
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException {
-        ApiResponse<Void> payload = ApiResponse.failure(
+        ApiResponse<Void> payload = ApiResponse.errorBody(
                 ApplicationProblemSpec.ACCESS_DENIED,
                 ApplicationProblemSpec.ACCESS_DENIED.getDefaultMessage(),
                 "application");
