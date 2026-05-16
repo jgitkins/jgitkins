@@ -18,7 +18,6 @@ import io.jgitkins.server.application.service.OrganizeService;
 import io.jgitkins.server.application.service.PublicUserQueryService;
 import io.jgitkins.server.application.service.PushEventHandleService;
 import io.jgitkins.server.application.service.RepositoryFileService;
-import io.jgitkins.server.application.service.RepositoryOverviewService;
 import io.jgitkins.server.application.service.UserCredentialService;
 import io.jgitkins.server.application.service.UserProfileService;
 import io.jgitkins.server.repository.application.service.BranchLoadService;
@@ -26,6 +25,7 @@ import io.jgitkins.server.repository.application.service.BranchManagementService
 import io.jgitkins.server.repository.application.service.RepositoryLoadService;
 import io.jgitkins.server.repository.application.service.RepositoryManagementService;
 import io.jgitkins.server.repository.application.service.RepositoryMemberService;
+import io.jgitkins.server.repository.application.service.RepositoryOverviewService;
 import io.jgitkins.server.repository.application.support.branch.BranchFactory;
 import io.jgitkins.server.shared.application.support.RepositoryAccessibilityService;
 import io.jgitkins.server.shared.application.support.RepositoryNamespaceResolver;
@@ -62,7 +62,6 @@ class ArchitecturePackageConventionTest {
                 PublicUserQueryService.class,
                 PushEventHandleService.class,
                 RepositoryFileService.class,
-                RepositoryOverviewService.class,
                 UserCredentialService.class,
                 UserProfileService.class);
 
@@ -76,7 +75,8 @@ class ArchitecturePackageConventionTest {
                 BranchManagementService.class,
                 RepositoryLoadService.class,
                 RepositoryManagementService.class,
-                RepositoryMemberService.class);
+                RepositoryMemberService.class,
+                RepositoryOverviewService.class);
 
         serviceClasses.forEach(serviceClass -> assertEquals(REPOSITORY_SERVICE_PACKAGE, serviceClass.getPackageName()));
     }

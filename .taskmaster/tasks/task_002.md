@@ -33,7 +33,7 @@
 
 ### 2.2. [web, server, runner] application dto 단순 carrier record 전환
 
-**Status:** pending  
+**Status:** done
 **Dependencies:** None  
 
 server/runner application dto 이하의 단순 carrier DTO를 선별해 Java record로 전환하고, web 호환성 검토와 builder/getter 중심 호출부 및 테스트 정리를 함께 수행한다.
@@ -201,3 +201,17 @@ Application 계층에는 `CreatePullRequestUseCase`와 `GetPullRequestDetailUseC
 `PullRequestController`를 추가하고 `POST /repositories/{namespace}/{repoName}/pull-requests`, `GET /pull-requests/{pullRequestId}` 또는 기존 라우팅 규칙에 맞는 endpoint를 제공한다. request/response DTO와 presentation mapper를 추가해 application DTO와 API 계약을 분리한다. 생성 API는 source/target branch만 받아 PR을 저장하고, 상세 API는 저장된 PR 상태와 현재 Git 기준 mergeability/readiness seed를 반환한다. 상세 조회는 read-only이며 mergeability와 target drift 관측값을 저장하지 않는다.
 
 테스트는 controller slice 또는 service mock 기반 REST 테스트로 happy path, source/target 동일 branch 오류, branch not found 오류, PR not found 오류를 검증한다. 다음 단계의 readiness 조합 확장을 위해 response에는 stored source/target, current source/target, status, targetDrift, mergeability를 명확히 노출한다.
+
+### 2.32. [plan][P1][server, docs] Repository Overview 연관 객체 Repository Context 이관 계획 수립
+
+**Status:** done
+**Dependencies:** 2.29, 2.31  
+
+`WebRepositoryController`가 동떨어져 보이는 원인인 `RepositoryOverviewUseCase`, `RepositoryOverviewService`, `RepositoryOverviewResult` 및 경로 해석 연관 객체의 목표 패키지와 점진 이관 순서를 수립한다.
+
+**Details:**
+
+참조 문서: `.taskmaster/docs/refactor/task_2_32_plan.md`. 검토 범위는 `server/src/main/java/io/jgitkins/server/presentation/api/web/WebRepositoryController.java`, `server/src/main/java/io/jgitkins/server/repository/presentation/api/rest/RepositoryManagementController.java`, `server/src/main/java/io/jgitkins/server/application/port/in/RepositoryOverviewUseCase.java`, `server/src/main/java/io/jgitkins/server/application/service/RepositoryOverviewService.java`, `server/src/main/java/io/jgitkins/server/application/dto/result/RepositoryOverviewResult.java`, `server/src/main/java/io/jgitkins/server/application/dto/RepositoryKey.java`, `server/src/main/java/io/jgitkins/server/application/dto/FileEntry.java`, `server/src/main/java/io/jgitkins/server/application/port/in/FileTreeLoadUseCase.java`, `server/src/main/java/io/jgitkins/server/application/port/in/GitRepositoryAccessUseCase.java` 및 관련 테스트다. 목표는 overview 조회 흐름을 Repository Context application 안으로 끌어오고, web internal/BFF adapter인 `WebRepositoryController`는 top-level `presentation.api.web`에 정렬하며, `RepositoryKey`, file tree, access resolution 객체는 blast radius와 cross-context 성격에 따라 즉시 이관, 유지, 후속 검토 대상으로 분류하는 것이다. 계획 문서는 3가지 이관 방안 비교, 선택 방안, 단계별 파일 이동 순서, before/after 코드 스니펫, 검증 전략, autoplan self-review 결과를 포함한다.
+
+[implementation closeout]
+`RepositoryOverviewUseCase`, `RepositoryOverviewService`, `RepositoryOverviewResult`를 Repository Context application 하위로 이관했다. `RepositoryOverviewService`는 더 이상 `RepositoryLoadUseCase`, `BranchLoadUseCase`, `FileTreeLoadUseCase`, `GitRepositoryAccessUseCase` 같은 inbound use case를 주입하지 않고 `RepositoryQueryPort`, `BranchQueryPort`, `FileGitPort`, `CurrentUserPort`, `GitRepositoryAccessService`를 조합한다. `WebRepositoryController`는 web internal/BFF adapter 성격에 맞춰 `server.presentation.api.web`으로 이동했고, `getOverviewByPath(namespace, repoName, branch)`로 위임하여 path 기반 repository lookup 조합 책임을 제거했다. `RepositoryManagementController`와 테스트 import도 새 package로 정리했다. 검증: `./gradlew :server:compileJava`, `./gradlew :server:test` 통과.

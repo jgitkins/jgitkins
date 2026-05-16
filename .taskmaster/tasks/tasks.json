@@ -474,6 +474,20 @@
             "parentTaskId": 2,
             "parentId": "2"
           },
+          {
+            "id": 32,
+            "title": "[plan][P1][server, docs] Repository Overview 연관 객체 Repository Context 이관 계획 수립",
+            "description": "`WebRepositoryController`가 동떨어져 보이는 원인인 `RepositoryOverviewUseCase`, `RepositoryOverviewService`, `RepositoryOverviewResult` 및 경로 해석 연관 객체의 목표 패키지와 점진 이관 순서를 수립한다.",
+            "details": "참조 문서: `docs/modeling/contexts/repository/repository-context.md`, `.taskmaster/docs/refactor/task_2_29_plan.md`, `.taskmaster/docs/refactor/task_2_31_plan.md`. 산출물은 `.taskmaster/docs/refactor/task_2_32_plan.md`이며 다음을 포함한다. 1) `RepositoryOverviewUseCase`, `RepositoryOverviewService`, `RepositoryOverviewResult`를 `repository.application` 하위로 이관하는 기준과 호출부 수정 범위를 정의한다. 2) `RepositoryKey`, `FileEntry`, `FileTreeLoadUseCase`, `GitRepositoryAccessUseCase`, `CurrentUserPort`처럼 overview 흐름에서 함께 관찰되는 객체를 즉시 이관, 유지, 후속 검토 대상으로 분류한다. 3) `WebRepositoryController`와 `RepositoryManagementController`의 overview endpoint 중복을 줄이기 위한 `getOverviewByPath(namespace, repoName, branch)` 추가 여부를 검토한다. 4) package convention test, controller test, service unit test, compile/test 검증 전략을 before/after 코드 스니펫과 함께 상세히 정의한다.\n\n[implementation closeout]\n`RepositoryOverviewUseCase`, `RepositoryOverviewService`, `RepositoryOverviewResult`를 Repository Context application 하위로 이관했다. `RepositoryOverviewService`는 더 이상 `RepositoryLoadUseCase`, `BranchLoadUseCase`, `FileTreeLoadUseCase`, `GitRepositoryAccessUseCase` 같은 inbound use case를 주입하지 않고 `RepositoryQueryPort`, `BranchQueryPort`, `FileGitPort`, `CurrentUserPort`, `GitRepositoryAccessService`를 조합한다. `WebRepositoryController`는 web internal/BFF adapter 성격에 맞춰 `server.presentation.api.web`으로 이동했고, `getOverviewByPath(namespace, repoName, branch)`로 위임하여 path 기반 repository lookup 조합 책임을 제거했다. `RepositoryManagementController`와 테스트 import도 새 package로 정리했다. 검증: `./gradlew :server:compileJava`, `./gradlew :server:test` 통과.",
+            "status": "done",
+            "dependencies": [
+              29,
+              31
+            ],
+            "parentTaskId": 2,
+            "parentId": "2",
+            "updatedAt": "2026-05-14T14:00:00.000Z"
+          }
         ]
       },
       {

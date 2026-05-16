@@ -1,11 +1,11 @@
 package io.jgitkins.server.repository.presentation.api.rest;
 
 import io.jgitkins.server.repository.application.contract.command.RepositoryCreateCommand;
-import io.jgitkins.server.application.dto.result.RepositoryOverviewResult;
+import io.jgitkins.server.repository.application.contract.result.RepositoryOverviewResult;
 import io.jgitkins.server.repository.application.contract.result.RepositoryResult;
 import io.jgitkins.server.repository.application.port.in.RepositoryLoadUseCase;
 import io.jgitkins.server.repository.application.port.in.RepositoryManagementUseCase;
-import io.jgitkins.server.application.port.in.RepositoryOverviewUseCase;
+import io.jgitkins.server.repository.application.port.in.RepositoryOverviewUseCase;
 import io.jgitkins.server.presentation.common.ApiResponse;
 import io.jgitkins.server.repository.presentation.dto.RepositoryCreateRequest;
 import io.jgitkins.server.repository.presentation.mapper.RepositoryRequestMapper;
@@ -72,7 +72,7 @@ public class RepositoryManagementController {
     @Operation(summary = "Get Repository Overview")
     @GetMapping("/{repositoryId}/overview")
     public ResponseEntity<ApiResponse<RepositoryOverviewResult>> getOverview(@PathVariable Long repositoryId,
-                                                                             @RequestParam(name = "branch", required = false) String branch) throws java.io.IOException {
+                                                                             @RequestParam(name = "branch", required = false) String branch) {
         return ApiResponse.ok(repositoryOverviewUseCase.getOverview(repositoryId, branch));
     }
 

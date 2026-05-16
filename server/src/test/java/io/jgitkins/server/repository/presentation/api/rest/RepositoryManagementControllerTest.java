@@ -15,7 +15,7 @@ import io.jgitkins.server.repository.application.contract.command.RepositoryCrea
 import io.jgitkins.server.repository.application.contract.result.RepositoryResult;
 import io.jgitkins.server.repository.application.port.in.RepositoryLoadUseCase;
 import io.jgitkins.server.repository.application.port.in.RepositoryManagementUseCase;
-import io.jgitkins.server.application.port.in.RepositoryOverviewUseCase;
+import io.jgitkins.server.repository.application.port.in.RepositoryOverviewUseCase;
 import io.jgitkins.server.domain.model.vo.OwnerType;
 import io.jgitkins.server.repository.presentation.dto.RepositoryCreateRequest;
 import io.jgitkins.server.repository.presentation.mapper.RepositoryRequestMapper;
