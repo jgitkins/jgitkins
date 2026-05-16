@@ -5,7 +5,7 @@ import static org.mockito.Mockito.when;
 
 import io.jgitkins.server.repository.application.contract.result.BranchSearchResult;
 import io.jgitkins.server.repository.application.port.out.BranchQueryPort;
-import io.jgitkins.server.common.exception.JgitkinsException;
+import io.jgitkins.core.common.exception.JgitkinsException;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

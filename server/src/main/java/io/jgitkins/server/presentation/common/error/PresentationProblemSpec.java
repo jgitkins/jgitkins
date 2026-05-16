@@ -1,6 +1,6 @@
 package io.jgitkins.server.presentation.common.error;
 
-import io.jgitkins.server.common.problem.ProblemSpec;
+import io.jgitkins.core.common.problem.ProblemSpec;
 
 public enum PresentationProblemSpec implements ProblemSpec<PresentationErrorCode> {
     UNAUTHORIZED(PresentationErrorCode.UNAUTHORIZED, "REQ-401", "Unauthorized", "request.unauthorized"),

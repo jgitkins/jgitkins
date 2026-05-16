@@ -1,8 +1,8 @@
-package io.jgitkins.server.presentation.common;
+package io.jgitkins.core.web.api.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import io.jgitkins.server.common.error.ErrorCode;
-import io.jgitkins.server.common.problem.ProblemSpec;
+import io.jgitkins.core.common.error.ErrorCode;
+import io.jgitkins.core.common.problem.ProblemSpec;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public final class ApiError {

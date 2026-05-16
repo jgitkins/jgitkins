@@ -1,6 +1,6 @@
-package io.jgitkins.server.common.problem;
+package io.jgitkins.core.common.problem;
 
-import io.jgitkins.server.common.error.ErrorCode;
+import io.jgitkins.core.common.error.ErrorCode;
 
 public interface ProblemSpec<T extends ErrorCode> {
 

@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import io.jgitkins.server.application.dto.FileEntry;
 import io.jgitkins.server.application.dto.FileIndexEntry;
 import io.jgitkins.server.application.port.in.FileLoadUseCase;
-import io.jgitkins.server.presentation.common.ApiResponse;
+import io.jgitkins.core.web.api.response.ApiResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

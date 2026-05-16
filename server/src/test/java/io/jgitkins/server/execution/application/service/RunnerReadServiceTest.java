@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import io.jgitkins.server.common.exception.JgitkinsException;
+import io.jgitkins.core.common.exception.JgitkinsException;
 import io.jgitkins.server.application.common.error.ApplicationErrorCode;
 import io.jgitkins.server.execution.application.exception.RunnerNotFoundException;
 import io.jgitkins.server.execution.application.contract.result.RunnerDetailResult;

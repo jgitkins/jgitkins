@@ -1,6 +1,6 @@
 package io.jgitkins.server.presentation.common.error;
 
-import io.jgitkins.server.common.error.ErrorCode;
+import io.jgitkins.core.common.error.ErrorCode;
 
 public enum PresentationErrorCode implements ErrorCode {
     UNAUTHORIZED("UNAUTHORIZED", "Unauthorized"),

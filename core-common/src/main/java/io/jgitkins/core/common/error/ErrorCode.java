@@ -1,4 +1,4 @@
-package io.jgitkins.server.common.error;
+package io.jgitkins.core.common.error;
 
 public interface ErrorCode {
 

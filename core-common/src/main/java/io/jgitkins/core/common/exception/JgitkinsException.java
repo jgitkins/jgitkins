@@ -1,7 +1,7 @@
-package io.jgitkins.server.common.exception;
+package io.jgitkins.core.common.exception;
 
-import io.jgitkins.server.common.error.ErrorCode;
-import io.jgitkins.server.common.problem.ProblemSpec;
+import io.jgitkins.core.common.error.ErrorCode;
+import io.jgitkins.core.common.problem.ProblemSpec;
 
 public abstract class JgitkinsException extends RuntimeException {
     private final ErrorCode errorCode;

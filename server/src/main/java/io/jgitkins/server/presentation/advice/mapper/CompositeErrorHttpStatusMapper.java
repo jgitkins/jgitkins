@@ -1,6 +1,6 @@
 package io.jgitkins.server.presentation.advice.mapper;
 
-import io.jgitkins.server.common.error.ErrorCode;
+import io.jgitkins.core.common.error.ErrorCode;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

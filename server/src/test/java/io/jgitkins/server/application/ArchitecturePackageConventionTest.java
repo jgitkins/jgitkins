@@ -31,7 +31,7 @@ import io.jgitkins.server.presentation.api.rest.UserController;
 import io.jgitkins.server.presentation.api.rest.UserCredentialController;
 import io.jgitkins.server.presentation.api.web.WebOrganizeController;
 import io.jgitkins.server.presentation.api.web.WebRepositoryController;
-import io.jgitkins.server.presentation.common.ApiResponse;
+import io.jgitkins.core.web.api.response.ApiResponse;
 import io.jgitkins.server.repository.application.service.BranchLoadService;
 import io.jgitkins.server.repository.application.service.BranchManagementService;
 import io.jgitkins.server.repository.application.service.RepositoryLoadService;
@@ -174,6 +174,37 @@ class ArchitecturePackageConventionTest {
         assertNoImports(repositoryGitAdapterRoot, "import io.jgitkins.server.repository.application.exception.");
     }
 
+    @Test
+    void coreModules_doNotImportApplicationModules() throws IOException {
+        List<Path> coreRoots = List.of(
+                Path.of("../core-common/src/main/java"),
+                Path.of("../core-web/src/main/java"),
+                Path.of("../core-security/src/main/java"),
+                Path.of("../core-persistence/src/main/java"),
+                Path.of("../core-grpc/src/main/java"));
+
+        for (Path coreRoot : coreRoots) {
+            assertNoImports(coreRoot, "import io.jgitkins.server.");
+            assertNoImports(coreRoot, "import io.jgitkins.web.");
+            assertNoImports(coreRoot, "import io.jgitkins.runner.");
+        }
+    }
+
+    @Test
+    void webMvcControllers_doNotUseCoreApiResponseAsViewModel() throws IOException {
+        Path webPresentationRoot = Path.of("../web/src/main/java/io/jgitkins/web/presentation");
+        assertNoImports(webPresentationRoot, "import io.jgitkins.core.web.api.response.ApiResponse;");
+    }
+
+    @Test
+    void corePersistence_doesNotOwnBusinessPersistenceModels() throws IOException {
+        Path corePersistenceRoot = Path.of("../core-persistence/src/main/java");
+
+        assertNoPath(corePersistenceRoot, "model");
+        assertNoPath(corePersistenceRoot, "entity");
+        assertNoPath(corePersistenceRoot, "adapter");
+    }
+
     private void assertNoInfrastructureImports(Path root) throws IOException {
         assertNoImports(root, "import io.jgitkins.server.infrastructure.");
     }
@@ -191,6 +222,17 @@ class ArchitecturePackageConventionTest {
                 () -> "API method response body must be ApiResponse<...>: " + method);
         assertEquals(ApiResponse.class, ((ParameterizedType) responseBodyType).getRawType(),
                 () -> "API method response body must be ApiResponse<...>: " + method);
+    }
+
+    private void assertNoPath(Path root, String disallowedPathSegment) throws IOException {
+        try (Stream<Path> files = Files.walk(root)) {
+            boolean hasDisallowedPath = files
+                    .anyMatch(path -> path.getNameCount() > 0
+                            && path.toString().contains("/" + disallowedPathSegment + "/"));
+
+            assertFalse(hasDisallowedPath,
+                    () -> "Path must not contain segment " + disallowedPathSegment + ": " + root);
+        }
     }
 
     private void assertNoImports(Path root, String disallowedImportPrefix) throws IOException {

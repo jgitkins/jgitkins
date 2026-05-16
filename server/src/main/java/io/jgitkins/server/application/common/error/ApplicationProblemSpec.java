@@ -1,6 +1,6 @@
 package io.jgitkins.server.application.common.error;
 
-import io.jgitkins.server.common.problem.ProblemSpec;
+import io.jgitkins.core.common.problem.ProblemSpec;
 
 public enum ApplicationProblemSpec implements ProblemSpec<ApplicationErrorCode> {
     UNAUTHENTICATED(ApplicationErrorCode.UNAUTHENTICATED, "AUTH-001", "Authentication required", "auth.required"),

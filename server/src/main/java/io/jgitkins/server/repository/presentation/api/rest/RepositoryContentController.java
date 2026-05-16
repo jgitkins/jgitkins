@@ -8,7 +8,7 @@ import io.jgitkins.server.repository.application.exception.RepositoryNotFoundExc
 import io.jgitkins.server.application.port.in.FileTreeLoadUseCase;
 import io.jgitkins.server.application.port.in.FileUploadUseCase;
 import io.jgitkins.server.repository.application.port.in.RepositoryLoadUseCase;
-import io.jgitkins.server.presentation.common.ApiResponse;
+import io.jgitkins.core.web.api.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;

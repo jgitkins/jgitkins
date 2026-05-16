@@ -7,8 +7,8 @@ import io.jgitkins.server.repository.application.contract.command.BranchCreateCo
 import io.jgitkins.server.repository.application.contract.result.BranchSearchResult;
 import io.jgitkins.server.repository.application.port.in.BranchLoadUseCase;
 import io.jgitkins.server.repository.application.port.in.BranchManagementUseCase;
-import io.jgitkins.server.presentation.common.ApiResponse;
-import io.jgitkins.server.presentation.util.LocationUriBuilder;
+import io.jgitkins.core.web.api.response.ApiResponse;
+import io.jgitkins.core.web.api.uri.LocationUriBuilder;
 import io.jgitkins.server.repository.presentation.dto.BranchCreateRequest;
 import io.jgitkins.server.repository.presentation.mapper.BranchRequestMapper;
 import org.springframework.http.ResponseEntity;

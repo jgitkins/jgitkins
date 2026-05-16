@@ -1,4 +1,4 @@
-package io.jgitkins.server.infrastructure.config.persistence;
+package io.jgitkins.core.persistence;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;

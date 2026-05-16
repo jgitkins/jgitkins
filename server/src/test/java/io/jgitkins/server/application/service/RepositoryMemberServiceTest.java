@@ -12,7 +12,7 @@ import io.jgitkins.server.repository.application.contract.result.RepositoryMembe
 import io.jgitkins.server.repository.application.port.out.RepositoryMemberPersistencePort;
 import io.jgitkins.server.repository.application.support.membership.RepositoryMembershipFactory;
 import io.jgitkins.server.application.validate.RepositoryMemberValidator;
-import io.jgitkins.server.common.exception.JgitkinsException;
+import io.jgitkins.core.common.exception.JgitkinsException;
 import io.jgitkins.server.repository.domain.model.RepositoryMember;
 import io.jgitkins.server.repository.domain.vo.RepositoryId;
 import io.jgitkins.server.repository.domain.vo.RepositoryMemberRole;

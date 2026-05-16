@@ -1,6 +1,6 @@
 package io.jgitkins.server.domain.error;
 
-import io.jgitkins.server.common.error.ErrorCode;
+import io.jgitkins.core.common.error.ErrorCode;
 
 public enum DomainErrorCode implements ErrorCode {
     RULE_VIOLATION("RULE_VIOLATION", "Domain rule violation"),

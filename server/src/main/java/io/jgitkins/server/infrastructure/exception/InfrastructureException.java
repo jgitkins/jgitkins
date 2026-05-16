@@ -1,6 +1,6 @@
 package io.jgitkins.server.infrastructure.exception;
 
-import io.jgitkins.server.common.exception.JgitkinsException;
+import io.jgitkins.core.common.exception.JgitkinsException;
 import io.jgitkins.server.infrastructure.common.error.InfrastructureErrorCode;
 import io.jgitkins.server.infrastructure.common.error.InfrastructureProblemSpec;
 

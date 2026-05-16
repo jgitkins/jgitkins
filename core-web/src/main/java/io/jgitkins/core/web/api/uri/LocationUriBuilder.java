@@ -1,4 +1,4 @@
-package io.jgitkins.server.presentation.util;
+package io.jgitkins.core.web.api.uri;
 
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 

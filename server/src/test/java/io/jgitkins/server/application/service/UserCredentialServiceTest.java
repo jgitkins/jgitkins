@@ -15,7 +15,7 @@ import io.jgitkins.server.application.dto.result.UserCredentialSummary;
 import io.jgitkins.server.application.common.error.ApplicationErrorCode;
 import io.jgitkins.server.application.mapper.UserCredentialApplicationMapper;
 import io.jgitkins.server.application.port.out.CurrentUserPort;
-import io.jgitkins.server.common.exception.JgitkinsException;
+import io.jgitkins.core.common.exception.JgitkinsException;
 import io.jgitkins.server.application.port.out.UserCredentialPersistencePort;
 import io.jgitkins.server.domain.model.UserCredential;
 import java.time.LocalDateTime;

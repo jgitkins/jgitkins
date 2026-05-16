@@ -1,7 +1,7 @@
 package io.jgitkins.server.presentation.api.rest;
 
 import io.jgitkins.server.application.port.in.SignupUseCase;
-import io.jgitkins.server.presentation.common.ApiResponse;
+import io.jgitkins.core.web.api.response.ApiResponse;
 import io.jgitkins.server.presentation.dto.UserUsernameUpdateRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

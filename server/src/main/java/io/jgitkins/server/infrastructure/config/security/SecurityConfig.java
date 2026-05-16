@@ -1,6 +1,7 @@
 package io.jgitkins.server.infrastructure.config.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.jgitkins.core.security.handler.SecurityErrorResponseWriter;
 import io.jgitkins.server.application.port.in.OAuthLoginUseCase;
 import io.jgitkins.server.infrastructure.adapter.security.JwtService;
 import io.jgitkins.server.infrastructure.config.filter.GitSmartHttpAuthFilter;
@@ -90,13 +91,18 @@ public class SecurityConfig {
     }
 
     @Bean
-    ApiAnauthorizeHandler anauthorizeHandler(ObjectMapper objectMapper) {
-        return new ApiAnauthorizeHandler(objectMapper);
+    SecurityErrorResponseWriter securityErrorResponseWriter(ObjectMapper objectMapper) {
+        return new SecurityErrorResponseWriter(objectMapper);
     }
 
     @Bean
-    ApiAccessDeniedHandler accessDeniedHandler(ObjectMapper objectMapper) {
-        return new ApiAccessDeniedHandler(objectMapper);
+    ApiAnauthorizeHandler anauthorizeHandler(SecurityErrorResponseWriter responseWriter) {
+        return new ApiAnauthorizeHandler(responseWriter);
+    }
+
+    @Bean
+    ApiAccessDeniedHandler accessDeniedHandler(SecurityErrorResponseWriter responseWriter) {
+        return new ApiAccessDeniedHandler(responseWriter);
     }
 
     @Bean

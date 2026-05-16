@@ -8,7 +8,7 @@ import io.jgitkins.server.execution.application.port.in.RunnerActivateUseCase;
 import io.jgitkins.server.execution.application.port.in.RunnerDeleteUseCase;
 import io.jgitkins.server.execution.application.port.in.RunnerLoadUseCase;
 import io.jgitkins.server.execution.application.port.in.RunnerRegisterUseCase;
-import io.jgitkins.server.presentation.common.ApiResponse;
+import io.jgitkins.core.web.api.response.ApiResponse;
 import io.jgitkins.server.execution.presentation.dto.RunnerActivateRequest;
 import io.jgitkins.server.execution.presentation.dto.RunnerCreateRequest;
 import io.jgitkins.server.execution.presentation.dto.RunnerResponse;

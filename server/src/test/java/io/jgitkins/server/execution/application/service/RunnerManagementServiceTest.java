@@ -15,7 +15,7 @@ import io.jgitkins.server.execution.application.contract.result.RunnerRegistrati
 import io.jgitkins.server.execution.application.mapper.RunnerApplicationMapper;
 import io.jgitkins.server.execution.domain.repository.RunnerRepository;
 import io.jgitkins.server.execution.application.support.RunnerRuntimeConfigProvider;
-import io.jgitkins.server.common.exception.JgitkinsException;
+import io.jgitkins.core.common.exception.JgitkinsException;
 import io.jgitkins.server.execution.application.exception.RunnerNotFoundException;
 import io.jgitkins.server.infrastructure.common.error.InfrastructureErrorCode;
 import io.jgitkins.server.domain.error.DomainProblemSpec;

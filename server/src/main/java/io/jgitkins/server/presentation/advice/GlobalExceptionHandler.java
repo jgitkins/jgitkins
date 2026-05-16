@@ -1,13 +1,13 @@
 package io.jgitkins.server.presentation.advice;
 
 import io.jgitkins.server.application.exception.ApplicationException;
-import io.jgitkins.server.common.error.ErrorCode;
-import io.jgitkins.server.common.exception.JgitkinsException;
+import io.jgitkins.core.common.error.ErrorCode;
+import io.jgitkins.core.common.exception.JgitkinsException;
 import io.jgitkins.server.domain.exception.DomainException;
 import io.jgitkins.server.infrastructure.common.error.InfrastructureErrorCode;
 import io.jgitkins.server.infrastructure.exception.InfrastructureException;
 import io.jgitkins.server.presentation.advice.mapper.CompositeErrorHttpStatusMapper;
-import io.jgitkins.server.presentation.common.ApiResponse;
+import io.jgitkins.core.web.api.response.ApiResponse;
 import io.jgitkins.server.presentation.common.error.PresentationErrorCode;
 import io.jgitkins.server.presentation.common.error.PresentationProblemSpec;
 import io.jgitkins.server.presentation.exception.PresentationException;

@@ -1,6 +1,6 @@
 package io.jgitkins.server.domain.error;
 
-import io.jgitkins.server.common.problem.ProblemSpec;
+import io.jgitkins.core.common.problem.ProblemSpec;
 
 public enum DomainProblemSpec implements ProblemSpec<DomainErrorCode> {
     ORGANIZE_MEMBER_INVALID(DomainErrorCode.RULE_VIOLATION, "ORG-MEMBER-400", "Organize member payload is invalid", "organizeMember.invalid"),

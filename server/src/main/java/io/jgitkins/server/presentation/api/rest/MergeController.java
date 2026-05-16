@@ -8,7 +8,7 @@ import io.jgitkins.server.application.port.in.MergeabilityCheckUseCase;
 import io.jgitkins.server.application.port.in.MergeUseCase;
 import io.jgitkins.server.application.dto.MergeRequest;
 import io.jgitkins.server.application.dto.result.MergeResult;
-import io.jgitkins.server.presentation.common.ApiResponse;
+import io.jgitkins.core.web.api.response.ApiResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

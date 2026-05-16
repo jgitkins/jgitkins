@@ -1,6 +1,6 @@
 package io.jgitkins.server.presentation.advice.mapper;
 
-import io.jgitkins.server.common.error.ErrorCode;
+import io.jgitkins.core.common.error.ErrorCode;
 import io.jgitkins.server.presentation.common.error.PresentationErrorCode;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;

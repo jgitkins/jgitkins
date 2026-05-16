@@ -1,6 +1,6 @@
 package io.jgitkins.server.infrastructure.common.error;
 
-import io.jgitkins.server.common.problem.ProblemSpec;
+import io.jgitkins.core.common.problem.ProblemSpec;
 
 public enum InfrastructureProblemSpec implements ProblemSpec<InfrastructureErrorCode> {
     BRANCH_CREATE_FAILED(InfrastructureErrorCode.JGIT_OPERATION_FAILED, "JGIT-500-BRANCH-CREATE", "Branch creation failed", "jgit.branchCreateFailed"),

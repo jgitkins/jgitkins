@@ -34,6 +34,12 @@ ext {
 }
 
 dependencies {
+	implementation project(':core-common')
+	implementation project(':core-web')
+	implementation project(':core-security')
+	implementation project(':core-persistence')
+	implementation project(':core-grpc')
+
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 //	implementation 'org.springframework.boot:spring-boot-starter-amqp'

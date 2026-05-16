@@ -1,6 +1,6 @@
 package io.jgitkins.server.infrastructure.common.error;
 
-import io.jgitkins.server.common.error.ErrorCode;
+import io.jgitkins.core.common.error.ErrorCode;
 
 public enum InfrastructureErrorCode implements ErrorCode {
     INTERNAL_ERROR("INTERNAL_ERROR", "Infrastructure internal error"),

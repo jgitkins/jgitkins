@@ -190,7 +190,7 @@ Application 계층에는 `CreatePullRequestUseCase`와 `GetPullRequestDetailUseC
 
 ### 2.16. [server] PullRequest REST API 연결
 
-**Status:** pending
+**Status:** done
 **Dependencies:** 2.15
 
 `CreatePullRequestUseCase`와 `GetPullRequestDetailUseCase`를 presentation REST API에 연결해 실제 클라이언트가 PR을 생성하고 상세 상태를 조회할 수 있게 한다.
@@ -215,3 +215,17 @@ Application 계층에는 `CreatePullRequestUseCase`와 `GetPullRequestDetailUseC
 
 [implementation closeout]
 `RepositoryOverviewUseCase`, `RepositoryOverviewService`, `RepositoryOverviewResult`를 Repository Context application 하위로 이관했다. `RepositoryOverviewService`는 더 이상 `RepositoryLoadUseCase`, `BranchLoadUseCase`, `FileTreeLoadUseCase`, `GitRepositoryAccessUseCase` 같은 inbound use case를 주입하지 않고 `RepositoryQueryPort`, `BranchQueryPort`, `FileGitPort`, `CurrentUserPort`, `GitRepositoryAccessService`를 조합한다. `WebRepositoryController`는 web internal/BFF adapter 성격에 맞춰 `server.presentation.api.web`으로 이동했고, `getOverviewByPath(namespace, repoName, branch)`로 위임하여 path 기반 repository lookup 조합 책임을 제거했다. `RepositoryManagementController`와 테스트 import도 새 package로 정리했다. 검증: `./gradlew :server:compileJava`, `./gradlew :server:test` 통과.
+
+### 2.33. [plan][P0][build, server, web, runner, docs] Core/Context/App 멀티모듈 분리 계획 수립
+
+**Status:** pending
+**Dependencies:** 2.32
+
+`server`, `web`, `runner`에 흩어진 web/security/persistence/grpc 설정과 bounded context 코드를 `core-*`, `context-*`, `app-*` 모듈로 점진 분리하기 위한 실행 계획을 수립한다.
+
+**Details:**
+
+참조 문서: `.taskmaster/docs/refactor/task_2_33_plan.md`, `.taskmaster/docs/refactor/task_2_33_core_libraries_plan.md`. 목표 구조는 `core-common`, `core-web`, `core-security`, `core-persistence`, `core-grpc`, `server-api-client`, `context-shared`, `context-repository`, `context-execution`, `context-collaboration`, `context-identity`, `context-organization`, `app-server`, `app-web`, `app-runner`다. 핵심 결정은 1) Boot plugin은 실행 가능한 `app-*` 모듈에만 적용한다. 2) `core-*`는 business context를 의존하지 않는다. 3) `context-*`는 `app-*`를 의존하지 않는다. 4) `app-web`은 `context-repository` 같은 도메인 context를 직접 의존하지 않고 `server-api-client`와 자체 DTO/ViewModel mapper만 사용한다. 5) `core-persistence`에는 DataSource/MyBatis/transaction 공통 설정만 두고 context별 mapper/entity/adapter는 각 context가 소유한다. 계획 문서는 현재 Gradle 의존성 관찰, 목표 모듈별 책임, 금지 의존성, Gradle 코드 스니펫, component scan 전략, phase별 구현 순서, 검증 기준, 후속 subtask 후보를 포함한다.
+
+[implementation closeout]
+`core-common`, `core-web`, `core-security`, `core-persistence`, `core-grpc` library module을 추가했다. `core-common`에는 `ErrorCode`, `ProblemSpec`, `JgitkinsException`을 이동했고, server business DTO와 infrastructure exception에 의존하는 `CommitFileFactory`는 server에 유지했다. `core-web`에는 `ApiResponse`, `ApiError`, `LocationUriBuilder`를 `api` 하위 package로 이동했고, server REST/internal adapter import를 정리했다. `core-security`에는 server problem spec을 직접 의존하지 않는 `SecurityErrorResponseWriter`만 추가하고, server security handler가 이를 사용하도록 변경했다. `core-persistence`에는 `DataSourceConfig`, `MybatisConfig`를 이동하고 `JGitkinsServerApplication`에서 명시 import했다. `core-grpc`는 gRPC/protobuf dependency 기준 shell로 추가했으며 proto/stub 이동은 보류했다. Architecture test에는 core module의 app import 금지, web MVC의 core ApiResponse import 금지, core-persistence의 business persistence model 소유 금지를 추가했다. 검증: `:core-common:test`, `:core-web:test`, `:core-security:test`, `:core-persistence:test`, `:core-grpc:test`, `:server:test`, `:web:test`, `:runner:test` 통과.

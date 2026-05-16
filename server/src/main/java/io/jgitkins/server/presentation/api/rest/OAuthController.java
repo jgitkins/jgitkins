@@ -3,7 +3,7 @@ package io.jgitkins.server.presentation.api.rest;
 import io.jgitkins.server.application.dto.command.OAuthLoginCommand;
 import io.jgitkins.server.application.dto.result.OAuthLoginResult;
 import io.jgitkins.server.application.port.in.OAuthLoginUseCase;
-import io.jgitkins.server.presentation.common.ApiResponse;
+import io.jgitkins.core.web.api.response.ApiResponse;
 import io.jgitkins.server.presentation.dto.OAuthLoginRequest;
 import io.jgitkins.server.presentation.mapper.OAuthRequestMapper;
 import io.swagger.v3.oas.annotations.Operation;

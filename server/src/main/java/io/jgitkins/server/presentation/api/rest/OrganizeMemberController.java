@@ -5,7 +5,7 @@ import io.jgitkins.server.application.dto.result.OrganizeMemberSummary;
 import io.jgitkins.server.application.port.in.OrganizeMemberAddUseCase;
 import io.jgitkins.server.application.port.in.OrganizeMemberQueryUseCase;
 import io.jgitkins.server.application.port.in.OrganizeMemberRemoveUseCase;
-import io.jgitkins.server.presentation.common.ApiResponse;
+import io.jgitkins.core.web.api.response.ApiResponse;
 import io.jgitkins.server.presentation.dto.OrganizeMemberAddRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

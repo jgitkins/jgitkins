@@ -3,7 +3,7 @@ package io.jgitkins.server.repository.domain.entity;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import io.jgitkins.server.common.exception.JgitkinsException;
+import io.jgitkins.core.common.exception.JgitkinsException;
 import org.junit.jupiter.api.Test;
 
 class BranchTest {

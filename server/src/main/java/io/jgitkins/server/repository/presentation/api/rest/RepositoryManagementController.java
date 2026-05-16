@@ -6,7 +6,7 @@ import io.jgitkins.server.repository.application.contract.result.RepositoryResul
 import io.jgitkins.server.repository.application.port.in.RepositoryLoadUseCase;
 import io.jgitkins.server.repository.application.port.in.RepositoryManagementUseCase;
 import io.jgitkins.server.repository.application.port.in.RepositoryOverviewUseCase;
-import io.jgitkins.server.presentation.common.ApiResponse;
+import io.jgitkins.core.web.api.response.ApiResponse;
 import io.jgitkins.server.repository.presentation.dto.RepositoryCreateRequest;
 import io.jgitkins.server.repository.presentation.mapper.RepositoryRequestMapper;
 import io.swagger.v3.oas.annotations.Operation;

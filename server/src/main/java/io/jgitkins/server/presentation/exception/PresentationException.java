@@ -1,6 +1,6 @@
 package io.jgitkins.server.presentation.exception;
 
-import io.jgitkins.server.common.exception.JgitkinsException;
+import io.jgitkins.core.common.exception.JgitkinsException;
 import io.jgitkins.server.presentation.common.error.PresentationErrorCode;
 import io.jgitkins.server.presentation.common.error.PresentationProblemSpec;
 

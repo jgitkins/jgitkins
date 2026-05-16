@@ -2,7 +2,7 @@ package io.jgitkins.server.application.exception;
 
 import io.jgitkins.server.application.common.error.ApplicationErrorCode;
 import io.jgitkins.server.application.common.error.ApplicationProblemSpec;
-import io.jgitkins.server.common.exception.JgitkinsException;
+import io.jgitkins.core.common.exception.JgitkinsException;
 
 public class ApplicationException extends JgitkinsException {
 

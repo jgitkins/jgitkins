@@ -1,6 +1,6 @@
 package io.jgitkins.server.application.common.error;
 
-import io.jgitkins.server.common.error.ErrorCode;
+import io.jgitkins.core.common.error.ErrorCode;
 
 public enum ApplicationErrorCode implements ErrorCode {
     UNAUTHENTICATED("UNAUTHENTICATED", "Authentication required"),

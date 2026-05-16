@@ -1,7 +1,7 @@
-package io.jgitkins.server.presentation.common;
+package io.jgitkins.core.web.api.response;
 
-import io.jgitkins.server.common.error.ErrorCode;
-import io.jgitkins.server.common.problem.ProblemSpec;
+import io.jgitkins.core.common.error.ErrorCode;
+import io.jgitkins.core.common.problem.ProblemSpec;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;

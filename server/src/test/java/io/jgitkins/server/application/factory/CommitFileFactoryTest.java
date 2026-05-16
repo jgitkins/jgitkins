@@ -5,7 +5,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import io.jgitkins.server.application.dto.FileUploadInfo;
-import io.jgitkins.server.common.exception.JgitkinsException;
+import io.jgitkins.core.common.exception.JgitkinsException;
 import io.jgitkins.server.common.factory.CommitFileFactory;
 import io.jgitkins.server.infrastructure.common.error.InfrastructureErrorCode;
 import java.io.IOException;

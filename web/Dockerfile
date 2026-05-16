@@ -1,10 +1,9 @@
 FROM eclipse-temurin:17-jdk AS build
 WORKDIR /workspace
 COPY . .
-# RUN ./gradlew bootJar -x test
-RUN ./gradlew bootJar -x test
+RUN ./gradlew :web:bootJar -x test
 
-RUN cp build/libs/app.jar /workspace/app.jar
+RUN cp web/build/libs/app.jar /workspace/app.jar
 
 FROM eclipse-temurin:17-jre
 WORKDIR /app
@@ -26,6 +25,6 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=build /workspace/app.jar /app/app.jar
-COPY secrets /app/secrets
+COPY web/secrets /app/secrets
 EXPOSE 8081
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]

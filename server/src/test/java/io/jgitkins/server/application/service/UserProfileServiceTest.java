@@ -1,6 +1,6 @@
 package io.jgitkins.server.application.service;
 
-import io.jgitkins.server.common.exception.JgitkinsException;
+import io.jgitkins.core.common.exception.JgitkinsException;
 import io.jgitkins.server.domain.error.DomainErrorCode;
 import io.jgitkins.server.domain.error.DomainProblemSpec;
 import io.jgitkins.server.application.port.out.CurrentUserPort;
