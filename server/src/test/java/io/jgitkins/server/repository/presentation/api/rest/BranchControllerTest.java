@@ -57,7 +57,9 @@ class BranchControllerTest {
                                 "sourceBranch", "main"
                         ))))
                 .andExpect(status().isCreated())
-                .andExpect(header().string("Location", org.hamcrest.Matchers.containsString("feature")));
+                .andExpect(header().string("Location", org.hamcrest.Matchers.containsString("feature")))
+                .andExpect(jsonPath("$.data").doesNotExist())
+                .andExpect(jsonPath("$.error").doesNotExist());
 
         verify(branchManagementUseCase).createBranch(command);
     }
@@ -74,7 +76,9 @@ class BranchControllerTest {
                                 "sourceBranch", "main"
                         ))))
                 .andExpect(status().isCreated())
-                .andExpect(header().string("Location", org.hamcrest.Matchers.containsString("feature-alias")));
+                .andExpect(header().string("Location", org.hamcrest.Matchers.containsString("feature-alias")))
+                .andExpect(jsonPath("$.data").doesNotExist())
+                .andExpect(jsonPath("$.error").doesNotExist());
 
         verify(branchManagementUseCase).createBranch(command);
     }

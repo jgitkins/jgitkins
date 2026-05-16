@@ -66,6 +66,14 @@ public final class ApiResponse<T> {
         return ResponseEntity.created(location).body(ApiResponse.success(body));
     }
 
+    public static ResponseEntity<ApiResponse<Void>> created(URI location) {
+        return ResponseEntity.created(location).body(ApiResponse.success());
+    }
+
+    public static <T> ResponseEntity<ApiResponse<T>> created(URI location, T body) {
+        return ResponseEntity.created(location).body(ApiResponse.success(body));
+    }
+
     public static <T> ResponseEntity<ApiResponse<T>> ok(T body) {
         return ResponseEntity.ok(ApiResponse.success(body));
     }

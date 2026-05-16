@@ -29,14 +29,14 @@ public class BranchController {
 
     @Operation(summary = "Create branch")
     @PostMapping
-    public ResponseEntity<Void> create(@PathVariable Long repositoryId,
-                                       @RequestBody BranchCreateRequest request) {
+    public ResponseEntity<ApiResponse<Void>> create(@PathVariable Long repositoryId,
+                                                    @RequestBody BranchCreateRequest request) {
 
         BranchCreateCommand createCommand = branchRequestMapper.toCommand(repositoryId, request);
         branchManagementUseCase.createBranch(createCommand);
 
         URI location = LocationUriBuilder.create(request.branchName());
-        return ResponseEntity.created(location).build();
+        return ApiResponse.created(location);
 
     }
 
