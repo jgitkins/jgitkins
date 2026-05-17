@@ -7,6 +7,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import io.jgitkins.server.application.support.CloneUrlBuilder;
 import io.jgitkins.server.application.support.change.BranchChangeRecorder;
 import io.jgitkins.server.shared.application.change.MergeabilityAssessmentAssembler;
+import io.jgitkins.server.change.review.application.service.PullRequestCreateService;
+import io.jgitkins.server.change.review.application.service.PullRequestQueryService;
 import io.jgitkins.server.execution.application.support.ExecutionRequestService;
 import io.jgitkins.server.execution.application.policy.EventPolicyResolver;
 import io.jgitkins.server.application.service.AdminUserService;
@@ -32,6 +34,7 @@ import io.jgitkins.server.presentation.api.rest.UserCredentialController;
 import io.jgitkins.server.presentation.api.web.WebOrganizeController;
 import io.jgitkins.server.presentation.api.web.WebRepositoryController;
 import io.jgitkins.core.web.api.response.ApiResponse;
+import io.jgitkins.server.change.review.presentation.api.rest.PullRequestController;
 import io.jgitkins.server.repository.application.service.BranchLoadService;
 import io.jgitkins.server.repository.application.service.BranchManagementService;
 import io.jgitkins.server.repository.application.service.RepositoryLoadService;
@@ -62,6 +65,7 @@ import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Arrays;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseEntity;
@@ -105,6 +109,18 @@ class ArchitecturePackageConventionTest {
     }
 
     @Test
+    void changeReviewServices_resideInChangeReviewServicePackage() {
+        List<Class<?>> serviceClasses = List.of(
+                PullRequestCreateService.class,
+                PullRequestQueryService.class,
+                io.jgitkins.server.change.review.application.service.MergeService.class);
+
+        serviceClasses.forEach(serviceClass -> assertEquals(
+                "io.jgitkins.server.change.review.application.service",
+                serviceClass.getPackageName()));
+    }
+
+    @Test
     void supportCollaborators_useComponentInsteadOfService() {
         List<Class<?>> supportClasses = List.of(
                 CloneUrlBuilder.class,
@@ -140,6 +156,8 @@ class ArchitecturePackageConventionTest {
                 SignupController.class,
                 UserController.class,
                 UserCredentialController.class,
+                PullRequestController.class,
+                io.jgitkins.server.change.review.presentation.api.rest.MergeController.class,
                 WebOrganizeController.class,
                 WebRepositoryController.class,
                 RunnerController.class,
@@ -157,31 +175,48 @@ class ArchitecturePackageConventionTest {
     }
 
     @Test
+    void changeReviewControllers_resideInChangeReviewPresentationPackage() {
+        List<Class<?>> controllerClasses = List.of(
+                PullRequestController.class,
+                io.jgitkins.server.change.review.presentation.api.rest.MergeController.class);
+
+        controllerClasses.forEach(controllerClass -> assertEquals(
+                "io.jgitkins.server.change.review.presentation.api.rest",
+                controllerClass.getPackageName()));
+    }
+
+    @Test
     void applicationSources_doNotImportInfrastructurePackages() throws IOException {
-        Path applicationRoot = Path.of("src/main/java/io/jgitkins/server/application");
+        Path applicationRoot = resolveExistingPath(
+                "src/main/java/io/jgitkins/server/application",
+                "app-server/src/main/java/io/jgitkins/server/application");
         assertNoInfrastructureImports(applicationRoot);
     }
 
     @Test
     void repositoryApplicationSources_doNotImportInfrastructurePackages() throws IOException {
-        Path repositoryApplicationRoot = Path.of("src/main/java/io/jgitkins/server/repository/application");
+        Path repositoryApplicationRoot = resolveExistingPath(
+                "src/main/java/io/jgitkins/server/repository/application",
+                "app-server/src/main/java/io/jgitkins/server/repository/application");
         assertNoInfrastructureImports(repositoryApplicationRoot);
     }
 
     @Test
     void repositoryGitAdapters_doNotImportRepositoryApplicationExceptions() throws IOException {
-        Path repositoryGitAdapterRoot = Path.of("src/main/java/io/jgitkins/server/repository/infrastructure/adapter/git");
+        Path repositoryGitAdapterRoot = resolveExistingPath(
+                "src/main/java/io/jgitkins/server/repository/infrastructure/adapter/git",
+                "app-server/src/main/java/io/jgitkins/server/repository/infrastructure/adapter/git");
         assertNoImports(repositoryGitAdapterRoot, "import io.jgitkins.server.repository.application.exception.");
     }
 
     @Test
     void coreModules_doNotImportApplicationModules() throws IOException {
         List<Path> coreRoots = List.of(
-                Path.of("../core-common/src/main/java"),
-                Path.of("../core-web/src/main/java"),
-                Path.of("../core-security/src/main/java"),
-                Path.of("../core-persistence/src/main/java"),
-                Path.of("../core-grpc/src/main/java"));
+                resolveExistingPath("../core-common/src/main/java", "core-common/src/main/java"),
+                resolveExistingPath("../core-web/src/main/java", "core-web/src/main/java"),
+                resolveExistingPath("../core-security/src/main/java", "core-security/src/main/java"),
+                resolveExistingPath("../core-persistence/src/main/java", "core-persistence/src/main/java"),
+                resolveExistingPath("../core-grpc/src/main/java", "core-grpc/src/main/java"));
 
         for (Path coreRoot : coreRoots) {
             assertNoImports(coreRoot, "import io.jgitkins.server.");
@@ -192,17 +227,28 @@ class ArchitecturePackageConventionTest {
 
     @Test
     void webMvcControllers_doNotUseCoreApiResponseAsViewModel() throws IOException {
-        Path webPresentationRoot = Path.of("../web/src/main/java/io/jgitkins/web/presentation");
+        Path webPresentationRoot = resolveExistingPath(
+                "../app-web/src/main/java/io/jgitkins/web/presentation",
+                "app-web/src/main/java/io/jgitkins/web/presentation");
         assertNoImports(webPresentationRoot, "import io.jgitkins.core.web.api.response.ApiResponse;");
     }
 
     @Test
     void corePersistence_doesNotOwnBusinessPersistenceModels() throws IOException {
-        Path corePersistenceRoot = Path.of("../core-persistence/src/main/java");
+        Path corePersistenceRoot = resolveExistingPath("../core-persistence/src/main/java", "core-persistence/src/main/java");
 
         assertNoPath(corePersistenceRoot, "model");
         assertNoPath(corePersistenceRoot, "entity");
         assertNoPath(corePersistenceRoot, "adapter");
+    }
+
+    private Path resolveExistingPath(String... candidates) {
+        return Arrays.stream(candidates)
+                .map(Path::of)
+                .filter(Files::exists)
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("Unable to resolve existing path from candidates: "
+                        + String.join(", ", candidates)));
     }
 
     private void assertNoInfrastructureImports(Path root) throws IOException {
