@@ -4,6 +4,7 @@
 - 현재 `server`, `web`, `runner`가 각자 보유한 web/security/persistence/grpc 설정과 도메인 context 코드를 점진적으로 분리한다.
 - 실행 가능한 애플리케이션 모듈은 `app-*`에만 두고, 공통 기술 설정은 `core-*`, 비즈니스 경계는 `context-*` 모듈로 승격한다.
 - `app-web`은 domain context를 직접 의존하지 않는다. `app-web`은 server가 제공하는 API 응답을 client SDK로 호출하고, web 자체 DTO/ViewModel로 변환해서 사용한다.
+- `server-api-client`는 `app-web` 전용 client SDK로 취급하고 `app-server`에는 두지 않는다.
 
 ### 현재 관찰
 - 현재 Gradle root는 다음 3개 모듈만 포함한다.
@@ -392,7 +393,7 @@ io.jgitkins.app.runner
 - `ApiResponse` public factory만 사용한다.
 
 #### Phase 2: `server-api-client` 도입 및 `app-web` 의존 정리
-- web module의 server 호출부를 `server-api-client`로 감싼다.
+- `server-api-client`를 `app-web` 전용 SDK로 고정하고, web module의 server 호출부를 이 모듈로 감싼다.
 - `app-web` 내부는 client DTO를 web ViewModel로 변환한다.
 - `app-web`이 `context-*` 또는 server application DTO를 직접 import하지 못하도록 테스트를 추가한다.
 
@@ -430,6 +431,8 @@ assertNoImports(appWebRoot, "import io.jgitkins.server.application.");
   - 대응: context별 `*ContextConfiguration`과 app-level `@Import`를 사용한다.
 - 위험: `app-web`이 편의상 context DTO를 직접 import한다.
   - 대응: architecture test로 `app-web -> context-*` import 금지.
+- 위험: `server-api-client`가 app-server 쪽에 섞이면 server 런타임이 transport SDK에 오염된다.
+  - 대응: `server-api-client`는 app-web에만 붙이고 app-server는 포함하지 않는다.
 - 위험: `core-web`이 보안, 세션, OAuth까지 끌어안는다.
   - 대응: `core-web`은 HTTP envelope/MVC 공통까지만 두고 security는 별도 module로 분리한다.
 - 위험: persistence 공통화가 entity 공통화로 변질된다.
@@ -451,3 +454,4 @@ assertNoImports(appWebRoot, "import io.jgitkins.server.application.");
 
 ### 세부 실행 문서
 - `.taskmaster/docs/refactor/task_2_33_core_libraries_plan.md`: `core-*` library module만 먼저 분리하는 간결 실행 계획과 상세 코드 스니펫을 다룬다.
+- `.taskmaster/docs/refactor/task_2_33_injection_core_libraries_from_apps_plan.md`: `app-server`, `app-web`, `app-runner` rename 이후 core library 주입과 bootstrap 정리를 다룬다.

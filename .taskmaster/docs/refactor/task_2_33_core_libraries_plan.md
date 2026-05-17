@@ -45,6 +45,10 @@ runner
 └── core-grpc
 ```
 
+### 후속 연계
+- `server-api-client`는 이번 core library 분리 범위가 아니라 `app-web` 전용 client SDK로 후속 계획에서 다룬다.
+- `app-server`는 server-api-client를 의존하지 않는다.
+
 ### `settings.gradle`
 ```gradle
 rootProject.name = 'jgitkins'
@@ -1048,3 +1052,6 @@ git diff --check
 - `core-persistence`에는 `DataSourceConfig`, `MybatisConfig`를 이동하고 server application에서 명시 import했다.
 - `core-grpc`는 dependency/version shell만 추가하고 proto/stub 이동은 보류했다.
 - 검증은 `:core-common:test`, `:core-web:test`, `:core-security:test`, `:core-persistence:test`, `:core-grpc:test`, `:server:test`, `:web:test`, `:runner:test`를 통과했다.
+
+### 후속 문서
+- `.taskmaster/docs/refactor/task_2_33_injection_core_libraries_from_apps_plan.md`: app 모듈 rename과 core library 주입, bootstrap 정리의 후속 실행 계획을 다룬다.

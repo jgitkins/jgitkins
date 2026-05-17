@@ -29,23 +29,23 @@ jobs:
         shell: bash
         env:
           EVENT_BEFORE: ${{ github.event.before }}
-          SERVER_PATTERN: '^(server/|core-common/|core-web/|core-security/|core-persistence/|core-grpc/|settings\.gradle$|\.github/workflows/verify\.yml$|\.github/workflows/server-verify\.yml$)'
-          WEB_PATTERN: '^(web/|core-common/|core-web/|core-security/|settings\.gradle$|\.github/workflows/verify\.yml$|\.github/workflows/web-verify\.yml$)'
-          RUNNER_PATTERN: '^(runner/|core-common/|core-grpc/|settings\.gradle$|\.github/workflows/verify\.yml$|\.github/workflows/runner-verify\.yml$)'
+          SERVER_PATTERN: '^(app-server/|core-common/|core-security/|core-persistence/|core-grpc/|settings\.gradle$|\.github/workflows/verify\.yml$|\.github/workflows/app-server-verify\.yml$)'
+          WEB_PATTERN: '^(app-web/|core-common/|core-web/|core-security/|settings\.gradle$|\.github/workflows/verify\.yml$|\.github/workflows/app-web-verify\.yml$)'
+          RUNNER_PATTERN: '^(app-runner/|core-common/|core-grpc/|settings\.gradle$|\.github/workflows/verify\.yml$|\.github/workflows/app-runner-verify\.yml$)'
         run: |
           bash .github/scripts/detect-changed-modules.sh
 
   server:
     needs: detect
     if: needs.detect.outputs.server == 'true'
-    uses: ./.github/workflows/server-verify.yml
+    uses: ./.github/workflows/app-server-verify.yml
 
   web:
     needs: detect
     if: needs.detect.outputs.web == 'true'
-    uses: ./.github/workflows/web-verify.yml
+    uses: ./.github/workflows/app-web-verify.yml
 
   runner:
     needs: detect
     if: needs.detect.outputs.runner == 'true'
-    uses: ./.github/workflows/runner-verify.yml
+    uses: ./.github/workflows/app-runner-verify.yml
