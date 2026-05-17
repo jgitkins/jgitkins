@@ -4,7 +4,7 @@
 
 `PullRequest` aggregate의 persisted state와 mapper/persistence adapter의 책임을 정리한다.
 
-이 문서는 `PullRequestDomainMapper`와 `PullRequestPersistenceAdapter`를 기준으로 저장/조회 경계를 고정한다.
+이 문서는 `app-server/src/main/java/io/jgitkins/server/change/review/infrastructure/**` 아래로 저장/조회 경계를 고정하는 계획이다.
 
 ## 핵심 결론
 
@@ -15,11 +15,24 @@
 
 ## 대상 파일
 
-- `app-server/src/main/java/io/jgitkins/server/infrastructure/mapper/PullRequestDomainMapper.java`
-- `app-server/src/main/java/io/jgitkins/server/infrastructure/adapter/persistence/pr/PullRequestPersistenceAdapter.java`
-- `app-server/src/main/java/io/jgitkins/server/infrastructure/persistence/model/PullRequestEntity.java`
-- `app-server/src/main/java/io/jgitkins/server/infrastructure/persistence/model/PullRequestEntityCondition.java`
-- `app-server/src/main/java/io/jgitkins/server/domain/pr/repository/PullRequestRepository.java`
+- `app-server/src/main/java/io/jgitkins/server/change/review/infrastructure/mapper/PullRequestDomainMapper.java`
+- `app-server/src/main/java/io/jgitkins/server/change/review/infrastructure/adapter/persistence/PullRequestPersistenceAdapter.java`
+- `app-server/src/main/java/io/jgitkins/server/change/review/infrastructure/persistence/model/PullRequestEntity.java`
+- `app-server/src/main/java/io/jgitkins/server/change/review/infrastructure/persistence/model/PullRequestEntityCondition.java`
+- `app-server/src/main/java/io/jgitkins/server/change/review/domain/repository/PullRequestRepository.java`
+
+## TO-BE 패키지
+
+```text
+app-server/src/main/java/io/jgitkins/server/change/review/infrastructure/
+  mapper/
+    PullRequestDomainMapper.java
+  adapter/persistence/
+    PullRequestPersistenceAdapter.java
+  persistence/model/
+    PullRequestEntity.java
+    PullRequestEntityCondition.java
+```
 
 ## mapper 정책
 

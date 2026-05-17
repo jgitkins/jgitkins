@@ -4,33 +4,45 @@
 
 `PullRequestService`에 섞여 있는 생성/조회 책임을 분리하고, `MergeService`와의 경계도 명확히 한다.
 
-이 문서는 application service를 create/query 중심으로 분리하는 계획이다.
+이 문서는 `app-server/src/main/java/io/jgitkins/server/change/review/application/**` 아래로 application seam을 옮기는 계획이다.
 
 ## 핵심 결론
 
 - PR 생성과 PR 상세 조회는 서로 다른 service로 분리한다.
 - `MergeService`는 Git merge 계산/실행만 책임진다.
 - PR 상태 전이는 이번 단계에서 merge API에 직접 묶지 않는다.
+- `PullRequestController`와 `MergeController`는 change.review presentation이 호출한다.
 
 ## 대상 파일
 
-- `app-server/src/main/java/io/jgitkins/server/application/service/PullRequestService.java`
-- `app-server/src/main/java/io/jgitkins/server/application/service/MergeService.java`
-- `app-server/src/main/java/io/jgitkins/server/application/support/pr/PullRequestMergeabilityResolver.java`
-- `app-server/src/main/java/io/jgitkins/server/application/support/pr/PullRequestDetailMapper.java`
-- `app-server/src/main/java/io/jgitkins/server/application/support/pr/PullRequestResultMapper.java`
-- `app-server/src/main/java/io/jgitkins/server/application/port/in/CreatePullRequestUseCase.java`
-- `app-server/src/main/java/io/jgitkins/server/application/port/in/GetPullRequestDetailUseCase.java`
+- `app-server/src/main/java/io/jgitkins/server/change/review/application/service/PullRequestCreateService.java`
+- `app-server/src/main/java/io/jgitkins/server/change/review/application/service/PullRequestQueryService.java`
+- `app-server/src/main/java/io/jgitkins/server/change/review/application/service/MergeService.java`
+- `app-server/src/main/java/io/jgitkins/server/change/review/application/support/PullRequestMergeabilityResolver.java`
+- `app-server/src/main/java/io/jgitkins/server/change/review/application/mapper/PullRequestDetailMapper.java`
+- `app-server/src/main/java/io/jgitkins/server/change/review/application/mapper/PullRequestResultMapper.java`
+- `app-server/src/main/java/io/jgitkins/server/change/review/application/port/in/CreatePullRequestUseCase.java`
+- `app-server/src/main/java/io/jgitkins/server/change/review/application/port/in/GetPullRequestDetailUseCase.java`
 
 ## TO-BE 서비스 구조
 
-권장 구조는 다음과 같다.
-
 ```text
-app-server/application/service/
-  PullRequestCreateService
-  PullRequestQueryService
-  MergeService
+app-server/src/main/java/io/jgitkins/server/change/review/application/
+  service/
+    PullRequestCreateService.java
+    PullRequestQueryService.java
+    MergeService.java
+  port/in/
+    CreatePullRequestUseCase.java
+    GetPullRequestDetailUseCase.java
+    MergeabilityCheckUseCase.java
+    MergeabilityEvaluationUseCase.java
+    MergeUseCase.java
+  support/
+    PullRequestMergeabilityResolver.java
+  mapper/
+    PullRequestDetailMapper.java
+    PullRequestResultMapper.java
 ```
 
 ### 1. PullRequestCreateService
@@ -43,35 +55,7 @@ app-server/application/service/
 - save
 - result mapping
 
-예시:
-
-```java
-@Service
-@RequiredArgsConstructor
-public class PullRequestCreateService implements CreatePullRequestUseCase {
-
-    private final PullRequestRepository pullRequestRepository;
-    private final RepositoryLookupService repositoryLookupService;
-    private final RepositoryNamespaceResolver repositoryNamespaceResolver;
-    private final BranchGitPort branchGitPort;
-    private final PullRequestResultMapper resultMapper;
-
-    @Override
-    @Transactional
-    public PullRequestResult createPullRequest(PullRequestCreateCommand command) {
-        Repository repository = repositoryLookupService.resolveByPath(command.namespace(), command.repoName())
-                .orElseThrow(() -> new RepositoryNotFoundException(command.namespace(), command.repoName()));
-        String namespace = repositoryNamespaceResolver.resolve(repository);
-        String repoName = repository.getPath().getValue();
-
-        BranchHeadSnapshot source = currentHead(namespace, repoName, command.sourceBranch());
-        BranchHeadSnapshot target = currentHead(namespace, repoName, command.targetBranch());
-
-        PullRequest saved = pullRequestRepository.save(PullRequest.create(repository.getId(), source, target));
-        return resultMapper.toResult(saved);
-    }
-}
-```
+핵심은 create flow가 repository context와 Git port를 읽고, change.review domain에 PR snapshot을 저장하는 것이다.
 
 ### 2. PullRequestQueryService
 
@@ -84,35 +68,7 @@ public class PullRequestCreateService implements CreatePullRequestUseCase {
 - mergeability evaluation
 - detail mapping
 
-예시:
-
-```java
-@Service
-@RequiredArgsConstructor
-public class PullRequestQueryService implements GetPullRequestDetailUseCase {
-
-    private final PullRequestRepository pullRequestRepository;
-    private final RepositoryRepository repositoryRepository;
-    private final PullRequestMergeabilityResolver mergeabilityResolver;
-    private final PullRequestDetailMapper detailMapper;
-
-    @Override
-    @Transactional(readOnly = true)
-    public PullRequestDetailResult getPullRequestDetail(PullRequestId pullRequestId) throws IOException {
-        PullRequest pullRequest = pullRequestRepository.findById(pullRequestId)
-                .orElseThrow(() -> new PullRequestNotFoundException(pullRequestId));
-        Repository repository = repositoryRepository.findById(pullRequest.getRepositoryId())
-                .orElseThrow(() -> new RepositoryNotFoundException(pullRequest.getRepositoryId().getValue()));
-
-        BranchHeadSnapshot currentSource = mergeabilityResolver.currentSourceHead(repository, pullRequest);
-        BranchHeadSnapshot currentTarget = mergeabilityResolver.currentTargetHead(repository, pullRequest);
-        PullRequest observed = pullRequest.markTargetDrifted(currentTarget);
-        MergeabilityAssessment assessment = mergeabilityResolver.assess(repository, observed);
-
-        return detailMapper.toDetail(observed, currentSource, currentTarget, assessment);
-    }
-}
-```
+핵심은 조회 시점 계산값을 모두 여기서 조립하고, aggregate는 persisted snapshot만 돌려주게 만드는 것이다.
 
 ### 3. MergeService 경계
 
@@ -138,7 +94,7 @@ public class MergeService implements MergeabilityCheckUseCase, MergeabilityEvalu
 - `PullRequestService`는 더 이상 create/query를 동시에 가지지 않도록 정리한다.
 - create/query service의 의존성 집합이 분리되도록 한다.
 - `PullRequestMergeabilityResolver`는 query service 전용 collaborator로 유지한다.
-- merge 수행은 repository-level flow로 남기고, PR 상태 전이 seam은 다음 단계로 미룬다.
+- merge 수행은 repository-level route를 유지하되, 서비스 ownership은 change.review로 옮긴다.
 
 ## 테스트 기준
 

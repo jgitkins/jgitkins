@@ -87,9 +87,9 @@ source branch를 target branch로 실제 반영하는 command다. 현재는 `Mer
 
 `PullRequest`는 이 context의 root다.
 
-- 코드 근거: `server/src/main/java/io/jgitkins/server/domain/pr/aggregate/PullRequest.java`
+- 코드 근거: `app-server/src/main/java/io/jgitkins/server/change/review/domain/aggregate/PullRequest.java`
 - 유스케이스 근거: `CreatePullRequestUseCase`, `GetPullRequestDetailUseCase`
-- 서비스 근거: `PullRequestService`
+- 서비스 근거: `PullRequestCreateService`, `PullRequestQueryService`
 
 Pull Request가 직접 소유하거나 결정하는 값은 다음과 같다.
 
@@ -109,7 +109,7 @@ Pull Request는 identity, branch snapshot, 상태 전이를 소유한다. 최신
 
 `BranchHeadSnapshot`은 Pull Request 내부 값 모델로 본다.
 
-- 코드 근거: `server/src/main/java/io/jgitkins/server/domain/pr/model/BranchHeadSnapshot.java`
+- 코드 근거: `app-server/src/main/java/io/jgitkins/server/change/review/domain/model/BranchHeadSnapshot.java`
 - 구성: `BranchName + CommitHash`
 - 규칙 근거: branch 이름과 commit hash가 모두 있어야 snapshot이 성립한다.
 
@@ -119,7 +119,7 @@ Pull Request는 identity, branch snapshot, 상태 전이를 소유한다. 최신
 
 `TargetDrift`는 Pull Request에 종속된 값 모델이다.
 
-- 코드 근거: `server/src/main/java/io/jgitkins/server/domain/pr/model/TargetDrift.java`
+- 코드 근거: `app-server/src/main/java/io/jgitkins/server/change/review/domain/model/TargetDrift.java`
 - 구성: `drifted`, `previousTargetHead`, `currentTargetHead`
 - 규칙 근거: drifted=true이면 이전/현재 target head가 모두 있어야 하고 서로 달라야 한다.
 
@@ -131,9 +131,9 @@ Pull Request는 identity, branch snapshot, 상태 전이를 소유한다. 최신
 
 `MergeabilityAssessment`는 Pull Request 내부 엔티티보다 도메인 서비스 계산 결과에 가깝다.
 
-- 코드 근거: `server/src/main/java/io/jgitkins/server/domain/model/changegraph/MergeabilityAssessment.java`
+- 코드 근거: `app-server/src/main/java/io/jgitkins/server/change/review/domain/model/changegraph/MergeabilityAssessment.java`
 - 서비스 근거: `PullRequestMergeabilityResolver`, `MergeService`, `MergeabilityAssessmentAssembler`
-- 테스트 근거: `PullRequestServiceTest`
+- 테스트 근거: `PullRequestCreateServiceTest`, `PullRequestQueryServiceTest`
 - `MergeabilityAssessment`는 `Change & Review Context` 안에서 다룬다.
 - Pull Request가 항상 영속적으로 소유하는 내부 엔티티로 보지 않는다.
 - 현재는 read-side 계산 결과 또는 domain service result로 기술한다.
@@ -141,20 +141,23 @@ Pull Request는 identity, branch snapshot, 상태 전이를 소유한다. 최신
 권장 패키지 예시는 다음과 같다.
 
 ```text
-server/domain/pr/
+server/change/review/
   aggregate/
     PullRequest.java
   model/
     BranchHeadSnapshot.java
     TargetDrift.java
     PullRequestStatus.java
+  model/changegraph/
+    MergeabilityAssessment.java
   vo/
     PullRequestId.java
 
-server/domain/model/changegraph/
-  MergeabilityAssessment.java
-  MergeabilityStatus.java
-  MergeTopologySummary.java
+server/change/review/application/
+  service/
+    PullRequestCreateService.java
+    PullRequestQueryService.java
+    MergeService.java
 ```
 
 이 구조는 Pull Request를 root로 두고 mergeability를 변경 그래프 해석 결과로 분리한다.
@@ -238,7 +241,7 @@ Pull Request 상태는 다음 3개다.
 
 #### 1. Pull Request 생성
 
-`PullRequestService` 흐름은 다음과 같다.
+`PullRequestCreateService` 흐름은 다음과 같다.
 
 1. `namespace + repoName`으로 Repository를 조회한다.
 2. Repository에서 실제 namespace와 repo path를 해석한다.
@@ -266,7 +269,7 @@ Pull Request 상태는 다음 3개다.
 
 #### 2. Pull Request 상세 조회
 
-`PullRequestService#getPullRequestDetail(...)` 흐름은 다음과 같다.
+`PullRequestQueryService#getPullRequestDetail(...)` 흐름은 다음과 같다.
 
 1. Pull Request를 로드한다.
 2. `repositoryId`로 Repository를 다시 로드한다.

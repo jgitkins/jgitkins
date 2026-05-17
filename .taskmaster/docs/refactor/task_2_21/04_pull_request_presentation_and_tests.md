@@ -4,25 +4,41 @@
 
 `Change & Review Context`의 API와 테스트 경계를 정리한다.
 
-이 문서는 PR 생성/상세 조회용 presentation endpoint를 새로 두고, merge controller는 repository-level command로 유지하는 계획을 담는다.
+이 문서는 `app-server/src/main/java/io/jgitkins/server/change/review/presentation/**` 아래로 PR API를 옮기고, repository-scoped merge route까지 change.review 소유로 정리하는 계획을 담는다.
 
 ## 핵심 결론
 
 - PR 전용 controller를 추가한다.
 - controller는 use case 호출만 하고, 계산 로직은 갖지 않는다.
-- `MergeController`는 repository-level merge flow로 유지한다.
+- `MergeController`는 repository-scoped merge flow를 유지하되 change.review presentation 소유로 옮긴다.
 - PR 상태 전이는 이번 단계에서 merge endpoint에 직접 얹지 않는다.
 
 ## 대상 파일
 
-- `app-server/src/main/java/io/jgitkins/server/presentation/api/rest/MergeController.java`
-- `app-server/src/main/java/io/jgitkins/server/presentation/api/rest/PullRequestController.java` 추가 예정
-- `app-server/src/main/java/io/jgitkins/server/presentation/dto/...` 추가 예정
-- `app-server/src/main/java/io/jgitkins/server/presentation/mapper/...` 추가 예정
+- `app-server/src/main/java/io/jgitkins/server/change/review/presentation/api/rest/MergeController.java`
+- `app-server/src/main/java/io/jgitkins/server/change/review/presentation/api/rest/PullRequestController.java` 추가 예정
+- `app-server/src/main/java/io/jgitkins/server/change/review/presentation/dto/...` 추가 예정
+- `app-server/src/main/java/io/jgitkins/server/change/review/presentation/mapper/...` 추가 예정
+
+## TO-BE 패키지
+
+```text
+app-server/src/main/java/io/jgitkins/server/change/review/presentation/
+  api/rest/
+    PullRequestController.java
+    MergeController.java
+  dto/
+    PullRequestCreateRequest.java
+  mapper/
+    PullRequestRequestMapper.java
+    PullRequestResponseMapper.java
+```
 
 ## controller 설계
 
 ### 1. PullRequestController 신규 도입
+
+이 단계에서는 PR용 신규 API contract를 추가한다. 기존 `MergeController`는 repository-scoped merge flow로 유지하고, PR 생성/상세 조회는 별도 controller로 분리한다.
 
 권장 base path:
 
@@ -65,7 +81,7 @@ public class PullRequestController {
 
 ### 2. MergeController 유지
 
-`MergeController`는 현재처럼 repository-level merge를 유지한다.
+`MergeController`는 repository-scoped merge route를 유지한다.
 
 ```java
 @GetMapping("/repositories/{namespace}/{repoName}/merge/check")
@@ -114,19 +130,21 @@ when(createPullRequestUseCase.createPullRequest(any(PullRequestCreateCommand.cla
 
 - presentation은 application port만 의존한다.
 - presentation은 infrastructure mapper/adapter를 직접 참조하지 않는다.
-- PR controller는 `PullRequestController`가 생기더라도 use case 중심 계약을 유지한다.
+- PR controller와 merge controller는 `change.review` package 안에서 use case 중심 계약을 유지한다.
 
 ## 권장 파일 추가
 
-- `app-server/src/main/java/io/jgitkins/server/presentation/api/rest/PullRequestController.java`
-- `app-server/src/main/java/io/jgitkins/server/presentation/dto/PullRequestCreateRequest.java`
-- `app-server/src/test/java/io/jgitkins/server/presentation/api/rest/PullRequestControllerTest.java`
+- `app-server/src/main/java/io/jgitkins/server/change/review/presentation/api/rest/PullRequestController.java`
+- `app-server/src/main/java/io/jgitkins/server/change/review/presentation/api/rest/MergeController.java`
+- `app-server/src/main/java/io/jgitkins/server/change/review/presentation/dto/PullRequestCreateRequest.java`
+- `app-server/src/test/java/io/jgitkins/server/change/review/presentation/api/rest/PullRequestControllerTest.java`
+- `app-server/src/test/java/io/jgitkins/server/change/review/presentation/api/rest/MergeControllerTest.java`
 
 필요하면 request mapper를 별도로 둔다.
 
 ## 완료 기준
 
 - PR 생성/상세 조회 엔드포인트가 presentation에 명시된다.
-- merge controller는 repository-level command로 남는다.
+- merge controller는 repository-scoped command로 남되 change.review ownership을 가진다.
 - controller는 thin adapter로 유지되고, 계산 로직은 service/support로만 존재한다.
 - 테스트가 endpoint, service, architecture 경계를 각각 검증한다.

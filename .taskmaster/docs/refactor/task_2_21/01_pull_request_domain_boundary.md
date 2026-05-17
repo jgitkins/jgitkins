@@ -1,16 +1,16 @@
-# 01. Pull Request Domain Boundary
+# 01. Change & Review Domain Boundary
 
 ## 목적
 
 `Change & Review Context`의 첫 번째 결정은 `PullRequest`가 무엇을 직접 소유하고, 무엇을 조회 시점 계산값으로 둘지 고정하는 것이다.
 
-이 문서는 `PullRequest` aggregate의 persisted state와 computed result 경계를 정리한다.
+이 문서는 `PullRequest` aggregate를 `app-server/src/main/java/io/jgitkins/server/change/review/domain/**` 아래로 옮기기 위한 boundary 규칙을 정리한다.
 
 ## 핵심 결론
 
 - `PullRequest`는 persisted root다.
 - `BranchHeadSnapshot`은 persisted snapshot이다.
-- `TargetDrift`는 조회 시 관찰 결과이지만, 현재 구조에서는 optional snapshot으로 유지할 수 있다.
+- `TargetDrift`는 조회 시 관찰 결과이지만, 현재 구조에서는 optional snapshot으로 유지한다.
 - `MergeabilityAssessment`는 persisted root의 필수가 아니다.
 - `lastAssessmentSnapshot`은 캐시성 snapshot으로만 취급하고, source of truth로 만들지 않는다.
 
@@ -24,21 +24,27 @@
 - `app-server/src/main/java/io/jgitkins/server/domain/pr/model/PullRequestStatus.java`
 - `app-server/src/main/java/io/jgitkins/server/domain/pr/model/vo/PullRequestId.java`
 
-현재 aggregate는 이미 다음 형태를 가진다.
+## TO-BE 패키지
 
-```java
-public class PullRequest extends AbstractAggregateRoot<PullRequestId> {
-    private final PullRequestId id;
-    private final RepositoryId repositoryId;
-    private final BranchHeadSnapshot source;
-    private final BranchHeadSnapshot target;
-    private final PullRequestStatus status;
-    private final MergeabilityAssessment lastAssessmentSnapshot;
-    private final TargetDrift targetDrift;
-    private final LocalDateTime createdAt;
-    private final LocalDateTime updatedAt;
-}
+```text
+app-server/src/main/java/io/jgitkins/server/change/review/domain/
+  aggregate/
+    PullRequest.java
+  model/
+    BranchHeadSnapshot.java
+    TargetDrift.java
+    PullRequestStatus.java
+  model/changegraph/
+    MergeabilityAssessment.java
+    MergeabilityStatus.java
+    MergeTopologySummary.java
+  repository/
+    PullRequestRepository.java
+  vo/
+    PullRequestId.java
 ```
+
+이 구조의 핵심은 `PullRequest`와 `MergeabilityAssessment`의 의미를 같은 context 안에 두되, persisted root와 computed result를 분리하는 것이다.
 
 ## 구현 방향
 
@@ -57,7 +63,7 @@ public class PullRequest extends AbstractAggregateRoot<PullRequestId> {
 
 ### 2. TargetDrift는 관찰 결과로만 다룬다
 
-`markTargetDrifted(...)`는 read-side observation helper로 남길 수 있다.
+`markTargetDrifted(...)`는 read-side observation helper로 남긴다.
 
 ```java
 public PullRequest markTargetDrifted(BranchHeadSnapshot currentTarget) {
