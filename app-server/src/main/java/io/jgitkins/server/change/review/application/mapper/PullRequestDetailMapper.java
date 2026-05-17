@@ -1,9 +1,9 @@
 package io.jgitkins.server.change.review.application.mapper;
 
 import io.jgitkins.server.change.review.application.dto.result.PullRequestDetailResult;
-import io.jgitkins.server.domain.model.changegraph.MergeabilityAssessment;
-import io.jgitkins.server.domain.pr.aggregate.PullRequest;
-import io.jgitkins.server.domain.pr.model.BranchHeadSnapshot;
+import io.jgitkins.server.change.review.domain.model.changegraph.MergeabilityAssessment;
+import io.jgitkins.server.change.review.domain.aggregate.PullRequest;
+import io.jgitkins.server.change.review.domain.model.BranchHeadSnapshot;
 import org.springframework.stereotype.Component;
 
 @Component

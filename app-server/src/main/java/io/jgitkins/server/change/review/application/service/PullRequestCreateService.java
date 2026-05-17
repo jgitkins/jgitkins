@@ -4,9 +4,9 @@ import io.jgitkins.server.change.review.application.dto.result.PullRequestResult
 import io.jgitkins.server.change.review.application.mapper.PullRequestResultMapper;
 import io.jgitkins.server.change.review.application.dto.command.PullRequestCreateCommand;
 import io.jgitkins.server.change.review.application.port.in.CreatePullRequestUseCase;
-import io.jgitkins.server.domain.pr.aggregate.PullRequest;
-import io.jgitkins.server.domain.pr.model.BranchHeadSnapshot;
-import io.jgitkins.server.domain.pr.repository.PullRequestRepository;
+import io.jgitkins.server.change.review.domain.aggregate.PullRequest;
+import io.jgitkins.server.change.review.domain.model.BranchHeadSnapshot;
+import io.jgitkins.server.change.review.domain.repository.PullRequestRepository;
 import io.jgitkins.server.repository.application.exception.BranchNotFoundException;
 import io.jgitkins.server.repository.application.exception.RepositoryNotFoundException;
 import io.jgitkins.server.repository.application.port.out.BranchGitPort;

@@ -1,9 +1,9 @@
 package io.jgitkins.server.shared.application.change;
 
 import io.jgitkins.server.application.dto.result.MergeResult;
-import io.jgitkins.server.domain.model.changegraph.MergeabilityAssessment;
-import io.jgitkins.server.domain.model.changegraph.MergeabilityStatus;
-import io.jgitkins.server.domain.model.changegraph.MergeTopologySummary;
+import io.jgitkins.server.change.review.domain.model.changegraph.MergeabilityAssessment;
+import io.jgitkins.server.change.review.domain.model.changegraph.MergeabilityStatus;
+import io.jgitkins.server.change.review.domain.model.changegraph.MergeTopologySummary;
 import org.springframework.stereotype.Component;
 
 @Component

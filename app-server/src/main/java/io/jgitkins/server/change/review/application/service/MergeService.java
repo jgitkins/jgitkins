@@ -5,7 +5,7 @@ import io.jgitkins.server.application.dto.result.MergeResult;
 import io.jgitkins.server.change.review.application.port.in.MergeUseCase;
 import io.jgitkins.server.change.review.application.port.in.MergeabilityCheckUseCase;
 import io.jgitkins.server.change.review.application.port.in.MergeabilityEvaluationUseCase;
-import io.jgitkins.server.domain.model.changegraph.MergeabilityAssessment;
+import io.jgitkins.server.change.review.domain.model.changegraph.MergeabilityAssessment;
 import io.jgitkins.server.application.port.out.MergeGitPort;
 import io.jgitkins.server.shared.application.change.MergeabilityAssessmentAssembler;
 import java.io.IOException;

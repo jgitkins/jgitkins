@@ -7,7 +7,7 @@ import io.jgitkins.server.application.port.in.MergeUseCase;
 import io.jgitkins.server.application.port.in.MergeabilityCheckUseCase;
 import io.jgitkins.server.application.port.out.MergeGitPort;
 import io.jgitkins.server.shared.application.change.MergeabilityAssessmentAssembler;
-import io.jgitkins.server.domain.model.changegraph.MergeabilityAssessment;
+import io.jgitkins.server.change.review.domain.model.changegraph.MergeabilityAssessment;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

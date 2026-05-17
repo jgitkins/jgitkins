@@ -1,7 +1,7 @@
 package io.jgitkins.server.change.review.application.mapper;
 
 import io.jgitkins.server.change.review.application.dto.result.PullRequestResult;
-import io.jgitkins.server.domain.pr.aggregate.PullRequest;
+import io.jgitkins.server.change.review.domain.aggregate.PullRequest;
 import org.springframework.stereotype.Component;
 
 @Component

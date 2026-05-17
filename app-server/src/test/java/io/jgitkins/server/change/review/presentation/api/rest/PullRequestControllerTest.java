@@ -15,10 +15,10 @@ import io.jgitkins.server.change.review.application.dto.result.PullRequestResult
 import io.jgitkins.server.change.review.application.port.in.CreatePullRequestUseCase;
 import io.jgitkins.server.change.review.application.port.in.GetPullRequestDetailUseCase;
 import io.jgitkins.server.change.review.presentation.dto.PullRequestCreateRequest;
-import io.jgitkins.server.domain.pr.model.BranchHeadSnapshot;
-import io.jgitkins.server.domain.pr.model.PullRequestStatus;
-import io.jgitkins.server.domain.pr.model.TargetDrift;
-import io.jgitkins.server.domain.pr.model.vo.PullRequestId;
+import io.jgitkins.server.change.review.domain.model.BranchHeadSnapshot;
+import io.jgitkins.server.change.review.domain.model.PullRequestStatus;
+import io.jgitkins.server.change.review.domain.model.TargetDrift;
+import io.jgitkins.server.change.review.domain.model.vo.PullRequestId;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

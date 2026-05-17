@@ -1,7 +1,7 @@
 package io.jgitkins.server.application.exception;
 
 import io.jgitkins.server.application.common.error.ApplicationErrorCode;
-import io.jgitkins.server.domain.pr.model.vo.PullRequestId;
+import io.jgitkins.server.change.review.domain.model.vo.PullRequestId;
 
 public class PullRequestNotFoundException extends ApplicationException {
 

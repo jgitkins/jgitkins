@@ -5,11 +5,11 @@ import io.jgitkins.server.change.review.application.dto.result.PullRequestDetail
 import io.jgitkins.server.change.review.application.mapper.PullRequestDetailMapper;
 import io.jgitkins.server.change.review.application.port.in.GetPullRequestDetailUseCase;
 import io.jgitkins.server.change.review.application.support.PullRequestMergeabilityResolver;
-import io.jgitkins.server.domain.model.changegraph.MergeabilityAssessment;
-import io.jgitkins.server.domain.pr.aggregate.PullRequest;
-import io.jgitkins.server.domain.pr.model.BranchHeadSnapshot;
-import io.jgitkins.server.domain.pr.model.vo.PullRequestId;
-import io.jgitkins.server.domain.pr.repository.PullRequestRepository;
+import io.jgitkins.server.change.review.domain.model.changegraph.MergeabilityAssessment;
+import io.jgitkins.server.change.review.domain.aggregate.PullRequest;
+import io.jgitkins.server.change.review.domain.model.BranchHeadSnapshot;
+import io.jgitkins.server.change.review.domain.model.vo.PullRequestId;
+import io.jgitkins.server.change.review.domain.repository.PullRequestRepository;
 import io.jgitkins.server.repository.application.exception.RepositoryNotFoundException;
 import io.jgitkins.server.repository.domain.aggregate.Repository;
 import io.jgitkins.server.repository.domain.repository.RepositoryRepository;

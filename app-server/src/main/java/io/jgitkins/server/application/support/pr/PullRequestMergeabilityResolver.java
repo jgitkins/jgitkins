@@ -2,9 +2,9 @@ package io.jgitkins.server.application.support.pr;
 
 import io.jgitkins.server.application.dto.result.MergeResult;
 import io.jgitkins.server.application.port.out.MergeGitPort;
-import io.jgitkins.server.domain.model.changegraph.MergeabilityAssessment;
-import io.jgitkins.server.domain.pr.aggregate.PullRequest;
-import io.jgitkins.server.domain.pr.model.BranchHeadSnapshot;
+import io.jgitkins.server.change.review.domain.model.changegraph.MergeabilityAssessment;
+import io.jgitkins.server.change.review.domain.aggregate.PullRequest;
+import io.jgitkins.server.change.review.domain.model.BranchHeadSnapshot;
 import io.jgitkins.server.repository.application.exception.BranchNotFoundException;
 import io.jgitkins.server.repository.application.port.out.BranchGitPort;
 import io.jgitkins.server.repository.application.port.out.exception.GitBranchRefMissingException;

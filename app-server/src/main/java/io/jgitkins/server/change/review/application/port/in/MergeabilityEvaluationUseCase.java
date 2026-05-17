@@ -1,6 +1,6 @@
 package io.jgitkins.server.change.review.application.port.in;
 
-import io.jgitkins.server.domain.model.changegraph.MergeabilityAssessment;
+import io.jgitkins.server.change.review.domain.model.changegraph.MergeabilityAssessment;
 import java.io.IOException;
 
 public interface MergeabilityEvaluationUseCase {
