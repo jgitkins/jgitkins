@@ -18,11 +18,11 @@
 
 대상 파일:
 
-- `server/src/main/java/io/jgitkins/server/domain/pr/aggregate/PullRequest.java`
-- `server/src/main/java/io/jgitkins/server/domain/pr/model/BranchHeadSnapshot.java`
-- `server/src/main/java/io/jgitkins/server/domain/pr/model/TargetDrift.java`
-- `server/src/main/java/io/jgitkins/server/domain/pr/model/PullRequestStatus.java`
-- `server/src/main/java/io/jgitkins/server/domain/pr/model/vo/PullRequestId.java`
+- `app-server/src/main/java/io/jgitkins/server/domain/pr/aggregate/PullRequest.java`
+- `app-server/src/main/java/io/jgitkins/server/domain/pr/model/BranchHeadSnapshot.java`
+- `app-server/src/main/java/io/jgitkins/server/domain/pr/model/TargetDrift.java`
+- `app-server/src/main/java/io/jgitkins/server/domain/pr/model/PullRequestStatus.java`
+- `app-server/src/main/java/io/jgitkins/server/domain/pr/model/vo/PullRequestId.java`
 
 현재 aggregate는 이미 다음 형태를 가진다.
 

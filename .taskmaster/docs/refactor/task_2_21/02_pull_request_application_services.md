@@ -14,20 +14,20 @@
 
 ## 대상 파일
 
-- `server/src/main/java/io/jgitkins/server/application/service/PullRequestService.java`
-- `server/src/main/java/io/jgitkins/server/application/service/MergeService.java`
-- `server/src/main/java/io/jgitkins/server/application/support/pr/PullRequestMergeabilityResolver.java`
-- `server/src/main/java/io/jgitkins/server/application/support/pr/PullRequestDetailMapper.java`
-- `server/src/main/java/io/jgitkins/server/application/support/pr/PullRequestResultMapper.java`
-- `server/src/main/java/io/jgitkins/server/application/port/in/CreatePullRequestUseCase.java`
-- `server/src/main/java/io/jgitkins/server/application/port/in/GetPullRequestDetailUseCase.java`
+- `app-server/src/main/java/io/jgitkins/server/application/service/PullRequestService.java`
+- `app-server/src/main/java/io/jgitkins/server/application/service/MergeService.java`
+- `app-server/src/main/java/io/jgitkins/server/application/support/pr/PullRequestMergeabilityResolver.java`
+- `app-server/src/main/java/io/jgitkins/server/application/support/pr/PullRequestDetailMapper.java`
+- `app-server/src/main/java/io/jgitkins/server/application/support/pr/PullRequestResultMapper.java`
+- `app-server/src/main/java/io/jgitkins/server/application/port/in/CreatePullRequestUseCase.java`
+- `app-server/src/main/java/io/jgitkins/server/application/port/in/GetPullRequestDetailUseCase.java`
 
 ## TO-BE 서비스 구조
 
 권장 구조는 다음과 같다.
 
 ```text
-server/application/service/
+app-server/application/service/
   PullRequestCreateService
   PullRequestQueryService
   MergeService

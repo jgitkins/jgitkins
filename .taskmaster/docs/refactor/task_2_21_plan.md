@@ -11,15 +11,15 @@
 
 현재 코드베이스에는 이미 다음 자산이 존재한다.
 
-- `server/src/main/java/io/jgitkins/server/domain/pr/aggregate/PullRequest.java`
-- `server/src/main/java/io/jgitkins/server/domain/pr/model/BranchHeadSnapshot.java`
-- `server/src/main/java/io/jgitkins/server/domain/pr/model/TargetDrift.java`
-- `server/src/main/java/io/jgitkins/server/domain/pr/repository/PullRequestRepository.java`
-- `server/src/main/java/io/jgitkins/server/application/service/PullRequestService.java`
-- `server/src/main/java/io/jgitkins/server/application/service/MergeService.java`
-- `server/src/main/java/io/jgitkins/server/application/support/pr/PullRequestMergeabilityResolver.java`
-- `server/src/main/java/io/jgitkins/server/infrastructure/adapter/persistence/pr/PullRequestPersistenceAdapter.java`
-- `server/src/main/java/io/jgitkins/server/infrastructure/mapper/PullRequestDomainMapper.java`
+- `app-server/src/main/java/io/jgitkins/server/domain/pr/aggregate/PullRequest.java`
+- `app-server/src/main/java/io/jgitkins/server/domain/pr/model/BranchHeadSnapshot.java`
+- `app-server/src/main/java/io/jgitkins/server/domain/pr/model/TargetDrift.java`
+- `app-server/src/main/java/io/jgitkins/server/domain/pr/repository/PullRequestRepository.java`
+- `app-server/src/main/java/io/jgitkins/server/application/service/PullRequestService.java`
+- `app-server/src/main/java/io/jgitkins/server/application/service/MergeService.java`
+- `app-server/src/main/java/io/jgitkins/server/application/support/pr/PullRequestMergeabilityResolver.java`
+- `app-server/src/main/java/io/jgitkins/server/infrastructure/adapter/persistence/pr/PullRequestPersistenceAdapter.java`
+- `app-server/src/main/java/io/jgitkins/server/infrastructure/mapper/PullRequestDomainMapper.java`
 
 이 작업의 목적은 기능 추가가 아니라 경계 재정렬이다. 특히 아래 두 축을 분리한다.
 
@@ -114,7 +114,7 @@ PullRequest observed = pullRequest.markTargetDrifted(currentTarget);
 권장 구조:
 
 ```text
-server/application/service/
+app-server/application/service/
   PullRequestCreateService
   PullRequestQueryService
   PullRequestMergeService (필요 시 PR-aware transition seam)
@@ -199,27 +199,27 @@ API는 PR 생성과 상세 조회를 우선 정리하고, merge 관련 API는 �
 
 ### 우선 검토 대상
 
-- `server/src/main/java/io/jgitkins/server/domain/pr/aggregate/PullRequest.java`
-- `server/src/main/java/io/jgitkins/server/domain/pr/model/BranchHeadSnapshot.java`
-- `server/src/main/java/io/jgitkins/server/domain/pr/model/TargetDrift.java`
-- `server/src/main/java/io/jgitkins/server/domain/pr/model/PullRequestStatus.java`
-- `server/src/main/java/io/jgitkins/server/application/service/PullRequestService.java`
-- `server/src/main/java/io/jgitkins/server/application/service/MergeService.java`
-- `server/src/main/java/io/jgitkins/server/application/support/pr/PullRequestMergeabilityResolver.java`
-- `server/src/main/java/io/jgitkins/server/application/support/pr/PullRequestDetailMapper.java`
-- `server/src/main/java/io/jgitkins/server/application/support/pr/PullRequestResultMapper.java`
-- `server/src/main/java/io/jgitkins/server/infrastructure/mapper/PullRequestDomainMapper.java`
-- `server/src/main/java/io/jgitkins/server/infrastructure/adapter/persistence/pr/PullRequestPersistenceAdapter.java`
-- `server/src/main/java/io/jgitkins/server/presentation/api/rest/MergeController.java`
+- `app-server/src/main/java/io/jgitkins/server/domain/pr/aggregate/PullRequest.java`
+- `app-server/src/main/java/io/jgitkins/server/domain/pr/model/BranchHeadSnapshot.java`
+- `app-server/src/main/java/io/jgitkins/server/domain/pr/model/TargetDrift.java`
+- `app-server/src/main/java/io/jgitkins/server/domain/pr/model/PullRequestStatus.java`
+- `app-server/src/main/java/io/jgitkins/server/application/service/PullRequestService.java`
+- `app-server/src/main/java/io/jgitkins/server/application/service/MergeService.java`
+- `app-server/src/main/java/io/jgitkins/server/application/support/pr/PullRequestMergeabilityResolver.java`
+- `app-server/src/main/java/io/jgitkins/server/application/support/pr/PullRequestDetailMapper.java`
+- `app-server/src/main/java/io/jgitkins/server/application/support/pr/PullRequestResultMapper.java`
+- `app-server/src/main/java/io/jgitkins/server/infrastructure/mapper/PullRequestDomainMapper.java`
+- `app-server/src/main/java/io/jgitkins/server/infrastructure/adapter/persistence/pr/PullRequestPersistenceAdapter.java`
+- `app-server/src/main/java/io/jgitkins/server/presentation/api/rest/MergeController.java`
 
 ### 테스트 보강 대상
 
-- `server/src/test/java/io/jgitkins/server/application/service/PullRequestServiceTest.java`
-- `server/src/test/java/io/jgitkins/server/application/service/MergeServiceTest.java`
-- `server/src/test/java/io/jgitkins/server/application/support/pr/PullRequestMergeabilityResolverTest.java`
-- `server/src/test/java/io/jgitkins/server/infrastructure/mapper/PullRequestDomainMapperTest.java`
-- `server/src/test/java/io/jgitkins/server/domain/pr/aggregate/PullRequestTest.java`
-- `server/src/test/java/io/jgitkins/server/application/ArchitecturePackageConventionTest.java`
+- `app-server/src/test/java/io/jgitkins/server/application/service/PullRequestServiceTest.java`
+- `app-server/src/test/java/io/jgitkins/server/application/service/MergeServiceTest.java`
+- `app-server/src/test/java/io/jgitkins/server/application/support/pr/PullRequestMergeabilityResolverTest.java`
+- `app-server/src/test/java/io/jgitkins/server/infrastructure/mapper/PullRequestDomainMapperTest.java`
+- `app-server/src/test/java/io/jgitkins/server/domain/pr/aggregate/PullRequestTest.java`
+- `app-server/src/test/java/io/jgitkins/server/application/ArchitecturePackageConventionTest.java`
 
 ## 구현 순서
 

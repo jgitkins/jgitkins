@@ -88,17 +88,18 @@
         "priority": "high",
         "details": "기존 기능별 Task를 카테고리 기반(신규기능/리팩토링/보안)으로 재구성함.",
         "testStrategy": "카테고리별 우선순위에 따라 하위 작업을 순차 수행하고 회귀 테스트를 적용한다.",
-        "updatedAt": "2026-05-13T15:40:11.641Z",
+        "updatedAt": "2026-05-17T13:37:03.626Z",
         "subtasks": [
           {
             "id": 1,
             "title": "[web, server] Inbound/Outbound Adapter 책임 재배치",
             "description": "요청 파싱/인증 컨텍스트/외부 I/O 책임이 섞인 지점을 어댑터 경계 기준으로 분리한다.",
             "details": "[source: jgitkins-server, original subtask: 2.19]",
-            "status": "pending",
+            "status": "done",
             "dependencies": [],
             "parentTaskId": 2,
-            "parentId": "2"
+            "parentId": "2",
+            "updatedAt": "2026-05-17T13:37:03.626Z"
           },
           {
             "id": 2,
@@ -599,7 +600,7 @@
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2026-05-14T11:32:12.262Z",
+      "lastModified": "2026-05-17T13:37:03.626Z",
       "taskCount": 5,
       "completedCount": 1,
       "tags": [

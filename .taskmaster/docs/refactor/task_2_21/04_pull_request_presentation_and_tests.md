@@ -15,10 +15,10 @@
 
 ## 대상 파일
 
-- `server/src/main/java/io/jgitkins/server/presentation/api/rest/MergeController.java`
-- `server/src/main/java/io/jgitkins/server/presentation/api/rest/PullRequestController.java` 추가 예정
-- `server/src/main/java/io/jgitkins/server/presentation/dto/...` 추가 예정
-- `server/src/main/java/io/jgitkins/server/presentation/mapper/...` 추가 예정
+- `app-server/src/main/java/io/jgitkins/server/presentation/api/rest/MergeController.java`
+- `app-server/src/main/java/io/jgitkins/server/presentation/api/rest/PullRequestController.java` 추가 예정
+- `app-server/src/main/java/io/jgitkins/server/presentation/dto/...` 추가 예정
+- `app-server/src/main/java/io/jgitkins/server/presentation/mapper/...` 추가 예정
 
 ## controller 설계
 
@@ -118,9 +118,9 @@ when(createPullRequestUseCase.createPullRequest(any(PullRequestCreateCommand.cla
 
 ## 권장 파일 추가
 
-- `server/src/main/java/io/jgitkins/server/presentation/api/rest/PullRequestController.java`
-- `server/src/main/java/io/jgitkins/server/presentation/dto/PullRequestCreateRequest.java`
-- `server/src/test/java/io/jgitkins/server/presentation/api/rest/PullRequestControllerTest.java`
+- `app-server/src/main/java/io/jgitkins/server/presentation/api/rest/PullRequestController.java`
+- `app-server/src/main/java/io/jgitkins/server/presentation/dto/PullRequestCreateRequest.java`
+- `app-server/src/test/java/io/jgitkins/server/presentation/api/rest/PullRequestControllerTest.java`
 
 필요하면 request mapper를 별도로 둔다.
 

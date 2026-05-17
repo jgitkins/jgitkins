@@ -15,11 +15,11 @@
 
 ## 대상 파일
 
-- `server/src/main/java/io/jgitkins/server/infrastructure/mapper/PullRequestDomainMapper.java`
-- `server/src/main/java/io/jgitkins/server/infrastructure/adapter/persistence/pr/PullRequestPersistenceAdapter.java`
-- `server/src/main/java/io/jgitkins/server/infrastructure/persistence/model/PullRequestEntity.java`
-- `server/src/main/java/io/jgitkins/server/infrastructure/persistence/model/PullRequestEntityCondition.java`
-- `server/src/main/java/io/jgitkins/server/domain/pr/repository/PullRequestRepository.java`
+- `app-server/src/main/java/io/jgitkins/server/infrastructure/mapper/PullRequestDomainMapper.java`
+- `app-server/src/main/java/io/jgitkins/server/infrastructure/adapter/persistence/pr/PullRequestPersistenceAdapter.java`
+- `app-server/src/main/java/io/jgitkins/server/infrastructure/persistence/model/PullRequestEntity.java`
+- `app-server/src/main/java/io/jgitkins/server/infrastructure/persistence/model/PullRequestEntityCondition.java`
+- `app-server/src/main/java/io/jgitkins/server/domain/pr/repository/PullRequestRepository.java`
 
 ## mapper 정책
 
