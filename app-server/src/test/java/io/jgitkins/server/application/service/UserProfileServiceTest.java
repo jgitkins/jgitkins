@@ -1,14 +1,14 @@
-package io.jgitkins.server.application.service;
+package io.jgitkins.server.identity.access.application.service;
 
 import io.jgitkins.core.common.exception.JgitkinsException;
 import io.jgitkins.server.domain.error.DomainErrorCode;
 import io.jgitkins.server.domain.error.DomainProblemSpec;
 import io.jgitkins.server.application.port.out.CurrentUserPort;
 import io.jgitkins.server.application.port.out.UserPersistencePort;
-import io.jgitkins.server.application.validate.ActivationValidator;
-import io.jgitkins.server.domain.model.User;
-import io.jgitkins.server.domain.model.UserStatus;
-import io.jgitkins.server.domain.model.vo.Username;
+import io.jgitkins.server.identity.access.application.validate.ActivationValidator;
+import io.jgitkins.server.identity.access.domain.aggregate.User;
+import io.jgitkins.server.identity.access.domain.vo.UserStatus;
+import io.jgitkins.server.identity.access.domain.vo.Username;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

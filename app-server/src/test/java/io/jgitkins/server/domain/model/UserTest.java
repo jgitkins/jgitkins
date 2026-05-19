@@ -1,10 +1,11 @@
-package io.jgitkins.server.domain.model;
+package io.jgitkins.server.identity.access.domain.aggregate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import io.jgitkins.server.domain.exception.UserAlreadyActivatedException;
-import io.jgitkins.server.domain.model.vo.Username;
+import io.jgitkins.server.identity.access.domain.exception.UserAlreadyActivatedException;
+import io.jgitkins.server.identity.access.domain.vo.UserStatus;
+import io.jgitkins.server.identity.access.domain.vo.Username;
 import org.junit.jupiter.api.Test;
 
 class UserTest {

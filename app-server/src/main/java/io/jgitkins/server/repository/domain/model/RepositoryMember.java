@@ -2,7 +2,7 @@ package io.jgitkins.server.repository.domain.model;
 
 import io.jgitkins.server.repository.domain.vo.RepositoryId;
 import io.jgitkins.server.repository.domain.vo.RepositoryMemberRole;
-import io.jgitkins.server.domain.model.vo.UserId;
+import io.jgitkins.server.identity.access.domain.vo.UserId;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

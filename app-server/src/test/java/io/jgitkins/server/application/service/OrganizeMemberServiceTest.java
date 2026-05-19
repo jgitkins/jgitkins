@@ -13,7 +13,7 @@ import io.jgitkins.server.application.validate.OrganizeMemberValidator;
 import io.jgitkins.server.domain.model.OrganizeMember;
 import io.jgitkins.server.domain.model.vo.OrganizeId;
 import io.jgitkins.server.domain.model.vo.OrganizeMemberRole;
-import io.jgitkins.server.domain.model.vo.UserId;
+import io.jgitkins.server.identity.access.domain.vo.UserId;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;

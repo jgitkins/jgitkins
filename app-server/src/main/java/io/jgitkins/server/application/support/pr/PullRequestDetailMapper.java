@@ -6,7 +6,7 @@ import io.jgitkins.server.change.review.domain.aggregate.PullRequest;
 import io.jgitkins.server.change.review.domain.model.BranchHeadSnapshot;
 import org.springframework.stereotype.Component;
 
-@Component
+@Component("legacyPullRequestDetailMapper")
 public class PullRequestDetailMapper {
 
     public PullRequestDetailResult toDetail(PullRequest pullRequest,

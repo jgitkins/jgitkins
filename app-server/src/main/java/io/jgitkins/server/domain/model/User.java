@@ -1,12 +1,14 @@
-package io.jgitkins.server.domain.model;
+package io.jgitkins.server.identity.access.domain.aggregate;
 
+import io.jgitkins.server.identity.access.domain.vo.UserAuthority;
+import io.jgitkins.server.identity.access.domain.vo.UserStatus;
+import io.jgitkins.server.identity.access.domain.vo.Username;
 import java.time.LocalDateTime;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import io.jgitkins.server.domain.exception.UserAlreadyActivatedException;
-import io.jgitkins.server.domain.model.vo.Username;
+import io.jgitkins.server.identity.access.domain.exception.UserAlreadyActivatedException;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)

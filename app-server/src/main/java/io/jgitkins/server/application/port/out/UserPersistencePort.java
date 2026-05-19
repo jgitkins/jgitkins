@@ -1,6 +1,6 @@
 package io.jgitkins.server.application.port.out;
 
-import io.jgitkins.server.domain.model.User;
+import io.jgitkins.server.identity.access.domain.aggregate.User;
 import java.util.Optional;
 
 public interface UserPersistencePort {

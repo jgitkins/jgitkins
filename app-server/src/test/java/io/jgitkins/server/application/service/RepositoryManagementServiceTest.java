@@ -18,7 +18,7 @@ import io.jgitkins.server.domain.model.vo.OwnerType;
 import io.jgitkins.server.repository.domain.vo.RepositoryId;
 import io.jgitkins.server.repository.domain.vo.RepositoryName;
 import io.jgitkins.server.repository.domain.vo.RepositoryVisibility;
-import io.jgitkins.server.domain.model.vo.UserId;
+import io.jgitkins.server.identity.access.domain.vo.UserId;
 import io.jgitkins.server.repository.domain.repository.RepositoryRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

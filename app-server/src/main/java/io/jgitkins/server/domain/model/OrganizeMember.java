@@ -4,7 +4,7 @@ import io.jgitkins.server.domain.exception.DomainException;
 import io.jgitkins.server.domain.error.DomainProblemSpec;
 import io.jgitkins.server.domain.model.vo.OrganizeId;
 import io.jgitkins.server.domain.model.vo.OrganizeMemberRole;
-import io.jgitkins.server.domain.model.vo.UserId;
+import io.jgitkins.server.identity.access.domain.vo.UserId;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

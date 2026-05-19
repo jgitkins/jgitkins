@@ -7,7 +7,7 @@ import io.jgitkins.server.application.port.out.OrganizePersistencePort;
 import io.jgitkins.server.domain.aggregate.Organize;
 import io.jgitkins.server.domain.model.vo.OrganizeId;
 import io.jgitkins.server.domain.model.vo.OrganizeName;
-import io.jgitkins.server.domain.model.vo.UserId;
+import io.jgitkins.server.identity.access.domain.vo.UserId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

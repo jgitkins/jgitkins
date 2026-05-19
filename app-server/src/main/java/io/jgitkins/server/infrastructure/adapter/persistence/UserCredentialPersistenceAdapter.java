@@ -1,13 +1,13 @@
-package io.jgitkins.server.infrastructure.adapter.persistence;
+package io.jgitkins.server.identity.access.infrastructure.adapter.persistence;
 
 import io.jgitkins.server.application.port.out.UserCredentialPersistencePort;
-import io.jgitkins.server.domain.model.UserCredential;
+import io.jgitkins.server.identity.access.domain.entity.UserCredential;
 import io.jgitkins.server.infrastructure.common.error.InfrastructureErrorCode;
 import io.jgitkins.server.infrastructure.exception.InfrastructureException;
-import io.jgitkins.server.infrastructure.mapper.UserCredentialDomainMapper;
-import io.jgitkins.server.infrastructure.persistence.mapper.UserCredentialsEntityMbgMapper;
-import io.jgitkins.server.infrastructure.persistence.model.UserCredentialsEntity;
-import io.jgitkins.server.infrastructure.persistence.model.UserCredentialsEntityCondition;
+import io.jgitkins.server.identity.access.infrastructure.mapper.UserCredentialDomainMapper;
+import io.jgitkins.server.identity.access.infrastructure.persistence.mapper.UserCredentialsEntityMbgMapper;
+import io.jgitkins.server.identity.access.infrastructure.persistence.model.UserCredentialsEntity;
+import io.jgitkins.server.identity.access.infrastructure.persistence.model.UserCredentialsEntityCondition;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;

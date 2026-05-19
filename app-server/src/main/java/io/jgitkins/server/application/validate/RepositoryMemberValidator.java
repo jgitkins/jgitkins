@@ -4,7 +4,7 @@ import io.jgitkins.server.repository.application.contract.command.RepositoryMemb
 import io.jgitkins.server.application.exception.MemberIdentifierRequiredException;
 import io.jgitkins.server.repository.application.port.out.RepositoryMemberPersistencePort;
 import io.jgitkins.server.repository.domain.vo.RepositoryId;
-import io.jgitkins.server.domain.model.vo.UserId;
+import io.jgitkins.server.identity.access.domain.vo.UserId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

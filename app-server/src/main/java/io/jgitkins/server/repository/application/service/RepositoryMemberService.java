@@ -41,7 +41,7 @@ public class RepositoryMemberService implements RepositoryMemberManagementUseCas
         repositoryMemberValidator.validateMemberIdentifiers(repositoryId, userId);
         repositoryMemberPort.deleteByRepositoryIdAndUserId(
                 RepositoryId.of(repositoryId),
-                io.jgitkins.server.domain.model.vo.UserId.of(userId)
+                io.jgitkins.server.identity.access.domain.vo.UserId.of(userId)
         );
     }
 

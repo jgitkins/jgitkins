@@ -1,13 +1,13 @@
-package io.jgitkins.server.infrastructure.adapter.persistence;
+package io.jgitkins.server.identity.access.infrastructure.adapter.persistence;
 
 import io.jgitkins.server.application.port.out.UserPersistencePort;
-import io.jgitkins.server.domain.model.User;
+import io.jgitkins.server.identity.access.domain.aggregate.User;
 import io.jgitkins.server.infrastructure.common.error.InfrastructureErrorCode;
 import io.jgitkins.server.infrastructure.exception.InfrastructureException;
-import io.jgitkins.server.infrastructure.mapper.UserDomainMapper;
-import io.jgitkins.server.infrastructure.persistence.mapper.UserEntityMbgMapper;
-import io.jgitkins.server.infrastructure.persistence.model.UserEntity;
-import io.jgitkins.server.infrastructure.persistence.model.UserEntityCondition;
+import io.jgitkins.server.identity.access.infrastructure.mapper.UserDomainMapper;
+import io.jgitkins.server.identity.access.infrastructure.persistence.mapper.UserEntityMbgMapper;
+import io.jgitkins.server.identity.access.infrastructure.persistence.model.UserEntity;
+import io.jgitkins.server.identity.access.infrastructure.persistence.model.UserEntityCondition;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

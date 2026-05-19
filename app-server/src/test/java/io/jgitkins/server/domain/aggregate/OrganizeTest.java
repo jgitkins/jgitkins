@@ -2,7 +2,7 @@ package io.jgitkins.server.domain.aggregate;
 
 import io.jgitkins.server.domain.event.OrganizeCreatedEvent;
 import io.jgitkins.server.domain.model.vo.OrganizeName;
-import io.jgitkins.server.domain.model.vo.UserId;
+import io.jgitkins.server.identity.access.domain.vo.UserId;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

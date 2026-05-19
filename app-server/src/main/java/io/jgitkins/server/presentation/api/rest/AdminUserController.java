@@ -1,11 +1,11 @@
-package io.jgitkins.server.presentation.api.rest;
+package io.jgitkins.server.identity.access.presentation.api.rest;
 
-import io.jgitkins.server.application.dto.result.UserAdminDetail;
-import io.jgitkins.server.application.dto.result.UserAdminSummary;
-import io.jgitkins.server.application.port.in.AdminUserQueryUseCase;
-import io.jgitkins.server.application.port.in.AdminUserUpdateUseCase;
+import io.jgitkins.server.identity.access.application.dto.result.UserAdminDetail;
+import io.jgitkins.server.identity.access.application.dto.result.UserAdminSummary;
+import io.jgitkins.server.identity.access.application.port.in.AdminUserQueryUseCase;
+import io.jgitkins.server.identity.access.application.port.in.AdminUserUpdateUseCase;
 import io.jgitkins.core.web.api.response.ApiResponse;
-import io.jgitkins.server.presentation.dto.UserStatusUpdateRequest;
+import io.jgitkins.server.identity.access.presentation.dto.UserStatusUpdateRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;

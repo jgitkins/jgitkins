@@ -16,7 +16,7 @@ import io.jgitkins.core.common.exception.JgitkinsException;
 import io.jgitkins.server.repository.domain.model.RepositoryMember;
 import io.jgitkins.server.repository.domain.vo.RepositoryId;
 import io.jgitkins.server.repository.domain.vo.RepositoryMemberRole;
-import io.jgitkins.server.domain.model.vo.UserId;
+import io.jgitkins.server.identity.access.domain.vo.UserId;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;

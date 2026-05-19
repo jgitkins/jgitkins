@@ -1,9 +1,9 @@
 package io.jgitkins.server.infrastructure.config.security.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.jgitkins.server.application.dto.command.OAuthLoginCommand;
-import io.jgitkins.server.application.dto.result.OAuthLoginResult;
-import io.jgitkins.server.application.port.in.OAuthLoginUseCase;
+import io.jgitkins.server.identity.access.application.dto.command.OAuthLoginCommand;
+import io.jgitkins.server.identity.access.application.dto.result.OAuthLoginResult;
+import io.jgitkins.server.identity.access.application.port.in.OAuthLoginUseCase;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;

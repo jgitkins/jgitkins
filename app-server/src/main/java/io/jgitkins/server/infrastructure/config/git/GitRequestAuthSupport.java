@@ -1,6 +1,6 @@
 package io.jgitkins.server.infrastructure.config.git;
 
-import io.jgitkins.server.infrastructure.config.security.auth.PatTokenAuthenticationService;
+import io.jgitkins.server.identity.access.infrastructure.adapter.security.PatTokenAuthenticationService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

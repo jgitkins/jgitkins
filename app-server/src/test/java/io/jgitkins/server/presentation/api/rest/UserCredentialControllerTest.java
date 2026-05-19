@@ -1,4 +1,4 @@
-package io.jgitkins.server.presentation.api.rest;
+package io.jgitkins.server.identity.access.presentation.api.rest;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -11,12 +11,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.jgitkins.server.application.dto.result.UserCredentialIssueResult;
+import io.jgitkins.server.identity.access.application.dto.result.UserCredentialIssueResult;
 import io.jgitkins.server.application.dto.result.UserCredentialSummary;
-import io.jgitkins.server.application.port.in.UserCredentialIssueUseCase;
-import io.jgitkins.server.application.port.in.UserCredentialQueryUseCase;
-import io.jgitkins.server.application.port.in.UserCredentialRevokeUseCase;
-import io.jgitkins.server.presentation.dto.UserCredentialIssueRequest;
+import io.jgitkins.server.identity.access.application.port.in.UserCredentialIssueUseCase;
+import io.jgitkins.server.identity.access.application.port.in.UserCredentialQueryUseCase;
+import io.jgitkins.server.identity.access.application.port.in.UserCredentialRevokeUseCase;
+import io.jgitkins.server.identity.access.presentation.dto.UserCredentialIssueRequest;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;

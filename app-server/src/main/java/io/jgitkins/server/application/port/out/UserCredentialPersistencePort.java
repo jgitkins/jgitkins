@@ -1,6 +1,6 @@
 package io.jgitkins.server.application.port.out;
 
-import io.jgitkins.server.domain.model.UserCredential;
+import io.jgitkins.server.identity.access.domain.entity.UserCredential;
 
 import java.util.List;
 import java.util.Optional;

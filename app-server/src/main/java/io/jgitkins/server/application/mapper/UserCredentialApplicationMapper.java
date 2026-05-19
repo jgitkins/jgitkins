@@ -1,7 +1,7 @@
-package io.jgitkins.server.application.mapper;
+package io.jgitkins.server.identity.access.application.mapper;
 
 import io.jgitkins.server.application.dto.result.UserCredentialSummary;
-import io.jgitkins.server.domain.model.UserCredential;
+import io.jgitkins.server.identity.access.domain.entity.UserCredential;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")

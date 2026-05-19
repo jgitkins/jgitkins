@@ -1,4 +1,4 @@
-package io.jgitkins.server.application.dto.result;
+package io.jgitkins.server.identity.access.application.dto.result;
 
 import java.time.LocalDateTime;
 import java.util.List;

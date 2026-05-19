@@ -1,4 +1,4 @@
-package io.jgitkins.server.application.support;
+package io.jgitkins.server.identity.access.application.support;
 
 import io.jgitkins.server.application.port.out.OrganizePersistencePort;
 import io.jgitkins.server.application.port.out.UserPersistencePort;

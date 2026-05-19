@@ -1,15 +1,15 @@
-package io.jgitkins.server.application.service;
+package io.jgitkins.server.identity.access.application.service;
 
-import io.jgitkins.server.application.dto.result.UserAdminDetail;
-import io.jgitkins.server.application.dto.result.UserAdminSummary;
-import io.jgitkins.server.application.dto.result.UserIdentitySummary;
-import io.jgitkins.server.application.mapper.UserApplicationMapper;
-import io.jgitkins.server.application.port.in.AdminUserQueryUseCase;
-import io.jgitkins.server.application.port.in.AdminUserUpdateUseCase;
+import io.jgitkins.server.identity.access.application.dto.result.UserAdminDetail;
+import io.jgitkins.server.identity.access.application.dto.result.UserAdminSummary;
+import io.jgitkins.server.identity.access.application.dto.result.UserIdentitySummary;
+import io.jgitkins.server.identity.access.application.mapper.UserApplicationMapper;
+import io.jgitkins.server.identity.access.application.port.in.AdminUserQueryUseCase;
+import io.jgitkins.server.identity.access.application.port.in.AdminUserUpdateUseCase;
 import io.jgitkins.server.application.port.out.UserIdentityPersistencePort;
 import io.jgitkins.server.application.port.out.UserPersistencePort;
-import io.jgitkins.server.domain.model.User;
-import io.jgitkins.server.domain.model.UserStatus;
+import io.jgitkins.server.identity.access.domain.aggregate.User;
+import io.jgitkins.server.identity.access.domain.vo.UserStatus;
 import java.util.List;
 import java.util.Locale;
 import lombok.RequiredArgsConstructor;

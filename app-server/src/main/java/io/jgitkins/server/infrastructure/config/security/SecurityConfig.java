@@ -2,7 +2,7 @@ package io.jgitkins.server.infrastructure.config.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jgitkins.core.security.handler.SecurityErrorResponseWriter;
-import io.jgitkins.server.application.port.in.OAuthLoginUseCase;
+import io.jgitkins.server.identity.access.application.port.in.OAuthLoginUseCase;
 import io.jgitkins.server.infrastructure.adapter.security.JwtService;
 import io.jgitkins.server.infrastructure.config.filter.GitSmartHttpAuthFilter;
 import io.jgitkins.server.infrastructure.config.filter.JwtAuthenticationFilter;

@@ -1,5 +1,6 @@
-package io.jgitkins.server.domain.model.vo;
+package io.jgitkins.server.identity.access.domain.vo;
 
+import io.jgitkins.server.domain.model.vo.OrganizeName;
 import java.util.regex.Pattern;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

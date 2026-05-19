@@ -1,4 +1,4 @@
-package io.jgitkins.server.presentation.dto;
+package io.jgitkins.server.identity.access.presentation.dto;
 
 import jakarta.validation.constraints.NotBlank;
 

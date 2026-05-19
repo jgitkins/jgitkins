@@ -12,7 +12,7 @@ import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-@Service
+@Service("legacyMergeService")
 @RequiredArgsConstructor
 public class MergeService implements MergeabilityCheckUseCase, MergeabilityEvaluationUseCase, MergeUseCase {
 

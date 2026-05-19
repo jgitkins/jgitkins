@@ -1,7 +1,7 @@
-package io.jgitkins.server.infrastructure.mapper;
+package io.jgitkins.server.identity.access.infrastructure.mapper;
 
-import io.jgitkins.server.domain.model.UserIdentity;
-import io.jgitkins.server.infrastructure.persistence.model.UserIdentitiesEntity;
+import io.jgitkins.server.identity.access.domain.entity.UserIdentity;
+import io.jgitkins.server.identity.access.infrastructure.persistence.model.UserIdentitiesEntity;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = org.mapstruct.ReportingPolicy.IGNORE)

@@ -5,7 +5,7 @@ import io.jgitkins.server.application.exception.UserNotFoundException;
 import io.jgitkins.server.application.port.out.OrganizePersistencePort;
 import io.jgitkins.server.application.port.out.UserPersistencePort;
 import io.jgitkins.server.repository.domain.aggregate.Repository;
-import io.jgitkins.server.domain.model.User;
+import io.jgitkins.server.identity.access.domain.aggregate.User;
 import io.jgitkins.server.domain.model.vo.OwnerId;
 import io.jgitkins.server.domain.model.vo.OwnerType;
 import lombok.RequiredArgsConstructor;

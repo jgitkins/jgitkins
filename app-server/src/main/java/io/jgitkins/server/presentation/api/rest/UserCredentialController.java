@@ -1,13 +1,13 @@
-package io.jgitkins.server.presentation.api.rest;
+package io.jgitkins.server.identity.access.presentation.api.rest;
 
-import io.jgitkins.server.application.dto.command.UserCredentialIssueCommand;
-import io.jgitkins.server.application.dto.result.UserCredentialIssueResult;
+import io.jgitkins.server.identity.access.application.dto.command.UserCredentialIssueCommand;
+import io.jgitkins.server.identity.access.application.dto.result.UserCredentialIssueResult;
 import io.jgitkins.server.application.dto.result.UserCredentialSummary;
-import io.jgitkins.server.application.port.in.UserCredentialIssueUseCase;
-import io.jgitkins.server.application.port.in.UserCredentialQueryUseCase;
-import io.jgitkins.server.application.port.in.UserCredentialRevokeUseCase;
+import io.jgitkins.server.identity.access.application.port.in.UserCredentialIssueUseCase;
+import io.jgitkins.server.identity.access.application.port.in.UserCredentialQueryUseCase;
+import io.jgitkins.server.identity.access.application.port.in.UserCredentialRevokeUseCase;
 import io.jgitkins.core.web.api.response.ApiResponse;
-import io.jgitkins.server.presentation.dto.UserCredentialIssueRequest;
+import io.jgitkins.server.identity.access.presentation.dto.UserCredentialIssueRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;

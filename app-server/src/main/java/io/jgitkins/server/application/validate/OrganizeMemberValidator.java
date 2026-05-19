@@ -4,7 +4,7 @@ import io.jgitkins.server.application.exception.OrganizeMemberAlreadyExistsExcep
 import io.jgitkins.server.application.port.out.OrganizeMemberPersistencePort;
 import io.jgitkins.server.domain.model.vo.OrganizeId;
 import io.jgitkins.server.domain.model.vo.OrganizeMemberRole;
-import io.jgitkins.server.domain.model.vo.UserId;
+import io.jgitkins.server.identity.access.domain.vo.UserId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

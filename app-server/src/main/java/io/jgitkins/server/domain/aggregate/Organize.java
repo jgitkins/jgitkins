@@ -3,7 +3,7 @@ package io.jgitkins.server.domain.aggregate;
 import io.jgitkins.server.domain.event.OrganizeCreatedEvent;
 import io.jgitkins.server.domain.model.vo.OrganizeId;
 import io.jgitkins.server.domain.model.vo.OrganizeName;
-import io.jgitkins.server.domain.model.vo.UserId;
+import io.jgitkins.server.identity.access.domain.vo.UserId;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

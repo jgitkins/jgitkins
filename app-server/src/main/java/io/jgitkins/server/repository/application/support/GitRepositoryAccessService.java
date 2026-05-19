@@ -9,7 +9,7 @@ import io.jgitkins.server.domain.model.vo.OrganizeId;
 import io.jgitkins.server.domain.model.vo.OwnerType;
 import io.jgitkins.server.repository.domain.vo.RepositoryMemberRole;
 import io.jgitkins.server.repository.domain.vo.RepositoryVisibility;
-import io.jgitkins.server.domain.model.vo.UserId;
+import io.jgitkins.server.identity.access.domain.vo.UserId;
 import io.jgitkins.server.repository.application.contract.result.RepositoryPermission;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;

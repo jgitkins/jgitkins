@@ -1,6 +1,6 @@
-package io.jgitkins.server.application.dto.result;
+package io.jgitkins.server.identity.access.application.dto.result;
 
-import io.jgitkins.server.domain.model.User;
+import io.jgitkins.server.identity.access.domain.aggregate.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

@@ -1,8 +1,8 @@
-package io.jgitkins.server.infrastructure.config.security.auth;
+package io.jgitkins.server.identity.access.infrastructure.adapter.security;
 
 import io.jgitkins.server.application.port.out.UserCredentialPersistencePort;
 import io.jgitkins.server.application.port.out.UserPersistencePort;
-import io.jgitkins.server.domain.model.UserCredential;
+import io.jgitkins.server.identity.access.domain.entity.UserCredential;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

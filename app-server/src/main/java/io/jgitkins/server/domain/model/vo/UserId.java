@@ -1,4 +1,4 @@
-package io.jgitkins.server.domain.model.vo;
+package io.jgitkins.server.identity.access.domain.vo;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

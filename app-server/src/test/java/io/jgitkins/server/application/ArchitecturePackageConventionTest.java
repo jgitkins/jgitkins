@@ -11,26 +11,26 @@ import io.jgitkins.server.change.review.application.service.PullRequestCreateSer
 import io.jgitkins.server.change.review.application.service.PullRequestQueryService;
 import io.jgitkins.server.execution.application.support.ExecutionRequestService;
 import io.jgitkins.server.execution.application.policy.EventPolicyResolver;
-import io.jgitkins.server.application.service.AdminUserService;
+import io.jgitkins.server.identity.access.application.service.AdminUserService;
 import io.jgitkins.server.application.service.CommitService;
 import io.jgitkins.server.application.service.MergeService;
-import io.jgitkins.server.application.service.OAuthLoginService;
+import io.jgitkins.server.identity.access.application.service.OAuthLoginService;
 import io.jgitkins.server.application.service.OrganizeMemberService;
 import io.jgitkins.server.application.service.OrganizeService;
-import io.jgitkins.server.application.service.PublicUserQueryService;
+import io.jgitkins.server.identity.access.application.service.PublicUserQueryService;
 import io.jgitkins.server.application.service.PushEventHandleService;
 import io.jgitkins.server.application.service.RepositoryFileService;
-import io.jgitkins.server.application.service.UserCredentialService;
-import io.jgitkins.server.application.service.UserProfileService;
+import io.jgitkins.server.identity.access.application.service.UserCredentialService;
+import io.jgitkins.server.identity.access.application.service.UserProfileService;
 import io.jgitkins.server.execution.presentation.api.rest.RunnerController;
-import io.jgitkins.server.presentation.api.rest.AdminUserController;
+import io.jgitkins.server.identity.access.presentation.api.rest.AdminUserController;
 import io.jgitkins.server.presentation.api.rest.MergeController;
-import io.jgitkins.server.presentation.api.rest.OAuthController;
+import io.jgitkins.server.identity.access.presentation.api.rest.OAuthController;
 import io.jgitkins.server.presentation.api.rest.OrganizeController;
 import io.jgitkins.server.presentation.api.rest.OrganizeMemberController;
 import io.jgitkins.server.presentation.api.rest.SignupController;
-import io.jgitkins.server.presentation.api.rest.UserController;
-import io.jgitkins.server.presentation.api.rest.UserCredentialController;
+import io.jgitkins.server.identity.access.presentation.api.rest.UserController;
+import io.jgitkins.server.identity.access.presentation.api.rest.UserCredentialController;
 import io.jgitkins.server.presentation.api.web.WebOrganizeController;
 import io.jgitkins.server.presentation.api.web.WebRepositoryController;
 import io.jgitkins.core.web.api.response.ApiResponse;
@@ -54,7 +54,7 @@ import io.jgitkins.server.repository.application.support.membership.RepositoryMe
 import io.jgitkins.server.repository.application.support.ownership.RepositoryOwnershipPolicy;
 import io.jgitkins.server.repository.application.support.provisioning.RepositoryProvisioner;
 import io.jgitkins.server.execution.application.support.RunnerRuntimeConfigProvider;
-import io.jgitkins.server.application.support.UserService;
+import io.jgitkins.server.identity.access.application.support.UserService;
 import io.jgitkins.server.repository.application.support.GitRepositoryAccessService;
 import io.jgitkins.server.repository.application.support.RepositoryLookupService;
 import java.io.IOException;
@@ -75,24 +75,32 @@ import org.springframework.stereotype.Service;
 class ArchitecturePackageConventionTest {
 
     private static final String APPLICATION_SERVICE_PACKAGE = "io.jgitkins.server.application.service";
+    private static final String IDENTITY_ACCESS_SERVICE_PACKAGE = "io.jgitkins.server.identity.access.application.service";
     private static final String REPOSITORY_SERVICE_PACKAGE = "io.jgitkins.server.repository.application.service";
 
     @Test
     void applicationServices_resideInUnifiedServicePackage() {
         List<Class<?>> serviceClasses = List.of(
-                AdminUserService.class,
                 CommitService.class,
                 MergeService.class,
-                OAuthLoginService.class,
                 OrganizeMemberService.class,
                 OrganizeService.class,
-                PublicUserQueryService.class,
                 PushEventHandleService.class,
-                RepositoryFileService.class,
+                RepositoryFileService.class);
+
+        serviceClasses.forEach(serviceClass -> assertEquals(APPLICATION_SERVICE_PACKAGE, serviceClass.getPackageName()));
+    }
+
+    @Test
+    void identityAccessServices_resideInIdentityAccessServicePackage() {
+        List<Class<?>> serviceClasses = List.of(
+                AdminUserService.class,
+                OAuthLoginService.class,
+                PublicUserQueryService.class,
                 UserCredentialService.class,
                 UserProfileService.class);
 
-        serviceClasses.forEach(serviceClass -> assertEquals(APPLICATION_SERVICE_PACKAGE, serviceClass.getPackageName()));
+        serviceClasses.forEach(serviceClass -> assertEquals(IDENTITY_ACCESS_SERVICE_PACKAGE, serviceClass.getPackageName()));
     }
 
     @Test

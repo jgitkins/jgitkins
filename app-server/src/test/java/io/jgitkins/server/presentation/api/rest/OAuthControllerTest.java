@@ -1,4 +1,4 @@
-package io.jgitkins.server.presentation.api.rest;
+package io.jgitkins.server.identity.access.presentation.api.rest;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -8,13 +8,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.jgitkins.server.application.dto.command.OAuthLoginCommand;
-import io.jgitkins.server.application.dto.result.OAuthLoginResult;
-import io.jgitkins.server.application.port.in.OAuthLoginUseCase;
-import io.jgitkins.server.domain.model.User;
-import io.jgitkins.server.domain.model.UserStatus;
-import io.jgitkins.server.presentation.dto.OAuthLoginRequest;
-import io.jgitkins.server.presentation.mapper.OAuthRequestMapper;
+import io.jgitkins.server.identity.access.application.dto.command.OAuthLoginCommand;
+import io.jgitkins.server.identity.access.application.dto.result.OAuthLoginResult;
+import io.jgitkins.server.identity.access.application.port.in.OAuthLoginUseCase;
+import io.jgitkins.server.identity.access.domain.aggregate.User;
+import io.jgitkins.server.identity.access.domain.vo.UserStatus;
+import io.jgitkins.server.identity.access.presentation.dto.OAuthLoginRequest;
+import io.jgitkins.server.identity.access.presentation.mapper.OAuthRequestMapper;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

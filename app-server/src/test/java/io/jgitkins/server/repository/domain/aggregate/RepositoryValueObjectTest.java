@@ -4,7 +4,7 @@ import io.jgitkins.server.domain.model.vo.BranchName;
 import io.jgitkins.server.repository.domain.vo.RepositoryName;
 import io.jgitkins.server.repository.domain.vo.RepositoryPath;
 import io.jgitkins.server.repository.domain.vo.RepositoryVisibility;
-import io.jgitkins.server.domain.model.vo.UserId;
+import io.jgitkins.server.identity.access.domain.vo.UserId;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

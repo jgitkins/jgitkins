@@ -1,16 +1,16 @@
-package io.jgitkins.server.application.service;
+package io.jgitkins.server.identity.access.application.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import io.jgitkins.server.application.exception.UnauthenticatedException;
 import io.jgitkins.server.application.exception.UserNotFoundException;
-import io.jgitkins.server.application.port.in.SignupUseCase;
+import io.jgitkins.server.identity.access.application.port.in.SignupUseCase;
 import io.jgitkins.server.application.port.out.CurrentUserPort;
 import io.jgitkins.server.application.port.out.UserPersistencePort;
-import io.jgitkins.server.application.validate.ActivationValidator;
-import io.jgitkins.server.domain.model.User;
-import io.jgitkins.server.domain.model.vo.Username;
+import io.jgitkins.server.identity.access.application.validate.ActivationValidator;
+import io.jgitkins.server.identity.access.domain.aggregate.User;
+import io.jgitkins.server.identity.access.domain.vo.Username;
 import lombok.RequiredArgsConstructor;
 
 @Service

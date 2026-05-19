@@ -7,7 +7,7 @@ import io.jgitkins.server.domain.model.vo.BranchName;
 import io.jgitkins.server.domain.model.vo.CommitHash;
 import io.jgitkins.server.execution.domain.repository.JobRepository;
 import io.jgitkins.server.repository.domain.vo.RepositoryId;
-import io.jgitkins.server.domain.model.vo.UserId;
+import io.jgitkins.server.identity.access.domain.vo.UserId;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

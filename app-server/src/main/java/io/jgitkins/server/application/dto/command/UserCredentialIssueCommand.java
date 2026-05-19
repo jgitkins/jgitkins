@@ -1,4 +1,4 @@
-package io.jgitkins.server.application.dto.command;
+package io.jgitkins.server.identity.access.application.dto.command;
 
 public record UserCredentialIssueCommand(
         String name,

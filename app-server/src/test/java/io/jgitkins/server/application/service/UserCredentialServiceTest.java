@@ -1,4 +1,4 @@
-package io.jgitkins.server.application.service;
+package io.jgitkins.server.identity.access.application.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -9,15 +9,15 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import io.jgitkins.server.application.dto.command.UserCredentialIssueCommand;
-import io.jgitkins.server.application.dto.result.UserCredentialIssueResult;
+import io.jgitkins.server.identity.access.application.dto.command.UserCredentialIssueCommand;
+import io.jgitkins.server.identity.access.application.dto.result.UserCredentialIssueResult;
 import io.jgitkins.server.application.dto.result.UserCredentialSummary;
 import io.jgitkins.server.application.common.error.ApplicationErrorCode;
-import io.jgitkins.server.application.mapper.UserCredentialApplicationMapper;
+import io.jgitkins.server.identity.access.application.mapper.UserCredentialApplicationMapper;
 import io.jgitkins.server.application.port.out.CurrentUserPort;
 import io.jgitkins.core.common.exception.JgitkinsException;
 import io.jgitkins.server.application.port.out.UserCredentialPersistencePort;
-import io.jgitkins.server.domain.model.UserCredential;
+import io.jgitkins.server.identity.access.domain.entity.UserCredential;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;

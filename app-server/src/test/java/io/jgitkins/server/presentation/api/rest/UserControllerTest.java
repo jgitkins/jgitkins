@@ -1,4 +1,4 @@
-package io.jgitkins.server.presentation.api.rest;
+package io.jgitkins.server.identity.access.presentation.api.rest;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -6,8 +6,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import io.jgitkins.server.application.dto.result.UserSummary;
-import io.jgitkins.server.application.port.in.PublicUserQueryUseCase;
+import io.jgitkins.server.identity.access.application.dto.result.UserSummary;
+import io.jgitkins.server.identity.access.application.port.in.PublicUserQueryUseCase;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.Test;

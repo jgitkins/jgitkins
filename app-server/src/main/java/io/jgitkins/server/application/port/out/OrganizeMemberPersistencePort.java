@@ -2,7 +2,7 @@ package io.jgitkins.server.application.port.out;
 
 import io.jgitkins.server.domain.model.OrganizeMember;
 import io.jgitkins.server.domain.model.vo.OrganizeId;
-import io.jgitkins.server.domain.model.vo.UserId;
+import io.jgitkins.server.identity.access.domain.vo.UserId;
 import java.util.Optional;
 
 public interface OrganizeMemberPersistencePort {

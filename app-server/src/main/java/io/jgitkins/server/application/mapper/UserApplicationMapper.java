@@ -1,11 +1,11 @@
-package io.jgitkins.server.application.mapper;
+package io.jgitkins.server.identity.access.application.mapper;
 
-import io.jgitkins.server.application.dto.result.UserAdminDetail;
-import io.jgitkins.server.application.dto.result.UserAdminSummary;
-import io.jgitkins.server.application.dto.result.UserIdentitySummary;
-import io.jgitkins.server.application.dto.result.UserSummary;
-import io.jgitkins.server.domain.model.User;
-import io.jgitkins.server.domain.model.UserIdentity;
+import io.jgitkins.server.identity.access.application.dto.result.UserAdminDetail;
+import io.jgitkins.server.identity.access.application.dto.result.UserAdminSummary;
+import io.jgitkins.server.identity.access.application.dto.result.UserIdentitySummary;
+import io.jgitkins.server.identity.access.application.dto.result.UserSummary;
+import io.jgitkins.server.identity.access.domain.aggregate.User;
+import io.jgitkins.server.identity.access.domain.entity.UserIdentity;
 import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

@@ -1,4 +1,4 @@
-package io.jgitkins.server.application.support;
+package io.jgitkins.server.identity.access.application.support;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -8,12 +8,12 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import io.jgitkins.server.application.dto.command.UserLoginOrSignUpCommand;
+import io.jgitkins.server.identity.access.application.dto.command.UserLoginOrSignUpCommand;
 import io.jgitkins.server.application.port.out.UserIdentityPersistencePort;
 import io.jgitkins.server.application.port.out.UserPersistencePort;
-import io.jgitkins.server.domain.model.User;
-import io.jgitkins.server.domain.model.UserIdentity;
-import io.jgitkins.server.domain.model.UserStatus;
+import io.jgitkins.server.identity.access.domain.aggregate.User;
+import io.jgitkins.server.identity.access.domain.entity.UserIdentity;
+import io.jgitkins.server.identity.access.domain.vo.UserStatus;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 

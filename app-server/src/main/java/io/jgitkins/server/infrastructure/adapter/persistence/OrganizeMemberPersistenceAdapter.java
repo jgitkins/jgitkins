@@ -3,7 +3,7 @@ package io.jgitkins.server.infrastructure.adapter.persistence;
 import io.jgitkins.server.application.port.out.OrganizeMemberPersistencePort;
 import io.jgitkins.server.domain.model.OrganizeMember;
 import io.jgitkins.server.domain.model.vo.OrganizeId;
-import io.jgitkins.server.domain.model.vo.UserId;
+import io.jgitkins.server.identity.access.domain.vo.UserId;
 import io.jgitkins.server.infrastructure.common.error.InfrastructureErrorCode;
 import io.jgitkins.server.infrastructure.exception.InfrastructureException;
 import io.jgitkins.server.infrastructure.mapper.OrganizeMemberDomainMapper;

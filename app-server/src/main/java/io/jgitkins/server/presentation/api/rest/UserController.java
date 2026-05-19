@@ -1,7 +1,7 @@
-package io.jgitkins.server.presentation.api.rest;
+package io.jgitkins.server.identity.access.presentation.api.rest;
 
-import io.jgitkins.server.application.dto.result.UserSummary;
-import io.jgitkins.server.application.port.in.PublicUserQueryUseCase;
+import io.jgitkins.server.identity.access.application.dto.result.UserSummary;
+import io.jgitkins.server.identity.access.application.port.in.PublicUserQueryUseCase;
 import io.jgitkins.core.web.api.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

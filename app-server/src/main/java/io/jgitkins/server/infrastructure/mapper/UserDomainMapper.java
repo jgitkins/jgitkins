@@ -1,8 +1,8 @@
-package io.jgitkins.server.infrastructure.mapper;
+package io.jgitkins.server.identity.access.infrastructure.mapper;
 
-import io.jgitkins.server.domain.model.User;
-import io.jgitkins.server.domain.model.UserStatus;
-import io.jgitkins.server.infrastructure.persistence.model.UserEntity;
+import io.jgitkins.server.identity.access.domain.aggregate.User;
+import io.jgitkins.server.identity.access.domain.vo.UserStatus;
+import io.jgitkins.server.identity.access.infrastructure.persistence.model.UserEntity;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
@@ -36,7 +36,7 @@ public interface UserDomainMapper {
                 entity.getEmail(),
                 entity.getDisplayName(),
                 entity.getAvatarUrl(),
-                entity.getAuthority() != null ? io.jgitkins.server.domain.model.UserAuthority.valueOf(entity.getAuthority()) : io.jgitkins.server.domain.model.UserAuthority.USER,
+                entity.getAuthority() != null ? io.jgitkins.server.identity.access.domain.vo.UserAuthority.valueOf(entity.getAuthority()) : io.jgitkins.server.identity.access.domain.vo.UserAuthority.USER,
                 UserStatus.fromNullable(entity.getStatus()),
                 entity.getLastLoginAt(),
                 entity.getCreatedAt(),

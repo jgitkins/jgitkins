@@ -1,7 +1,7 @@
-package io.jgitkins.server.infrastructure.persistence.mapper;
+package io.jgitkins.server.identity.access.infrastructure.persistence.mapper;
 
-import io.jgitkins.server.infrastructure.persistence.model.UserCredentialsEntity;
-import io.jgitkins.server.infrastructure.persistence.model.UserCredentialsEntityCondition;
+import io.jgitkins.server.identity.access.infrastructure.persistence.model.UserCredentialsEntity;
+import io.jgitkins.server.identity.access.infrastructure.persistence.model.UserCredentialsEntityCondition;
 import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;

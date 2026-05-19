@@ -1,7 +1,7 @@
-package io.jgitkins.server.presentation.mapper;
+package io.jgitkins.server.identity.access.presentation.mapper;
 
-import io.jgitkins.server.application.dto.command.OAuthLoginCommand;
-import io.jgitkins.server.presentation.dto.OAuthLoginRequest;
+import io.jgitkins.server.identity.access.application.dto.command.OAuthLoginCommand;
+import io.jgitkins.server.identity.access.presentation.dto.OAuthLoginRequest;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

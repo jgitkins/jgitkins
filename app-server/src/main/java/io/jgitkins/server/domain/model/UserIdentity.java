@@ -1,4 +1,4 @@
-package io.jgitkins.server.domain.model;
+package io.jgitkins.server.identity.access.domain.entity;
 
 import java.time.LocalDateTime;
 import lombok.AccessLevel;

@@ -1,4 +1,4 @@
-package io.jgitkins.server.infrastructure.persistence.model;
+package io.jgitkins.server.identity.access.infrastructure.persistence.model;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

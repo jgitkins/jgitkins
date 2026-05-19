@@ -88,7 +88,7 @@
         "priority": "high",
         "details": "기존 기능별 Task를 카테고리 기반(신규기능/리팩토링/보안)으로 재구성함.",
         "testStrategy": "카테고리별 우선순위에 따라 하위 작업을 순차 수행하고 회귀 테스트를 적용한다.",
-        "updatedAt": "2026-05-17T13:37:03.626Z",
+        "updatedAt": "2026-05-18T13:10:06.630Z",
         "subtasks": [
           {
             "id": 1,
@@ -327,25 +327,27 @@
             "title": "[plan][P3][server, docs] Change & Review Context 기준 리팩토링 계획 수립",
             "description": "`PullRequest` 영속 상태와 `MergeabilityAssessment`, `TargetDrift` 같은 계산 결과의 경계를 더 엄격히 적용하기 위한 실행 계획을 수립한다.",
             "details": "참조 문서: `docs/modeling/contexts/change-review/change-review-context.md`, `docs/modeling/contexts/change-review/change-review-context-diagrams.md`. 산출물은 `.taskmaster/docs/refactor/task_2_21_plan.md`이며 다음을 포함한다. 1) persisted state와 computed result 분리 원칙 재확인. 2) PR 생성/상세 조회/상태 전이/merge 수행 경계 정리. 3) `Repository`와 shared seam 의존성 반영. 4) MBG 영속성, application seam, API 확장 순서 정의.",
-            "status": "in-progress",
+            "status": "done",
             "dependencies": [
               18,
               19
             ],
             "parentTaskId": 2,
-            "parentId": "2"
+            "parentId": "2",
+            "updatedAt": "2026-05-18T13:09:16.078Z"
           },
           {
             "id": 22,
             "title": "[plan][P4][server, docs] Identity & Access Context 기준 리팩토링 계획 수립",
             "description": "`User`, `UserIdentity`, `UserCredential`, activation, PAT 발급/폐기 경계를 문서 기준으로 재정렬하는 실행 계획을 수립한다.",
-            "details": "참조 문서: `docs/modeling/contexts/identity-access/identity-access-context.md`, `docs/modeling/contexts/identity-access/identity-access-context-diagrams.md`. 산출물은 `.taskmaster/docs/refactor/task_2_22_plan.md`이며 다음을 포함한다. 1) `User Aggregate Root Candidate` 확정 여부 검토. 2) `UserIdentity`, `UserCredential`의 종속 모델 유지 또는 분리 기준 정리. 3) activation/credential 흐름의 application service 경계 재배치안. 4) namespace 충돌과 collaboration 연계 포인트 정리.",
-            "status": "pending",
+            "details": "참조 문서: `docs/domain/contexts/identity-access/context.md`, `docs/domain/contexts/identity-access/diagrams.md`. 산출물은 `.taskmaster/docs/refactor/task_2_22_plan.md`이며 다음을 포함한다. 1) `User Aggregate Root Candidate` 확정 여부 검토. 2) `UserIdentity`, `UserCredential`의 종속 모델 유지 또는 분리 기준 정리. 3) activation/credential 흐름의 application service 경계 재배치안. 4) namespace 충돌과 collaboration 연계 포인트 정리.",
+            "status": "in-progress",
             "dependencies": [
               18
             ],
             "parentTaskId": 2,
-            "parentId": "2"
+            "parentId": "2",
+            "updatedAt": "2026-05-18T13:10:06.630Z"
           },
           {
             "id": 23,
@@ -600,7 +602,7 @@
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2026-05-17T13:37:03.626Z",
+      "lastModified": "2026-05-18T13:10:06.630Z",
       "taskCount": 5,
       "completedCount": 1,
       "tags": [

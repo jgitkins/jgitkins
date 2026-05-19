@@ -3,7 +3,7 @@ package io.jgitkins.server.infrastructure.mapper;
 import io.jgitkins.server.domain.aggregate.Organize;
 import io.jgitkins.server.domain.model.vo.OrganizeId;
 import io.jgitkins.server.domain.model.vo.OrganizeName;
-import io.jgitkins.server.domain.model.vo.UserId;
+import io.jgitkins.server.identity.access.domain.vo.UserId;
 import io.jgitkins.server.infrastructure.persistence.model.OrganizeEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

@@ -1,4 +1,4 @@
-package io.jgitkins.server.application.validate;
+package io.jgitkins.server.identity.access.application.validate;
 
 import io.jgitkins.server.application.common.error.ApplicationErrorCode;
 import io.jgitkins.server.application.exception.ApplicationException;
@@ -10,7 +10,7 @@ import io.jgitkins.server.application.port.out.UserPersistencePort;
 import io.jgitkins.server.domain.model.vo.OrganizeName;
 import io.jgitkins.server.domain.model.vo.OwnerId;
 import io.jgitkins.server.domain.model.vo.OwnerType;
-import io.jgitkins.server.domain.model.vo.Username;
+import io.jgitkins.server.identity.access.domain.vo.Username;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

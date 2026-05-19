@@ -19,7 +19,7 @@ import io.jgitkins.core.common.exception.JgitkinsException;
 import io.jgitkins.server.domain.aggregate.Organize;
 import io.jgitkins.server.domain.model.vo.OrganizeId;
 import io.jgitkins.server.domain.model.vo.OrganizeName;
-import io.jgitkins.server.domain.model.vo.UserId;
+import io.jgitkins.server.identity.access.domain.vo.UserId;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;

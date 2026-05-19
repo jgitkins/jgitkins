@@ -1,7 +1,7 @@
-package io.jgitkins.server.application.support;
+package io.jgitkins.server.identity.access.application.support;
 
-import io.jgitkins.server.domain.model.User;
-import io.jgitkins.server.domain.model.UserIdentity;
+import io.jgitkins.server.identity.access.domain.aggregate.User;
+import io.jgitkins.server.identity.access.domain.entity.UserIdentity;
 import java.time.LocalDateTime;
 import org.springframework.stereotype.Component;
 

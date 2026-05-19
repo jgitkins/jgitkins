@@ -4,7 +4,7 @@ import io.jgitkins.server.application.dto.result.PullRequestResult;
 import io.jgitkins.server.change.review.domain.aggregate.PullRequest;
 import org.springframework.stereotype.Component;
 
-@Component
+@Component("legacyPullRequestResultMapper")
 public class PullRequestResultMapper {
 
     public PullRequestResult toResult(PullRequest pullRequest) {

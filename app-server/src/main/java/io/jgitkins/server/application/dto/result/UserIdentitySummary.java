@@ -1,4 +1,4 @@
-package io.jgitkins.server.application.dto.result;
+package io.jgitkins.server.identity.access.application.dto.result;
 
 public record UserIdentitySummary(
         String providerName,
