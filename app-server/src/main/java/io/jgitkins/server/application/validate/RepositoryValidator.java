@@ -1,8 +1,10 @@
 package io.jgitkins.server.application.validate;
 
 import io.jgitkins.server.application.exception.*;
+import io.jgitkins.server.collaboration.application.exception.OrganizeAccessDeniedException;
+import io.jgitkins.server.collaboration.domain.vo.OrganizeId;
 import io.jgitkins.server.identity.access.application.port.out.CurrentUserPort;
-import io.jgitkins.server.application.port.out.OrganizeMemberPersistencePort;
+import io.jgitkins.server.collaboration.application.port.out.OrganizeMemberPersistencePort;
 import io.jgitkins.server.repository.domain.aggregate.Repository;
 import io.jgitkins.server.domain.model.vo.*;
 import io.jgitkins.server.identity.access.domain.vo.UserId;

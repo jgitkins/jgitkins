@@ -1,11 +1,11 @@
 package io.jgitkins.server.repository.application.support;
 
-import io.jgitkins.server.application.port.out.OrganizeMemberPersistencePort;
+import io.jgitkins.server.collaboration.application.port.out.OrganizeMemberPersistencePort;
 import io.jgitkins.server.repository.application.port.out.RepositoryMemberPersistencePort;
 import io.jgitkins.server.repository.domain.aggregate.Repository;
-import io.jgitkins.server.domain.model.OrganizeMember;
+import io.jgitkins.server.collaboration.domain.entity.OrganizeMember;
 import io.jgitkins.server.repository.domain.model.RepositoryMember;
-import io.jgitkins.server.domain.model.vo.OrganizeId;
+import io.jgitkins.server.collaboration.domain.vo.OrganizeId;
 import io.jgitkins.server.domain.model.vo.OwnerType;
 import io.jgitkins.server.repository.domain.vo.RepositoryMemberRole;
 import io.jgitkins.server.repository.domain.vo.RepositoryVisibility;
@@ -97,8 +97,8 @@ public class GitRepositoryAccessService {
             );
             if (organizeMember.isPresent()) {
                 var role = organizeMember.get().getRole();
-                boolean writable = role == io.jgitkins.server.domain.model.vo.OrganizeMemberRole.OWNER
-                        || role == io.jgitkins.server.domain.model.vo.OrganizeMemberRole.MAINTAINER;
+                boolean writable = role == io.jgitkins.server.collaboration.domain.vo.OrganizeMemberRole.OWNER
+                        || role == io.jgitkins.server.collaboration.domain.vo.OrganizeMemberRole.MAINTAINER;
                 return new RepositoryPermission("ORGANIZATION_" + role.name(), writable, true);
             }
         }

@@ -1,8 +1,8 @@
 package io.jgitkins.server.identity.access.application.support;
 
-import io.jgitkins.server.application.port.out.OrganizePersistencePort;
+import io.jgitkins.server.collaboration.application.port.out.OrganizePersistencePort;
 import io.jgitkins.server.identity.access.application.port.out.UserPersistencePort;
-import io.jgitkins.server.domain.model.vo.OrganizeName;
+import io.jgitkins.server.collaboration.domain.vo.OrganizeName;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -53,7 +53,7 @@ public class UsernameAllocator {
 		return findOrganizeByName(username).isEmpty();
 	}
 
-	private Optional<io.jgitkins.server.domain.aggregate.Organize> findOrganizeByName(String namespace) {
+	private Optional<io.jgitkins.server.collaboration.domain.aggregate.Organize> findOrganizeByName(String namespace) {
 		try {
 			return organizePort.findByName(OrganizeName.from(namespace));
 		} catch (IllegalArgumentException e) {

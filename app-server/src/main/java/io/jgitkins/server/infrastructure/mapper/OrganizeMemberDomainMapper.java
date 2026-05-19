@@ -1,8 +1,8 @@
 package io.jgitkins.server.infrastructure.mapper;
 
-import io.jgitkins.server.domain.model.OrganizeMember;
-import io.jgitkins.server.domain.model.vo.OrganizeId;
-import io.jgitkins.server.domain.model.vo.OrganizeMemberRole;
+import io.jgitkins.server.collaboration.domain.entity.OrganizeMember;
+import io.jgitkins.server.collaboration.domain.vo.OrganizeId;
+import io.jgitkins.server.collaboration.domain.vo.OrganizeMemberRole;
 import io.jgitkins.server.identity.access.domain.vo.UserId;
 import io.jgitkins.server.infrastructure.persistence.model.OrganizeMemberEntity;
 import org.mapstruct.Mapper;

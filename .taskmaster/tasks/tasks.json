@@ -16,7 +16,7 @@
             "id": 1,
             "title": "[runner] 복잡한 Jenkinsfile 실행 지원 범위 검증 및 Job/Runner 보완",
             "description": "복잡한 Jenkinsfile 시나리오를 기준으로 Job 생성부터 Runner 실행까지 현재 지원 범위를 검증하고, 필요한 기능 보완 포인트를 도출한다.",
-            "status": "in-progress",
+            "status": "done",
             "dependencies": [],
             "details": "[source: jgitkins-server, original subtask: 1.16]\n이 작업은 단순 테스트가 아니라 향후 Job 생성 및 Runner 실행 기능 확장을 위한 신규기능 성격의 검증 과제다. 우선 대표적인 복잡한 Jenkinsfile 시나리오를 선정한다. 예: scripted pipeline, declarative pipeline, parallel stage, matrix/conditional, shared library 의존, shell/script step 다수, credential 사용, agent/docker 지정, 아티팩트/워크스페이스 활용 등. 각 시나리오별로 현재 서버가 push 이후 Job 을 어떻게 생성하는지, 어떤 payload 로 Runner 에 전달하는지, Runner 가 어떤 runtime/plugin/script 제약으로 실패하는지 확인한다. 검토 및 구현 범위는 다음을 포함한다. 1) 복잡한 Jenkinsfile 샘플 세트 정의. 2) Job 생성 입력 모델과 Jenkinsfile 선택/해석 규칙이 복잡한 스크립트 구조를 수용하는지 점검. 3) Runner 측 실행 환경, plugin, 이미지, credential, filesystem/workspace 요구사항 정리. 4) 성공/실패/skip/timeout 케이스별 상태 반영과 로그 수집 전략 확인. 5) 실제 검증 결과를 바탕으로 서버/runner 어느 쪽에 기능 보완이 필요한지 후속 Task 로 분리한다. 산출물은 지원 가능 시나리오, 실패 시나리오, 즉시 보완 항목, 후속 개발 항목 목록이다.",
             "testStrategy": "",
@@ -28,7 +28,7 @@
             "title": "[web, server] Develop File Content Viewer UI Component with WYSIWYG",
             "description": "Create a frontend UI component to display file content, integrating a WYSIWYG editor for rendering various file types (e.g., Markdown, code, plain text).",
             "details": "[source: jgitkins-server, original subtask: 1.19]\nImplement a component (e.g., `FileContentViewer`) that accepts raw file content and its type (derived from file extension).\n1.  For Markdown files (`.md`, `.markdown`), integrate a Markdown renderer library (e.g., `react-markdown`, `marked.js`) to display rendered HTML.\n2.  For code files (e.g., `.java`, `.js`, `.py`, `.xml`), integrate a code highlighter/editor (e.g., Monaco Editor, CodeMirror, Prism.js) to display syntax-highlighted code.\n3.  For plain text files, display the content directly.\n4.  For unknown or binary files, display a message indicating content cannot be rendered directly.\n\nThe component should act as a viewer (read-only) as per the PRD's '읽을 수 있는 기능을 제공한다' (provides the ability to read).",
-            "status": "pending",
+            "status": "in-progress",
             "dependencies": [],
             "parentTaskId": 1,
             "parentId": "1",
@@ -88,7 +88,7 @@
         "priority": "high",
         "details": "기존 기능별 Task를 카테고리 기반(신규기능/리팩토링/보안)으로 재구성함.",
         "testStrategy": "카테고리별 우선순위에 따라 하위 작업을 순차 수행하고 회귀 테스트를 적용한다.",
-        "updatedAt": "2026-05-18T13:10:06.630Z",
+        "updatedAt": "2026-05-19T14:46:30.915Z",
         "subtasks": [
           {
             "id": 1,
@@ -105,7 +105,7 @@
             "id": 2,
             "title": "[web, server, runner] application dto 단순 carrier record 전환",
             "description": "server/runner application dto 이하의 단순 carrier DTO를 선별해 Java record로 전환하고, web 호환성 검토와 builder/getter 중심 호출부 및 테스트 정리를 함께 수행한다.",
-            "status": "in-progress",
+            "status": "done",
             "dependencies": [],
             "details": "[source: jgitkins-server, original subtask: 2.41]\n참조 문서: .taskmaster/docs/refactor/task_2_2_plan.md. 대상 범위는 server의 src/main/java/io/jgitkins/server/application/dto, command, result 패키지와 runner의 src/main/java/io/jgitkins/runner/application/dto 패키지다. web 모듈은 현재 application dto 대부분이 이미 record이므로 직접 전환 대상보다는 server/runner 변경 이후 mapper/controller/view model 호환성 검토와 회귀 검증 범위에 포함한다. 유지 대상은 이미 record인 RepositoryKey, RepositoryCreationContext, RunnerDispatchContext, PushHookRequest, PushJobPlanRequest, DispatchJobCommand, RepositoryCreateCommand, DispatchableJob, JobDispatchResult, JobCreationDecision 등이며, web의 기존 record DTO도 동일하게 유지한다. 우선 검토 후보는 server 쪽 BranchCreateCommand, OrganizeCreationCommand, OrganizeMemberAddCommand, RepositoryMemberAddCommand, RunnerRegisterCommand, UpdateOrganizeCommand, UserCredentialIssueCommand, OAuthLoginCommand, JobCreateCommand, JobResultReportCommand, UserLoginOrSignUpCommand, BranchSearchResult, OrganizeCreationResult, OrganizeMemberSummary, RepositoryMemberSummary, RunnerDetailResult, RunnerRegistrationResult, RunnerActivateResult, UserAdminSummary, UserAdminDetail, UserCredentialIssueResult, UserCredentialSummary, UserIdentitySummary, UserSummary, RepositoryResult, RepositoryOverviewResult 등과 runner 쪽 RunnerRuntimeConfigResult, RunnerExecutionConfigResult, RunnerActivateResult, JobRunContext 등이다. 단, BranchCreationContext, PushEventCommand, UpdateRepositoryCommand, JobPlan, OAuthLoginResult, PipelineConfig, PipelineRule, RunnerExecutionConfig, RunnerRuntimeConfig, MergeResult, FileUploadInfo, FileUploadRequest, CommitHistory, BranchInfo처럼 정적 팩토리, setter, 도메인 객체 노출, 컬렉션 방어 복사, 기본값 정책, 커스텀 메서드나 의미 있는 생성 규칙이 있는 타입은 단순 carrier 여부를 먼저 검토하고 필요 시 범위에서 제외한다. 변경 시 Lombok Builder/Getter 제거, mapper/service/controller/runner adapter/test 호출부의 accessor 및 생성 방식 정리, Jackson 직렬화와 모듈 간 회귀 테스트 범위 정의를 포함한다.",
             "testStrategy": "",
@@ -142,7 +142,7 @@
             "title": "[web] RestClient 예외 처리 횡단 관심사 중앙화 및 예외 변환 적용",
             "description": "",
             "details": "[source: jgitkins-web, original subtask: 2.5]",
-            "status": "in-progress",
+            "status": "done",
             "dependencies": [],
             "parentTaskId": 2,
             "parentId": "2",
@@ -240,7 +240,9 @@
             "description": "`docs/modeling/domain/change-graph-context.md` 기준으로 기존 `MergeResult` 위에 제품 언어의 `MergeabilityAssessment`와 `MergeTopologySummary` 모델을 얹고, fast-forward/merge commit 필요 여부를 노출한다.",
             "details": "[source: docs/modeling/domain/change-graph-context.md]\n이번 작업은 Change Graph Context의 첫 구현 단위다. 기존 `MergeResult` API 계약은 유지하되, domain model 패키지에 `MergeabilityAssessment`, `MergeabilityStatus`, `MergeTopologySummary`를 추가하고 application support assembler를 통해 기존 merge preview 결과를 제품 언어로 변환한다. `MergeService`에는 `MergeabilityEvaluationUseCase`를 추가해 향후 PR readiness 조합에서 raw `MergeResult` 대신 assessment를 사용할 수 있는 seam을 만든다. `MergeGitAdapter.previewMergeability`는 fast-forward 가능 여부와 merge commit 필요 여부를 `MergeResult`에 채워 downstream assembler가 topology를 만들 수 있게 한다. 관련 테스트는 assembler 매핑, MergeService 위임, application package convention을 검증한다.\n\n[review closeout]\nfast-forward 설명은 실제 merge 수행 전략을 약속하지 않도록 topology 설명으로 조정했다. `MergeGitAdapterTest`를 추가해 fast-forward 가능 경로와 diverged 경로의 topology flag를 JGit fixture로 검증했다. 문서에는 `PullRequest` 영속 Aggregate와 `MergeabilityAssessment` 조회 시점 계산값의 경계를 반영했다. 검증: `./gradlew :server:test` 통과.",
             "status": "done",
-            "dependencies": [],
+            "dependencies": [
+              13
+            ],
             "parentTaskId": 2,
             "parentId": "2",
             "updatedAt": "2026-04-11T14:02:33Z"
@@ -260,29 +262,25 @@
           },
           {
             "id": 16,
-            "title": "[server] PullRequest REST API 연결",
-            "description": "`CreatePullRequestUseCase`와 `GetPullRequestDetailUseCase`를 presentation REST API에 연결해 실제 클라이언트가 PR을 생성하고 상세 상태를 조회할 수 있게 한다.",
-            "details": "[source: 2.15 implementation]\n`PullRequestController`를 추가하고 `POST /repositories/{namespace}/{repoName}/pull-requests`, `GET /pull-requests/{pullRequestId}` 또는 기존 라우팅 규칙에 맞는 endpoint를 제공한다. request/response DTO와 presentation mapper를 추가해 application DTO와 API 계약을 분리한다. 생성 API는 source/target branch만 받아 PR을 저장하고, 상세 API는 저장된 PR 상태와 현재 Git 기준 mergeability/readiness seed를 반환한다. 상세 조회는 read-only이며 mergeability와 target drift 관측값을 저장하지 않는다.\n\n테스트는 controller slice 또는 service mock 기반 REST 테스트로 happy path, source/target 동일 branch 오류, branch not found 오류, PR not found 오류를 검증한다. 다음 단계의 readiness 조합 확장을 위해 response에는 stored source/target, current source/target, status, targetDrift, mergeability를 명확히 노출한다.",
-            "status": "pending",
-            "dependencies": [
-              15
-            ],
+            "title": "[docs] 전체 도메인 개념명세 초안 작성",
+            "description": "시스템 내 주요 도메인 개념의 aggregate/entity/value object 후보와 context 간 관계를 초안으로 정리한다.",
+            "details": "목표는 Aggregate를 바로 확정하기 전에 서비스 전체의 도메인 후보, bounded context, 유비쿼터스 언어, 화면/조회 유스케이스와 진짜 도메인 개념을 분리해 문서화하는 것이다. 작업 범위는 다음을 포함한다. 1) server/web/runner 모듈과 `docs/modeling/domain` 문서를 훑어 현재 존재하는 도메인 후보를 수집한다. 2) Repository, Namespace/Organization/User, Branch, Commit/FileTree/Diff, Push Event, CI Policy, Pipeline Execution, Runner, Job, PullRequest/Change Graph 등 주요 개념을 context map 형태로 배치한다. 3) 각 후보가 Aggregate, Entity, Value Object, Domain Service, Read Model, Application UseCase 중 어디에 가까운지 1차 분류한다. 4) 컨텍스트 간 관계(upstream/downstream, shared kernel 후보, anti-corruption 필요 지점)를 명시한다. 5) 후속 Aggregate 명세 문서의 템플릿을 정의한다. 산출물은 `docs/modeling/domain/domain-map.md` 또는 동등한 위치의 전체 도메인 맵 문서이며, 후속으로 도메인별 aggregate 문서를 쪼갤 수 있게 관련 코드 경로와 미확정 쟁점을 함께 남긴다.\n\n[progress 2026-04-14T12:40:18Z]\n`docs/modeling/domain-concept-definitions.md`에 전체 도메인 개념명세 초안을 작성했다. 제품 언어 기준으로 User, Namespace, Organization, Repository, Branch, Commit/FileTree/Diff, Push Event, Change Graph, PullRequest, CI Policy, Job, Runner, Pipeline Execution, Readiness, Dashboard/Explore/Repository Detail을 정의하고, 각 개념의 현재 분류, 코드/테이블 근거, Aggregate 판단, 미확정 쟁점을 정리했다. 후속 작업은 이 문서를 기준으로 `domain-map.md`를 작성하고 Aggregate 명세 템플릿을 분리하는 것이다.\n\n[progress 2026-04-14T13:01:54Z]\n문서 내 TODO 코멘트를 반영해 작성 기준을 제품 언어 기준으로 단순화했다. UserIdentity는 User 하위 Entity 후보로 명확히 정리했고, UserCredential은 현재는 User 하위 Entity 후보이되 scope, expiry, lastUsedAt, revokedAt, audit log가 독립 생명주기로 중요해질 때 별도 Aggregate로 승격하는 기준을 추가했다. Namespace는 Aggregate가 아니라 User 또는 Organization이 전역적으로 점유하는 repository owner slug와 해석 규칙으로 정의했고, User username과 Organization name의 전역 충돌 금지 및 현재 resolver별 충돌 정책 불일치를 미확정 쟁점으로 기록했다.\n\n[progress 2026-04-16T00:00:00+09:00]\n도메인 문서 구조를 기존 `docs/modeling/domain` 단일 폴더 중심에서 `overview / contexts / shared` 역할 분리 구조로 재정비했다. 현재 기준선 문서는 `docs/modeling/overview/domain-overview.md`이며, 제품 언어 기준의 전체 도메인 개념, 1차 Aggregate/Entity 후보 분류, bounded context 개요 맵, shared/cross-cutting 개념 분리를 담는다. 상단 개념 설명은 Aggregate와 Entity 중심으로만 유지하고, Namespace/Commit/Diff/FileTree 같은 비-aggregate 개념은 별도 표로 분리했다. bounded context 라벨은 `Identity & Access Context`, `Collaboration Context`, `Repository Context`, `Change & Review Context`, `Execution Context`로 정리했다.\n\n`docs/modeling/contexts/README.md`는 개념 설명 문서가 아니라 상세 문서 인덱스 역할만 하도록 재작성했다. 현재 작성 완료된 컨텍스트는 `docs/modeling/contexts/repository/`이며, 이 폴더 아래에 `README.md`, `repository-context.md`, `repository-context-diagrams.md`를 두는 패턴을 확정했다. 이후 컨텍스트도 `contexts/<context>/README.md`, `<context>-context.md`, `<context>-diagrams.md` 구조를 따른다.\n\n`Repository Context` 초안에는 다음 결정을 반영했다. `Repository`는 Aggregate Root, `Branch`는 Repository에 종속된 Entity, `RepositoryMember`는 독립 Aggregate가 아니라 Repository와 User 사이의 권한 관계 모델로 우선 해석한다. 패키지 예시는 `server/domain/repository/aggregate/Repository.java`, `server/domain/repository/model/RepositoryMember.java`, `server/domain/repository/vo/RepositoryId.java`, `server/domain/repository/vo/RepositoryMemberRole.java` 구조를 사용한다. `Namespace`는 특정 컨텍스트 소유물이 아니라 shared/cross-cutting VO+policy 성격으로 보고 `server/domain/shared/namespace/Namespace.java`, `NamespacePolicy.java`, `NamespaceAvailabilityChecker.java` 예시를 기록했다. 저장소 상태는 장기적으로 boolean `initialized` 대신 `RepositoryState`로 승격하며, 현재 후보 상태는 `PROVISIONED`(bare repo만 생성, commit 없음), `INITIALIZED`(초기 commit 완료, active), `DELETED`(삭제 완료)다.\n\n다이어그램은 본문과 분리했다. `repository-context-diagrams.md`에는 Aggregate 구조를 설명하는 mermaid classDiagram, `RepositoryState` 기준 stateDiagram-v2, 생성/초기화 흐름 sequenceDiagram을 두었다. 의도는 구현 클래스 복제가 아니라 Aggregate 경계, 상태 전이, 오케스트레이션 seam 설명이다.\n\n현 시점의 아키텍처 판단은 `Repository Context` 문서만으로 즉시 코드 리팩토링에 들어가기보다, 다른 bounded context 문서를 먼저 최소 초안까지 고정한 뒤 리팩토링에 착수하는 편이 안전하다는 것이다. 이유는 `Branch`, `RepositoryMember`, `Namespace`, `Permission`, `PullRequest`, `Job`, `Runner` 경계가 아직 다른 컨텍스트와 맞물려 있기 때문이다. 권장 다음 순서는 1) `Change & Review Context`, 2) `Execution Context`, 3) `Identity & Access Context`, 4) `Collaboration Context`, 5) `Shared / Cross-Cutting Topics` 문서화다. 이 순서로 최소 기준선을 확정한 뒤 패키지/도메인 리팩토링을 시작한다.\n\n후속 작업 시 이 서브태스크의 산출물 경로는 기존 `docs/modeling/domain/*.md`보다 현재 재구성된 `docs/modeling/overview/`, `docs/modeling/contexts/`, `docs/modeling/shared/` 구조를 우선 기준으로 삼는다. 기존 삭제된 문서 경로를 전제로 한 링크/설명은 더 이상 기준 문서로 취급하지 않는다.",
+            "testStrategy": "",
             "parentTaskId": 2,
-            "parentId": "2",
-            "updatedAt": "2026-04-13T14:00:47Z"
+            "parentId": "2"
           },
           {
             "id": 17,
-            "title": "[docs] 전체 도메인 맵 및 Aggregate 명세 준비",
-            "description": "현재 코드와 기존 도메인 문서를 기준으로 jgitkins의 전체 도메인 맵을 먼저 작성하고, 이후 도메인별 Aggregate 명세를 작성할 수 있는 기준선을 만든다.",
-            "details": "목표는 Aggregate를 바로 확정하기 전에 서비스 전체의 도메인 후보, bounded context, 유비쿼터스 언어, 화면/조회 유스케이스와 진짜 도메인 개념을 분리해 문서화하는 것이다. 작업 범위는 다음을 포함한다. 1) server/web/runner 모듈과 `docs/modeling/domain` 문서를 훑어 현재 존재하는 도메인 후보를 수집한다. 2) Repository, Namespace/Organization/User, Branch, Commit/FileTree/Diff, Push Event, CI Policy, Pipeline Execution, Runner, Job, PullRequest/Change Graph 등 주요 개념을 context map 형태로 배치한다. 3) 각 후보가 Aggregate, Entity, Value Object, Domain Service, Read Model, Application UseCase 중 어디에 가까운지 1차 분류한다. 4) 컨텍스트 간 관계(upstream/downstream, shared kernel 후보, anti-corruption 필요 지점)를 명시한다. 5) 후속 Aggregate 명세 문서의 템플릿을 정의한다. 산출물은 `docs/modeling/domain/domain-map.md` 또는 동등한 위치의 전체 도메인 맵 문서이며, 후속으로 도메인별 aggregate 문서를 쪼갤 수 있게 관련 코드 경로와 미확정 쟁점을 함께 남긴다.\n\n[progress 2026-04-14T12:40:18Z]\n`docs/modeling/domain-concept-definitions.md`에 전체 도메인 개념명세 초안을 작성했다. 제품 언어 기준으로 User, Namespace, Organization, Repository, Branch, Commit/FileTree/Diff, Push Event, Change Graph, PullRequest, CI Policy, Job, Runner, Pipeline Execution, Readiness, Dashboard/Explore/Repository Detail을 정의하고, 각 개념의 현재 분류, 코드/테이블 근거, Aggregate 판단, 미확정 쟁점을 정리했다. 후속 작업은 이 문서를 기준으로 `domain-map.md`를 작성하고 Aggregate 명세 템플릿을 분리하는 것이다.\n\n[progress 2026-04-14T13:01:54Z]\n문서 내 TODO 코멘트를 반영해 작성 기준을 제품 언어 기준으로 단순화했다. UserIdentity는 User 하위 Entity 후보로 명확히 정리했고, UserCredential은 현재는 User 하위 Entity 후보이되 scope, expiry, lastUsedAt, revokedAt, audit log가 독립 생명주기로 중요해질 때 별도 Aggregate로 승격하는 기준을 추가했다. Namespace는 Aggregate가 아니라 User 또는 Organization이 전역적으로 점유하는 repository owner slug와 해석 규칙으로 정의했고, User username과 Organization name의 전역 충돌 금지 및 현재 resolver별 충돌 정책 불일치를 미확정 쟁점으로 기록했다.\n\n[progress 2026-04-16T00:00:00+09:00]\n도메인 문서 구조를 기존 `docs/modeling/domain` 단일 폴더 중심에서 `overview / contexts / shared` 역할 분리 구조로 재정비했다. 현재 기준선 문서는 `docs/modeling/overview/domain-overview.md`이며, 제품 언어 기준의 전체 도메인 개념, 1차 Aggregate/Entity 후보 분류, bounded context 개요 맵, shared/cross-cutting 개념 분리를 담는다. 상단 개념 설명은 Aggregate와 Entity 중심으로만 유지하고, Namespace/Commit/Diff/FileTree 같은 비-aggregate 개념은 별도 표로 분리했다. bounded context 라벨은 `Identity & Access Context`, `Collaboration Context`, `Repository Context`, `Change & Review Context`, `Execution Context`로 정리했다.\n\n`docs/modeling/contexts/README.md`는 개념 설명 문서가 아니라 상세 문서 인덱스 역할만 하도록 재작성했다. 현재 작성 완료된 컨텍스트는 `docs/modeling/contexts/repository/`이며, 이 폴더 아래에 `README.md`, `repository-context.md`, `repository-context-diagrams.md`를 두는 패턴을 확정했다. 이후 컨텍스트도 `contexts/<context>/README.md`, `<context>-context.md`, `<context>-diagrams.md` 구조를 따른다.\n\n`Repository Context` 초안에는 다음 결정을 반영했다. `Repository`는 Aggregate Root, `Branch`는 Repository에 종속된 Entity, `RepositoryMember`는 독립 Aggregate가 아니라 Repository와 User 사이의 권한 관계 모델로 우선 해석한다. 패키지 예시는 `server/domain/repository/aggregate/Repository.java`, `server/domain/repository/model/RepositoryMember.java`, `server/domain/repository/vo/RepositoryId.java`, `server/domain/repository/vo/RepositoryMemberRole.java` 구조를 사용한다. `Namespace`는 특정 컨텍스트 소유물이 아니라 shared/cross-cutting VO+policy 성격으로 보고 `server/domain/shared/namespace/Namespace.java`, `NamespacePolicy.java`, `NamespaceAvailabilityChecker.java` 예시를 기록했다. 저장소 상태는 장기적으로 boolean `initialized` 대신 `RepositoryState`로 승격하며, 현재 후보 상태는 `PROVISIONED`(bare repo만 생성, commit 없음), `INITIALIZED`(초기 commit 완료, active), `DELETED`(삭제 완료)다.\n\n다이어그램은 본문과 분리했다. `repository-context-diagrams.md`에는 Aggregate 구조를 설명하는 mermaid classDiagram, `RepositoryState` 기준 stateDiagram-v2, 생성/초기화 흐름 sequenceDiagram을 두었다. 의도는 구현 클래스 복제가 아니라 Aggregate 경계, 상태 전이, 오케스트레이션 seam 설명이다.\n\n현 시점의 아키텍처 판단은 `Repository Context` 문서만으로 즉시 코드 리팩토링에 들어가기보다, 다른 bounded context 문서를 먼저 최소 초안까지 고정한 뒤 리팩토링에 착수하는 편이 안전하다는 것이다. 이유는 `Branch`, `RepositoryMember`, `Namespace`, `Permission`, `PullRequest`, `Job`, `Runner` 경계가 아직 다른 컨텍스트와 맞물려 있기 때문이다. 권장 다음 순서는 1) `Change & Review Context`, 2) `Execution Context`, 3) `Identity & Access Context`, 4) `Collaboration Context`, 5) `Shared / Cross-Cutting Topics` 문서화다. 이 순서로 최소 기준선을 확정한 뒤 패키지/도메인 리팩토링을 시작한다.\n\n후속 작업 시 이 서브태스크의 산출물 경로는 기존 `docs/modeling/domain/*.md`보다 현재 재구성된 `docs/modeling/overview/`, `docs/modeling/contexts/`, `docs/modeling/shared/` 구조를 우선 기준으로 삼는다. 기존 삭제된 문서 경로를 전제로 한 링크/설명은 더 이상 기준 문서로 취급하지 않는다.",
+            "title": "[docs] Identity & Access Context 기준 실행 계획 수립",
+            "description": "Identity & Access context의 aggregate, identity, credential, activation 경계를 재정렬하는 실행 계획을 수립한다.",
+            "details": "참조 문서: `docs/domain/contexts/identity-access/context.md`, `docs/domain/contexts/identity-access/diagrams.md`. 산출물은 `.taskmaster/docs/refactor/task_2_22_plan.md`이며 다음을 포함한다. 1) `User Aggregate Root Candidate` 확정 여부 검토. 2) `UserIdentity`, `UserCredential`의 종속 모델 유지 또는 분리 기준 정리. 3) activation/credential 흐름의 application service 경계 재배치안. 4) namespace 충돌과 collaboration 연계 포인트 정리.",
             "status": "done",
             "dependencies": [
-              13
+              18
             ],
             "parentTaskId": 2,
             "parentId": "2",
-            "updatedAt": "2026-04-20T13:53:39.868Z"
+            "updatedAt": "2026-05-18T13:09:16.078Z"
           },
           {
             "id": 18,
@@ -347,20 +345,21 @@
             ],
             "parentTaskId": 2,
             "parentId": "2",
-            "updatedAt": "2026-05-19T08:40:00.000Z"
+            "updatedAt": "2026-05-19T14:13:57.587Z"
           },
           {
             "id": 23,
             "title": "[plan][P5][server, docs] Collaboration Context 기준 리팩토링 계획 수립",
             "description": "`Organization`, `Organization Member`, owner/member 기반 접근 경계와 relation model 해석을 문서 기준으로 재정렬하는 실행 계획을 수립한다.",
             "details": "참조 문서: `docs/modeling/contexts/collaboration/collaboration-context.md`, `docs/modeling/contexts/collaboration/collaboration-context-diagrams.md`. 산출물은 `.taskmaster/docs/refactor/task_2_23_plan.md`이며 다음을 포함한다. 1) `Organization Aggregate`와 `Organization Member relation model` 기준 정리. 2) `Organize` 명명과 문서 용어 정합성 정리. 3) repository ownership, shared permission 계산과의 연결 seam 정리. 4) identity/access 의존성 반영과 점진 이관 순서 정의.",
-            "status": "pending",
+            "status": "done",
             "dependencies": [
               18,
               22
             ],
             "parentTaskId": 2,
-            "parentId": "2"
+            "parentId": "2",
+            "updatedAt": "2026-05-19T14:46:30.915Z"
           },
           {
             "id": 24,
@@ -602,7 +601,7 @@
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2026-05-18T13:10:06.630Z",
+      "lastModified": "2026-05-19T14:46:30.915Z",
       "taskCount": 5,
       "completedCount": 1,
       "tags": [

@@ -20,8 +20,8 @@ import io.jgitkins.server.identity.access.application.service.AdminUserService;
 import io.jgitkins.server.application.service.CommitService;
 import io.jgitkins.server.application.service.MergeService;
 import io.jgitkins.server.identity.access.application.service.OAuthLoginService;
-import io.jgitkins.server.application.service.OrganizeMemberService;
-import io.jgitkins.server.application.service.OrganizeService;
+import io.jgitkins.server.collaboration.application.service.OrganizeMemberService;
+import io.jgitkins.server.collaboration.application.service.OrganizeService;
 import io.jgitkins.server.identity.access.application.service.PublicUserQueryService;
 import io.jgitkins.server.application.service.PushEventHandleService;
 import io.jgitkins.server.application.service.RepositoryFileService;
@@ -31,12 +31,12 @@ import io.jgitkins.server.execution.presentation.api.rest.RunnerController;
 import io.jgitkins.server.identity.access.presentation.api.rest.AdminUserController;
 import io.jgitkins.server.presentation.api.rest.MergeController;
 import io.jgitkins.server.identity.access.presentation.api.rest.OAuthController;
-import io.jgitkins.server.presentation.api.rest.OrganizeController;
-import io.jgitkins.server.presentation.api.rest.OrganizeMemberController;
+import io.jgitkins.server.collaboration.presentation.api.rest.OrganizeController;
+import io.jgitkins.server.collaboration.presentation.api.rest.OrganizeMemberController;
 import io.jgitkins.server.identity.access.presentation.api.rest.SignupController;
 import io.jgitkins.server.identity.access.presentation.api.rest.UserController;
 import io.jgitkins.server.identity.access.presentation.api.rest.UserCredentialController;
-import io.jgitkins.server.presentation.api.web.WebOrganizeController;
+import io.jgitkins.server.collaboration.presentation.api.web.WebOrganizeController;
 import io.jgitkins.server.presentation.api.web.WebRepositoryController;
 import io.jgitkins.core.web.api.response.ApiResponse;
 import io.jgitkins.server.change.review.presentation.api.rest.PullRequestController;
@@ -80,6 +80,7 @@ import org.springframework.stereotype.Service;
 class ArchitecturePackageConventionTest {
 
     private static final String APPLICATION_SERVICE_PACKAGE = "io.jgitkins.server.application.service";
+    private static final String COLLABORATION_APPLICATION_SERVICE_PACKAGE = "io.jgitkins.server.collaboration.application.service";
     private static final String IDENTITY_ACCESS_SERVICE_PACKAGE = "io.jgitkins.server.identity.access.application.service";
     private static final String IDENTITY_ACCESS_PORT_OUT_PACKAGE = "io.jgitkins.server.identity.access.application.port.out";
     private static final String REPOSITORY_SERVICE_PACKAGE = "io.jgitkins.server.repository.application.service";
@@ -89,12 +90,21 @@ class ArchitecturePackageConventionTest {
         List<Class<?>> serviceClasses = List.of(
                 CommitService.class,
                 MergeService.class,
-                OrganizeMemberService.class,
-                OrganizeService.class,
                 PushEventHandleService.class,
                 RepositoryFileService.class);
 
         serviceClasses.forEach(serviceClass -> assertEquals(APPLICATION_SERVICE_PACKAGE, serviceClass.getPackageName()));
+    }
+
+    @Test
+    void collaborationServices_resideInCollaborationServicePackage() {
+        List<Class<?>> serviceClasses = List.of(
+                OrganizeMemberService.class,
+                OrganizeService.class);
+
+        serviceClasses.forEach(serviceClass -> assertEquals(
+                COLLABORATION_APPLICATION_SERVICE_PACKAGE,
+                serviceClass.getPackageName()));
     }
 
     @Test
@@ -198,6 +208,21 @@ class ArchitecturePackageConventionTest {
                 .flatMap(controllerClass -> Stream.of(controllerClass.getDeclaredMethods()))
                 .filter(method -> Modifier.isPublic(method.getModifiers()))
                 .forEach(this::assertReturnsApiResponseEntity);
+    }
+
+    @Test
+    void collaborationControllers_resideInCollaborationPresentationPackage() {
+        List<Class<?>> controllerClasses = List.of(
+                OrganizeController.class,
+                OrganizeMemberController.class,
+                WebOrganizeController.class);
+
+        controllerClasses.forEach(controllerClass -> {
+            String packageName = controllerClass.getPackageName();
+            boolean matchesRest = packageName.equals("io.jgitkins.server.collaboration.presentation.api.rest");
+            boolean matchesWeb = packageName.equals("io.jgitkins.server.collaboration.presentation.api.web");
+            assertTrue(matchesRest || matchesWeb);
+        });
     }
 
     @Test

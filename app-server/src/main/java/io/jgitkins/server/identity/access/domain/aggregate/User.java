@@ -4,7 +4,6 @@ import io.jgitkins.server.identity.access.domain.vo.UserAuthority;
 import io.jgitkins.server.identity.access.domain.vo.UserStatus;
 import io.jgitkins.server.identity.access.domain.vo.Username;
 import java.time.LocalDateTime;
-
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

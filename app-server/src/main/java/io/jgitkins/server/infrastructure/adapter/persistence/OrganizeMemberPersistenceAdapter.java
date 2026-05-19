@@ -1,8 +1,9 @@
 package io.jgitkins.server.infrastructure.adapter.persistence;
 
-import io.jgitkins.server.application.port.out.OrganizeMemberPersistencePort;
-import io.jgitkins.server.domain.model.OrganizeMember;
-import io.jgitkins.server.domain.model.vo.OrganizeId;
+import io.jgitkins.server.collaboration.application.port.out.OrganizeMemberPersistencePort;
+import io.jgitkins.server.collaboration.application.port.out.OrganizeMembershipQueryPort;
+import io.jgitkins.server.collaboration.domain.entity.OrganizeMember;
+import io.jgitkins.server.collaboration.domain.vo.OrganizeId;
 import io.jgitkins.server.identity.access.domain.vo.UserId;
 import io.jgitkins.server.infrastructure.common.error.InfrastructureErrorCode;
 import io.jgitkins.server.infrastructure.exception.InfrastructureException;
@@ -16,7 +17,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class OrganizeMemberPersistenceAdapter implements OrganizeMemberPersistencePort {
+public class OrganizeMemberPersistenceAdapter implements OrganizeMemberPersistencePort, OrganizeMembershipQueryPort {
 
     private final OrganizeMemberEntityMbgMapper organizeMemberMapper;
 

@@ -1,7 +1,7 @@
 package io.jgitkins.server.change.review.application.service;
 
-import io.jgitkins.server.application.exception.PullRequestNotFoundException;
 import io.jgitkins.server.change.review.application.dto.result.PullRequestDetailResult;
+import io.jgitkins.server.change.review.application.exception.PullRequestNotFoundException;
 import io.jgitkins.server.change.review.application.mapper.PullRequestDetailMapper;
 import io.jgitkins.server.change.review.application.port.in.GetPullRequestDetailUseCase;
 import io.jgitkins.server.change.review.application.support.PullRequestMergeabilityResolver;

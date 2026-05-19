@@ -4,7 +4,7 @@ import io.jgitkins.server.repository.application.contract.command.RepositoryCrea
 import io.jgitkins.server.repository.application.contract.result.RepositoryResult;
 import io.jgitkins.server.application.mapper.RepositoryApplicationMapper;
 import io.jgitkins.server.identity.access.application.port.out.CurrentUserPort;
-import io.jgitkins.server.application.port.out.OrganizeMemberPersistencePort;
+import io.jgitkins.server.collaboration.application.port.out.OrganizeMemberPersistencePort;
 import io.jgitkins.server.repository.application.support.ownership.RepositoryOwnershipPolicy;
 import io.jgitkins.server.repository.application.support.provisioning.RepositoryProvisioner;
 import io.jgitkins.server.shared.application.support.RepositoryNamespaceResolver;
@@ -12,7 +12,7 @@ import io.jgitkins.server.application.validate.RepositoryValidator;
 import io.jgitkins.core.common.exception.JgitkinsException;
 import io.jgitkins.server.repository.domain.aggregate.Repository;
 import io.jgitkins.server.domain.model.vo.InitialCommitOptions;
-import io.jgitkins.server.domain.model.vo.OrganizeId;
+import io.jgitkins.server.collaboration.domain.vo.OrganizeId;
 import io.jgitkins.server.domain.model.vo.OwnerId;
 import io.jgitkins.server.domain.model.vo.OwnerType;
 import io.jgitkins.server.repository.domain.vo.RepositoryId;
