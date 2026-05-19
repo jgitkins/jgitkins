@@ -2,7 +2,7 @@ package io.jgitkins.server.repository.application.service;
 
 import io.jgitkins.server.application.dto.FileEntry;
 import io.jgitkins.server.application.dto.RepositoryKey;
-import io.jgitkins.server.application.port.out.CurrentUserPort;
+import io.jgitkins.server.identity.access.application.port.out.CurrentUserPort;
 import io.jgitkins.server.application.port.out.FileGitPort;
 import io.jgitkins.server.repository.application.contract.result.BranchSearchResult;
 import io.jgitkins.server.repository.application.contract.result.RepositoryOverviewResult;

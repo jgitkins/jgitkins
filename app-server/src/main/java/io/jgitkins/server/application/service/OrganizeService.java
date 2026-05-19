@@ -6,7 +6,7 @@ import io.jgitkins.server.application.mapper.OrganizeApplicationMapper;
 import io.jgitkins.server.application.port.in.OrganizeCreationUseCase;
 import io.jgitkins.server.application.port.in.OrganizeDeletionUseCase;
 import io.jgitkins.server.application.port.in.OrganizeLoadUseCase;
-import io.jgitkins.server.application.port.out.CurrentUserPort;
+import io.jgitkins.server.identity.access.application.port.out.CurrentUserPort;
 import io.jgitkins.server.application.port.out.OrganizePersistencePort;
 import io.jgitkins.server.application.validate.OrganizeValidator;
 import io.jgitkins.server.domain.aggregate.Organize;

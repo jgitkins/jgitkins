@@ -3,7 +3,7 @@ package io.jgitkins.server.repository.application.service;
 import io.jgitkins.server.repository.application.contract.command.RepositoryCreateCommand;
 import io.jgitkins.server.repository.application.contract.result.RepositoryResult;
 import io.jgitkins.server.application.mapper.RepositoryApplicationMapper;
-import io.jgitkins.server.application.port.out.CurrentUserPort;
+import io.jgitkins.server.identity.access.application.port.out.CurrentUserPort;
 import io.jgitkins.server.application.port.out.OrganizeMemberPersistencePort;
 import io.jgitkins.server.repository.application.support.ownership.RepositoryOwnershipPolicy;
 import io.jgitkins.server.repository.application.support.provisioning.RepositoryProvisioner;

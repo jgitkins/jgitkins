@@ -261,3 +261,23 @@ API는 login, activation, admin user, PAT credential 흐름을 기준으로 유�
 - 이 단계에서 repository context package와 shared context를 다시 이동하지 않는다.
 - 이 단계에서 change-review context를 identity.access 안으로 끌어오지 않는다.
 - 이 단계에서 collaboration context의 ownership model을 재설계하지 않는다.
+
+## 실행 결과 요약 (2026-05-19)
+
+### 완료
+- `io.jgitkins.server.identity.access` 패키지 트리로 84개 파일 이관 완료(main 70 + test 14). 도메인 모델, application service/support/validate/port/in/port/out/dto/mapper, infrastructure adapter/security/MBG mapper+model, presentation controller/dto/mapper, 테스트 미러까지 모두 포함.
+- 5개 outbound port(`UserPersistencePort`, `UserIdentityPersistencePort`, `UserCredentialPersistencePort`, `TokenIssuerPort`, `CurrentUserPort`)와 `SignupController` + 테스트도 같이 이관.
+- 34개 cross-context importer의 FQN을 새 위치로 일괄 갱신(repository/shared/collaboration/legacy application).
+- MBG XML 4종 namespace/type 갱신: `UserEntityMbgMapper.xml`, `UserIdentitiesEntityMbgMapper.xml`, `UserCredentialsEntityMbgMapper.xml`, `PullRequestEntityMbgMapper.xml`.
+- `JGitkinsServerApplication`에 `@MapperScan` 추가하여 `change.review` + `identity.access` 매퍼 인터페이스를 Spring이 인식하도록 보강.
+- `ArchitecturePackageConventionTest`에 신규 두 가드 추가: `identityAccessApplicationSources_doNotImportInfrastructurePackages`, `identityAccessOutboundPorts_resideInIdentityAccessPortOutPackage`.
+- `coreModules_doNotImportApplicationModules`가 존재하지 않는 `core-grpc/src/main/java`를 강제 요구하던 사전 결함을 "존재하는 모듈만 검사"로 보정.
+- 사전 결함: legacy `application/service/PullRequestService` + `application/support/pr/*`(Detail/Result/Mergeability) + 중복 DTO/inbound port + 잘못 위치한 `PullRequestServiceTest` 총 10개 파일을 외부 의존자 0건 확인 후 정리하여 `pullRequestMergeabilityResolver` Spring bean 충돌 해소.
+- 검증: `./gradlew clean :app-server:build` 성공, 255/255 tests passed.
+
+### 후속 작업으로 분리 (이번 task 밖, 별도 task 권장)
+
+1. **`PullRequestNotFoundException` 정리 (Task 2.21 마무리)** — 현재 `io.jgitkins.server.application.exception.PullRequestNotFoundException`이 legacy 위치에 남아있고 `change.review.application.service` 코드가 import 중. change-review context 안으로 옮겨야 일관성이 회복된다.
+2. **`core-persistence/MybatisConfig` 구조 smell** — 코어 라이브러리가 `@MapperScan("io.jgitkins.server.infrastructure.persistence.mapper")`로 app-server 패키지를 직접 지목하고 있다. 본 task에서는 `JGitkinsServerApplication`에 `@MapperScan`을 추가하는 우회 처리로 새 패키지를 등록했으나, 장기적으로는 `MybatisConfig`에서 `@MapperScan` 제거하고 app-server 측에서 단일 책임으로 mapper scan 범위를 정의하는 것이 옳다.
+3. **Identity & Access cross-context output port 의존성 정리** — repository/shared/collaboration 컨텍스트가 `identity.access.application.port.out.UserPersistencePort` 등을 직접 import한다. bounded context 경계 관점에서 보면 외부 컨텍스트가 identity.access 내부 포트를 끌어가는 형태이므로, shared seam(예: `UserLookupPort` 같은 협력 인터페이스)로 추상화하는 안을 후속으로 검토.
+4. **Module extraction** — 본 task의 목표대로 package-local bounded context 완성에 그쳤다. Gradle module 추출은 패키지 안정화 이후 별도 task로 진행.

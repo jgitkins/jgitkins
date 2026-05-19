@@ -1,10 +1,10 @@
 package io.jgitkins.server.repository.application.service;
 
 import io.jgitkins.server.repository.application.contract.result.RepositoryResult;
-import io.jgitkins.server.application.port.out.CurrentUserPort;
+import io.jgitkins.server.identity.access.application.port.out.CurrentUserPort;
 import io.jgitkins.server.application.port.out.OrganizePersistencePort;
 import io.jgitkins.server.repository.application.port.out.RepositoryQueryPort;
-import io.jgitkins.server.application.port.out.UserPersistencePort;
+import io.jgitkins.server.identity.access.application.port.out.UserPersistencePort;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

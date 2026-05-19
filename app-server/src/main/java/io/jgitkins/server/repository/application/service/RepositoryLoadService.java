@@ -4,9 +4,9 @@ import io.jgitkins.server.repository.application.contract.result.RepositoryResul
 import io.jgitkins.server.repository.application.exception.RepositoryNotFoundException;
 import io.jgitkins.server.application.exception.UserNotFoundException;
 import io.jgitkins.server.repository.application.port.in.RepositoryLoadUseCase;
-import io.jgitkins.server.application.port.out.CurrentUserPort;
+import io.jgitkins.server.identity.access.application.port.out.CurrentUserPort;
 import io.jgitkins.server.repository.application.port.out.RepositoryQueryPort;
-import io.jgitkins.server.application.port.out.UserPersistencePort;
+import io.jgitkins.server.identity.access.application.port.out.UserPersistencePort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

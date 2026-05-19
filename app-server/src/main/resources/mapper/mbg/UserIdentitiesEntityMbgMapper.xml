@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="io.jgitkins.server.infrastructure.persistence.mapper.UserIdentitiesEntityMbgMapper">
-  <resultMap id="BaseResultMap" type="io.jgitkins.server.infrastructure.persistence.model.UserIdentitiesEntity">
+<mapper namespace="io.jgitkins.server.identity.access.infrastructure.persistence.mapper.UserIdentitiesEntityMbgMapper">
+  <resultMap id="BaseResultMap" type="io.jgitkins.server.identity.access.infrastructure.persistence.model.UserIdentitiesEntity">
     <id column="ID" jdbcType="BIGINT" property="id" />
     <result column="USER_ID" jdbcType="BIGINT" property="userId" />
     <result column="PROVIDER_NAME" jdbcType="VARCHAR" property="providerName" />
@@ -75,7 +75,7 @@
     ID, USER_ID, PROVIDER_NAME, PROVIDER_SUB, EMAIL, EMAIL_VERIFIED, NAME, AVATAR_URL, 
     CREATED_AT, UPDATED_AT
   </sql>
-  <select id="selectByCondition" parameterType="io.jgitkins.server.infrastructure.persistence.model.UserIdentitiesEntityCondition" resultMap="BaseResultMap">
+  <select id="selectByCondition" parameterType="io.jgitkins.server.identity.access.infrastructure.persistence.model.UserIdentitiesEntityCondition" resultMap="BaseResultMap">
     select
     <if test="distinct">
       distinct
@@ -99,13 +99,13 @@
     delete from USER_IDENTITIES
     where ID = #{id,jdbcType=BIGINT}
   </delete>
-  <delete id="deleteByCondition" parameterType="io.jgitkins.server.infrastructure.persistence.model.UserIdentitiesEntityCondition">
+  <delete id="deleteByCondition" parameterType="io.jgitkins.server.identity.access.infrastructure.persistence.model.UserIdentitiesEntityCondition">
     delete from USER_IDENTITIES
     <if test="_parameter != null">
       <include refid="Condition_Where_Clause" />
     </if>
   </delete>
-  <insert id="insert" keyColumn="ID" keyProperty="id" parameterType="io.jgitkins.server.infrastructure.persistence.model.UserIdentitiesEntity" useGeneratedKeys="true">
+  <insert id="insert" keyColumn="ID" keyProperty="id" parameterType="io.jgitkins.server.identity.access.infrastructure.persistence.model.UserIdentitiesEntity" useGeneratedKeys="true">
     insert into USER_IDENTITIES (USER_ID, PROVIDER_NAME, PROVIDER_SUB, 
       EMAIL, EMAIL_VERIFIED, NAME, 
       AVATAR_URL, CREATED_AT, UPDATED_AT
@@ -115,7 +115,7 @@
       #{avatarUrl,jdbcType=VARCHAR}, #{createdAt,jdbcType=TIMESTAMP}, #{updatedAt,jdbcType=TIMESTAMP}
       )
   </insert>
-  <insert id="insertSelective" keyColumn="ID" keyProperty="id" parameterType="io.jgitkins.server.infrastructure.persistence.model.UserIdentitiesEntity" useGeneratedKeys="true">
+  <insert id="insertSelective" keyColumn="ID" keyProperty="id" parameterType="io.jgitkins.server.identity.access.infrastructure.persistence.model.UserIdentitiesEntity" useGeneratedKeys="true">
     insert into USER_IDENTITIES
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="userId != null">
@@ -176,7 +176,7 @@
       </if>
     </trim>
   </insert>
-  <select id="countByCondition" parameterType="io.jgitkins.server.infrastructure.persistence.model.UserIdentitiesEntityCondition" resultType="java.lang.Long">
+  <select id="countByCondition" parameterType="io.jgitkins.server.identity.access.infrastructure.persistence.model.UserIdentitiesEntityCondition" resultType="java.lang.Long">
     select count(*) from USER_IDENTITIES
     <if test="_parameter != null">
       <include refid="Condition_Where_Clause" />
@@ -236,7 +236,7 @@
       <include refid="Update_By_Condition_Where_Clause" />
     </if>
   </update>
-  <update id="updateByPrimaryKeySelective" parameterType="io.jgitkins.server.infrastructure.persistence.model.UserIdentitiesEntity">
+  <update id="updateByPrimaryKeySelective" parameterType="io.jgitkins.server.identity.access.infrastructure.persistence.model.UserIdentitiesEntity">
     update USER_IDENTITIES
     <set>
       <if test="userId != null">
@@ -269,7 +269,7 @@
     </set>
     where ID = #{id,jdbcType=BIGINT}
   </update>
-  <update id="updateByPrimaryKey" parameterType="io.jgitkins.server.infrastructure.persistence.model.UserIdentitiesEntity">
+  <update id="updateByPrimaryKey" parameterType="io.jgitkins.server.identity.access.infrastructure.persistence.model.UserIdentitiesEntity">
     update USER_IDENTITIES
     set USER_ID = #{userId,jdbcType=BIGINT},
       PROVIDER_NAME = #{providerName,jdbcType=VARCHAR},

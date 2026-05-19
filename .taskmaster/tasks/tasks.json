@@ -341,13 +341,13 @@
             "title": "[plan][P4][server, docs] Identity & Access Context 기준 리팩토링 계획 수립",
             "description": "`User`, `UserIdentity`, `UserCredential`, activation, PAT 발급/폐기 경계를 문서 기준으로 재정렬하는 실행 계획을 수립한다.",
             "details": "참조 문서: `docs/domain/contexts/identity-access/context.md`, `docs/domain/contexts/identity-access/diagrams.md`. 산출물은 `.taskmaster/docs/refactor/task_2_22_plan.md`이며 다음을 포함한다. 1) `User Aggregate Root Candidate` 확정 여부 검토. 2) `UserIdentity`, `UserCredential`의 종속 모델 유지 또는 분리 기준 정리. 3) activation/credential 흐름의 application service 경계 재배치안. 4) namespace 충돌과 collaboration 연계 포인트 정리.",
-            "status": "in-progress",
+            "status": "done",
             "dependencies": [
               18
             ],
             "parentTaskId": 2,
             "parentId": "2",
-            "updatedAt": "2026-05-18T13:10:06.630Z"
+            "updatedAt": "2026-05-19T08:40:00.000Z"
           },
           {
             "id": 23,

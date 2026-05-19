@@ -7,7 +7,7 @@ import static org.mockito.Mockito.when;
 
 import io.jgitkins.server.application.common.error.ApplicationErrorCode;
 import io.jgitkins.server.application.port.in.GitRepositoryAccessUseCase;
-import io.jgitkins.server.application.port.out.CurrentUserPort;
+import io.jgitkins.server.identity.access.application.port.out.CurrentUserPort;
 import io.jgitkins.core.common.exception.JgitkinsException;
 import io.jgitkins.server.repository.domain.aggregate.Repository;
 import io.jgitkins.server.repository.application.contract.result.RepositoryPermission;

@@ -11,6 +11,11 @@ import io.jgitkins.server.change.review.application.service.PullRequestCreateSer
 import io.jgitkins.server.change.review.application.service.PullRequestQueryService;
 import io.jgitkins.server.execution.application.support.ExecutionRequestService;
 import io.jgitkins.server.execution.application.policy.EventPolicyResolver;
+import io.jgitkins.server.identity.access.application.port.out.CurrentUserPort;
+import io.jgitkins.server.identity.access.application.port.out.TokenIssuerPort;
+import io.jgitkins.server.identity.access.application.port.out.UserCredentialPersistencePort;
+import io.jgitkins.server.identity.access.application.port.out.UserIdentityPersistencePort;
+import io.jgitkins.server.identity.access.application.port.out.UserPersistencePort;
 import io.jgitkins.server.identity.access.application.service.AdminUserService;
 import io.jgitkins.server.application.service.CommitService;
 import io.jgitkins.server.application.service.MergeService;
@@ -28,7 +33,7 @@ import io.jgitkins.server.presentation.api.rest.MergeController;
 import io.jgitkins.server.identity.access.presentation.api.rest.OAuthController;
 import io.jgitkins.server.presentation.api.rest.OrganizeController;
 import io.jgitkins.server.presentation.api.rest.OrganizeMemberController;
-import io.jgitkins.server.presentation.api.rest.SignupController;
+import io.jgitkins.server.identity.access.presentation.api.rest.SignupController;
 import io.jgitkins.server.identity.access.presentation.api.rest.UserController;
 import io.jgitkins.server.identity.access.presentation.api.rest.UserCredentialController;
 import io.jgitkins.server.presentation.api.web.WebOrganizeController;
@@ -76,6 +81,7 @@ class ArchitecturePackageConventionTest {
 
     private static final String APPLICATION_SERVICE_PACKAGE = "io.jgitkins.server.application.service";
     private static final String IDENTITY_ACCESS_SERVICE_PACKAGE = "io.jgitkins.server.identity.access.application.service";
+    private static final String IDENTITY_ACCESS_PORT_OUT_PACKAGE = "io.jgitkins.server.identity.access.application.port.out";
     private static final String REPOSITORY_SERVICE_PACKAGE = "io.jgitkins.server.repository.application.service";
 
     @Test
@@ -101,6 +107,18 @@ class ArchitecturePackageConventionTest {
                 UserProfileService.class);
 
         serviceClasses.forEach(serviceClass -> assertEquals(IDENTITY_ACCESS_SERVICE_PACKAGE, serviceClass.getPackageName()));
+    }
+
+    @Test
+    void identityAccessOutboundPorts_resideInIdentityAccessPortOutPackage() {
+        List<Class<?>> portClasses = List.of(
+                CurrentUserPort.class,
+                TokenIssuerPort.class,
+                UserCredentialPersistencePort.class,
+                UserIdentityPersistencePort.class,
+                UserPersistencePort.class);
+
+        portClasses.forEach(portClass -> assertEquals(IDENTITY_ACCESS_PORT_OUT_PACKAGE, portClass.getPackageName()));
     }
 
     @Test
@@ -210,6 +228,14 @@ class ArchitecturePackageConventionTest {
     }
 
     @Test
+    void identityAccessApplicationSources_doNotImportInfrastructurePackages() throws IOException {
+        Path identityAccessApplicationRoot = resolveExistingPath(
+                "src/main/java/io/jgitkins/server/identity/access/application",
+                "app-server/src/main/java/io/jgitkins/server/identity/access/application");
+        assertNoInfrastructureImports(identityAccessApplicationRoot);
+    }
+
+    @Test
     void repositoryGitAdapters_doNotImportRepositoryApplicationExceptions() throws IOException {
         Path repositoryGitAdapterRoot = resolveExistingPath(
                 "src/main/java/io/jgitkins/server/repository/infrastructure/adapter/git",
@@ -219,12 +245,15 @@ class ArchitecturePackageConventionTest {
 
     @Test
     void coreModules_doNotImportApplicationModules() throws IOException {
-        List<Path> coreRoots = List.of(
-                resolveExistingPath("../core-common/src/main/java", "core-common/src/main/java"),
-                resolveExistingPath("../core-web/src/main/java", "core-web/src/main/java"),
-                resolveExistingPath("../core-security/src/main/java", "core-security/src/main/java"),
-                resolveExistingPath("../core-persistence/src/main/java", "core-persistence/src/main/java"),
-                resolveExistingPath("../core-grpc/src/main/java", "core-grpc/src/main/java"));
+        List<Path> coreRoots = Stream.of(
+                        "core-common/src/main/java",
+                        "core-web/src/main/java",
+                        "core-security/src/main/java",
+                        "core-persistence/src/main/java",
+                        "core-grpc/src/main/java")
+                .flatMap(candidate -> Stream.of(Path.of("../" + candidate), Path.of(candidate)))
+                .filter(Files::exists)
+                .toList();
 
         for (Path coreRoot : coreRoots) {
             assertNoImports(coreRoot, "import io.jgitkins.server.");

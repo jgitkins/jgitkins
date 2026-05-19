@@ -11,7 +11,7 @@ import static org.mockito.Mockito.when;
 import io.jgitkins.server.application.dto.command.OrganizeCreationCommand;
 import io.jgitkins.server.application.dto.result.OrganizeCreationResult;
 import io.jgitkins.server.application.mapper.OrganizeApplicationMapper;
-import io.jgitkins.server.application.port.out.CurrentUserPort;
+import io.jgitkins.server.identity.access.application.port.out.CurrentUserPort;
 import io.jgitkins.server.application.port.out.OrganizeMemberPersistencePort;
 import io.jgitkins.server.application.port.out.OrganizePersistencePort;
 import io.jgitkins.server.application.validate.OrganizeValidator;
