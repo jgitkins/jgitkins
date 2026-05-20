@@ -6,6 +6,11 @@
 - `mapper`, `persistence adapter`, `MBG entity/model`, `context-specific support` 가 top-level `server/infrastructure` 에 남아 있으면 경계가 다시 흐려지므로, 이를 context 소유로 옮긴다.
 - 이번 작업의 목표는 package tree 를 코드의 소유권과 일치시키는 것이다. 기능 추가는 없다.
 
+### Scope Update
+- 이번 진행은 `infrastructure` only 로 제한한다.
+- `application`, `domain`, `presentation` 에 남아 있는 잔재는 이번 pass 에서 옮기지 않고, 이 문서에 deferred inventory 로 기록한다.
+- infrastructure 정리는 계속 진행하되, non-infrastructure layer 와 섞어서 한 번에 처리하지 않는다.
+
 ### 배경
 - 이미 `collaboration`, `repository`, `identity.access`, `change.review`, `execution` 은 별도 bounded context 로 나뉘어 있다.
 - `core-persistence` 는 DataSource/MyBatis/transaction 같은 공통 기술 설정을 분리해 둔 상태다.
@@ -17,6 +22,16 @@
 - collaboration context 는 `application`, `domain`, `presentation` 이 정리되어 있고, infrastructure 만 잔재가 남아 있다.
 - repository / identity / change.review / execution context 도 같은 패턴의 잔재가 있다.
 - `ArchitecturePackageConventionTest` 는 service/controller package 와 일부 import 규칙만 보고 있어서, infrastructure ownership 까지는 아직 강제하지 못한다.
+
+### Deferred Inventory
+이번 pass 에서 의도적으로 남겨두는 객체들이다. 다음 pass 에서 처리한다.
+
+| Root | 대표 잔재 | 이유 |
+|---|---|---|
+| `server/application` | `service/`, `validate/`, `mapper/`, `dto/`, `exception/` | 이번 scope 에서는 infrastructure 만 이동한다. |
+| `server/domain` | `aggregate/`, `entity/`, `event/`, `vo/` | domain migration 은 infrastructure 이관과 분리한다. |
+| `server/presentation` | `api/`, `dto/`, `mapper/`, `advice/` | HTTP contract 와 오류 응답은 별도 pass 로 다룬다. |
+| `server/infrastructure` | repository / execution 쪽 context-specific adapter, mapper, model 잔재 | 이 pass 에서 계속 정리하되, 공통 glue 는 남긴다. |
 
 ### 이미 존재하는 것
 - `core-persistence` 에서 DataSource/MyBatis 공통 설정을 분리한 기준이 있다.
@@ -188,6 +203,8 @@ shared/application
 - Gradle module split 추가 작업
 - persistence schema 변경
 - business behavior 변경
+- `application`, `domain`, `presentation` 의 잔재 이동
+- `server/common/infrastructure` 를 넘어선 공통 레이어 확장
 
 ### 병렬화 전략
 ```text
