@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="io.jgitkins.server.infrastructure.persistence.mapper.RepositoryMemberEntityMbgMapper">
-  <resultMap id="BaseResultMap" type="io.jgitkins.server.infrastructure.persistence.model.RepositoryMemberEntity">
+<mapper namespace="io.jgitkins.server.repository.infrastructure.persistence.mapper.RepositoryMemberEntityMbgMapper">
+  <resultMap id="BaseResultMap" type="io.jgitkins.server.repository.infrastructure.persistence.model.RepositoryMemberEntity">
     <id column="ID" jdbcType="BIGINT" property="id" />
     <result column="REPOSITORY_ID" jdbcType="BIGINT" property="repositoryId" />
     <result column="USER_ID" jdbcType="BIGINT" property="userId" />
@@ -69,7 +69,7 @@
   <sql id="Base_Column_List">
     ID, REPOSITORY_ID, USER_ID, ROLE, ADDED_AT
   </sql>
-  <select id="selectByCondition" parameterType="io.jgitkins.server.infrastructure.persistence.model.RepositoryMemberEntityCondition" resultMap="BaseResultMap">
+  <select id="selectByCondition" parameterType="io.jgitkins.server.repository.infrastructure.persistence.model.RepositoryMemberEntityCondition" resultMap="BaseResultMap">
     select
     <if test="distinct">
       distinct
@@ -93,19 +93,19 @@
     delete from REPOSITORY_MEMBER
     where ID = #{id,jdbcType=BIGINT}
   </delete>
-  <delete id="deleteByCondition" parameterType="io.jgitkins.server.infrastructure.persistence.model.RepositoryMemberEntityCondition">
+  <delete id="deleteByCondition" parameterType="io.jgitkins.server.repository.infrastructure.persistence.model.RepositoryMemberEntityCondition">
     delete from REPOSITORY_MEMBER
     <if test="_parameter != null">
       <include refid="Condition_Where_Clause" />
     </if>
   </delete>
-  <insert id="insert" keyColumn="ID" keyProperty="id" parameterType="io.jgitkins.server.infrastructure.persistence.model.RepositoryMemberEntity" useGeneratedKeys="true">
+  <insert id="insert" keyColumn="ID" keyProperty="id" parameterType="io.jgitkins.server.repository.infrastructure.persistence.model.RepositoryMemberEntity" useGeneratedKeys="true">
     insert into REPOSITORY_MEMBER (REPOSITORY_ID, USER_ID, ROLE, 
       ADDED_AT)
     values (#{repositoryId,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT}, #{role,jdbcType=VARCHAR}, 
       #{addedAt,jdbcType=TIMESTAMP})
   </insert>
-  <insert id="insertSelective" keyColumn="ID" keyProperty="id" parameterType="io.jgitkins.server.infrastructure.persistence.model.RepositoryMemberEntity" useGeneratedKeys="true">
+  <insert id="insertSelective" keyColumn="ID" keyProperty="id" parameterType="io.jgitkins.server.repository.infrastructure.persistence.model.RepositoryMemberEntity" useGeneratedKeys="true">
     insert into REPOSITORY_MEMBER
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="repositoryId != null">
@@ -136,7 +136,7 @@
       </if>
     </trim>
   </insert>
-  <select id="countByCondition" parameterType="io.jgitkins.server.infrastructure.persistence.model.RepositoryMemberEntityCondition" resultType="java.lang.Long">
+  <select id="countByCondition" parameterType="io.jgitkins.server.repository.infrastructure.persistence.model.RepositoryMemberEntityCondition" resultType="java.lang.Long">
     select count(*) from REPOSITORY_MEMBER
     <if test="_parameter != null">
       <include refid="Condition_Where_Clause" />
@@ -176,7 +176,7 @@
       <include refid="Update_By_Condition_Where_Clause" />
     </if>
   </update>
-  <update id="updateByPrimaryKeySelective" parameterType="io.jgitkins.server.infrastructure.persistence.model.RepositoryMemberEntity">
+  <update id="updateByPrimaryKeySelective" parameterType="io.jgitkins.server.repository.infrastructure.persistence.model.RepositoryMemberEntity">
     update REPOSITORY_MEMBER
     <set>
       <if test="repositoryId != null">
@@ -194,7 +194,7 @@
     </set>
     where ID = #{id,jdbcType=BIGINT}
   </update>
-  <update id="updateByPrimaryKey" parameterType="io.jgitkins.server.infrastructure.persistence.model.RepositoryMemberEntity">
+  <update id="updateByPrimaryKey" parameterType="io.jgitkins.server.repository.infrastructure.persistence.model.RepositoryMemberEntity">
     update REPOSITORY_MEMBER
     set REPOSITORY_ID = #{repositoryId,jdbcType=BIGINT},
       USER_ID = #{userId,jdbcType=BIGINT},

@@ -2,8 +2,8 @@ package io.jgitkins.server.identity.access.infrastructure.adapter.persistence;
 
 import io.jgitkins.server.identity.access.application.port.out.UserPersistencePort;
 import io.jgitkins.server.identity.access.domain.aggregate.User;
-import io.jgitkins.server.infrastructure.common.error.InfrastructureErrorCode;
-import io.jgitkins.server.infrastructure.exception.InfrastructureException;
+import io.jgitkins.server.common.infrastructure.error.InfrastructureErrorCode;
+import io.jgitkins.server.common.infrastructure.exception.InfrastructureException;
 import io.jgitkins.server.identity.access.infrastructure.mapper.UserDomainMapper;
 import io.jgitkins.server.identity.access.infrastructure.persistence.mapper.UserEntityMbgMapper;
 import io.jgitkins.server.identity.access.infrastructure.persistence.model.UserEntity;

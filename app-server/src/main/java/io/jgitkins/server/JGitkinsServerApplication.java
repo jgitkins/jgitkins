@@ -13,6 +13,8 @@ import org.springframework.context.annotation.Import;
 @Import({DataSourceConfig.class, MybatisConfig.class})
 @MapperScan(basePackages = {
     "io.jgitkins.server.collaboration.infrastructure.persistence.mapper",
+    "io.jgitkins.server.repository.infrastructure.persistence.mapper",
+    "io.jgitkins.server.execution.infrastructure.persistence.mapper",
     "io.jgitkins.server.change.review.infrastructure.persistence.mapper",
     "io.jgitkins.server.identity.access.infrastructure.persistence.mapper"
 })

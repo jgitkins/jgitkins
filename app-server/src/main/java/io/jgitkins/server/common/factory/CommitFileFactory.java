@@ -2,7 +2,7 @@ package io.jgitkins.server.common.factory;
 
 import io.jgitkins.server.application.dto.CommitFile;
 import io.jgitkins.server.application.dto.FileUploadInfo;
-import io.jgitkins.server.infrastructure.exception.FileReadFailedException;
+import io.jgitkins.server.common.infrastructure.exception.FileReadFailedException;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;

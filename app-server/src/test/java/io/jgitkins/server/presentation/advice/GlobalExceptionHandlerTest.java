@@ -6,8 +6,8 @@ import io.jgitkins.server.repository.application.exception.RepositoryNotFoundExc
 import io.jgitkins.server.domain.error.DomainErrorCode;
 import io.jgitkins.server.domain.error.DomainProblemSpec;
 import io.jgitkins.server.domain.exception.DomainException;
-import io.jgitkins.server.infrastructure.common.error.InfrastructureErrorCode;
-import io.jgitkins.server.infrastructure.exception.InfrastructureException;
+import io.jgitkins.server.common.infrastructure.error.InfrastructureErrorCode;
+import io.jgitkins.server.common.infrastructure.exception.InfrastructureException;
 import io.jgitkins.server.presentation.advice.mapper.*;
 import io.jgitkins.server.presentation.common.error.PresentationProblemSpec;
 import io.jgitkins.server.presentation.exception.PresentationException;

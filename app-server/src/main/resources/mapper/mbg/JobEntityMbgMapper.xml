@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="io.jgitkins.server.infrastructure.persistence.mapper.JobEntityMbgMapper">
-  <resultMap id="BaseResultMap" type="io.jgitkins.server.infrastructure.persistence.model.JobEntity">
+<mapper namespace="io.jgitkins.server.execution.infrastructure.persistence.mapper.JobEntityMbgMapper">
+  <resultMap id="BaseResultMap" type="io.jgitkins.server.execution.infrastructure.persistence.model.JobEntity">
     <id column="ID" jdbcType="BIGINT" property="id" />
     <result column="REPOSITORY_ID" jdbcType="BIGINT" property="repositoryId" />
     <result column="COMMIT_HASH" jdbcType="VARCHAR" property="commitHash" />
@@ -70,7 +70,7 @@
   <sql id="Base_Column_List">
     ID, REPOSITORY_ID, COMMIT_HASH, BRANCH_NAME, TRIGGERED_BY, CREATED_AT
   </sql>
-  <select id="selectByCondition" parameterType="io.jgitkins.server.infrastructure.persistence.model.JobEntityCondition" resultMap="BaseResultMap">
+  <select id="selectByCondition" parameterType="io.jgitkins.server.execution.infrastructure.persistence.model.JobEntityCondition" resultMap="BaseResultMap">
     select
     <if test="distinct">
       distinct
@@ -94,19 +94,19 @@
     delete from JOB
     where ID = #{id,jdbcType=BIGINT}
   </delete>
-  <delete id="deleteByCondition" parameterType="io.jgitkins.server.infrastructure.persistence.model.JobEntityCondition">
+  <delete id="deleteByCondition" parameterType="io.jgitkins.server.execution.infrastructure.persistence.model.JobEntityCondition">
     delete from JOB
     <if test="_parameter != null">
       <include refid="Condition_Where_Clause" />
     </if>
   </delete>
-  <insert id="insert" keyColumn="ID" keyProperty="id" parameterType="io.jgitkins.server.infrastructure.persistence.model.JobEntity" useGeneratedKeys="true">
+  <insert id="insert" keyColumn="ID" keyProperty="id" parameterType="io.jgitkins.server.execution.infrastructure.persistence.model.JobEntity" useGeneratedKeys="true">
     insert into JOB (REPOSITORY_ID, COMMIT_HASH, BRANCH_NAME, 
       TRIGGERED_BY, CREATED_AT)
     values (#{repositoryId,jdbcType=BIGINT}, #{commitHash,jdbcType=VARCHAR}, #{branchName,jdbcType=VARCHAR}, 
       #{triggeredBy,jdbcType=BIGINT}, #{createdAt,jdbcType=TIMESTAMP})
   </insert>
-  <insert id="insertSelective" keyColumn="ID" keyProperty="id" parameterType="io.jgitkins.server.infrastructure.persistence.model.JobEntity" useGeneratedKeys="true">
+  <insert id="insertSelective" keyColumn="ID" keyProperty="id" parameterType="io.jgitkins.server.execution.infrastructure.persistence.model.JobEntity" useGeneratedKeys="true">
     insert into JOB
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="repositoryId != null">
@@ -143,7 +143,7 @@
       </if>
     </trim>
   </insert>
-  <select id="countByCondition" parameterType="io.jgitkins.server.infrastructure.persistence.model.JobEntityCondition" resultType="java.lang.Long">
+  <select id="countByCondition" parameterType="io.jgitkins.server.execution.infrastructure.persistence.model.JobEntityCondition" resultType="java.lang.Long">
     select count(*) from JOB
     <if test="_parameter != null">
       <include refid="Condition_Where_Clause" />
@@ -187,7 +187,7 @@
       <include refid="Update_By_Condition_Where_Clause" />
     </if>
   </update>
-  <update id="updateByPrimaryKeySelective" parameterType="io.jgitkins.server.infrastructure.persistence.model.JobEntity">
+  <update id="updateByPrimaryKeySelective" parameterType="io.jgitkins.server.execution.infrastructure.persistence.model.JobEntity">
     update JOB
     <set>
       <if test="repositoryId != null">
@@ -208,7 +208,7 @@
     </set>
     where ID = #{id,jdbcType=BIGINT}
   </update>
-  <update id="updateByPrimaryKey" parameterType="io.jgitkins.server.infrastructure.persistence.model.JobEntity">
+  <update id="updateByPrimaryKey" parameterType="io.jgitkins.server.execution.infrastructure.persistence.model.JobEntity">
     update JOB
     set REPOSITORY_ID = #{repositoryId,jdbcType=BIGINT},
       COMMIT_HASH = #{commitHash,jdbcType=VARCHAR},

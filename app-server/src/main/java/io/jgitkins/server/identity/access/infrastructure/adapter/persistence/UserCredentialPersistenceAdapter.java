@@ -2,8 +2,8 @@ package io.jgitkins.server.identity.access.infrastructure.adapter.persistence;
 
 import io.jgitkins.server.identity.access.application.port.out.UserCredentialPersistencePort;
 import io.jgitkins.server.identity.access.domain.entity.UserCredential;
-import io.jgitkins.server.infrastructure.common.error.InfrastructureErrorCode;
-import io.jgitkins.server.infrastructure.exception.InfrastructureException;
+import io.jgitkins.server.common.infrastructure.error.InfrastructureErrorCode;
+import io.jgitkins.server.common.infrastructure.exception.InfrastructureException;
 import io.jgitkins.server.identity.access.infrastructure.mapper.UserCredentialDomainMapper;
 import io.jgitkins.server.identity.access.infrastructure.persistence.mapper.UserCredentialsEntityMbgMapper;
 import io.jgitkins.server.identity.access.infrastructure.persistence.model.UserCredentialsEntity;

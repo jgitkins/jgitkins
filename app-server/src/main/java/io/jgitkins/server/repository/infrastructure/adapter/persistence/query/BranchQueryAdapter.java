@@ -2,11 +2,11 @@ package io.jgitkins.server.repository.infrastructure.adapter.persistence.query;
 
 import io.jgitkins.server.repository.application.contract.result.BranchSearchResult;
 import io.jgitkins.server.repository.application.port.out.BranchQueryPort;
-import io.jgitkins.server.infrastructure.common.error.InfrastructureErrorCode;
-import io.jgitkins.server.infrastructure.exception.InfrastructureException;
-import io.jgitkins.server.infrastructure.persistence.mapper.BranchEntityMbgMapper;
-import io.jgitkins.server.infrastructure.persistence.model.BranchEntity;
-import io.jgitkins.server.infrastructure.persistence.model.BranchEntityCondition;
+import io.jgitkins.server.common.infrastructure.error.InfrastructureErrorCode;
+import io.jgitkins.server.common.infrastructure.exception.InfrastructureException;
+import io.jgitkins.server.repository.infrastructure.persistence.mapper.BranchEntityMbgMapper;
+import io.jgitkins.server.repository.infrastructure.persistence.model.BranchEntity;
+import io.jgitkins.server.repository.infrastructure.persistence.model.BranchEntityCondition;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;

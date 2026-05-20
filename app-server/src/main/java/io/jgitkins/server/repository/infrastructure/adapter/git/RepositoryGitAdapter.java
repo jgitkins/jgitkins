@@ -2,11 +2,11 @@ package io.jgitkins.server.repository.infrastructure.adapter.git;
 
 import io.jgitkins.server.application.common.GitConstants;
 import io.jgitkins.server.repository.application.port.out.RepositoryGitPort;
-import io.jgitkins.server.infrastructure.exception.HeadReferenceUpdateFailedException;
-import io.jgitkins.server.infrastructure.exception.RepositoryCreateFailedException;
-import io.jgitkins.server.infrastructure.exception.RepositoryDeleteFailedException;
-import io.jgitkins.server.infrastructure.support.RepositoryFileSystemHelper;
-import io.jgitkins.server.infrastructure.support.RepositoryResolver;
+import io.jgitkins.server.common.infrastructure.exception.HeadReferenceUpdateFailedException;
+import io.jgitkins.server.common.infrastructure.exception.RepositoryCreateFailedException;
+import io.jgitkins.server.common.infrastructure.exception.RepositoryDeleteFailedException;
+import io.jgitkins.server.repository.infrastructure.support.RepositoryFileSystemHelper;
+import io.jgitkins.server.repository.infrastructure.support.RepositoryResolver;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jgit.lib.Constants;

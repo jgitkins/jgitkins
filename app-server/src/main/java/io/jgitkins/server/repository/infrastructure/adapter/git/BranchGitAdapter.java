@@ -1,10 +1,10 @@
 package io.jgitkins.server.repository.infrastructure.adapter.git;
 
 import java.io.IOException;
-import io.jgitkins.server.infrastructure.exception.BranchCreateFailedException;
-import io.jgitkins.server.infrastructure.exception.BranchDeleteFailedException;
-import io.jgitkins.server.infrastructure.exception.HeadReferenceResolveFailedException;
-import io.jgitkins.server.infrastructure.support.RepositoryResolver;
+import io.jgitkins.server.common.infrastructure.exception.BranchCreateFailedException;
+import io.jgitkins.server.common.infrastructure.exception.BranchDeleteFailedException;
+import io.jgitkins.server.common.infrastructure.exception.HeadReferenceResolveFailedException;
+import io.jgitkins.server.repository.infrastructure.support.RepositoryResolver;
 import io.jgitkins.server.repository.application.contract.internal.BranchCreationContext;
 import io.jgitkins.server.repository.application.port.out.BranchGitPort;
 import io.jgitkins.server.repository.application.port.out.exception.GitBranchRefAlreadyExistsException;

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="io.jgitkins.server.infrastructure.persistence.mapper.BranchEntityMbgMapper">
-  <resultMap id="BaseResultMap" type="io.jgitkins.server.infrastructure.persistence.model.BranchEntity">
+<mapper namespace="io.jgitkins.server.repository.infrastructure.persistence.mapper.BranchEntityMbgMapper">
+  <resultMap id="BaseResultMap" type="io.jgitkins.server.repository.infrastructure.persistence.model.BranchEntity">
     <id column="ID" jdbcType="BIGINT" property="id" />
     <result column="REPOSITORY_ID" jdbcType="BIGINT" property="repositoryId" />
     <result column="NAME" jdbcType="VARCHAR" property="name" />
@@ -75,7 +75,7 @@
     ID, REPOSITORY_ID, NAME, IS_LOCKED, IS_CI, IS_DEFAULT, LOCKED_BY, LOCKED_AT, CREATED_AT, 
     UPDATED_AT
   </sql>
-  <select id="selectByCondition" parameterType="io.jgitkins.server.infrastructure.persistence.model.BranchEntityCondition" resultMap="BaseResultMap">
+  <select id="selectByCondition" parameterType="io.jgitkins.server.repository.infrastructure.persistence.model.BranchEntityCondition" resultMap="BaseResultMap">
     select
     <if test="distinct">
       distinct
@@ -99,13 +99,13 @@
     delete from BRANCH
     where ID = #{id,jdbcType=BIGINT}
   </delete>
-  <delete id="deleteByCondition" parameterType="io.jgitkins.server.infrastructure.persistence.model.BranchEntityCondition">
+  <delete id="deleteByCondition" parameterType="io.jgitkins.server.repository.infrastructure.persistence.model.BranchEntityCondition">
     delete from BRANCH
     <if test="_parameter != null">
       <include refid="Condition_Where_Clause" />
     </if>
   </delete>
-  <insert id="insert" keyColumn="ID" keyProperty="id" parameterType="io.jgitkins.server.infrastructure.persistence.model.BranchEntity" useGeneratedKeys="true">
+  <insert id="insert" keyColumn="ID" keyProperty="id" parameterType="io.jgitkins.server.repository.infrastructure.persistence.model.BranchEntity" useGeneratedKeys="true">
     insert into BRANCH (REPOSITORY_ID, NAME, IS_LOCKED, 
       IS_CI, IS_DEFAULT, LOCKED_BY, 
       LOCKED_AT, CREATED_AT, UPDATED_AT
@@ -115,7 +115,7 @@
       #{lockedAt,jdbcType=TIMESTAMP}, #{createdAt,jdbcType=TIMESTAMP}, #{updatedAt,jdbcType=TIMESTAMP}
       )
   </insert>
-  <insert id="insertSelective" keyColumn="ID" keyProperty="id" parameterType="io.jgitkins.server.infrastructure.persistence.model.BranchEntity" useGeneratedKeys="true">
+  <insert id="insertSelective" keyColumn="ID" keyProperty="id" parameterType="io.jgitkins.server.repository.infrastructure.persistence.model.BranchEntity" useGeneratedKeys="true">
     insert into BRANCH
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="repositoryId != null">
@@ -176,7 +176,7 @@
       </if>
     </trim>
   </insert>
-  <select id="countByCondition" parameterType="io.jgitkins.server.infrastructure.persistence.model.BranchEntityCondition" resultType="java.lang.Long">
+  <select id="countByCondition" parameterType="io.jgitkins.server.repository.infrastructure.persistence.model.BranchEntityCondition" resultType="java.lang.Long">
     select count(*) from BRANCH
     <if test="_parameter != null">
       <include refid="Condition_Where_Clause" />
@@ -236,7 +236,7 @@
       <include refid="Update_By_Condition_Where_Clause" />
     </if>
   </update>
-  <update id="updateByPrimaryKeySelective" parameterType="io.jgitkins.server.infrastructure.persistence.model.BranchEntity">
+  <update id="updateByPrimaryKeySelective" parameterType="io.jgitkins.server.repository.infrastructure.persistence.model.BranchEntity">
     update BRANCH
     <set>
       <if test="repositoryId != null">
@@ -269,7 +269,7 @@
     </set>
     where ID = #{id,jdbcType=BIGINT}
   </update>
-  <update id="updateByPrimaryKey" parameterType="io.jgitkins.server.infrastructure.persistence.model.BranchEntity">
+  <update id="updateByPrimaryKey" parameterType="io.jgitkins.server.repository.infrastructure.persistence.model.BranchEntity">
     update BRANCH
     set REPOSITORY_ID = #{repositoryId,jdbcType=BIGINT},
       NAME = #{name,jdbcType=VARCHAR},

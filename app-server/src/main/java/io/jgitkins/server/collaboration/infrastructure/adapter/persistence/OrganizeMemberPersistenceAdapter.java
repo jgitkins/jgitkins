@@ -5,8 +5,8 @@ import io.jgitkins.server.collaboration.application.port.out.OrganizeMembershipQ
 import io.jgitkins.server.collaboration.domain.entity.OrganizeMember;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeId;
 import io.jgitkins.server.identity.access.domain.vo.UserId;
-import io.jgitkins.server.infrastructure.common.error.InfrastructureErrorCode;
-import io.jgitkins.server.infrastructure.exception.InfrastructureException;
+import io.jgitkins.server.common.infrastructure.error.InfrastructureErrorCode;
+import io.jgitkins.server.common.infrastructure.exception.InfrastructureException;
 import io.jgitkins.server.collaboration.infrastructure.mapper.OrganizeMemberDomainMapper;
 import io.jgitkins.server.collaboration.infrastructure.persistence.mapper.OrganizeMemberEntityMbgMapper;
 import io.jgitkins.server.collaboration.infrastructure.persistence.model.OrganizeMemberEntity;

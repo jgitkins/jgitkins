@@ -4,8 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.jgitkins.server.execution.application.contract.pipeline.PipelineConfig;
-import io.jgitkins.server.infrastructure.exception.InfrastructureException;
-import io.jgitkins.server.infrastructure.support.RepositoryResolver;
+import io.jgitkins.server.common.infrastructure.exception.InfrastructureException;
+import io.jgitkins.server.repository.infrastructure.support.RepositoryResolver;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;

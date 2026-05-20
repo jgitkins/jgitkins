@@ -12,8 +12,11 @@ import javax.sql.DataSource;
 
 @Configuration
 @MapperScan({
-        "io.jgitkins.server.infrastructure.persistence.mapper",
         "io.jgitkins.server.collaboration.infrastructure.persistence.mapper"
+        ,"io.jgitkins.server.repository.infrastructure.persistence.mapper"
+        ,"io.jgitkins.server.execution.infrastructure.persistence.mapper"
+        ,"io.jgitkins.server.change.review.infrastructure.persistence.mapper"
+        ,"io.jgitkins.server.identity.access.infrastructure.persistence.mapper"
 })
 public class MybatisConfig {
 

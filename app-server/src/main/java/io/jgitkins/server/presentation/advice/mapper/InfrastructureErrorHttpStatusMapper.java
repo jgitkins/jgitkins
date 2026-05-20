@@ -1,7 +1,7 @@
 package io.jgitkins.server.presentation.advice.mapper;
 
 import io.jgitkins.core.common.error.ErrorCode;
-import io.jgitkins.server.infrastructure.common.error.InfrastructureErrorCode;
+import io.jgitkins.server.common.infrastructure.error.InfrastructureErrorCode;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -20,4 +20,3 @@ public class InfrastructureErrorHttpStatusMapper implements ErrorHttpStatusMappe
         return HttpStatus.INTERNAL_SERVER_ERROR;
     }
 }
-
