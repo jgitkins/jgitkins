@@ -22,6 +22,16 @@ import io.jgitkins.server.application.service.MergeService;
 import io.jgitkins.server.identity.access.application.service.OAuthLoginService;
 import io.jgitkins.server.collaboration.application.service.OrganizeMemberService;
 import io.jgitkins.server.collaboration.application.service.OrganizeService;
+import io.jgitkins.server.collaboration.infrastructure.adapter.persistence.OrganizeMemberPersistenceAdapter;
+import io.jgitkins.server.collaboration.infrastructure.adapter.persistence.OrganizePersistenceAdapter;
+import io.jgitkins.server.collaboration.infrastructure.mapper.OrganizeDomainMapper;
+import io.jgitkins.server.collaboration.infrastructure.mapper.OrganizeMemberDomainMapper;
+import io.jgitkins.server.collaboration.infrastructure.persistence.mapper.OrganizeEntityMbgMapper;
+import io.jgitkins.server.collaboration.infrastructure.persistence.mapper.OrganizeMemberEntityMbgMapper;
+import io.jgitkins.server.collaboration.infrastructure.persistence.model.OrganizeEntity;
+import io.jgitkins.server.collaboration.infrastructure.persistence.model.OrganizeEntityCondition;
+import io.jgitkins.server.collaboration.infrastructure.persistence.model.OrganizeMemberEntity;
+import io.jgitkins.server.collaboration.infrastructure.persistence.model.OrganizeMemberEntityCondition;
 import io.jgitkins.server.identity.access.application.service.PublicUserQueryService;
 import io.jgitkins.server.application.service.PushEventHandleService;
 import io.jgitkins.server.application.service.RepositoryFileService;
@@ -81,6 +91,10 @@ class ArchitecturePackageConventionTest {
 
     private static final String APPLICATION_SERVICE_PACKAGE = "io.jgitkins.server.application.service";
     private static final String COLLABORATION_APPLICATION_SERVICE_PACKAGE = "io.jgitkins.server.collaboration.application.service";
+    private static final String COLLABORATION_INFRASTRUCTURE_ADAPTER_PACKAGE = "io.jgitkins.server.collaboration.infrastructure.adapter.persistence";
+    private static final String COLLABORATION_INFRASTRUCTURE_MAPPER_PACKAGE = "io.jgitkins.server.collaboration.infrastructure.mapper";
+    private static final String COLLABORATION_INFRASTRUCTURE_PERSISTENCE_MODEL_PACKAGE = "io.jgitkins.server.collaboration.infrastructure.persistence.model";
+    private static final String COLLABORATION_INFRASTRUCTURE_PERSISTENCE_MAPPER_PACKAGE = "io.jgitkins.server.collaboration.infrastructure.persistence.mapper";
     private static final String IDENTITY_ACCESS_SERVICE_PACKAGE = "io.jgitkins.server.identity.access.application.service";
     private static final String IDENTITY_ACCESS_PORT_OUT_PACKAGE = "io.jgitkins.server.identity.access.application.port.out";
     private static final String REPOSITORY_SERVICE_PACKAGE = "io.jgitkins.server.repository.application.service";
@@ -105,6 +119,30 @@ class ArchitecturePackageConventionTest {
         serviceClasses.forEach(serviceClass -> assertEquals(
                 COLLABORATION_APPLICATION_SERVICE_PACKAGE,
                 serviceClass.getPackageName()));
+    }
+
+    @Test
+    void collaborationInfrastructureClasses_resideInCollaborationInfrastructurePackages() {
+        List<Class<?>> classes = List.of(
+                OrganizePersistenceAdapter.class,
+                OrganizeMemberPersistenceAdapter.class,
+                OrganizeDomainMapper.class,
+                OrganizeMemberDomainMapper.class,
+                OrganizeEntityMbgMapper.class,
+                OrganizeMemberEntityMbgMapper.class,
+                OrganizeEntity.class,
+                OrganizeEntityCondition.class,
+                OrganizeMemberEntity.class,
+                OrganizeMemberEntityCondition.class);
+
+        classes.forEach(clazz -> {
+            String packageName = clazz.getPackageName();
+            boolean adapterPackage = packageName.equals(COLLABORATION_INFRASTRUCTURE_ADAPTER_PACKAGE);
+            boolean mapperPackage = packageName.equals(COLLABORATION_INFRASTRUCTURE_MAPPER_PACKAGE);
+            boolean persistenceModelPackage = packageName.equals(COLLABORATION_INFRASTRUCTURE_PERSISTENCE_MODEL_PACKAGE);
+            boolean persistenceMapperPackage = packageName.equals(COLLABORATION_INFRASTRUCTURE_PERSISTENCE_MAPPER_PACKAGE);
+            assertTrue(adapterPackage || mapperPackage || persistenceModelPackage || persistenceMapperPackage);
+        });
     }
 
     @Test
@@ -253,11 +291,28 @@ class ArchitecturePackageConventionTest {
     }
 
     @Test
+    void collaborationInfrastructureSources_doNotImportTopLevelInfrastructurePersistencePackages() throws IOException {
+        Path collaborationInfrastructureRoot = resolveExistingPath(
+                "src/main/java/io/jgitkins/server/collaboration/infrastructure",
+                "app-server/src/main/java/io/jgitkins/server/collaboration/infrastructure");
+        assertNoImports(collaborationInfrastructureRoot, "import io.jgitkins.server.infrastructure.persistence.");
+    }
+
+    @Test
     void identityAccessApplicationSources_doNotImportInfrastructurePackages() throws IOException {
         Path identityAccessApplicationRoot = resolveExistingPath(
                 "src/main/java/io/jgitkins/server/identity/access/application",
                 "app-server/src/main/java/io/jgitkins/server/identity/access/application");
         assertNoInfrastructureImports(identityAccessApplicationRoot);
+    }
+
+    @Test
+    void repositoryInfrastructureSources_doNotImportLegacyOrganizeInfrastructurePackages() throws IOException {
+        Path repositoryInfrastructureRoot = resolveExistingPath(
+                "src/main/java/io/jgitkins/server/repository/infrastructure",
+                "app-server/src/main/java/io/jgitkins/server/repository/infrastructure");
+        assertNoImports(repositoryInfrastructureRoot, "import io.jgitkins.server.infrastructure.persistence.mapper.Organize");
+        assertNoImports(repositoryInfrastructureRoot, "import io.jgitkins.server.infrastructure.persistence.model.Organize");
     }
 
     @Test

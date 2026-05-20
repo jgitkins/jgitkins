@@ -2,7 +2,7 @@
   "master": {
     "tasks": [
       {
-        "id": "1",
+        "id": 1,
         "title": "신규기능",
         "description": "사용자 가치 전달을 위한 기능 개발/확장 작업",
         "status": "pending",
@@ -80,7 +80,7 @@
         ]
       },
       {
-        "id": "2",
+        "id": 2,
         "title": "리팩토링",
         "description": "구조 개선, 품질 개선, 테스트 체계 강화 작업",
         "status": "in-progress",
@@ -91,422 +91,22 @@
         "updatedAt": "2026-05-19T14:46:30.915Z",
         "subtasks": [
           {
-            "id": 1,
-            "title": "[web, server] Inbound/Outbound Adapter 책임 재배치",
-            "description": "요청 파싱/인증 컨텍스트/외부 I/O 책임이 섞인 지점을 어댑터 경계 기준으로 분리한다.",
-            "details": "[source: jgitkins-server, original subtask: 2.19]",
-            "status": "done",
-            "dependencies": [],
-            "parentTaskId": 2,
-            "parentId": "2",
-            "updatedAt": "2026-05-17T13:37:03.626Z"
-          },
-          {
-            "id": 2,
-            "title": "[web, server, runner] application dto 단순 carrier record 전환",
-            "description": "server/runner application dto 이하의 단순 carrier DTO를 선별해 Java record로 전환하고, web 호환성 검토와 builder/getter 중심 호출부 및 테스트 정리를 함께 수행한다.",
-            "status": "done",
-            "dependencies": [],
-            "details": "[source: jgitkins-server, original subtask: 2.41]\n참조 문서: .taskmaster/docs/refactor/task_2_2_plan.md. 대상 범위는 server의 src/main/java/io/jgitkins/server/application/dto, command, result 패키지와 runner의 src/main/java/io/jgitkins/runner/application/dto 패키지다. web 모듈은 현재 application dto 대부분이 이미 record이므로 직접 전환 대상보다는 server/runner 변경 이후 mapper/controller/view model 호환성 검토와 회귀 검증 범위에 포함한다. 유지 대상은 이미 record인 RepositoryKey, RepositoryCreationContext, RunnerDispatchContext, PushHookRequest, PushJobPlanRequest, DispatchJobCommand, RepositoryCreateCommand, DispatchableJob, JobDispatchResult, JobCreationDecision 등이며, web의 기존 record DTO도 동일하게 유지한다. 우선 검토 후보는 server 쪽 BranchCreateCommand, OrganizeCreationCommand, OrganizeMemberAddCommand, RepositoryMemberAddCommand, RunnerRegisterCommand, UpdateOrganizeCommand, UserCredentialIssueCommand, OAuthLoginCommand, JobCreateCommand, JobResultReportCommand, UserLoginOrSignUpCommand, BranchSearchResult, OrganizeCreationResult, OrganizeMemberSummary, RepositoryMemberSummary, RunnerDetailResult, RunnerRegistrationResult, RunnerActivateResult, UserAdminSummary, UserAdminDetail, UserCredentialIssueResult, UserCredentialSummary, UserIdentitySummary, UserSummary, RepositoryResult, RepositoryOverviewResult 등과 runner 쪽 RunnerRuntimeConfigResult, RunnerExecutionConfigResult, RunnerActivateResult, JobRunContext 등이다. 단, BranchCreationContext, PushEventCommand, UpdateRepositoryCommand, JobPlan, OAuthLoginResult, PipelineConfig, PipelineRule, RunnerExecutionConfig, RunnerRuntimeConfig, MergeResult, FileUploadInfo, FileUploadRequest, CommitHistory, BranchInfo처럼 정적 팩토리, setter, 도메인 객체 노출, 컬렉션 방어 복사, 기본값 정책, 커스텀 메서드나 의미 있는 생성 규칙이 있는 타입은 단순 carrier 여부를 먼저 검토하고 필요 시 범위에서 제외한다. 변경 시 Lombok Builder/Getter 제거, mapper/service/controller/runner adapter/test 호출부의 accessor 및 생성 방식 정리, Jackson 직렬화와 모듈 간 회귀 테스트 범위 정의를 포함한다.",
-            "testStrategy": "",
-            "parentTaskId": 2,
-            "parentId": "2",
-            "updatedAt": "2026-03-29T02:27:11.425Z"
-          },
-          {
-            "id": 3,
-            "title": "[server] ErrorCode 단순화 및 세부 Exception 클래스 설계 검토",
-            "description": "ErrorCode를 HTTP status 중심의 단순 코드로 축소할 수 있는지 검토하고, Application 예외를 UserNotFoundException 같은 구체 타입 중심으로 상세화하는 방향의 설계/적용 기준을 정리한다.",
-            "status": "done",
-            "dependencies": [],
-            "details": "[source: jgitkins-server, original subtask: 2.42]\n이 서브태스크는 즉시 구현 확정이 아니라 사전 검토와 적용 기준 수립을 목표로 한다. 검토 주제 1: ErrorCode는 status 의미에 맞는 단순 코드만 유지하는 방향을 평가한다. 예를 들어 다수의 세부 NOT_FOUND 계열 코드를 개별 enum으로 늘리는 대신 NOT_FOUND, BAD_REQUEST, CONFLICT, FORBIDDEN, UNAUTHORIZED, INTERNAL_SERVER_ERROR 같은 status 중심 코드로 축소했을 때의 장단점을 분석한다. 검토 주제 2: 반대로 예외 클래스는 더 구체적으로 세분화한다. 예를 들어 Application/Domain 계층에서 UserNotFoundException, RepositoryNotFoundException, OrganizeNotFoundException, RunnerNotFoundException 같은 상세 구현체가 각자 내부적으로 ErrorCode.NOT_FOUND 를 고정 보유하는 모델을 검토한다. 함께 확인할 사항은 다음과 같다. 1) 현재 ErrorCode, JgitkinsException, DomainException, ApplicationException, InfrastructureException, GlobalExceptionHandler 구조와의 정합성. 2) ErrorCode 축소 시 외부 응답 메시지, 로깅, 관측성, 프론트엔드 분기 처리에 미치는 영향. 3) 세부 Exception 클래스 증가가 가독성/유지보수성/테스트성에 주는 이점과 비용. 4) 어떤 계층까지 세부 Exception 을 허용할지, 도메인/애플리케이션/인프라에서의 책임 경계. 5) 최종적으로 진행 여부를 너와 검토 후 결정할 수 있도록 적용안 A/B와 마이그레이션 전략을 문서화한다.",
-            "testStrategy": "",
-            "parentTaskId": 2,
-            "parentId": "2",
-            "updatedAt": "2026-04-08T12:43:43.401Z"
-          },
-          {
-            "id": 4,
-            "title": "[web, server, runner] 멀티모듈 로깅 Java Configuration 표준화 준비",
-            "description": "server의 2026-03-09 커밋 fc0412a79891f15d326823cf6a58963da7f1dc31을 기준선으로 삼아 runner/web 모듈에도 확장 가능한 LoggingConfigurator 전환 계획과 적용 기준을 수립한다.",
-            "status": "done",
-            "dependencies": [],
-            "details": "[source: jgitkins-server, original subtask: 2.43]\n참조 문서: .taskmaster/docs/refactor/task_2_43_plan.md. 1) server의 LoggingConfigurator, spring.factories 등록, XML 제거 방식을 기준선으로 삼는다. 2) runner/web의 기존 logback-spring.xml 차이를 비교하여 root level, 공통 logger preset, 로그 파일 경로/파일명, traceId 패턴, SOPS EnvironmentPostProcessor 공존 조건을 정리한다. 3) 공통 모듈 추출 여부는 비교 검토하되 1차 적용은 모듈별 configurator 도입과 XML 제거를 우선 검토한다. 4) local/non-local 프로파일별 console/file appender, 비동기 appender, spring.factories 등록, 회귀 검증 기준을 문서화한다.",
-            "testStrategy": "각 모듈을 local 및 non-local 프로파일로 부팅하여 console/file appender 동작, root/logger level, traceId 패턴, spring.factories 기반 초기화, 기존 SOPS 초기화 공존 여부를 검증한다.",
-            "parentTaskId": 2,
-            "parentId": "2",
-            "updatedAt": "2026-03-29T02:46:53.347Z"
-          },
-          {
-            "id": 5,
-            "title": "[web] RestClient 예외 처리 횡단 관심사 중앙화 및 예외 변환 적용",
-            "description": "",
-            "details": "[source: jgitkins-web, original subtask: 2.5]",
-            "status": "done",
-            "dependencies": [],
-            "parentTaskId": 2,
-            "parentId": "2",
-            "updatedAt": "2026-04-08T14:11:31.639Z"
-          },
-          {
-            "id": 6,
-            "title": "[server] Global Exception Handler (@ControllerAdvice) 및 API 규격 표준화 적용",
-            "description": "",
-            "details": "[source: jgitkins-web, original subtask: 2.6]",
+            "id": 34,
+            "title": "[plan][P1][server, docs] Common infrastructure와 bounded context infrastructure 패키지 분리 계획 수립",
+            "description": "`server/common/infrastructure` 에 공통 설정만 남기고, 각 bounded context 의 persistence model, mapper, adapter, technical support 를 context 하위 `infrastructure` 로 이동하는 실행 계획을 수립한다.",
+            "details": "참조 문서: `.taskmaster/docs/refactor/task_2_34_plan.md`. 검토 범위는 `app-server/src/main/java/io/jgitkins/server/infrastructure/adapter/persistence/*`, `app-server/src/main/java/io/jgitkins/server/infrastructure/mapper/*`, `app-server/src/main/java/io/jgitkins/server/infrastructure/persistence/*`, `app-server/src/main/java/io/jgitkins/server/common/infrastructure/*` 신설 기준, 그리고 `collaboration`, `repository`, `identity.access`, `change.review`, `execution` 각 bounded context 의 `infrastructure` 패키지 설계다. 목표는 공통 기술 설정과 비즈니스 의미가 있는 persistence 자산을 분리해, package tree 가 소유권을 숨기지 않도록 만드는 것이다. 계획 문서는 공통 vs context 경계 원칙, 3가지 방법 비교, phase 별 이동 순서, package policy test 추가안, generated MBG 산출물 이동 기준, 병렬 작업 lane, NOT in scope 를 포함한다.",
             "status": "pending",
-            "dependencies": [],
-            "parentTaskId": 2,
-            "parentId": "2"
-          },
-          {
-            "id": 7,
-            "title": "Outbound Port 설계의 객체지향적 세분화 (단일 책임, 인터페이스 분리 원칙 위배 해소)",
-            "description": "",
-            "details": "[source: jgitkins-web, original subtask: 2.7]",
-            "status": "pending",
-            "dependencies": [],
-            "parentTaskId": 2,
-            "parentId": "2"
-          },
-          {
-            "id": 8,
-            "title": "[runner] 기존 jgitkins-runner 소스 이관",
-            "description": "기존 jgitkins-runner 저장소의 실행/빌드에 필요한 소스 자산만 monorepo의 runner 모듈로 이관한다.",
-            "details": "",
-            "status": "done",
-            "dependencies": [],
-            "parentTaskId": 2,
-            "updatedAt": "2026-03-27T05:41:50.767Z",
-            "parentId": "undefined"
-          },
-          {
-            "id": 9,
-            "title": "[server] Repository 생성 프로비저닝 이벤트 제거 및 UseCase 오케스트레이션 정리",
-            "description": "Repository 생성 후처리에서 RepositoryProvisionedEventListener 기반 흐름을 제거하고, application.support 패키지의 RepositoryProvisioner로 프로비저닝 로직을 이동한 뒤 RepositoryCreateUseCase 구현체가 이를 직접 호출하도록 정리한다.",
-            "details": "[source: jgitkins-server, original subtask: custom]\n참조 문서: .taskmaster/docs/refactor/task_2_9_plan.md. 검토 범위는 `server/src/main/java/io/jgitkins/server/application/event/RepositoryProvisionedEventListener.java`, `server/src/main/java/io/jgitkins/server/domain/event/RepositoryProvisionedEvent.java`, `server/src/main/java/io/jgitkins/server/domain/aggregate/Repository.java`, `server/src/main/java/io/jgitkins/server/application/service/RepositoryLifecycleService.java`, `server/src/main/java/io/jgitkins/server/application/support` 패키지다. 목표는 `RepositoryProvisionedEventListener`가 담당하던 기본 브랜치 생성, 초기 커밋, HEAD 갱신, 초기화 상태 반영 절차를 `RepositoryProvisioner`로 이동하고, `RepositoryLifecycleService.create()`가 저장소 저장 및 git 초기화 직후 이를 직접 오케스트레이션하도록 정리하는 것이다. 이 과정에서 `Repository.create()`의 `RepositoryProvisionedEvent` 등록은 제거 대상으로 검토하며, `Presentation` 계층은 기존처럼 단일 `RepositoryCreateUseCase` 호출만 유지한다. `DomainEventPublisher`와 다른 도메인 이벤트 사용처는 이번 범위에서 제거하지 않으며, 해당 인터페이스와 구현체의 잔존 여부는 다른 aggregate 사용처를 확인한 뒤 결정한다.",
-            "status": "done",
-            "dependencies": [],
-            "parentTaskId": 2,
-            "parentId": "2",
-            "updatedAt": "2026-04-06T12:55:19.046Z"
-          },
-          {
-            "id": 10,
-            "title": "[server] RepositoryLifecycleService 분리 및 Load/Management 책임 재구성",
-            "description": "`RepositoryLifecycleService`를 `RepositoryManagementService`와 `RepositoryLoadService`로 분리하고, 조회 전용 메서드를 별도 Load Service로 이관하며, `RepositoryLoadUseCase` 및 연관 호출부의 메서드 명명 규칙을 `load*` 계열로 정리할지 검토 후 반영한다.",
-            "details": "[source: jgitkins-server, original subtask: custom]\n참조 문서: .taskmaster/docs/refactor/task_2_10_plan.md. 검토 범위는 `server/src/main/java/io/jgitkins/server/application/service/RepositoryLifecycleService.java`, `server/src/main/java/io/jgitkins/server/application/port/in/RepositoryLoadUseCase.java`, `server/src/main/java/io/jgitkins/server/presentation/api/rest/RepositoryManagementController.java`, `server/src/main/java/io/jgitkins/server/presentation/api/rest/RepositoryContentController.java`, `server/src/main/java/io/jgitkins/server/presentation/api/web/WebRepositoryController.java`, `server/src/main/java/io/jgitkins/server/application/service/RepositoryOverviewService.java`, `server/src/test/java/io/jgitkins/server/application/service/RepositoryLifecycleServiceTest.java`, `server/src/test/java/io/jgitkins/server/application/ArchitecturePackageConventionTest.java` 및 `RepositoryLoadUseCase` 호출 테스트 전반이다. 목표는 생성/삭제 오케스트레이션과 조회 책임을 분리하여 서비스 응집도를 높이고, Load 전용 구현체 도입 이후에도 기존 Controller의 UseCase 계약은 유지하는 것이다. 메서드 명명은 `RepositoryLoadUseCase`라는 포트 이름과 맞추어 `get*`에서 `load*`로 정리하는 방안을 우선 검토하되, 단순 치환이 아닌 조회 의도와 반환 의미가 명확한 이름으로 조정하는 것을 원칙으로 한다.",
-            "status": "done",
-            "dependencies": [],
-            "parentTaskId": 2,
-            "parentId": "2",
-            "updatedAt": "2026-04-06T12:55:23.913Z"
-          },
-          {
-            "id": 11,
-            "title": "[server] BranchService 분리 및 Branch 조회/관리 책임 재구성",
-            "description": "`BranchService`를 `BranchManagementService`와 `BranchLoadService`로 분리하고, 조회성 메서드를 별도 서비스로 이관하며, `BranchLoadUseCase`의 `get*` 메서드를 `load*`로 정리할지 검토 후 반영 기준을 수립한다.",
-            "details": "[source: jgitkins-server, original subtask: custom]\n참조 문서: .taskmaster/docs/refactor/task_2_11_plan.md. 검토 범위는 `server/src/main/java/io/jgitkins/server/application/service/BranchService.java`, `server/src/main/java/io/jgitkins/server/application/port/in/BranchLoadUseCase.java`, `server/src/main/java/io/jgitkins/server/application/port/in/BranchCreateUseCase.java`, `server/src/main/java/io/jgitkins/server/application/port/in/BranchDeleteUseCase.java`, `server/src/main/java/io/jgitkins/server/presentation/api/rest/BranchController.java`, `server/src/main/java/io/jgitkins/server/application/service/RepositoryOverviewService.java`, `server/src/test/java/io/jgitkins/server/application/service/BranchServiceTest.java`, `server/src/test/java/io/jgitkins/server/presentation/api/rest/BranchControllerTest.java`, `server/src/test/java/io/jgitkins/server/application/ArchitecturePackageConventionTest.java` 및 관련 조회 호출부 전반이다. 목표는 브랜치 조회와 생성/삭제 오케스트레이션 책임을 분리하여 서비스 응집도를 높이고, `BranchLoadUseCase`의 메서드 명명을 `get*`에서 `load*`로 정렬할지 검토한 뒤 일관된 기준을 문서화하는 것이다.",
-            "status": "done",
-            "dependencies": [],
-            "parentTaskId": 2,
-            "parentId": "2",
-            "updatedAt": "2026-04-02T14:21:45.758Z"
-          },
-          {
-            "id": 12,
-            "title": "[server] PushEventHandleService 분해 및 정책/실행 경계 1차 분리",
-            "description": "`PushEventHandleService`가 직접 수행하던 브랜치 상태 반영, 정책 해석, 실행 요청 생성을 분리해 오케스트레이션 전용 서비스로 얇게 만들고, 향후 PR/branch event 확장을 위한 첫 seam을 만든다.",
-            "details": "[source: jgitkins-server, original subtask: custom]\n대상 범위는 `server/src/main/java/io/jgitkins/server/application/service/PushEventHandleService.java`, `server/src/main/java/io/jgitkins/server/application/support/PushJobCreationPolicy.java`, `server/src/main/java/io/jgitkins/server/application/validate/JobCreationValidator.java`, `server/src/test/java/io/jgitkins/server/application/service/PushEventHandleServiceTest.java`, `server/src/test/java/io/jgitkins/server/application/ArchitecturePackageConventionTest.java`와 신규 support collaborator 패키지다. 1차 목표는 `PushEventHandleService`를 `BranchChangeRecorder`, `EventPolicyResolver`, `ExecutionRequestService` 협력자로 분해하여 브랜치 변경 사실 기록, `ci.yml` 기반 정책 해석, `JobCreateUseCase` 호출 경계를 명확히 나누는 것이다. 이 단계에서는 기존 push 기반 동작과 runner dispatch 흐름을 유지하고, `PushJobCreationPolicy`는 push 전용 구현을 감싼 상태로 두되 향후 일반화 가능한 이름과 테스트 seam을 확보한다. 관련 단위 테스트를 추가하여 오케스트레이션 경계, support package 규칙, execution command 매핑이 유지되는지 검증한다.",
-            "status": "done",
-            "dependencies": [],
-            "parentTaskId": 2,
-            "parentId": "2",
-            "updatedAt": "2026-04-10T13:31:57.985Z"
-          },
-          {
-            "id": 13,
-            "title": "[docs] SCM/CI 도메인 모델링 bounded context 명세",
-            "description": "`docs/modeling/domain` 아래에 SCM 변경 흐름, CI 정책, 실행, PR readiness bounded context 문서를 작성하고 aggregate/VO/domain service 경계를 명시한다.",
-            "details": "[source: docs/modeling/domain]\n이번 작업은 구현 전 도메인 명세를 고정하기 위한 문서화 리팩토링이다. 범위는 `docs/modeling/domain/README.md`, `change-graph-context.md`, `ci-policy-context.md`, `pipeline-execution-context.md`, `pull-request-readiness-context.md` 작성이다. 각 bounded context 문서에는 목적, 핵심 질문, 유비쿼터스 언어, Subdomain Classification, 책임/비책임, 주요 입력/출력, Aggregate Root, Entities, Value Objects, 핵심 불변식, mermaid class diagram, domain service 후보, 현재 코드 시드, 다음 리팩터링 힌트를 포함한다. 특히 Change Graph Context는 병합 도메인의 기준 문서로 삼고 `PullRequest`, `BranchHeadSnapshot`, `MergeabilityAssessment`, `MergeTopologySummary`, `TargetDrift`의 의미를 먼저 고정한다.",
-            "status": "done",
-            "dependencies": [],
-            "parentTaskId": 2,
-            "parentId": "2",
-            "updatedAt": "2026-04-11T13:08:33.379Z"
-          },
-          {
-            "id": 14,
-            "title": "[server] Change Graph MergeabilityAssessment 모델 도입",
-            "description": "`docs/modeling/domain/change-graph-context.md` 기준으로 기존 `MergeResult` 위에 제품 언어의 `MergeabilityAssessment`와 `MergeTopologySummary` 모델을 얹고, fast-forward/merge commit 필요 여부를 노출한다.",
-            "details": "[source: docs/modeling/domain/change-graph-context.md]\n이번 작업은 Change Graph Context의 첫 구현 단위다. 기존 `MergeResult` API 계약은 유지하되, domain model 패키지에 `MergeabilityAssessment`, `MergeabilityStatus`, `MergeTopologySummary`를 추가하고 application support assembler를 통해 기존 merge preview 결과를 제품 언어로 변환한다. `MergeService`에는 `MergeabilityEvaluationUseCase`를 추가해 향후 PR readiness 조합에서 raw `MergeResult` 대신 assessment를 사용할 수 있는 seam을 만든다. `MergeGitAdapter.previewMergeability`는 fast-forward 가능 여부와 merge commit 필요 여부를 `MergeResult`에 채워 downstream assembler가 topology를 만들 수 있게 한다. 관련 테스트는 assembler 매핑, MergeService 위임, application package convention을 검증한다.\n\n[review closeout]\nfast-forward 설명은 실제 merge 수행 전략을 약속하지 않도록 topology 설명으로 조정했다. `MergeGitAdapterTest`를 추가해 fast-forward 가능 경로와 diverged 경로의 topology flag를 JGit fixture로 검증했다. 문서에는 `PullRequest` 영속 Aggregate와 `MergeabilityAssessment` 조회 시점 계산값의 경계를 반영했다. 검증: `./gradlew :server:test` 통과.",
-            "status": "done",
             "dependencies": [
-              13
+              33
             ],
             "parentTaskId": 2,
             "parentId": "2",
-            "updatedAt": "2026-04-11T14:02:33Z"
-          },
-          {
-            "id": 15,
-            "title": "[server] PullRequest 도메인/영속성/Application seam 도입",
-            "description": "`docs/modeling/domain/change-graph-context.md` 기준으로 PR의 영속 상태를 대표하는 domain aggregate와 MBG 기반 영속성, 생성/상세 조회 application seam을 도입한다.",
-            "details": "[source: docs/modeling/domain/change-graph-context.md]\n이번 작업은 presentation API 없이 server 내부 seam까지 진행한다. `domain.pr` 하위에 `PullRequest` Aggregate Root와 `PullRequestId`, `PullRequestStatus`, `BranchHeadSnapshot`, `TargetDrift`, `PullRequestRepository`를 추가한다. source/target 동일 branch 금지, 열린 pull request만 close/markMerged 가능, 닫힌 pull request만 reopen 가능, 저장된 assessment snapshot은 선택적 기록값이라는 불변식을 테스트로 고정한다.\n\n영속성은 JPA가 아니라 기존 MyBatis Generator 흐름을 따른다. `server/data/ddl.sql`과 `server/data/mbg/mbg-config.xml`에 `PULL_REQUEST`를 명세하고, `server/data/mbg/generate.sh`로 생성된 `PullRequestEntity`, `PullRequestEntityCondition`, `PullRequestEntityMbgMapper`, `PullRequestEntityMbgMapper.xml`을 사용한다. 구현체는 `infrastructure.adapter.persistence.pr.PullRequestPersistenceAdapter`로 두고 domain repository를 구현한다.\n\nApplication 계층에는 `CreatePullRequestUseCase`와 `GetPullRequestDetailUseCase`를 추가한다. PR 생성은 repository/source/target branch head snapshot만 저장하고, 병합 가능 여부는 저장하지 않는다. 상세 조회는 read-only로 저장된 `PullRequest`와 현재 Git head, `PullRequestMergeabilityResolver`가 매번 재계산한 `MergeabilityAssessment`를 조합해 `PullRequestDetailResult`를 반환한다. 조회 중 target drift가 감지되어도 영속화하지 않으며, status 변경성 command에서만 저장하는 방향을 유지한다.\n\n[implementation closeout]\n`PullRequest` Aggregate와 PR 전용 VO/status/repository를 추가했고, MBG 기반 `PULL_REQUEST` 영속성 객체와 adapter/domain mapper를 연결했다. `BranchGitPort.getHeadCommitHash`를 추가해 생성/상세 조회에서 현재 branch head를 읽을 수 있게 했다. `CreatePullRequestUseCase`는 initial snapshot만 저장하고 mergeability는 저장하지 않으며, `GetPullRequestDetailUseCase`는 read-only로 현재 Git 상태 기준 mergeability를 매번 재계산한다. `PullRequestServiceTest`, `PullRequestDomainMapperTest`, `PullRequestTest`로 생성, 상세 조회 read-only 정책, target drift 응답 계산, assessment 비영속화, domain invariant를 검증했다. 검증: `./gradlew :server:test` 통과.",
-            "status": "done",
-            "dependencies": [
-              14
-            ],
-            "parentTaskId": 2,
-            "parentId": "2",
-            "updatedAt": "2026-04-13T14:00:47Z"
-          },
-          {
-            "id": 16,
-            "title": "[docs] 전체 도메인 개념명세 초안 작성",
-            "description": "시스템 내 주요 도메인 개념의 aggregate/entity/value object 후보와 context 간 관계를 초안으로 정리한다.",
-            "details": "목표는 Aggregate를 바로 확정하기 전에 서비스 전체의 도메인 후보, bounded context, 유비쿼터스 언어, 화면/조회 유스케이스와 진짜 도메인 개념을 분리해 문서화하는 것이다. 작업 범위는 다음을 포함한다. 1) server/web/runner 모듈과 `docs/modeling/domain` 문서를 훑어 현재 존재하는 도메인 후보를 수집한다. 2) Repository, Namespace/Organization/User, Branch, Commit/FileTree/Diff, Push Event, CI Policy, Pipeline Execution, Runner, Job, PullRequest/Change Graph 등 주요 개념을 context map 형태로 배치한다. 3) 각 후보가 Aggregate, Entity, Value Object, Domain Service, Read Model, Application UseCase 중 어디에 가까운지 1차 분류한다. 4) 컨텍스트 간 관계(upstream/downstream, shared kernel 후보, anti-corruption 필요 지점)를 명시한다. 5) 후속 Aggregate 명세 문서의 템플릿을 정의한다. 산출물은 `docs/modeling/domain/domain-map.md` 또는 동등한 위치의 전체 도메인 맵 문서이며, 후속으로 도메인별 aggregate 문서를 쪼갤 수 있게 관련 코드 경로와 미확정 쟁점을 함께 남긴다.\n\n[progress 2026-04-14T12:40:18Z]\n`docs/modeling/domain-concept-definitions.md`에 전체 도메인 개념명세 초안을 작성했다. 제품 언어 기준으로 User, Namespace, Organization, Repository, Branch, Commit/FileTree/Diff, Push Event, Change Graph, PullRequest, CI Policy, Job, Runner, Pipeline Execution, Readiness, Dashboard/Explore/Repository Detail을 정의하고, 각 개념의 현재 분류, 코드/테이블 근거, Aggregate 판단, 미확정 쟁점을 정리했다. 후속 작업은 이 문서를 기준으로 `domain-map.md`를 작성하고 Aggregate 명세 템플릿을 분리하는 것이다.\n\n[progress 2026-04-14T13:01:54Z]\n문서 내 TODO 코멘트를 반영해 작성 기준을 제품 언어 기준으로 단순화했다. UserIdentity는 User 하위 Entity 후보로 명확히 정리했고, UserCredential은 현재는 User 하위 Entity 후보이되 scope, expiry, lastUsedAt, revokedAt, audit log가 독립 생명주기로 중요해질 때 별도 Aggregate로 승격하는 기준을 추가했다. Namespace는 Aggregate가 아니라 User 또는 Organization이 전역적으로 점유하는 repository owner slug와 해석 규칙으로 정의했고, User username과 Organization name의 전역 충돌 금지 및 현재 resolver별 충돌 정책 불일치를 미확정 쟁점으로 기록했다.\n\n[progress 2026-04-16T00:00:00+09:00]\n도메인 문서 구조를 기존 `docs/modeling/domain` 단일 폴더 중심에서 `overview / contexts / shared` 역할 분리 구조로 재정비했다. 현재 기준선 문서는 `docs/modeling/overview/domain-overview.md`이며, 제품 언어 기준의 전체 도메인 개념, 1차 Aggregate/Entity 후보 분류, bounded context 개요 맵, shared/cross-cutting 개념 분리를 담는다. 상단 개념 설명은 Aggregate와 Entity 중심으로만 유지하고, Namespace/Commit/Diff/FileTree 같은 비-aggregate 개념은 별도 표로 분리했다. bounded context 라벨은 `Identity & Access Context`, `Collaboration Context`, `Repository Context`, `Change & Review Context`, `Execution Context`로 정리했다.\n\n`docs/modeling/contexts/README.md`는 개념 설명 문서가 아니라 상세 문서 인덱스 역할만 하도록 재작성했다. 현재 작성 완료된 컨텍스트는 `docs/modeling/contexts/repository/`이며, 이 폴더 아래에 `README.md`, `repository-context.md`, `repository-context-diagrams.md`를 두는 패턴을 확정했다. 이후 컨텍스트도 `contexts/<context>/README.md`, `<context>-context.md`, `<context>-diagrams.md` 구조를 따른다.\n\n`Repository Context` 초안에는 다음 결정을 반영했다. `Repository`는 Aggregate Root, `Branch`는 Repository에 종속된 Entity, `RepositoryMember`는 독립 Aggregate가 아니라 Repository와 User 사이의 권한 관계 모델로 우선 해석한다. 패키지 예시는 `server/domain/repository/aggregate/Repository.java`, `server/domain/repository/model/RepositoryMember.java`, `server/domain/repository/vo/RepositoryId.java`, `server/domain/repository/vo/RepositoryMemberRole.java` 구조를 사용한다. `Namespace`는 특정 컨텍스트 소유물이 아니라 shared/cross-cutting VO+policy 성격으로 보고 `server/domain/shared/namespace/Namespace.java`, `NamespacePolicy.java`, `NamespaceAvailabilityChecker.java` 예시를 기록했다. 저장소 상태는 장기적으로 boolean `initialized` 대신 `RepositoryState`로 승격하며, 현재 후보 상태는 `PROVISIONED`(bare repo만 생성, commit 없음), `INITIALIZED`(초기 commit 완료, active), `DELETED`(삭제 완료)다.\n\n다이어그램은 본문과 분리했다. `repository-context-diagrams.md`에는 Aggregate 구조를 설명하는 mermaid classDiagram, `RepositoryState` 기준 stateDiagram-v2, 생성/초기화 흐름 sequenceDiagram을 두었다. 의도는 구현 클래스 복제가 아니라 Aggregate 경계, 상태 전이, 오케스트레이션 seam 설명이다.\n\n현 시점의 아키텍처 판단은 `Repository Context` 문서만으로 즉시 코드 리팩토링에 들어가기보다, 다른 bounded context 문서를 먼저 최소 초안까지 고정한 뒤 리팩토링에 착수하는 편이 안전하다는 것이다. 이유는 `Branch`, `RepositoryMember`, `Namespace`, `Permission`, `PullRequest`, `Job`, `Runner` 경계가 아직 다른 컨텍스트와 맞물려 있기 때문이다. 권장 다음 순서는 1) `Change & Review Context`, 2) `Execution Context`, 3) `Identity & Access Context`, 4) `Collaboration Context`, 5) `Shared / Cross-Cutting Topics` 문서화다. 이 순서로 최소 기준선을 확정한 뒤 패키지/도메인 리팩토링을 시작한다.\n\n후속 작업 시 이 서브태스크의 산출물 경로는 기존 `docs/modeling/domain/*.md`보다 현재 재구성된 `docs/modeling/overview/`, `docs/modeling/contexts/`, `docs/modeling/shared/` 구조를 우선 기준으로 삼는다. 기존 삭제된 문서 경로를 전제로 한 링크/설명은 더 이상 기준 문서로 취급하지 않는다.",
-            "testStrategy": "",
-            "parentTaskId": 2,
-            "parentId": "2"
-          },
-          {
-            "id": 17,
-            "title": "[docs] Identity & Access Context 기준 실행 계획 수립",
-            "description": "Identity & Access context의 aggregate, identity, credential, activation 경계를 재정렬하는 실행 계획을 수립한다.",
-            "details": "참조 문서: `docs/domain/contexts/identity-access/context.md`, `docs/domain/contexts/identity-access/diagrams.md`. 산출물은 `.taskmaster/docs/refactor/task_2_22_plan.md`이며 다음을 포함한다. 1) `User Aggregate Root Candidate` 확정 여부 검토. 2) `UserIdentity`, `UserCredential`의 종속 모델 유지 또는 분리 기준 정리. 3) activation/credential 흐름의 application service 경계 재배치안. 4) namespace 충돌과 collaboration 연계 포인트 정리.",
-            "status": "done",
-            "dependencies": [
-              18
-            ],
-            "parentTaskId": 2,
-            "parentId": "2",
-            "updatedAt": "2026-05-18T13:09:16.078Z"
-          },
-          {
-            "id": 18,
-            "title": "[plan][P0][server, docs] Shared / Cross-Cutting Topics 기준 리팩토링 계획 수립",
-            "description": "`Namespace`, `Pipeline Policy`, `RepositoryPermission`, `MergeabilityAssessment`처럼 여러 context를 가로지르는 계산/정책 seam을 먼저 고정하고 후속 리팩토링의 기준선을 만든다.",
-            "details": "참조 문서: `docs/modeling/overview/domain-overview.md`, `docs/modeling/contexts/shared-cross-cutting/shared-cross-cutting-topics.md`, `docs/modeling/contexts/shared-cross-cutting/shared-cross-cutting-topics-diagrams.md`. 산출물은 `.taskmaster/docs/refactor/task_2_18_plan.md`이며 다음을 포함한다. 1) shared value object / application-level policy / read-side result 분류 확정. 2) `Namespace`, `Pipeline Policy`, `RepositoryPermission`, `MergeabilityAssessment`의 현재 코드 위치와 목표 위치 정리. 3) `Execution`, `Repository`, `Change & Review`가 어떤 seam을 공통으로 사용해야 하는지 정의. 4) 단계별 이관 순서, 영향 범위, 테스트 전략 정리.",
-            "status": "done",
-            "dependencies": [],
-            "parentTaskId": 2,
-            "parentId": "2",
-            "updatedAt": "2026-04-30T21:03:13.002Z"
-          },
-          {
-            "id": 19,
-            "title": "[plan][P1][server, docs] Repository Context 기준 리팩토링 계획 수립",
-            "description": "`Repository`, `Branch`, `RepositoryMember`, provisioning lifecycle의 책임을 문서 기준으로 재정렬하는 실행 계획을 수립한다.",
-            "details": "참조 문서: `docs/modeling/contexts/repository/repository-context.md`, `docs/modeling/contexts/repository/repository-context-diagrams.md`. 산출물은 `.taskmaster/docs/refactor/task_2_19_plan.md`이며 다음을 포함한다. 1) `Repository Aggregate`, `Branch Entity`, `RepositoryMember relation model` 기준의 패키지/서비스 재배치안. 2) `RepositoryManagement/Load`, provisioning, branch metadata, Git external state 경계 정리. 3) 선행 shared seam 의존성 반영. 4) 테스트 전략과 점진 이관 단위 정의.",
-            "status": "done",
-            "dependencies": [
-              18
-            ],
-            "parentTaskId": 2,
-            "parentId": "2",
-            "updatedAt": "2026-04-30T23:01:53.001Z"
-          },
-          {
-            "id": 20,
-            "title": "[plan][P2][server, docs] Execution Context 기준 리팩토링 계획 수립",
-            "description": "`Job`, `JobHistory`, `Runner`, dispatch orchestration, pipeline policy 소비 경계를 문서 기준으로 재정렬하는 실행 계획을 수립한다.",
-            "details": "참조 문서: `docs/modeling/contexts/execution/execution-context.md`. 산출물은 `.taskmaster/docs/refactor/task_2_20_plan.md`이며 다음을 포함한다. 1) `Job Aggregate`, `JobHistory Entity`, `Runner Aggregate` 기준의 서비스/포트 재배치안. 2) `PushEventHandleService`, `ExecutionRequestService`, `PushJobCreationPolicy`의 경계 재정의. 3) pipeline policy가 aggregate가 아닌 application-level policy라는 현재 판단 반영. 4) dispatch/result report/runner activation 테스트 전략 정리.",
-            "status": "done",
-            "dependencies": [
-              18,
-              19
-            ],
-            "parentTaskId": 2,
-            "parentId": "2",
-            "updatedAt": "2026-05-14T21:21:13.000Z"
-          },
-          {
-            "id": 21,
-            "title": "[plan][P3][server, docs] Change & Review Context 기준 리팩토링 계획 수립",
-            "description": "`PullRequest` 영속 상태와 `MergeabilityAssessment`, `TargetDrift` 같은 계산 결과의 경계를 더 엄격히 적용하기 위한 실행 계획을 수립한다.",
-            "details": "참조 문서: `docs/modeling/contexts/change-review/change-review-context.md`, `docs/modeling/contexts/change-review/change-review-context-diagrams.md`. 산출물은 `.taskmaster/docs/refactor/task_2_21_plan.md`이며 다음을 포함한다. 1) persisted state와 computed result 분리 원칙 재확인. 2) PR 생성/상세 조회/상태 전이/merge 수행 경계 정리. 3) `Repository`와 shared seam 의존성 반영. 4) MBG 영속성, application seam, API 확장 순서 정의.",
-            "status": "done",
-            "dependencies": [
-              18,
-              19
-            ],
-            "parentTaskId": 2,
-            "parentId": "2",
-            "updatedAt": "2026-05-18T13:09:16.078Z"
-          },
-          {
-            "id": 22,
-            "title": "[plan][P4][server, docs] Identity & Access Context 기준 리팩토링 계획 수립",
-            "description": "`User`, `UserIdentity`, `UserCredential`, activation, PAT 발급/폐기 경계를 문서 기준으로 재정렬하는 실행 계획을 수립한다.",
-            "details": "참조 문서: `docs/domain/contexts/identity-access/context.md`, `docs/domain/contexts/identity-access/diagrams.md`. 산출물은 `.taskmaster/docs/refactor/task_2_22_plan.md`이며 다음을 포함한다. 1) `User Aggregate Root Candidate` 확정 여부 검토. 2) `UserIdentity`, `UserCredential`의 종속 모델 유지 또는 분리 기준 정리. 3) activation/credential 흐름의 application service 경계 재배치안. 4) namespace 충돌과 collaboration 연계 포인트 정리.",
-            "status": "done",
-            "dependencies": [
-              18
-            ],
-            "parentTaskId": 2,
-            "parentId": "2",
-            "updatedAt": "2026-05-19T14:13:57.587Z"
-          },
-          {
-            "id": 23,
-            "title": "[plan][P5][server, docs] Collaboration Context 기준 리팩토링 계획 수립",
-            "description": "`Organization`, `Organization Member`, owner/member 기반 접근 경계와 relation model 해석을 문서 기준으로 재정렬하는 실행 계획을 수립한다.",
-            "details": "참조 문서: `docs/modeling/contexts/collaboration/collaboration-context.md`, `docs/modeling/contexts/collaboration/collaboration-context-diagrams.md`. 산출물은 `.taskmaster/docs/refactor/task_2_23_plan.md`이며 다음을 포함한다. 1) `Organization Aggregate`와 `Organization Member relation model` 기준 정리. 2) `Organize` 명명과 문서 용어 정합성 정리. 3) repository ownership, shared permission 계산과의 연결 seam 정리. 4) identity/access 의존성 반영과 점진 이관 순서 정의.",
-            "status": "done",
-            "dependencies": [
-              18,
-              22
-            ],
-            "parentTaskId": 2,
-            "parentId": "2",
-            "updatedAt": "2026-05-19T14:46:30.915Z"
-          },
-          {
-            "id": 24,
-            "title": "[plan][P1][server, docs] Repository Support collaborator 책임 분해 계획 수립",
-            "description": "`RepositoryOwnershipPolicy`, `BranchWritePolicy`, `RepositoryMembershipPolicy`의 책임을 재검토하고 policy/factory/support 경계를 문서 기준으로 재정의하는 실행 계획을 수립한다.",
-            "details": "참조 문서: `docs/modeling/contexts/repository/repository-context.md`, `.taskmaster/docs/refactor/task_2_19_plan.md`, `.taskmaster/docs/refactor/task_2_24_plan.md`. 산출물은 `.taskmaster/docs/refactor/task_2_24_plan.md`이며 다음을 포함한다. 1) `RepositoryOwnershipPolicy`의 ownership validation, repository draft 생성, initial commit options 조립, deletion permission 검증 책임을 분리할지 기준 정리. 2) `BranchWritePolicy`의 source branch 결정과 branch metadata 생성 책임을 policy/factory/support 중 어떤 형태로 둘지 결정. 3) `RepositoryMembershipPolicy`의 입력 검증, 기본 role 결정, member 생성 책임을 유지 또는 support/factory로 재명명할지 정리. 4) 실제 클래스명, 목표 패키지, 점진 이관 순서, 테스트 전략 정의.",
-            "status": "done",
-            "dependencies": [
-              19
-            ],
-            "parentTaskId": 2,
-            "parentId": "2",
-            "updatedAt": "2026-05-04T13:14:39.567Z"
-          },
-          {
-            "id": 25,
-            "title": "[plan][P1][server, docs] Repository Context inbound UseCase 포트 통합 계획 수립",
-            "description": "`repository.application.port.in` 아래에 세분화된 UseCase 포트를 `Management`와 `Load` 축으로 재구성하는 실행 계획을 수립한다.",
-            "details": "참조 문서: `.taskmaster/docs/refactor/task_2_19_plan.md`, `.taskmaster/docs/refactor/task_2_24_plan.md`, `docs/modeling/contexts/repository/repository-context.md`. 산출물은 `.taskmaster/docs/refactor/task_2_25_plan.md`이며 다음을 포함한다. 1) `BranchCreate/DeleteUseCase`, `RepositoryCreate/DeleteUseCase`, `RepositoryMemberAdd/Remove/QueryUseCase`를 `ManagementUseCase`/`LoadUseCase` 기준으로 묶는 기준 정리. 2) controller, web adapter, overview service, 테스트 주입점 영향 범위 정리. 3) 기존 service 구현체가 어떤 통합 포트를 구현하게 되는지 TO-BE 구조와 상세 코드 스니펫 제시. 4) 네이밍, package 유지 여부, 점진 이관 순서, 검증 전략 정의.",
-            "status": "done",
-            "dependencies": [
-              19,
-              24
-            ],
-            "parentTaskId": 2,
-            "parentId": "2",
-            "updatedAt": "2026-05-04T15:52:03.440Z"
-          },
-          {
-            "id": 26,
-            "title": "[plan][P1][server, docs] Repository Persistence/Query/Git 포트 분리 계획 수립",
-            "description": "`RepositoryPersistencePort`를 aggregate 저장소, 조회 포트, repository-level git 포트 기준으로 재정렬하는 실행 계획을 수립한다.",
-            "details": "참조 문서: `docs/modeling/contexts/repository/repository-context.md`, `.taskmaster/docs/refactor/task_2_19_plan.md`, `.taskmaster/docs/refactor/task_2_26_plan.md`. 산출물은 `.taskmaster/docs/refactor/task_2_26_plan.md`이며 다음을 포함한다. 1) `RepositoryPersistencePort`의 메서드를 `domain.repository.RepositoryRepository`, `repository.application.port.out.RepositoryQueryPort`, `repository.application.port.out.RepositoryGitPort`로 어떻게 나눌지 기준 정리. 2) `RepositoryLookupService`, `RepositoryLoadService`, `RepositoryValidator`, `RepositoryProvisioner`, `PushEventCommandResolver`, `PullRequestService` 등 호출부 영향 범위와 이동 기준 정리. 3) `RepositoryGitPort`는 repository-level git seam만 유지하고 `BranchGitPort`, `CommitGitPort`와 합치지 않는 원칙을 명시. 4) 단계별 이관 순서, adapter 구현 방향, 테스트 전략을 상세 코드 스니펫과 함께 정의.",
-            "status": "done",
-            "dependencies": [
-              19,
-              25
-            ],
-            "parentTaskId": 2,
-            "parentId": "2",
-            "updatedAt": "2026-05-06T12:40:51.530Z"
-          },
-          {
-            "id": 27,
-            "title": "[plan][P1][server, docs] Repository aggregate load와 read model query seam 재설계 계획 수립",
-            "description": "`RepositoryRepository`가 aggregate 복원 메서드를 소유하도록 되돌리고, 순수 조회 흐름은 application read model을 직접 반환하는 query seam으로 재설계하는 실행 계획을 수립한다.",
-            "details": "참조 문서: `docs/modeling/contexts/repository/repository-context.md`, `.taskmaster/docs/refactor/task_2_19_plan.md`, `.taskmaster/docs/refactor/task_2_26_plan.md`. 산출물은 `.taskmaster/docs/refactor/task_2_27_plan.md`이며 다음을 포함한다. 1) `RepositoryRepository`에 `findById`, `findByOwnerAndName` 등 aggregate 복원 메서드를 다시 귀속시키는 기준 정리. 2) `RepositoryLoadService`, `ActivationValidator`, 이후 화면/API 조회 시나리오처럼 순수 조회용 흐름은 `RepositoryResult` 또는 전용 read model을 직접 반환하는 `RepositoryReadModelQueryPort` 계열로 재설계하는 방안 정리. 3) `RepositoryLookupService`, `PullRequestService`, `RepositoryValidator`가 aggregate seam과 read model seam 중 무엇을 써야 하는지 호출부별 기준 정의. 4) 현재 2.26 구현을 checkpoint로 두고, 다음 리팩토링 단계의 이행 순서와 테스트 전략을 상세 코드 스니펫과 함께 정의.",
-            "status": "done",
-            "dependencies": [
-              19,
-              26
-            ],
-            "parentTaskId": 2,
-            "parentId": "2",
-            "updatedAt": "2026-05-07T01:59:53.537Z"
-          },
-          {
-            "id": 28,
-            "title": "[plan][P1][server, docs] Repository Context에서 Branch 귀속 수준 정리 계획 수립",
-            "description": "`Branch`를 Repository Context 내부 Entity로 유지하되, `Repository` aggregate가 branch 컬렉션을 직접 소유하지 않는 방향으로 경계와 이관 계획을 수립한다.",
-            "details": "참조 문서: `docs/modeling/contexts/repository/repository-context.md`, `docs/modeling/contexts/repository/repository-context-diagrams.md`, `.taskmaster/docs/refactor/task_2_19_plan.md`. 산출물은 `.taskmaster/docs/refactor/task_2_28_plan.md`이며 다음을 포함한다. 1) `Branch`의 소속을 `Repository Context`로 확정하되 `Repository` aggregate 내부 컬렉션으로는 편입하지 않는 이유와 기준 정리. 2) `Branch`, `BranchRepository`, `BranchManagementService`, `BranchLoadService`, `BranchFactory`, `BranchGitPort`, `BranchQueryPort`의 목표 패키지와 책임 경계 정리. 3) `Repository`가 직접 가져야 할 브랜치 관련 규칙과, 별도 branch entity/service가 계속 가져갈 절차를 분리. 4) 점진 이관 순서, 테스트 전략, before/after 코드 스니펫 정의.",
-            "status": "done",
-            "dependencies": [
-              19,
-              27
-            ],
-            "parentTaskId": 2,
-            "parentId": "2",
-            "updatedAt": "2026-05-07T03:12:37.733Z"
-          },
-          {
-            "id": 29,
-            "title": "[plan][P1][server, docs] Repository Context domain aggregate/entity/VO 이관 계획 수립",
-            "description": "`Repository Context`가 소유하는 aggregate, relation model, repository, repository-prefixed VO를 `repository.domain` 하위로 정렬하는 실행 계획을 수립한다.",
-            "details": "참조 문서: `docs/modeling/contexts/repository/repository-context.md`, `docs/modeling/contexts/repository/repository-context-diagrams.md`, `.taskmaster/docs/refactor/task_2_19_plan.md`, `.taskmaster/docs/refactor/task_2_28_plan.md`. 산출물은 `.taskmaster/docs/refactor/task_2_29_plan.md`이며 다음을 포함한다. 1) `Repository`, `RepositoryRepository`, `RepositoryMember`, `RepositorySynchronizedEvent`, `RepositoryId/Name/Path/Visibility`, `RepositoryMemberRole`의 목표 패키지와 이동 기준 정리. 2) `OwnerId`, `OwnerType`, `OrganizeId`, `UserId`처럼 cross-context 성격이 있는 식별자는 이번 범위에서 유지하는 이유를 명시. 3) repository/application/shared/infrastructure/test 전반의 import 영향 범위와 점진 이관 순서 정의. 4) 문서는 간결하게 유지하되 before/after 코드 스니펫은 상세하게 제시한다.",
-            "status": "done",
-            "dependencies": [
-              19,
-              27,
-              28
-            ],
-            "parentTaskId": 2,
-            "parentId": "2",
-            "updatedAt": "2026-05-10T12:41:29.074Z"
-          },
-          {
-            "id": 30,
-            "title": "[server] Repository Git adapter의 application exception 의존 제거",
-            "description": "`repository.infrastructure.adapter.git`가 `application.exception`을 직접 참조하지 않도록 예외 경계를 정리하고, 기술 실패와 도메인/애플리케이션 해석 책임을 분리한다.",
-            "details": "대상 범위는 `server/src/main/java/io/jgitkins/server/repository/infrastructure/adapter/git/BranchGitAdapter.java`, `RepositoryGitCommitAdapter.java`, 필요 시 `RepositoryGitAdapter.java`, 대응하는 `repository.application.port.out.*`, `repository.application.service/*`, `repository.application.support/*`, 관련 exception 패키지와 테스트다. 목표는 adapter가 `BranchNotFoundException`, `BranchAlreadyExistsException`, `SourceBranchNotFoundException`, `CommitNotFoundException` 같은 application exception을 직접 알지 않도록 바꾸는 것이다. 방안은 1) infrastructure exception 또는 adapter-local result로 기술 실패를 표현하고, 2) application/service/factory가 이를 해석해 application exception으로 변환하는 구조를 우선 검토한다. `BranchGitPort`, `CommitGitPort`, `RepositoryGitPort`의 계약 변경이 필요한지 평가하고, 테스트에서는 branch not found, source branch not found, duplicate branch, commit not found, ref update failure 시나리오를 adapter/서비스 경계 기준으로 분리 검증한다.",
-            "status": "done",
-            "dependencies": [
-              24,
-              26,
-              28,
-              29,
-              31
-            ],
-            "parentTaskId": 2,
-            "parentId": "2",
-            "updatedAt": "2026-05-11T14:55:50.596Z"
-          },
-          {
-            "id": 31,
-            "title": "[plan][P1][server, docs] Repository Context presentation adapter 패키지 재정렬 계획 수립",
-            "description": "`repository` context 하위에 `presentation` 패키지를 추가하고, repository 관련 controller/request mapper/request dto를 함께 이관하는 실행 계획을 수립한다.",
-            "details": "참조 문서: `docs/modeling/contexts/repository/repository-context.md`, `.taskmaster/docs/refactor/task_2_19_plan.md`, `.taskmaster/docs/refactor/task_2_25_plan.md`, `.taskmaster/docs/refactor/task_2_29_plan.md`. 산출물은 `.taskmaster/docs/refactor/task_2_31_plan.md`이며 다음을 포함한다. 1) `RepositoryManagementController`, `BranchController`, `RepositoryMemberController`, `RepositoryContentController`, `RepositoryCommitController`, `RepositoryFileController`, `WebRepositoryController`를 `server/repository/presentation` 하위로 재배치하는 기준 정리. 2) `RepositoryCreateRequest`, `RepositoryUpdateRequest`, `RepositoryMemberAddRequest`, `BranchCreateRequest`, `RepositoryRequestMapper`, `BranchRequestMapper`처럼 repository 전용 request model과 mapper를 같이 이관하는 기준 정의. 3) `ApiResponse`, `GlobalExceptionHandler`, 공통 에러/유틸은 top-level `presentation`에 유지하고, repository 전용 presentation 자산만 context 하위로 이동하는 경계 정리. 4) `RepositoryOverviewUseCase/Service`가 아직 generic application 패키지에 남아 있어 controller 책임이 섞여 보이는 지점을 분석하되, 이번 단계는 presentation 재정렬에 집중하는 범위 제어와 점진 이관 순서, 테스트 전략을 상세 코드 스니펫과 함께 정리한다.",
-            "status": "done",
-            "dependencies": [
-              19,
-              25,
-              29
-            ],
-            "parentTaskId": 2,
-            "parentId": "2"
-          },
-          {
-            "id": 32,
-            "title": "[plan][P1][server, docs] Repository Overview 연관 객체 Repository Context 이관 계획 수립",
-            "description": "`WebRepositoryController`가 동떨어져 보이는 원인인 `RepositoryOverviewUseCase`, `RepositoryOverviewService`, `RepositoryOverviewResult` 및 경로 해석 연관 객체의 목표 패키지와 점진 이관 순서를 수립한다.",
-            "details": "참조 문서: `docs/modeling/contexts/repository/repository-context.md`, `.taskmaster/docs/refactor/task_2_29_plan.md`, `.taskmaster/docs/refactor/task_2_31_plan.md`. 산출물은 `.taskmaster/docs/refactor/task_2_32_plan.md`이며 다음을 포함한다. 1) `RepositoryOverviewUseCase`, `RepositoryOverviewService`, `RepositoryOverviewResult`를 `repository.application` 하위로 이관하는 기준과 호출부 수정 범위를 정의한다. 2) `RepositoryKey`, `FileEntry`, `FileTreeLoadUseCase`, `GitRepositoryAccessUseCase`, `CurrentUserPort`처럼 overview 흐름에서 함께 관찰되는 객체를 즉시 이관, 유지, 후속 검토 대상으로 분류한다. 3) `WebRepositoryController`와 `RepositoryManagementController`의 overview endpoint 중복을 줄이기 위한 `getOverviewByPath(namespace, repoName, branch)` 추가 여부를 검토한다. 4) package convention test, controller test, service unit test, compile/test 검증 전략을 before/after 코드 스니펫과 함께 상세히 정의한다.\n\n[implementation closeout]\n`RepositoryOverviewUseCase`, `RepositoryOverviewService`, `RepositoryOverviewResult`를 Repository Context application 하위로 이관했다. `RepositoryOverviewService`는 더 이상 `RepositoryLoadUseCase`, `BranchLoadUseCase`, `FileTreeLoadUseCase`, `GitRepositoryAccessUseCase` 같은 inbound use case를 주입하지 않고 `RepositoryQueryPort`, `BranchQueryPort`, `FileGitPort`, `CurrentUserPort`, `GitRepositoryAccessService`를 조합한다. `WebRepositoryController`는 web internal/BFF adapter 성격에 맞춰 `server.presentation.api.web`으로 이동했고, `getOverviewByPath(namespace, repoName, branch)`로 위임하여 path 기반 repository lookup 조합 책임을 제거했다. `RepositoryManagementController`와 테스트 import도 새 package로 정리했다. 검증: `./gradlew :server:compileJava`, `./gradlew :server:test` 통과.",
-            "status": "done",
-            "dependencies": [
-              29,
-              31
-            ],
-            "parentTaskId": 2,
-            "parentId": "2",
-            "updatedAt": "2026-05-14T14:00:00.000Z"
-          },
-          {
-            "id": 33,
-            "title": "[plan][P0][build, server, web, runner, docs] Core/Context/App 멀티모듈 분리 계획 수립",
-            "description": "`server`, `web`, `runner`에 흩어진 web/security/persistence/grpc 설정과 bounded context 코드를 `core-*`, `context-*`, `app-*` 모듈로 점진 분리하기 위한 실행 계획을 수립한다.",
-            "details": "참조 문서: `.taskmaster/docs/refactor/task_2_33_plan.md`, `.taskmaster/docs/refactor/task_2_33_core_libraries_plan.md`. 목표 구조는 `core-common`, `core-web`, `core-security`, `core-persistence`, `core-grpc`, `server-api-client`, `context-shared`, `context-repository`, `context-execution`, `context-collaboration`, `context-identity`, `context-organization`, `app-server`, `app-web`, `app-runner`다. 핵심 결정은 1) Boot plugin은 실행 가능한 `app-*` 모듈에만 적용한다. 2) `core-*`는 business context를 의존하지 않는다. 3) `context-*`는 `app-*`를 의존하지 않는다. 4) `app-web`은 `context-repository` 같은 도메인 context를 직접 의존하지 않고 `server-api-client`와 자체 DTO/ViewModel mapper만 사용한다. 5) `core-persistence`에는 DataSource/MyBatis/transaction 공통 설정만 두고 context별 mapper/entity/adapter는 각 context가 소유한다. 계획 문서는 현재 Gradle 의존성 관찰, 목표 모듈별 책임, 금지 의존성, Gradle 코드 스니펫, component scan 전략, phase별 구현 순서, 검증 기준, 후속 subtask 후보를 포함한다.\n\n[implementation closeout]\n`core-common`, `core-web`, `core-security`, `core-persistence`, `core-grpc` library module을 추가했다. `core-common`에는 `ErrorCode`, `ProblemSpec`, `JgitkinsException`을 이동했고, server business DTO와 infrastructure exception에 의존하는 `CommitFileFactory`는 server에 유지했다. `core-web`에는 `ApiResponse`, `ApiError`, `LocationUriBuilder`를 `api` 하위 package로 이동했고, server REST/internal adapter import를 정리했다. `core-security`에는 server problem spec을 직접 의존하지 않는 `SecurityErrorResponseWriter`만 추가하고, server security handler가 이를 사용하도록 변경했다. `core-persistence`에는 `DataSourceConfig`, `MybatisConfig`를 이동하고 `JGitkinsServerApplication`에서 명시 import했다. `core-grpc`는 gRPC/protobuf dependency 기준 shell로 추가했으며 proto/stub 이동은 보류했다. Architecture test에는 core module의 app import 금지, web MVC의 core ApiResponse import 금지, core-persistence의 business persistence model 소유 금지를 추가했다. 검증: `:core-common:test`, `:core-web:test`, `:core-security:test`, `:core-persistence:test`, `:core-grpc:test`, `:server:test`, `:web:test`, `:runner:test` 통과.",
-            "status": "done",
-            "dependencies": [
-              32
-            ],
-            "parentTaskId": 2,
-            "parentId": "2",
-            "updatedAt": "2026-05-16T11:45:00.000Z"
+            "updatedAt": "2026-05-20T09:00:00.000Z"
           }
         ]
       },
       {
-        "id": "3",
+        "id": 3,
         "title": "보안",
         "description": "인증/인가/자격증명/보안 회귀 강화 작업",
         "status": "cancelled",
@@ -518,7 +118,7 @@
         "subtasks": []
       },
       {
-        "id": "4",
+        "id": 4,
         "title": "운영/인프라",
         "description": "배포/모니터링/CI-CD/운영 안정성 개선 작업",
         "status": "pending",
@@ -575,7 +175,7 @@
         ]
       },
       {
-        "id": "5",
+        "id": 5,
         "title": "버그/핫픽스",
         "description": "사용자 영향 버그 및 긴급 수정 작업",
         "status": "done",
@@ -601,12 +201,14 @@
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2026-05-19T14:46:30.915Z",
+      "lastModified": "2026-05-20T09:00:00.000Z",
       "taskCount": 5,
       "completedCount": 1,
       "tags": [
         "master"
-      ]
+      ],
+      "created": "2026-05-20T13:57:12.190Z",
+      "description": "Tasks for master context"
     }
   }
 }

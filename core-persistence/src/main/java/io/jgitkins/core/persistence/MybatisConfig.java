@@ -11,7 +11,10 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import javax.sql.DataSource;
 
 @Configuration
-@MapperScan("io.jgitkins.server.infrastructure.persistence.mapper")
+@MapperScan({
+        "io.jgitkins.server.infrastructure.persistence.mapper",
+        "io.jgitkins.server.collaboration.infrastructure.persistence.mapper"
+})
 public class MybatisConfig {
 
     /**

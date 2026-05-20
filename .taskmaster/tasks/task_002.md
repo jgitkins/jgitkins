@@ -229,3 +229,14 @@ Application 계층에는 `CreatePullRequestUseCase`와 `GetPullRequestDetailUseC
 
 [implementation closeout]
 `core-common`, `core-web`, `core-security`, `core-persistence`, `core-grpc` library module을 추가했다. `core-common`에는 `ErrorCode`, `ProblemSpec`, `JgitkinsException`을 이동했고, server business DTO와 infrastructure exception에 의존하는 `CommitFileFactory`는 server에 유지했다. `core-web`에는 `ApiResponse`, `ApiError`, `LocationUriBuilder`를 `api` 하위 package로 이동했고, server REST/internal adapter import를 정리했다. `core-security`에는 server problem spec을 직접 의존하지 않는 `SecurityErrorResponseWriter`만 추가하고, server security handler가 이를 사용하도록 변경했다. `core-persistence`에는 `DataSourceConfig`, `MybatisConfig`를 이동하고 `JGitkinsServerApplication`에서 명시 import했다. `core-grpc`는 gRPC/protobuf dependency 기준 shell로 추가했으며 proto/stub 이동은 보류했다. Architecture test에는 core module의 app import 금지, web MVC의 core ApiResponse import 금지, core-persistence의 business persistence model 소유 금지를 추가했다. 검증: `:core-common:test`, `:core-web:test`, `:core-security:test`, `:core-persistence:test`, `:core-grpc:test`, `:server:test`, `:web:test`, `:runner:test` 통과.
+
+### 2.34. [plan][P1][server, docs] Common infrastructure와 bounded context infrastructure 패키지 분리 계획 수립
+
+**Status:** pending
+**Dependencies:** 2.33
+
+`server/common/infrastructure` 에 공통 설정만 남기고, 각 bounded context 의 persistence model, mapper, adapter, technical support 를 context 하위 `infrastructure` 로 이동하는 실행 계획을 수립한다.
+
+**Details:**
+
+참조 문서: `.taskmaster/docs/refactor/task_2_34_plan.md`. 검토 범위는 `app-server/src/main/java/io/jgitkins/server/infrastructure/adapter/persistence/*`, `app-server/src/main/java/io/jgitkins/server/infrastructure/mapper/*`, `app-server/src/main/java/io/jgitkins/server/infrastructure/persistence/*`, `app-server/src/main/java/io/jgitkins/server/common/infrastructure/*` 신설 기준, 그리고 `collaboration`, `repository`, `identity.access`, `change.review`, `execution` 각 bounded context 의 `infrastructure` 패키지 설계다. 목표는 공통 기술 설정과 비즈니스 의미가 있는 persistence 자산을 분리해, package tree 가 소유권을 숨기지 않도록 만드는 것이다. 계획 문서는 공통 vs context 경계 원칙, 3가지 방법 비교, phase 별 이동 순서, package policy test 추가안, generated MBG 산출물 이동 기준, 병렬 작업 lane, NOT in scope 를 포함한다.
