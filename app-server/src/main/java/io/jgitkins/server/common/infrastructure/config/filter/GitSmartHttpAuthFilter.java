@@ -1,6 +1,6 @@
 package io.jgitkins.server.common.infrastructure.config.filter;
 
-import io.jgitkins.server.application.port.in.GitRepositoryAccessUseCase;
+import io.jgitkins.server.repository.application.port.in.GitRepositoryAccessUseCase;
 import io.jgitkins.server.common.infrastructure.config.git.GitSmartHttpEvent;
 import io.jgitkins.server.common.infrastructure.config.git.GitSmartHttpEventParser;
 import jakarta.servlet.FilterChain;

@@ -1,10 +1,10 @@
 package io.jgitkins.server.common.infrastructure.config.git.hook.push;
 
-import io.jgitkins.server.application.dto.command.PushEventCommand;
-import io.jgitkins.server.application.dto.command.PushHookRequest;
-import io.jgitkins.server.application.port.in.PushEventHandleUseCase;
-import io.jgitkins.server.application.port.out.PushEventRequestResolver;
-import io.jgitkins.server.application.support.PushEventCommandResolver;
+import io.jgitkins.server.shared.application.command.PushEventCommand;
+import io.jgitkins.server.shared.application.command.PushHookRequest;
+import io.jgitkins.server.execution.application.port.in.PushEventHandleUseCase;
+import io.jgitkins.server.shared.application.port.out.PushEventRequestResolver;
+import io.jgitkins.server.shared.application.support.PushEventCommandResolver;
 import java.util.Collection;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;

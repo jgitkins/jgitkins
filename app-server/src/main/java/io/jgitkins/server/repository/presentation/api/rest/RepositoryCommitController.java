@@ -1,7 +1,7 @@
 package io.jgitkins.server.repository.presentation.api.rest;
 
-import io.jgitkins.server.application.dto.CommitHistory;
-import io.jgitkins.server.application.port.in.CommitLoadUseCase;
+import io.jgitkins.server.repository.application.contract.result.CommitHistory;
+import io.jgitkins.server.repository.application.port.in.CommitLoadUseCase;
 import io.jgitkins.core.web.api.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

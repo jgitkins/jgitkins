@@ -2,7 +2,7 @@ package io.jgitkins.server.execution.application.validate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.jgitkins.server.application.dto.command.PushEventCommand;
+import io.jgitkins.server.shared.application.command.PushEventCommand;
 import io.jgitkins.server.execution.application.contract.result.JobCreationDecision;
 import org.junit.jupiter.api.Test;
 

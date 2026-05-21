@@ -1,7 +1,7 @@
 package io.jgitkins.server.shared.application.support;
 
 import io.jgitkins.server.collaboration.application.exception.OrganizeNotFoundException;
-import io.jgitkins.server.application.exception.UserNotFoundException;
+import io.jgitkins.server.identity.access.application.exception.UserNotFoundException;
 import io.jgitkins.server.collaboration.application.port.out.OrganizeQueryPort;
 import io.jgitkins.server.identity.access.application.port.out.UserPersistencePort;
 import io.jgitkins.server.repository.domain.aggregate.Repository;

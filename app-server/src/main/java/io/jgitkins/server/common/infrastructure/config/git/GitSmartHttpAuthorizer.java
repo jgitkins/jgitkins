@@ -1,6 +1,6 @@
 package io.jgitkins.server.common.infrastructure.config.git;
 
-import io.jgitkins.server.application.port.in.GitRepositoryAccessUseCase;
+import io.jgitkins.server.repository.application.port.in.GitRepositoryAccessUseCase;
 import io.jgitkins.server.common.infrastructure.config.filter.GitSmartHttpAuthFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;

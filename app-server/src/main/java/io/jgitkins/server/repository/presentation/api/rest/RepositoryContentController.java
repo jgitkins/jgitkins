@@ -1,12 +1,12 @@
 package io.jgitkins.server.repository.presentation.api.rest;
 
-import io.jgitkins.server.application.dto.FileEntry;
-import io.jgitkins.server.application.dto.FileUploadInfo;
-import io.jgitkins.server.application.dto.FileUploadRequest;
-import io.jgitkins.server.application.dto.RepositoryKey;
+import io.jgitkins.server.repository.application.contract.result.FileEntry;
+import io.jgitkins.server.repository.application.contract.command.FileUploadInfo;
+import io.jgitkins.server.repository.presentation.dto.FileUploadRequest;
+import io.jgitkins.server.repository.application.contract.internal.RepositoryKey;
 import io.jgitkins.server.repository.application.exception.RepositoryNotFoundException;
-import io.jgitkins.server.application.port.in.FileTreeLoadUseCase;
-import io.jgitkins.server.application.port.in.FileUploadUseCase;
+import io.jgitkins.server.repository.application.port.in.FileTreeLoadUseCase;
+import io.jgitkins.server.repository.application.port.in.FileUploadUseCase;
 import io.jgitkins.server.repository.application.port.in.RepositoryLoadUseCase;
 import io.jgitkins.core.web.api.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;

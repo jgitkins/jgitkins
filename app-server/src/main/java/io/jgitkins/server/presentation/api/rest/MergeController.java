@@ -2,10 +2,10 @@ package io.jgitkins.server.presentation.api.rest;
 
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
-import io.jgitkins.server.application.port.in.MergeabilityCheckUseCase;
-import io.jgitkins.server.application.port.in.MergeUseCase;
-import io.jgitkins.server.application.dto.MergeRequest;
-import io.jgitkins.server.application.dto.result.MergeResult;
+import io.jgitkins.server.change.review.application.port.in.MergeabilityCheckUseCase;
+import io.jgitkins.server.change.review.application.port.in.MergeUseCase;
+import io.jgitkins.server.change.review.application.dto.command.MergeRequest;
+import io.jgitkins.server.change.review.application.dto.result.MergeResult;
 import io.jgitkins.core.web.api.response.ApiResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

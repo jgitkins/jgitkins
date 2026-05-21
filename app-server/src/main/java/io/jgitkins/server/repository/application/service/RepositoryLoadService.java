@@ -2,7 +2,7 @@ package io.jgitkins.server.repository.application.service;
 
 import io.jgitkins.server.repository.application.contract.result.RepositoryResult;
 import io.jgitkins.server.repository.application.exception.RepositoryNotFoundException;
-import io.jgitkins.server.application.exception.UserNotFoundException;
+import io.jgitkins.server.identity.access.application.exception.UserNotFoundException;
 import io.jgitkins.server.repository.application.port.in.RepositoryLoadUseCase;
 import io.jgitkins.server.identity.access.application.port.out.CurrentUserPort;
 import io.jgitkins.server.repository.application.port.out.RepositoryQueryPort;

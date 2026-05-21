@@ -1,8 +1,8 @@
 package io.jgitkins.server.change.review.presentation.api.rest;
 
 import io.jgitkins.core.web.api.response.ApiResponse;
-import io.jgitkins.server.application.dto.MergeRequest;
-import io.jgitkins.server.application.dto.result.MergeResult;
+import io.jgitkins.server.change.review.application.dto.command.MergeRequest;
+import io.jgitkins.server.change.review.application.dto.result.MergeResult;
 import io.jgitkins.server.change.review.application.port.in.MergeUseCase;
 import io.jgitkins.server.change.review.application.port.in.MergeabilityCheckUseCase;
 import io.swagger.v3.oas.annotations.Operation;

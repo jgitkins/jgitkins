@@ -116,6 +116,29 @@
 | `validate/RepositoryMemberValidator.java` | repository member validation | `repository.application.validate` |
 | `validate/RepositoryValidator.java` | repository creation/update validation | `repository.application.validate` |
 
+### test inventory
+`server/application` 아래 테스트도 함께 분류한다. 실제 이관 시에는 source code 와 같은 seam 기준을 따른다.
+
+| Current file | 성격 | Target package |
+|---|---|---|
+| `ArchitecturePackageConventionTest.java` | package policy guard | `io.jgitkins.server.application` 유지 |
+| `factory/CommitFileFactoryTest.java` | common factory test | `io.jgitkins.server.common.factory` |
+| `service/BranchLoadServiceTest.java` | repository service test | `io.jgitkins.server.repository.application.service` |
+| `service/BranchManagementServiceTest.java` | repository service test | `io.jgitkins.server.repository.application.service` |
+| `service/CommitServiceTest.java` | repository service test | `io.jgitkins.server.repository.application.service` |
+| `service/PushEventHandleServiceIntegrationTest.java` | execution service integration test | `io.jgitkins.server.execution.application.service` |
+| `service/PushEventHandleServiceTest.java` | execution service test | `io.jgitkins.server.execution.application.service` |
+| `service/RepositoryFileServiceTest.java` | repository service test | `io.jgitkins.server.repository.application.service` |
+| `service/RepositoryLoadServiceTest.java` | repository service test | `io.jgitkins.server.repository.application.service` |
+| `service/RepositoryManagementServiceTest.java` | repository service test | `io.jgitkins.server.repository.application.service` |
+| `service/RepositoryMemberServiceTest.java` | repository service test | `io.jgitkins.server.repository.application.service` |
+| `support/change/BranchChangeRecorderTest.java` | shared change recorder test | `io.jgitkins.server.shared.application.support.change` |
+| `support/change/MergeabilityAssessmentAssemblerTest.java` | shared mergeability assembler test | `io.jgitkins.server.shared.application.change` |
+| `support/PushEventCommandResolverTest.java` | shared push command resolver test | `io.jgitkins.server.shared.application.support` |
+| `support/RepositoryProvisionerTest.java` | repository provisioning test | `io.jgitkins.server.repository.application.support.provisioning` |
+| `validate/BranchCreationValidatorTest.java` | repository validator test | `io.jgitkins.server.repository.application.validate` |
+| `validate/RepositoryAccessValidatorTest.java` | repository validator test | `io.jgitkins.server.repository.application.validate` |
+
 ### 3가지 방법
 #### 방법 A: top-level application 유지
 - 장점: 이동량이 작다.

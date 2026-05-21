@@ -243,15 +243,15 @@ Application 계층에는 `CreatePullRequestUseCase`와 `GetPullRequestDetailUseC
 
 ### 2.35. [plan][P1][server, docs] server/application 잔재를 bounded context application 으로 분류하는 계획 수립
 
-**Status:** pending
+**Status:** in-progress
 **Dependencies:** 34
 
-`server/application` 하위에 남아 있는 common/dto/exception/mapper/port/service/support/validate 객체를 seam 기준으로 `repository`, `change/review`, `execution`, `identity/access`, `shared` 로 분류하는 실행 계획을 수립한다.
+`server/application` 하위에 남아 있는 common/dto/exception/mapper/port/service/support/validate 객체와 관련 테스트를 seam 기준으로 `repository`, `change/review`, `execution`, `identity/access`, `shared` 로 분류하는 실행 계획을 수립한다.
 
 **Details:**
 
 [source: jgitkins-server, original subtask: custom]
-참조 문서: `.taskmaster/docs/refactor/task_2_35_application_plan.md`. 검토 범위는 `app-server/src/main/java/io/jgitkins/server/application/common/*`, `app-server/src/main/java/io/jgitkins/server/application/dto/*`, `app-server/src/main/java/io/jgitkins/server/application/exception/*`, `app-server/src/main/java/io/jgitkins/server/application/mapper/*`, `app-server/src/main/java/io/jgitkins/server/application/port/*`, `app-server/src/main/java/io/jgitkins/server/application/service/*`, `app-server/src/main/java/io/jgitkins/server/application/support/*`, `app-server/src/main/java/io/jgitkins/server/application/validate/*` 이다. 목표는 top-level application 을 공용 저장소처럼 두지 않고, `shared/application` 과 각 bounded context application 패키지로 소유권을 분리하는 것이다.
+참조 문서: `.taskmaster/docs/refactor/task_2_35_application_plan.md`. 검토 범위는 `app-server/src/main/java/io/jgitkins/server/application/common/*`, `app-server/src/main/java/io/jgitkins/server/application/dto/*`, `app-server/src/main/java/io/jgitkins/server/application/exception/*`, `app-server/src/main/java/io/jgitkins/server/application/mapper/*`, `app-server/src/main/java/io/jgitkins/server/application/port/*`, `app-server/src/main/java/io/jgitkins/server/application/service/*`, `app-server/src/main/java/io/jgitkins/server/application/support/*`, `app-server/src/main/java/io/jgitkins/server/application/validate/*`, 그리고 대응하는 `app-server/src/test/java/io/jgitkins/server/application/*` 테스트 패키지다. 목표는 top-level application 을 공용 저장소처럼 두지 않고, `shared/application` 과 각 bounded context application 패키지로 소유권을 분리하는 것이다.
 
 ### 2.36. [plan][P1][server, docs] server/domain 잔재를 shared/domain 및 context domain 으로 분류하는 계획 수립
 

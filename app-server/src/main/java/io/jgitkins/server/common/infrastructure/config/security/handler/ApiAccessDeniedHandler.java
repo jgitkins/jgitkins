@@ -2,7 +2,7 @@ package io.jgitkins.server.common.infrastructure.config.security.handler;
 
 import io.jgitkins.core.security.handler.SecurityErrorResponseWriter;
 import io.jgitkins.core.web.api.response.ApiResponse;
-import io.jgitkins.server.application.common.error.ApplicationProblemSpec;
+import io.jgitkins.server.shared.application.error.ApplicationProblemSpec;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;

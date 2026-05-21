@@ -1,9 +1,9 @@
 package io.jgitkins.server.identity.access.application.validate;
 
-import io.jgitkins.server.application.common.error.ApplicationErrorCode;
-import io.jgitkins.server.application.exception.ApplicationException;
+import io.jgitkins.server.shared.application.error.ApplicationErrorCode;
+import io.jgitkins.server.shared.application.exception.ApplicationException;
 import io.jgitkins.server.collaboration.application.exception.OrganizeAlreadyExistsException;
-import io.jgitkins.server.application.exception.UsernameAlreadyExistsException;
+import io.jgitkins.server.identity.access.application.exception.UsernameAlreadyExistsException;
 import io.jgitkins.server.collaboration.application.port.out.OrganizePersistencePort;
 import io.jgitkins.server.repository.application.port.out.RepositoryQueryPort;
 import io.jgitkins.server.identity.access.application.port.out.UserPersistencePort;

@@ -1,6 +1,6 @@
 package io.jgitkins.server.common.infrastructure.config.git.hook.push;
 
-import io.jgitkins.server.application.dto.command.PushHookRequest;
+import io.jgitkins.server.shared.application.command.PushHookRequest;
 import java.util.Collection;
 import java.util.Optional;
 import org.eclipse.jgit.lib.Constants;

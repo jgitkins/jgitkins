@@ -1,9 +1,9 @@
 package io.jgitkins.server.common.infrastructure.adapter.git;
 
-import io.jgitkins.server.application.common.GitConstants;
-import io.jgitkins.server.application.dto.MergeRequest;
-import io.jgitkins.server.application.dto.result.MergeResult;
-import io.jgitkins.server.application.port.out.MergeGitPort;
+import io.jgitkins.server.shared.common.GitConstants;
+import io.jgitkins.server.change.review.application.dto.command.MergeRequest;
+import io.jgitkins.server.change.review.application.dto.result.MergeResult;
+import io.jgitkins.server.change.review.application.port.out.MergeGitPort;
 import java.io.File;
 import java.io.IOException;
 import java.time.Instant;

@@ -1,8 +1,8 @@
 package io.jgitkins.server.repository.application.exception;
 
-import io.jgitkins.server.application.exception.ApplicationException;
+import io.jgitkins.server.shared.application.exception.ApplicationException;
 
-import io.jgitkins.server.application.common.error.ApplicationProblemSpec;
+import io.jgitkins.server.shared.application.error.ApplicationProblemSpec;
 
 public class CommitNotFoundException extends ApplicationException {
 

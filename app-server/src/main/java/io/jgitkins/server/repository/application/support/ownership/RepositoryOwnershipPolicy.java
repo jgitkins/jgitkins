@@ -2,7 +2,7 @@ package io.jgitkins.server.repository.application.support.ownership;
 
 import io.jgitkins.server.repository.application.contract.command.RepositoryCreateCommand;
 import io.jgitkins.server.repository.application.contract.internal.RepositoryCreationPlan;
-import io.jgitkins.server.application.validate.RepositoryValidator;
+import io.jgitkins.server.repository.application.validate.RepositoryValidator;
 import io.jgitkins.server.repository.domain.aggregate.Repository;
 import io.jgitkins.server.domain.model.vo.BranchName;
 import io.jgitkins.server.domain.model.vo.InitialCommitOptions;

@@ -1,7 +1,7 @@
 package io.jgitkins.server.execution.application.exception;
 
-import io.jgitkins.server.application.common.error.ApplicationProblemSpec;
-import io.jgitkins.server.application.exception.ApplicationException;
+import io.jgitkins.server.shared.application.error.ApplicationProblemSpec;
+import io.jgitkins.server.shared.application.exception.ApplicationException;
 
 public class RunnerNotFoundException extends ApplicationException {
 

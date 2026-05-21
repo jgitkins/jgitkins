@@ -12,7 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jgitkins.server.identity.access.application.dto.result.UserCredentialIssueResult;
-import io.jgitkins.server.application.dto.result.UserCredentialSummary;
+import io.jgitkins.server.identity.access.application.dto.result.UserCredentialSummary;
 import io.jgitkins.server.identity.access.application.port.in.UserCredentialIssueUseCase;
 import io.jgitkins.server.identity.access.application.port.in.UserCredentialQueryUseCase;
 import io.jgitkins.server.identity.access.application.port.in.UserCredentialRevokeUseCase;

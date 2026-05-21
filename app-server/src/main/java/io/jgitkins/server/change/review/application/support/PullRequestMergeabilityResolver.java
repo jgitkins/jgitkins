@@ -1,7 +1,7 @@
 package io.jgitkins.server.change.review.application.support;
 
-import io.jgitkins.server.application.dto.result.MergeResult;
-import io.jgitkins.server.application.port.out.MergeGitPort;
+import io.jgitkins.server.change.review.application.dto.result.MergeResult;
+import io.jgitkins.server.change.review.application.port.out.MergeGitPort;
 import io.jgitkins.server.change.review.application.mapper.PullRequestDetailMapper;
 import io.jgitkins.server.change.review.domain.model.changegraph.MergeabilityAssessment;
 import io.jgitkins.server.change.review.domain.aggregate.PullRequest;

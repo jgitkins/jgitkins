@@ -1,6 +1,6 @@
 package io.jgitkins.server.repository.application.contract.result;
 
-import io.jgitkins.server.application.dto.FileEntry;
+import io.jgitkins.server.repository.application.contract.result.FileEntry;
 import java.util.List;
 
 public record RepositoryOverviewResult(

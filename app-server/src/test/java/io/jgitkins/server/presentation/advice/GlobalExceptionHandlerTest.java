@@ -1,7 +1,7 @@
 package io.jgitkins.server.presentation.advice;
 
-import io.jgitkins.server.application.common.error.ApplicationProblemSpec;
-import io.jgitkins.server.application.exception.ApplicationException;
+import io.jgitkins.server.shared.application.error.ApplicationProblemSpec;
+import io.jgitkins.server.shared.application.exception.ApplicationException;
 import io.jgitkins.server.repository.application.exception.RepositoryNotFoundException;
 import io.jgitkins.server.domain.error.DomainErrorCode;
 import io.jgitkins.server.domain.error.DomainProblemSpec;

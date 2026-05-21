@@ -1,6 +1,6 @@
 package io.jgitkins.server.common.infrastructure.adapter;
 
-import io.jgitkins.server.application.port.out.PushEventRequestResolver;
+import io.jgitkins.server.shared.application.port.out.PushEventRequestResolver;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;

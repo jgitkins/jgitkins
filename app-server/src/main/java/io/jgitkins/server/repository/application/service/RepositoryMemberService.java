@@ -6,7 +6,7 @@ import io.jgitkins.server.repository.application.port.in.RepositoryMemberLoadUse
 import io.jgitkins.server.repository.application.port.in.RepositoryMemberManagementUseCase;
 import io.jgitkins.server.repository.application.port.out.RepositoryMemberPersistencePort;
 import io.jgitkins.server.repository.application.support.membership.RepositoryMembershipFactory;
-import io.jgitkins.server.application.validate.RepositoryMemberValidator;
+import io.jgitkins.server.repository.application.validate.RepositoryMemberValidator;
 import io.jgitkins.server.repository.domain.model.RepositoryMember;
 import io.jgitkins.server.repository.domain.vo.RepositoryId;
 import java.util.List;

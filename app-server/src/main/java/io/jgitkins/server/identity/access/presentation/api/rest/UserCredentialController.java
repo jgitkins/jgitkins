@@ -2,7 +2,7 @@ package io.jgitkins.server.identity.access.presentation.api.rest;
 
 import io.jgitkins.server.identity.access.application.dto.command.UserCredentialIssueCommand;
 import io.jgitkins.server.identity.access.application.dto.result.UserCredentialIssueResult;
-import io.jgitkins.server.application.dto.result.UserCredentialSummary;
+import io.jgitkins.server.identity.access.application.dto.result.UserCredentialSummary;
 import io.jgitkins.server.identity.access.application.port.in.UserCredentialIssueUseCase;
 import io.jgitkins.server.identity.access.application.port.in.UserCredentialQueryUseCase;
 import io.jgitkins.server.identity.access.application.port.in.UserCredentialRevokeUseCase;

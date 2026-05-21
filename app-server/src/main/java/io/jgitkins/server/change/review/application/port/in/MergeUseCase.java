@@ -1,7 +1,7 @@
 package io.jgitkins.server.change.review.application.port.in;
 
-import io.jgitkins.server.application.dto.MergeRequest;
-import io.jgitkins.server.application.dto.result.MergeResult;
+import io.jgitkins.server.change.review.application.dto.command.MergeRequest;
+import io.jgitkins.server.change.review.application.dto.result.MergeResult;
 import java.io.IOException;
 
 public interface MergeUseCase {

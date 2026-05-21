@@ -23,7 +23,7 @@ import io.jgitkins.server.identity.access.infrastructure.persistence.model.UserE
 import io.jgitkins.server.identity.access.infrastructure.persistence.model.UserEntityCondition;
 import io.jgitkins.server.repository.application.contract.result.RepositoryResult;
 import io.jgitkins.server.repository.application.port.out.RepositoryQueryPort;
-import io.jgitkins.server.application.support.CloneUrlBuilder;
+import io.jgitkins.server.repository.application.support.CloneUrlBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

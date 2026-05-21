@@ -3,9 +3,9 @@ package io.jgitkins.server.repository.application.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
-import io.jgitkins.server.application.dto.FileEntry;
+import io.jgitkins.server.repository.application.contract.result.FileEntry;
 import io.jgitkins.server.identity.access.application.port.out.CurrentUserPort;
-import io.jgitkins.server.application.port.out.FileGitPort;
+import io.jgitkins.server.repository.application.port.out.FileGitPort;
 import io.jgitkins.server.repository.application.contract.result.BranchSearchResult;
 import io.jgitkins.server.repository.application.contract.result.RepositoryOverviewResult;
 import io.jgitkins.server.repository.application.contract.result.RepositoryPermission;

@@ -1,6 +1,6 @@
 package io.jgitkins.server.presentation.advice;
 
-import io.jgitkins.server.application.exception.ApplicationException;
+import io.jgitkins.server.shared.application.exception.ApplicationException;
 import io.jgitkins.core.common.error.ErrorCode;
 import io.jgitkins.core.common.exception.JgitkinsException;
 import io.jgitkins.server.domain.exception.DomainException;

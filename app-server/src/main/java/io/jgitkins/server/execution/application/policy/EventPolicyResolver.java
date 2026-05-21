@@ -1,6 +1,6 @@
 package io.jgitkins.server.execution.application.policy;
 
-import io.jgitkins.server.application.dto.command.PushEventCommand;
+import io.jgitkins.server.shared.application.command.PushEventCommand;
 import io.jgitkins.server.execution.application.contract.result.JobPlan;
 import io.jgitkins.server.execution.application.contract.internal.PushJobPlanRequest;
 import lombok.RequiredArgsConstructor;

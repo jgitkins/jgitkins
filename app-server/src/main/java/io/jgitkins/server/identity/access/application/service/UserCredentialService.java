@@ -2,15 +2,15 @@ package io.jgitkins.server.identity.access.application.service;
 
 import io.jgitkins.server.identity.access.application.dto.command.UserCredentialIssueCommand;
 import io.jgitkins.server.identity.access.application.dto.result.UserCredentialIssueResult;
-import io.jgitkins.server.application.dto.result.UserCredentialSummary;
+import io.jgitkins.server.identity.access.application.dto.result.UserCredentialSummary;
 import io.jgitkins.server.identity.access.application.mapper.UserCredentialApplicationMapper;
 import io.jgitkins.server.identity.access.application.port.out.CurrentUserPort;
 import io.jgitkins.server.identity.access.application.port.in.UserCredentialIssueUseCase;
 import io.jgitkins.server.identity.access.application.port.in.UserCredentialQueryUseCase;
 import io.jgitkins.server.identity.access.application.port.in.UserCredentialRevokeUseCase;
 import io.jgitkins.server.identity.access.application.port.out.UserCredentialPersistencePort;
-import io.jgitkins.server.application.common.error.ApplicationErrorCode;
-import io.jgitkins.server.application.exception.ApplicationException;
+import io.jgitkins.server.shared.application.error.ApplicationErrorCode;
+import io.jgitkins.server.shared.application.exception.ApplicationException;
 import io.jgitkins.server.identity.access.domain.entity.UserCredential;
 import java.security.SecureRandom;
 import java.util.Base64;

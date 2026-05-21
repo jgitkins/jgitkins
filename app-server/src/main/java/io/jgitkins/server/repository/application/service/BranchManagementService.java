@@ -8,7 +8,7 @@ import io.jgitkins.server.repository.application.port.out.BranchGitPort;
 import io.jgitkins.server.repository.application.port.out.exception.GitBranchRefMissingException;
 import io.jgitkins.server.repository.application.support.branch.BranchFactory;
 import io.jgitkins.server.shared.application.support.RepositoryNamespaceResolver;
-import io.jgitkins.server.application.validate.RepositoryAccessValidator;
+import io.jgitkins.server.repository.application.validate.RepositoryAccessValidator;
 import io.jgitkins.server.repository.domain.aggregate.Repository;
 import io.jgitkins.server.repository.domain.vo.RepositoryId;
 import io.jgitkins.server.repository.domain.repository.RepositoryRepository;

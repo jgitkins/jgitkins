@@ -3,9 +3,9 @@ package io.jgitkins.server.change.review.application.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
-import io.jgitkins.server.application.dto.MergeRequest;
-import io.jgitkins.server.application.dto.result.MergeResult;
-import io.jgitkins.server.application.port.out.MergeGitPort;
+import io.jgitkins.server.change.review.application.dto.command.MergeRequest;
+import io.jgitkins.server.change.review.application.dto.result.MergeResult;
+import io.jgitkins.server.change.review.application.port.out.MergeGitPort;
 import io.jgitkins.server.shared.application.change.MergeabilityAssessmentAssembler;
 import io.jgitkins.server.change.review.domain.model.changegraph.MergeabilityAssessment;
 import io.jgitkins.server.change.review.domain.model.changegraph.MergeabilityStatus;

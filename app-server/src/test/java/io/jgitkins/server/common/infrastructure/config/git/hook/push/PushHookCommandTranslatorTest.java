@@ -2,7 +2,7 @@ package io.jgitkins.server.common.infrastructure.config.git.hook.push;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.jgitkins.server.application.dto.command.PushHookRequest;
+import io.jgitkins.server.shared.application.command.PushHookRequest;
 import io.jgitkins.server.common.infrastructure.config.git.hook.push.PushHookCommandTranslator;
 import java.util.List;
 import java.util.Optional;

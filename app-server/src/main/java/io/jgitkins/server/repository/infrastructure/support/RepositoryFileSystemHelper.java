@@ -1,6 +1,6 @@
 package io.jgitkins.server.repository.infrastructure.support;
 
-import io.jgitkins.server.application.exception.RepositoryAlreadyExistsException;
+import io.jgitkins.server.repository.application.exception.RepositoryAlreadyExistsException;
 import io.jgitkins.server.common.infrastructure.exception.FileSystemAccessFailedException;
 import lombok.experimental.UtilityClass;
 import org.eclipse.jgit.lib.Repository;

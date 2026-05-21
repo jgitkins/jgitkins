@@ -3,8 +3,8 @@ package io.jgitkins.server.repository.infrastructure.adapter.git;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import io.jgitkins.server.application.dto.CommitFile;
-import io.jgitkins.server.application.dto.CommitHistory;
+import io.jgitkins.server.repository.application.contract.result.CommitFile;
+import io.jgitkins.server.repository.application.contract.result.CommitHistory;
 import io.jgitkins.server.repository.infrastructure.support.RepositoryResolver;
 import io.jgitkins.server.repository.application.port.out.exception.GitCommitObjectMissingException;
 import io.jgitkins.server.repository.infrastructure.adapter.git.RepositoryGitFileAdapter;
@@ -45,7 +45,7 @@ class RepositoryGitCommitAdapterTest {
         assertThat(histories).hasSize(1);
         assertThat(histories.get(0).getMessage()).isEqualTo("initial commit");
         assertThat(fileAdapter.listTree("team", "demo", "main", ""))
-                .extracting(io.jgitkins.server.application.dto.FileEntry::getPath)
+                .extracting(io.jgitkins.server.repository.application.contract.result.FileEntry::getPath)
                 .contains("README.md");
     }
 

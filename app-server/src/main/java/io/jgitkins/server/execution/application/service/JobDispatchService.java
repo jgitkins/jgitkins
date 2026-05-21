@@ -6,7 +6,7 @@ import io.jgitkins.server.execution.application.contract.command.DispatchJobComm
 import io.jgitkins.server.execution.application.contract.result.JobDispatchResult;
 import io.jgitkins.server.execution.application.port.in.JobDispatchUseCase;
 import io.jgitkins.server.execution.application.port.out.JobDispatchQueryPort;
-import io.jgitkins.server.application.support.CloneUrlBuilder;
+import io.jgitkins.server.repository.application.support.CloneUrlBuilder;
 import io.jgitkins.server.execution.domain.aggregate.Job;
 import io.jgitkins.server.execution.domain.entity.JobHistory;
 import io.jgitkins.server.execution.domain.repository.JobRepository;

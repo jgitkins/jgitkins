@@ -3,7 +3,7 @@ package io.jgitkins.server.repository.infrastructure.adapter.git;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.groups.Tuple.tuple;
 
-import io.jgitkins.server.application.dto.FileEntry;
+import io.jgitkins.server.repository.application.contract.result.FileEntry;
 import io.jgitkins.server.repository.infrastructure.support.RepositoryResolver;
 import java.io.IOException;
 import java.nio.file.Files;

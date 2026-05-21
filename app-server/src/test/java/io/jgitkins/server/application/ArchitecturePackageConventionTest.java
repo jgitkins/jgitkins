@@ -4,21 +4,26 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import io.jgitkins.server.application.support.CloneUrlBuilder;
-import io.jgitkins.server.application.support.change.BranchChangeRecorder;
+import io.jgitkins.server.repository.application.support.CloneUrlBuilder;
+import io.jgitkins.server.shared.application.support.change.BranchChangeRecorder;
 import io.jgitkins.server.shared.application.change.MergeabilityAssessmentAssembler;
 import io.jgitkins.server.change.review.application.service.PullRequestCreateService;
 import io.jgitkins.server.change.review.application.service.PullRequestQueryService;
 import io.jgitkins.server.execution.application.support.ExecutionRequestService;
 import io.jgitkins.server.execution.application.policy.EventPolicyResolver;
+import io.jgitkins.server.execution.application.service.JobDispatchService;
+import io.jgitkins.server.execution.application.service.JobResultReportService;
+import io.jgitkins.server.execution.application.service.JobService;
+import io.jgitkins.server.execution.application.service.RunnerManagementService;
+import io.jgitkins.server.execution.application.service.RunnerReadService;
 import io.jgitkins.server.identity.access.application.port.out.CurrentUserPort;
 import io.jgitkins.server.identity.access.application.port.out.TokenIssuerPort;
 import io.jgitkins.server.identity.access.application.port.out.UserCredentialPersistencePort;
 import io.jgitkins.server.identity.access.application.port.out.UserIdentityPersistencePort;
 import io.jgitkins.server.identity.access.application.port.out.UserPersistencePort;
 import io.jgitkins.server.identity.access.application.service.AdminUserService;
-import io.jgitkins.server.application.service.CommitService;
-import io.jgitkins.server.application.service.MergeService;
+import io.jgitkins.server.repository.application.service.CommitService;
+import io.jgitkins.server.change.review.application.service.MergeService;
 import io.jgitkins.server.identity.access.application.service.OAuthLoginService;
 import io.jgitkins.server.collaboration.application.service.OrganizeMemberService;
 import io.jgitkins.server.collaboration.application.service.OrganizeService;
@@ -33,8 +38,8 @@ import io.jgitkins.server.collaboration.infrastructure.persistence.model.Organiz
 import io.jgitkins.server.collaboration.infrastructure.persistence.model.OrganizeMemberEntity;
 import io.jgitkins.server.collaboration.infrastructure.persistence.model.OrganizeMemberEntityCondition;
 import io.jgitkins.server.identity.access.application.service.PublicUserQueryService;
-import io.jgitkins.server.application.service.PushEventHandleService;
-import io.jgitkins.server.application.service.RepositoryFileService;
+import io.jgitkins.server.execution.application.service.PushEventHandleService;
+import io.jgitkins.server.repository.application.service.RepositoryFileService;
 import io.jgitkins.server.identity.access.application.service.UserCredentialService;
 import io.jgitkins.server.identity.access.application.service.UserProfileService;
 import io.jgitkins.server.execution.presentation.api.rest.RunnerController;
@@ -89,7 +94,9 @@ import org.springframework.stereotype.Service;
 
 class ArchitecturePackageConventionTest {
 
-    private static final String APPLICATION_SERVICE_PACKAGE = "io.jgitkins.server.application.service";
+    private static final String REPOSITORY_SERVICE_PACKAGE = "io.jgitkins.server.repository.application.service";
+    private static final String CHANGE_REVIEW_SERVICE_PACKAGE = "io.jgitkins.server.change.review.application.service";
+    private static final String EXECUTION_SERVICE_PACKAGE = "io.jgitkins.server.execution.application.service";
     private static final String COLLABORATION_APPLICATION_SERVICE_PACKAGE = "io.jgitkins.server.collaboration.application.service";
     private static final String COLLABORATION_INFRASTRUCTURE_ADAPTER_PACKAGE = "io.jgitkins.server.collaboration.infrastructure.adapter.persistence";
     private static final String COLLABORATION_INFRASTRUCTURE_MAPPER_PACKAGE = "io.jgitkins.server.collaboration.infrastructure.mapper";
@@ -97,17 +104,19 @@ class ArchitecturePackageConventionTest {
     private static final String COLLABORATION_INFRASTRUCTURE_PERSISTENCE_MAPPER_PACKAGE = "io.jgitkins.server.collaboration.infrastructure.persistence.mapper";
     private static final String IDENTITY_ACCESS_SERVICE_PACKAGE = "io.jgitkins.server.identity.access.application.service";
     private static final String IDENTITY_ACCESS_PORT_OUT_PACKAGE = "io.jgitkins.server.identity.access.application.port.out";
-    private static final String REPOSITORY_SERVICE_PACKAGE = "io.jgitkins.server.repository.application.service";
-
     @Test
-    void applicationServices_resideInUnifiedServicePackage() {
+    void repositoryServices_resideInRepositoryServicePackage() {
         List<Class<?>> serviceClasses = List.of(
                 CommitService.class,
-                MergeService.class,
-                PushEventHandleService.class,
-                RepositoryFileService.class);
+                BranchLoadService.class,
+                BranchManagementService.class,
+                RepositoryFileService.class,
+                RepositoryLoadService.class,
+                RepositoryManagementService.class,
+                RepositoryMemberService.class,
+                RepositoryOverviewService.class);
 
-        serviceClasses.forEach(serviceClass -> assertEquals(APPLICATION_SERVICE_PACKAGE, serviceClass.getPackageName()));
+        serviceClasses.forEach(serviceClass -> assertEquals(REPOSITORY_SERVICE_PACKAGE, serviceClass.getPackageName()));
     }
 
     @Test
@@ -189,9 +198,20 @@ class ArchitecturePackageConventionTest {
                 PullRequestQueryService.class,
                 io.jgitkins.server.change.review.application.service.MergeService.class);
 
-        serviceClasses.forEach(serviceClass -> assertEquals(
-                "io.jgitkins.server.change.review.application.service",
-                serviceClass.getPackageName()));
+        serviceClasses.forEach(serviceClass -> assertEquals(CHANGE_REVIEW_SERVICE_PACKAGE, serviceClass.getPackageName()));
+    }
+
+    @Test
+    void executionServices_resideInExecutionServicePackage() {
+        List<Class<?>> serviceClasses = List.of(
+                JobDispatchService.class,
+                JobResultReportService.class,
+                JobService.class,
+                PushEventHandleService.class,
+                RunnerManagementService.class,
+                RunnerReadService.class);
+
+        serviceClasses.forEach(serviceClass -> assertEquals(EXECUTION_SERVICE_PACKAGE, serviceClass.getPackageName()));
     }
 
     @Test
@@ -275,11 +295,10 @@ class ArchitecturePackageConventionTest {
     }
 
     @Test
-    void applicationSources_doNotImportInfrastructurePackages() throws IOException {
-        Path applicationRoot = resolveExistingPath(
+    void applicationSources_areRemoved() throws IOException {
+        assertNoJavaFiles(
                 "src/main/java/io/jgitkins/server/application",
                 "app-server/src/main/java/io/jgitkins/server/application");
-        assertNoInfrastructureImports(applicationRoot);
     }
 
     @Test
@@ -370,6 +389,20 @@ class ArchitecturePackageConventionTest {
 
     private void assertNoInfrastructureImports(Path root) throws IOException {
         assertNoImports(root, "import io.jgitkins.server.infrastructure.");
+    }
+
+    private void assertNoJavaFiles(String... candidates) throws IOException {
+        for (String candidate : candidates) {
+            Path root = Path.of(candidate);
+            if (!Files.exists(root)) {
+                continue;
+            }
+
+            try (Stream<Path> files = Files.walk(root)) {
+                assertFalse(files.anyMatch(path -> path.toString().endsWith(".java")),
+                        () -> "Path must not contain Java sources: " + root);
+            }
+        }
     }
 
     private void assertReturnsApiResponseEntity(Method method) {

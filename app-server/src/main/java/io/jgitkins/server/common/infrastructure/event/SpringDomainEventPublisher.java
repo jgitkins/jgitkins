@@ -1,6 +1,6 @@
 package io.jgitkins.server.common.infrastructure.event;
 
-import io.jgitkins.server.application.common.event.DomainEventPublisher;
+import io.jgitkins.server.shared.application.event.DomainEventPublisher;
 import io.jgitkins.server.domain.event.DomainEvent;
 import java.util.List;
 import lombok.RequiredArgsConstructor;

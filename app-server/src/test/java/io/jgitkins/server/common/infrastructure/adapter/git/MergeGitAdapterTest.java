@@ -2,7 +2,7 @@ package io.jgitkins.server.common.infrastructure.adapter.git;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.jgitkins.server.application.dto.result.MergeResult;
+import io.jgitkins.server.change.review.application.dto.result.MergeResult;
 import io.jgitkins.server.common.infrastructure.adapter.git.MergeGitAdapter;
 import java.io.IOException;
 import java.nio.file.Files;

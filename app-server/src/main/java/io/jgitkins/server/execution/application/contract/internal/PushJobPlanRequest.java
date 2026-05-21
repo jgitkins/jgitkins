@@ -1,6 +1,6 @@
 package io.jgitkins.server.execution.application.contract.internal;
 
-import io.jgitkins.server.application.dto.command.PushEventCommand;
+import io.jgitkins.server.shared.application.command.PushEventCommand;
 
 public record PushJobPlanRequest(String namespace,
                                  String repoName,

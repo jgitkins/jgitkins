@@ -11,8 +11,8 @@ import static org.mockito.Mockito.when;
 
 import io.jgitkins.server.identity.access.application.dto.command.UserCredentialIssueCommand;
 import io.jgitkins.server.identity.access.application.dto.result.UserCredentialIssueResult;
-import io.jgitkins.server.application.dto.result.UserCredentialSummary;
-import io.jgitkins.server.application.common.error.ApplicationErrorCode;
+import io.jgitkins.server.identity.access.application.dto.result.UserCredentialSummary;
+import io.jgitkins.server.shared.application.error.ApplicationErrorCode;
 import io.jgitkins.server.identity.access.application.mapper.UserCredentialApplicationMapper;
 import io.jgitkins.server.identity.access.application.port.out.CurrentUserPort;
 import io.jgitkins.core.common.exception.JgitkinsException;
