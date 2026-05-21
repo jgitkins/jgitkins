@@ -2,7 +2,7 @@
   "master": {
     "tasks": [
       {
-        "id": 1,
+        "id": "1",
         "title": "신규기능",
         "description": "사용자 가치 전달을 위한 기능 개발/확장 작업",
         "status": "pending",
@@ -80,33 +80,72 @@
         ]
       },
       {
-        "id": 2,
+        "id": "2",
         "title": "리팩토링",
         "description": "구조 개선, 품질 개선, 테스트 체계 강화 작업",
-        "status": "in-progress",
+        "status": "done",
         "dependencies": [],
         "priority": "high",
         "details": "기존 기능별 Task를 카테고리 기반(신규기능/리팩토링/보안)으로 재구성함.",
         "testStrategy": "카테고리별 우선순위에 따라 하위 작업을 순차 수행하고 회귀 테스트를 적용한다.",
-        "updatedAt": "2026-05-19T14:46:30.915Z",
+        "updatedAt": "2026-05-21T13:04:07.525Z",
         "subtasks": [
           {
             "id": 34,
             "title": "[plan][P1][server, docs] Common infrastructure와 bounded context infrastructure 패키지 분리 계획 수립",
             "description": "`server/common/infrastructure` 에 공통 설정만 남기고, 각 bounded context 의 persistence model, mapper, adapter, technical support 를 context 하위 `infrastructure` 로 이동하는 실행 계획을 수립한다.",
             "details": "참조 문서: `.taskmaster/docs/refactor/task_2_34_plan.md`. 검토 범위는 `app-server/src/main/java/io/jgitkins/server/infrastructure/adapter/persistence/*`, `app-server/src/main/java/io/jgitkins/server/infrastructure/mapper/*`, `app-server/src/main/java/io/jgitkins/server/infrastructure/persistence/*`, `app-server/src/main/java/io/jgitkins/server/common/infrastructure/*` 신설 기준, 그리고 `collaboration`, `repository`, `identity.access`, `change.review`, `execution` 각 bounded context 의 `infrastructure` 패키지 설계다. 목표는 공통 기술 설정과 비즈니스 의미가 있는 persistence 자산을 분리해, package tree 가 소유권을 숨기지 않도록 만드는 것이다. 계획 문서는 공통 vs context 경계 원칙, 3가지 방법 비교, phase 별 이동 순서, package policy test 추가안, generated MBG 산출물 이동 기준, 병렬 작업 lane, NOT in scope 를 포함한다.",
-            "status": "pending",
+            "status": "done",
             "dependencies": [
               33
             ],
             "parentTaskId": 2,
             "parentId": "2",
-            "updatedAt": "2026-05-20T09:00:00.000Z"
+            "updatedAt": "2026-05-21T13:04:07.525Z"
+          },
+          {
+            "id": 35,
+            "title": "[plan][P1][server, docs] server/application 잔재를 bounded context application 으로 분류하는 계획 수립",
+            "description": "`server/application` 하위에 남아 있는 common/dto/exception/mapper/port/service/support/validate 객체를 seam 기준으로 `repository`, `change/review`, `execution`, `identity/access`, `shared` 로 분류하는 실행 계획을 수립한다.",
+            "details": "참조 문서: `.taskmaster/docs/refactor/task_2_35_application_plan.md`. 검토 범위는 `app-server/src/main/java/io/jgitkins/server/application/common/*`, `app-server/src/main/java/io/jgitkins/server/application/dto/*`, `app-server/src/main/java/io/jgitkins/server/application/exception/*`, `app-server/src/main/java/io/jgitkins/server/application/mapper/*`, `app-server/src/main/java/io/jgitkins/server/application/port/*`, `app-server/src/main/java/io/jgitkins/server/application/service/*`, `app-server/src/main/java/io/jgitkins/server/application/support/*`, `app-server/src/main/java/io/jgitkins/server/application/validate/*` 이다. 목표는 top-level application 을 공용 저장소처럼 두지 않고, `shared/application` 과 각 bounded context application 패키지로 소유권을 분리하는 것이다.",
+            "status": "pending",
+            "dependencies": [
+              34
+            ],
+            "parentTaskId": 2,
+            "parentId": "2",
+            "updatedAt": "2026-05-21T13:04:07.525Z"
+          },
+          {
+            "id": 36,
+            "title": "[plan][P1][server, docs] server/domain 잔재를 shared/domain 및 context domain 으로 분류하는 계획 수립",
+            "description": "`server/domain` 하위에 남아 있는 aggregate/error/event/exception/vo 객체를 공용 도메인 primitive 와 context 전용 domain 으로 나누고, bounded context 소유권이 드러나는 패키지로 이관하는 실행 계획을 수립한다.",
+            "details": "참조 문서: `.taskmaster/docs/refactor/task_2_36_domain_plan.md`. 검토 범위는 `app-server/src/main/java/io/jgitkins/server/domain/*`, `app-server/src/main/java/io/jgitkins/server/domain/aggregate/*`, `app-server/src/main/java/io/jgitkins/server/domain/error/*`, `app-server/src/main/java/io/jgitkins/server/domain/event/*`, `app-server/src/main/java/io/jgitkins/server/domain/exception/*`, `app-server/src/main/java/io/jgitkins/server/domain/model/vo/*` 이다. 목표는 공용 value object / domain base / domain event contract 는 `shared/domain` 으로, context-specific aggregate / exception / vo 는 각 bounded context domain 으로 재배치하는 것이다.",
+            "status": "pending",
+            "dependencies": [
+              34
+            ],
+            "parentTaskId": 2,
+            "parentId": "2",
+            "updatedAt": "2026-05-21T13:04:07.525Z"
+          },
+          {
+            "id": 37,
+            "title": "[plan][P1][server, docs] server/presentation 잔재를 common presentation 및 context presentation 으로 분류하는 계획 수립",
+            "description": "`server/presentation` 하위에 남아 있는 advice/error/exception/api controller 객체를 common web support 와 bounded context presentation 으로 분류하는 실행 계획을 수립한다.",
+            "details": "참조 문서: `.taskmaster/docs/refactor/task_2_37_presentation_plan.md`. 검토 범위는 `app-server/src/main/java/io/jgitkins/server/presentation/advice/*`, `app-server/src/main/java/io/jgitkins/server/presentation/advice/mapper/*`, `app-server/src/main/java/io/jgitkins/server/presentation/api/*`, `app-server/src/main/java/io/jgitkins/server/presentation/common/error/*`, `app-server/src/main/java/io/jgitkins/server/presentation/exception/*`, `app-server/src/main/java/io/jgitkins/server/presentation/mapper/*`, `app-server/src/main/java/io/jgitkins/server/presentation/validate/*` 이다. 목표는 공통 web concern 은 `common/presentation` 으로 고정하고, feature controller 는 `repository`, `change/review`, 필요 시 `execution` 등의 bounded context presentation 으로 이동시키는 것이다.",
+            "status": "pending",
+            "dependencies": [
+              34
+            ],
+            "parentTaskId": 2,
+            "parentId": "2",
+            "updatedAt": "2026-05-21T13:04:07.525Z"
           }
         ]
       },
       {
-        "id": 3,
+        "id": "3",
         "title": "보안",
         "description": "인증/인가/자격증명/보안 회귀 강화 작업",
         "status": "cancelled",
@@ -118,7 +157,7 @@
         "subtasks": []
       },
       {
-        "id": 4,
+        "id": "4",
         "title": "운영/인프라",
         "description": "배포/모니터링/CI-CD/운영 안정성 개선 작업",
         "status": "pending",
@@ -175,7 +214,7 @@
         ]
       },
       {
-        "id": 5,
+        "id": "5",
         "title": "버그/핫픽스",
         "description": "사용자 영향 버그 및 긴급 수정 작업",
         "status": "done",
@@ -201,14 +240,12 @@
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2026-05-20T09:00:00.000Z",
+      "lastModified": "2026-05-21T13:04:07.525Z",
       "taskCount": 5,
-      "completedCount": 1,
+      "completedCount": 2,
       "tags": [
         "master"
-      ],
-      "created": "2026-05-20T13:57:12.190Z",
-      "description": "Tasks for master context"
+      ]
     }
   }
 }
