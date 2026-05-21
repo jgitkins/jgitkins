@@ -2,7 +2,7 @@
 
 **Title:** 리팩토링
 
-**Status:** in-progress
+**Status:** done
 
 **Dependencies:** None
 
@@ -255,7 +255,7 @@ Application 계층에는 `CreatePullRequestUseCase`와 `GetPullRequestDetailUseC
 
 ### 2.36. [plan][P1][server, docs] server/domain 잔재를 shared/domain 및 context domain 으로 분류하는 계획 수립
 
-**Status:** pending
+**Status:** done
 **Dependencies:** 34
 
 `server/domain` 하위에 남아 있는 aggregate/error/event/exception/vo 객체를 공용 도메인 primitive 와 context 전용 domain 으로 나누고, bounded context 소유권이 드러나는 패키지로 이관하는 실행 계획을 수립한다.
@@ -267,7 +267,7 @@ Application 계층에는 `CreatePullRequestUseCase`와 `GetPullRequestDetailUseC
 
 ### 2.37. [plan][P1][server, docs] server/presentation 잔재를 common presentation 및 context presentation 으로 분류하는 계획 수립
 
-**Status:** pending
+**Status:** done
 **Dependencies:** 34
 
 `server/presentation` 하위에 남아 있는 advice/error/exception/api controller 객체를 common web support 와 bounded context presentation 으로 분류하는 실행 계획을 수립한다.

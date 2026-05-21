@@ -1,92 +1,97 @@
 # Task 2.37 Plan: server/presentation 잔재 bounded context 분류
 
 ### 목적
-- `server/presentation` 에 남아 있는 공통 web concern 과 feature controller 를 분리한다.
-- common exception handling / error spec / mapper 는 `common/presentation` 으로 고정하고, feature controller 는 bounded context presentation 으로 이동한다.
-- top-level `presentation` 이 공용 web 컨테이너인지 기능 컨트롤러인지 헷갈리지 않게 한다.
+- `server/presentation` 은 더 이상 하나의 공용 presentation layer 로 남기지 않는다.
+- top-level `presentation` 에 남은 객체를 common web support 와 feature presentation 으로 분류한다.
+- 이번 작업의 목표는 HTTP concern 과 feature controller 의 소유권을 분리하는 것이다.
 
 ### Scope Update
 - 이번 pass 는 `server/presentation` 만 다룬다.
-- application / domain / infrastructure 는 별도 task 로 처리한다.
-- controller route 변경과 response contract 변경은 최소화하고 package ownership 만 정리한다.
+- `application` 과 `domain` 은 별도 task 로 처리한다.
+- infrastructure 객체나 domain aggregate 는 이번 pass 에서 손대지 않는다.
+
+### 배경
+- `presentation` 아래에는 advice / mapper / api / common error / exception / dto / validate 가 혼재해 있다.
+- 일부 타입은 전역 exception handling 과 error mapping 이고, 일부는 repository / change-review 의 feature controller 이다.
+- 현재 구조는 common web support 와 feature controller 의 경계가 패키지명에서 드러나지 않는다.
 
 ### 분류 원칙
-1. API error handling, problem spec, exception base, HTTP status mapper 는 common web support 로 본다.
-2. feature controller 는 자신이 서비스하는 bounded context presentation 으로 옮긴다.
-3. request/response DTO 와 presentation mapper 는 controller 소유 context 로 이동한다.
-4. top-level `server/presentation` 은 migration 완료 후 common/presentation 만 남기는 것을 목표로 한다.
+1. 공통 exception handler, error mapper, presentation error contract 는 `common/presentation` 으로 보낸다.
+2. feature controller 는 각 bounded context `presentation` 으로 보낸다.
+3. repository 전용 request/response DTO 는 `repository/presentation` 으로 보낸다.
+4. `server/presentation` 은 migration 완료 후 empty shell 이 되는 것을 목표로 한다.
 
 ### current -> target inventory
 
-#### 1) presentation/advice
+#### 1) presentation advice
 | Current file | 성격 | Target package |
 |---|---|---|
-| `advice/GlobalExceptionHandler.java` | common exception translator | `common.presentation.advice` |
+| `advice/GlobalExceptionHandler.java` | common web exception handler | `io.jgitkins.server.common.presentation.advice` |
 
-#### 2) presentation/advice/mapper
+#### 2) presentation advice mapper
 | Current file | 성격 | Target package |
 |---|---|---|
-| `advice/mapper/ApplicationErrorHttpStatusMapper.java` | application error mapper | `common.presentation.advice.mapper` |
-| `advice/mapper/CompositeErrorHttpStatusMapper.java` | mapper aggregation | `common.presentation.advice.mapper` |
-| `advice/mapper/DomainErrorHttpStatusMapper.java` | domain error mapper | `common.presentation.advice.mapper` |
-| `advice/mapper/ErrorHttpStatusMapper.java` | mapper contract | `common.presentation.advice.mapper` |
-| `advice/mapper/InfrastructureErrorHttpStatusMapper.java` | infra error mapper | `common.presentation.advice.mapper` |
-| `advice/mapper/PresentationErrorHttpStatusMapper.java` | presentation error mapper | `common.presentation.advice.mapper` |
+| `advice/mapper/ApplicationErrorHttpStatusMapper.java` | application error mapper | `io.jgitkins.server.common.presentation.advice.mapper` |
+| `advice/mapper/CompositeErrorHttpStatusMapper.java` | composite mapper | `io.jgitkins.server.common.presentation.advice.mapper` |
+| `advice/mapper/DomainErrorHttpStatusMapper.java` | domain error mapper | `io.jgitkins.server.common.presentation.advice.mapper` |
+| `advice/mapper/ErrorHttpStatusMapper.java` | common mapper contract | `io.jgitkins.server.common.presentation.advice.mapper` |
+| `advice/mapper/InfrastructureErrorHttpStatusMapper.java` | infrastructure error mapper | `io.jgitkins.server.common.presentation.advice.mapper` |
+| `advice/mapper/PresentationErrorHttpStatusMapper.java` | presentation error mapper | `io.jgitkins.server.common.presentation.advice.mapper` |
 
-#### 3) presentation/api
+#### 3) presentation api
 | Current file | 성격 | Target package |
 |---|---|---|
-| `api/rest/MergeController.java` | merge feature controller | `change.review.presentation.api.rest` |
-| `api/web/WebRepositoryController.java` | repository web/BFF controller | `repository.presentation.api.web` |
+| `api/rest/MergeController.java` | change/review feature controller | `io.jgitkins.server.change.review.presentation.api.rest` |
+| `api/web/WebRepositoryController.java` | repository feature web controller | `io.jgitkins.server.repository.presentation.api.web` |
 
-#### 4) presentation/common/error
+#### 4) presentation common error
 | Current file | 성격 | Target package |
 |---|---|---|
-| `common/error/PresentationErrorCode.java` | common web error code | `common.presentation.error` |
-| `common/error/PresentationProblemSpec.java` | common web problem spec | `common.presentation.error` |
+| `common/error/PresentationErrorCode.java` | common presentation error code | `io.jgitkins.server.common.presentation.error` |
+| `common/error/PresentationProblemSpec.java` | common presentation problem spec | `io.jgitkins.server.common.presentation.error` |
 
-#### 5) presentation/exception
+#### 5) presentation dto
 | Current file | 성격 | Target package |
 |---|---|---|
-| `exception/PresentationException.java` | common web exception base | `common.presentation.exception` |
+| `dto/FileIndexEntry.java` | repository response DTO | `io.jgitkins.server.repository.presentation.dto` |
 
-### controller consolidation note
-- `MergeController` 는 change/review context 의 controller 와 기능이 겹칠 가능성이 높다.
-- 이 문서에서는 우선 `change.review.presentation` 으로 이동시키고, 이후 duplicate contract 는 한쪽으로 흡수하는 것을 권장한다.
-- `WebRepositoryController` 는 repository presentation 의 web/BFF adapter 로 취급한다.
+#### 6) presentation exception
+| Current file | 성격 | Target package |
+|---|---|---|
+| `exception/PresentationException.java` | common presentation exception base | `io.jgitkins.server.common.presentation.exception` |
+
+### test inventory
+`server/presentation` 아래 테스트도 함께 분류한다. 실제 이관 시에는 source code 와 같은 seam 기준을 따른다.
+
+| Current file | 성격 | Target package |
+|---|---|---|
+| `advice/GlobalExceptionHandlerTest.java` | common presentation advice test | `io.jgitkins.server.common.presentation.advice` |
 
 ### 3가지 방법
 #### 방법 A: top-level presentation 유지
-- 장점: 가장 적게 움직인다.
-- 단점: common web 과 feature controller 가 계속 섞인다.
-- 평가: 3/10.
+- 장점: 이동량이 적다.
+- 단점: common web support 와 feature controller 가 계속 섞인다.
+- 평가: 2/10.
 
-#### 방법 B: common/presentation 만 만들고 feature controller 는 나중에 정리
-- 장점: 공통 web concern 을 먼저 고정할 수 있다.
-- 단점: controller ownership 이 남는다.
-- 평가: 7/10.
-
-#### 방법 C: common/presentation + bounded context presentation 을 같이 정리한다
-- 장점: web boundary 가 명확하다.
-- 장점: route ownership 과 error handling ownership 을 동시에 고정한다.
-- 단점: 이동 범위가 넓다.
+#### 방법 B: common/presentation 과 context presentation 으로 분리
+- 장점: 전역 웹 concern 과 feature controller 가 분리된다.
+- 단점: import 정리량이 많다.
 - 평가: 10/10.
 
-**권장안:** 방법 C.
+#### 방법 C: presentation 전용 공통 모듈 분리
+- 장점: 공통 HTTP concern 을 더 강하게 격리할 수 있다.
+- 단점: 현재 스코프를 초과한다.
+- 평가: 4/10.
 
 ### 구현 순서
-1. common/presentation 으로 갈 exception / error / mapper 를 먼저 확정한다.
-2. MergeController 를 change/review presentation 으로 이동한다.
-3. WebRepositoryController 를 repository presentation 으로 이동한다.
-4. presentation package policy test 로 top-level 잔재를 막는다.
+1. common presentation advice 와 error contract 부터 먼저 이동한다.
+2. repository/change-review feature controller 를 context presentation 으로 분리한다.
+3. repository presentation DTO 를 정리한다.
+4. `server/presentation` 경로가 비었는지 확인한다.
+5. package policy test 로 common/context 경계를 고정한다.
 
-### 검증
-- `ArchitecturePackageConventionTest` 에 common/presentation 외 top-level presentation 금지 규칙을 추가한다.
-- controller test 는 route contract 와 error response contract 를 유지한다.
-- `./gradlew :app-server:test` 로 회귀를 검증한다.
-
-### NOT in scope
-- application service 이동
-- domain 이동
-- infrastructure 이동
-- API contract 자체 변경
+### 검증 포인트
+- `server/presentation` 아래 Java source 가 없어야 한다.
+- `GlobalExceptionHandler` 는 common presentation 에 남아야 한다.
+- feature controller 는 repository 또는 change/review presentation 으로만 존재해야 한다.
+- presentation error contract 는 common presentation 에서만 관리해야 한다.
