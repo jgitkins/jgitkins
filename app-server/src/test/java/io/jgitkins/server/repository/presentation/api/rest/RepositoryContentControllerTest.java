@@ -16,11 +16,11 @@ import io.jgitkins.server.repository.application.contract.result.RepositoryResul
 import io.jgitkins.server.repository.application.port.in.FileTreeLoadUseCase;
 import io.jgitkins.server.repository.application.port.in.FileUploadUseCase;
 import io.jgitkins.server.repository.application.port.in.RepositoryLoadUseCase;
-import io.jgitkins.server.presentation.advice.GlobalExceptionHandler;
-import io.jgitkins.server.presentation.advice.mapper.ApplicationErrorHttpStatusMapper;
-import io.jgitkins.server.presentation.advice.mapper.CompositeErrorHttpStatusMapper;
-import io.jgitkins.server.presentation.advice.mapper.DomainErrorHttpStatusMapper;
-import io.jgitkins.server.presentation.advice.mapper.InfrastructureErrorHttpStatusMapper;
+import io.jgitkins.server.common.presentation.advice.GlobalExceptionHandler;
+import io.jgitkins.server.common.presentation.advice.mapper.ApplicationErrorHttpStatusMapper;
+import io.jgitkins.server.common.presentation.advice.mapper.CompositeErrorHttpStatusMapper;
+import io.jgitkins.server.common.presentation.advice.mapper.DomainErrorHttpStatusMapper;
+import io.jgitkins.server.common.presentation.advice.mapper.InfrastructureErrorHttpStatusMapper;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

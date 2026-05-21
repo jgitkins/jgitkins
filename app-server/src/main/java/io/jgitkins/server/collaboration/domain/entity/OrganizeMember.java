@@ -1,7 +1,7 @@
 package io.jgitkins.server.collaboration.domain.entity;
 
-import io.jgitkins.server.domain.exception.DomainException;
-import io.jgitkins.server.domain.error.DomainProblemSpec;
+import io.jgitkins.server.shared.domain.exception.DomainException;
+import io.jgitkins.server.shared.domain.error.DomainProblemSpec;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeId;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeMemberRole;
 import io.jgitkins.server.identity.access.domain.vo.UserId;

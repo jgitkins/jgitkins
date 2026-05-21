@@ -1,6 +1,6 @@
 package io.jgitkins.server.execution.domain.entity;
 
-import io.jgitkins.server.domain.model.vo.SequenceNumber;
+import io.jgitkins.server.shared.domain.model.vo.SequenceNumber;
 import io.jgitkins.server.identity.access.domain.vo.SystemUser;
 import io.jgitkins.server.execution.domain.vo.JobHistoryId;
 import io.jgitkins.server.execution.domain.vo.JobId;

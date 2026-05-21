@@ -2,9 +2,9 @@ package io.jgitkins.server.execution.infrastructure.mapper;
 
 import io.jgitkins.server.execution.domain.aggregate.Job;
 import io.jgitkins.server.execution.domain.entity.JobHistory;
-import io.jgitkins.server.domain.model.vo.BranchName;
-import io.jgitkins.server.domain.model.vo.CommitHash;
-import io.jgitkins.server.domain.model.vo.SequenceNumber;
+import io.jgitkins.server.shared.domain.model.vo.BranchName;
+import io.jgitkins.server.shared.domain.model.vo.CommitHash;
+import io.jgitkins.server.shared.domain.model.vo.SequenceNumber;
 import io.jgitkins.server.identity.access.domain.vo.SystemUser;
 import io.jgitkins.server.identity.access.domain.vo.UserId;
 import io.jgitkins.server.execution.domain.vo.JobHistoryId;

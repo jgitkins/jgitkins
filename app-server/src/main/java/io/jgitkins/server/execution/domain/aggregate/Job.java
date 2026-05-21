@@ -1,8 +1,8 @@
 package io.jgitkins.server.execution.domain.aggregate;
 
-import io.jgitkins.server.domain.aggregate.AbstractAggregateRoot;
-import io.jgitkins.server.domain.model.vo.BranchName;
-import io.jgitkins.server.domain.model.vo.CommitHash;
+import io.jgitkins.server.shared.domain.aggregate.AbstractAggregateRoot;
+import io.jgitkins.server.shared.domain.model.vo.BranchName;
+import io.jgitkins.server.shared.domain.model.vo.CommitHash;
 import io.jgitkins.server.identity.access.domain.vo.UserId;
 import io.jgitkins.server.execution.domain.event.JobQueuedEvent;
 import io.jgitkins.server.execution.domain.entity.JobHistory;

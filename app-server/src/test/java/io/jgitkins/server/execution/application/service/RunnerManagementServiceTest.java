@@ -18,7 +18,7 @@ import io.jgitkins.server.execution.application.support.RunnerRuntimeConfigProvi
 import io.jgitkins.core.common.exception.JgitkinsException;
 import io.jgitkins.server.execution.application.exception.RunnerNotFoundException;
 import io.jgitkins.server.common.infrastructure.error.InfrastructureErrorCode;
-import io.jgitkins.server.domain.error.DomainProblemSpec;
+import io.jgitkins.server.shared.domain.error.DomainProblemSpec;
 import io.jgitkins.server.common.infrastructure.exception.RunnerActivationFailedException;
 import io.jgitkins.server.common.infrastructure.exception.RunnerDeletionFailedException;
 import io.jgitkins.server.execution.domain.aggregate.Runner;

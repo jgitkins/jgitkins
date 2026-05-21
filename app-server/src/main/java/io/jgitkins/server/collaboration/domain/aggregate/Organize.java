@@ -3,7 +3,7 @@ package io.jgitkins.server.collaboration.domain.aggregate;
 import io.jgitkins.server.collaboration.domain.event.OrganizeCreatedEvent;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeId;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeName;
-import io.jgitkins.server.domain.aggregate.AbstractAggregateRoot;
+import io.jgitkins.server.shared.domain.aggregate.AbstractAggregateRoot;
 import io.jgitkins.server.identity.access.domain.vo.UserId;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

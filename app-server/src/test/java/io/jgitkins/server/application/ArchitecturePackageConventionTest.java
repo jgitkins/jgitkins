@@ -44,7 +44,7 @@ import io.jgitkins.server.identity.access.application.service.UserCredentialServ
 import io.jgitkins.server.identity.access.application.service.UserProfileService;
 import io.jgitkins.server.execution.presentation.api.rest.RunnerController;
 import io.jgitkins.server.identity.access.presentation.api.rest.AdminUserController;
-import io.jgitkins.server.presentation.api.rest.MergeController;
+import io.jgitkins.server.change.review.presentation.api.rest.MergeController;
 import io.jgitkins.server.identity.access.presentation.api.rest.OAuthController;
 import io.jgitkins.server.collaboration.presentation.api.rest.OrganizeController;
 import io.jgitkins.server.collaboration.presentation.api.rest.OrganizeMemberController;
@@ -52,7 +52,7 @@ import io.jgitkins.server.identity.access.presentation.api.rest.SignupController
 import io.jgitkins.server.identity.access.presentation.api.rest.UserController;
 import io.jgitkins.server.identity.access.presentation.api.rest.UserCredentialController;
 import io.jgitkins.server.collaboration.presentation.api.web.WebOrganizeController;
-import io.jgitkins.server.presentation.api.web.WebRepositoryController;
+import io.jgitkins.server.repository.presentation.api.web.WebRepositoryController;
 import io.jgitkins.core.web.api.response.ApiResponse;
 import io.jgitkins.server.change.review.presentation.api.rest.PullRequestController;
 import io.jgitkins.server.repository.application.service.BranchLoadService;

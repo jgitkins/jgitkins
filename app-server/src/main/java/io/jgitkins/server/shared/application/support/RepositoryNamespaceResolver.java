@@ -6,8 +6,8 @@ import io.jgitkins.server.collaboration.application.port.out.OrganizeQueryPort;
 import io.jgitkins.server.identity.access.application.port.out.UserPersistencePort;
 import io.jgitkins.server.repository.domain.aggregate.Repository;
 import io.jgitkins.server.identity.access.domain.aggregate.User;
-import io.jgitkins.server.domain.model.vo.OwnerId;
-import io.jgitkins.server.domain.model.vo.OwnerType;
+import io.jgitkins.server.shared.domain.model.vo.OwnerId;
+import io.jgitkins.server.shared.domain.model.vo.OwnerType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

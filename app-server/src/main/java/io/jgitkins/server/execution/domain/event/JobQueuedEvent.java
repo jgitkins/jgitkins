@@ -1,9 +1,9 @@
 package io.jgitkins.server.execution.domain.event;
 
-import io.jgitkins.server.domain.event.DomainEvent;
+import io.jgitkins.server.shared.domain.event.DomainEvent;
 import io.jgitkins.server.execution.domain.aggregate.Job;
-import io.jgitkins.server.domain.model.vo.BranchName;
-import io.jgitkins.server.domain.model.vo.CommitHash;
+import io.jgitkins.server.shared.domain.model.vo.BranchName;
+import io.jgitkins.server.shared.domain.model.vo.CommitHash;
 import io.jgitkins.server.execution.domain.vo.JobId;
 import io.jgitkins.server.execution.domain.vo.JobStatus;
 import io.jgitkins.server.repository.domain.vo.RepositoryId;

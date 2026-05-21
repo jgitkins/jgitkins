@@ -3,7 +3,7 @@ package io.jgitkins.server.shared.application.support;
 import io.jgitkins.server.collaboration.application.port.out.OrganizeMembershipQueryPort;
 import io.jgitkins.server.repository.domain.aggregate.Repository;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeId;
-import io.jgitkins.server.domain.model.vo.OwnerType;
+import io.jgitkins.server.shared.domain.model.vo.OwnerType;
 import io.jgitkins.server.repository.domain.vo.RepositoryVisibility;
 import io.jgitkins.server.identity.access.domain.vo.UserId;
 import java.util.Map;

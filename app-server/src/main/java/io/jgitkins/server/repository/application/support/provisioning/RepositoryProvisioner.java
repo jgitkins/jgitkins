@@ -5,7 +5,7 @@ import io.jgitkins.server.repository.application.port.out.CommitGitPort;
 import io.jgitkins.server.repository.application.port.out.RepositoryGitPort;
 import io.jgitkins.server.common.factory.CommitFileFactory;
 import io.jgitkins.server.repository.domain.aggregate.Repository;
-import io.jgitkins.server.domain.model.vo.InitialCommitOptions;
+import io.jgitkins.server.repository.domain.model.vo.InitialCommitOptions;
 import io.jgitkins.server.repository.domain.repository.RepositoryRepository;
 import io.jgitkins.server.repository.domain.entity.Branch;
 import io.jgitkins.server.repository.domain.repository.BranchRepository;

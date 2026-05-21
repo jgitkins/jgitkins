@@ -8,8 +8,8 @@ import io.jgitkins.server.collaboration.application.port.out.OrganizePersistence
 import io.jgitkins.server.repository.application.port.out.RepositoryQueryPort;
 import io.jgitkins.server.identity.access.application.port.out.UserPersistencePort;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeName;
-import io.jgitkins.server.domain.model.vo.OwnerId;
-import io.jgitkins.server.domain.model.vo.OwnerType;
+import io.jgitkins.server.shared.domain.model.vo.OwnerId;
+import io.jgitkins.server.shared.domain.model.vo.OwnerType;
 import io.jgitkins.server.identity.access.domain.vo.Username;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

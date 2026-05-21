@@ -8,7 +8,7 @@ import io.jgitkins.core.common.exception.JgitkinsException;
 import io.jgitkins.server.repository.application.contract.command.BranchCreateCommand;
 import io.jgitkins.server.repository.domain.entity.Branch;
 import io.jgitkins.server.repository.domain.aggregate.Repository;
-import io.jgitkins.server.domain.model.vo.BranchName;
+import io.jgitkins.server.shared.domain.model.vo.BranchName;
 import io.jgitkins.server.repository.domain.vo.RepositoryId;
 import io.jgitkins.server.repository.domain.repository.BranchRepository;
 import java.util.Optional;

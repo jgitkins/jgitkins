@@ -1,6 +1,6 @@
 package io.jgitkins.server.change.review.infrastructure.mapper;
 
-import io.jgitkins.server.domain.model.vo.CommitHash;
+import io.jgitkins.server.shared.domain.model.vo.CommitHash;
 import io.jgitkins.server.repository.domain.vo.RepositoryId;
 import io.jgitkins.server.change.review.domain.aggregate.PullRequest;
 import io.jgitkins.server.change.review.domain.model.BranchHeadSnapshot;

@@ -3,7 +3,7 @@ package io.jgitkins.server.repository.infrastructure.adapter.git;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.jgitkins.server.repository.application.contract.result.CommitFile;
-import io.jgitkins.server.domain.model.vo.BranchName;
+import io.jgitkins.server.shared.domain.model.vo.BranchName;
 import io.jgitkins.server.repository.infrastructure.support.RepositoryResolver;
 import io.jgitkins.server.repository.application.contract.command.BranchCreateCommand;
 import io.jgitkins.server.repository.application.contract.internal.BranchCreationContext;

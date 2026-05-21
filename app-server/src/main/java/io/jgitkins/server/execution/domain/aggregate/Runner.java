@@ -1,6 +1,6 @@
 package io.jgitkins.server.execution.domain.aggregate;
 
-import io.jgitkins.server.domain.aggregate.AbstractAggregateRoot;
+import io.jgitkins.server.shared.domain.aggregate.AbstractAggregateRoot;
 import io.jgitkins.server.execution.domain.event.RunnerActivatedEvent;
 import io.jgitkins.server.execution.domain.exception.RunnerAlreadyActiveException;
 import io.jgitkins.server.execution.domain.exception.RunnerTokenMismatchException;

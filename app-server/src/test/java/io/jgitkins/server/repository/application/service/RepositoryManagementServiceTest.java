@@ -11,10 +11,10 @@ import io.jgitkins.server.shared.application.support.RepositoryNamespaceResolver
 import io.jgitkins.server.repository.application.validate.RepositoryValidator;
 import io.jgitkins.core.common.exception.JgitkinsException;
 import io.jgitkins.server.repository.domain.aggregate.Repository;
-import io.jgitkins.server.domain.model.vo.InitialCommitOptions;
+import io.jgitkins.server.repository.domain.model.vo.InitialCommitOptions;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeId;
-import io.jgitkins.server.domain.model.vo.OwnerId;
-import io.jgitkins.server.domain.model.vo.OwnerType;
+import io.jgitkins.server.shared.domain.model.vo.OwnerId;
+import io.jgitkins.server.shared.domain.model.vo.OwnerType;
 import io.jgitkins.server.repository.domain.vo.RepositoryId;
 import io.jgitkins.server.repository.domain.vo.RepositoryName;
 import io.jgitkins.server.repository.domain.vo.RepositoryVisibility;

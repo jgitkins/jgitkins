@@ -2,7 +2,7 @@ package io.jgitkins.server.repository.presentation.mapper;
 
 import io.jgitkins.server.repository.application.contract.command.RepositoryCreateCommand;
 import io.jgitkins.server.repository.application.contract.command.UpdateRepositoryCommand;
-import io.jgitkins.server.domain.model.vo.OwnerType;
+import io.jgitkins.server.shared.domain.model.vo.OwnerType;
 import io.jgitkins.server.repository.domain.vo.RepositoryVisibility;
 import io.jgitkins.server.repository.presentation.dto.RepositoryCreateRequest;
 import io.jgitkins.server.repository.presentation.dto.RepositoryUpdateRequest;

@@ -1,6 +1,6 @@
 package io.jgitkins.server.shared.application.event;
 
-import io.jgitkins.server.domain.event.DomainEvent;
+import io.jgitkins.server.shared.domain.event.DomainEvent;
 
 import java.util.List;
 

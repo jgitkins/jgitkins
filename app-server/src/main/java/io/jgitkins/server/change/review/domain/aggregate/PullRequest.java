@@ -1,6 +1,6 @@
 package io.jgitkins.server.change.review.domain.aggregate;
 
-import io.jgitkins.server.domain.aggregate.AbstractAggregateRoot;
+import io.jgitkins.server.shared.domain.aggregate.AbstractAggregateRoot;
 import io.jgitkins.server.change.review.domain.model.changegraph.MergeabilityAssessment;
 import io.jgitkins.server.repository.domain.vo.RepositoryId;
 import io.jgitkins.server.change.review.domain.model.BranchHeadSnapshot;

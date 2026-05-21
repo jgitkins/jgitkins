@@ -1,8 +1,8 @@
 package io.jgitkins.server.identity.access.application.service;
 
 import io.jgitkins.core.common.exception.JgitkinsException;
-import io.jgitkins.server.domain.error.DomainErrorCode;
-import io.jgitkins.server.domain.error.DomainProblemSpec;
+import io.jgitkins.server.shared.domain.error.DomainErrorCode;
+import io.jgitkins.server.shared.domain.error.DomainProblemSpec;
 import io.jgitkins.server.identity.access.application.port.out.CurrentUserPort;
 import io.jgitkins.server.identity.access.application.port.out.UserPersistencePort;
 import io.jgitkins.server.identity.access.application.validate.ActivationValidator;

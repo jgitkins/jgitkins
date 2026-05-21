@@ -1,7 +1,7 @@
 package io.jgitkins.server.repository.application.port.out;
 
-import io.jgitkins.server.domain.model.vo.OwnerId;
-import io.jgitkins.server.domain.model.vo.OwnerType;
+import io.jgitkins.server.shared.domain.model.vo.OwnerId;
+import io.jgitkins.server.shared.domain.model.vo.OwnerType;
 import io.jgitkins.server.repository.application.contract.result.RepositoryResult;
 import java.util.List;
 import java.util.Optional;

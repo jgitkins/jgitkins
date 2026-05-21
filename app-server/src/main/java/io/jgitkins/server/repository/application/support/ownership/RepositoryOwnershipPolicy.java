@@ -4,10 +4,10 @@ import io.jgitkins.server.repository.application.contract.command.RepositoryCrea
 import io.jgitkins.server.repository.application.contract.internal.RepositoryCreationPlan;
 import io.jgitkins.server.repository.application.validate.RepositoryValidator;
 import io.jgitkins.server.repository.domain.aggregate.Repository;
-import io.jgitkins.server.domain.model.vo.BranchName;
-import io.jgitkins.server.domain.model.vo.InitialCommitOptions;
-import io.jgitkins.server.domain.model.vo.OwnerId;
-import io.jgitkins.server.domain.model.vo.OwnerType;
+import io.jgitkins.server.shared.domain.model.vo.BranchName;
+import io.jgitkins.server.repository.domain.model.vo.InitialCommitOptions;
+import io.jgitkins.server.shared.domain.model.vo.OwnerId;
+import io.jgitkins.server.shared.domain.model.vo.OwnerType;
 import io.jgitkins.server.repository.domain.vo.RepositoryName;
 import io.jgitkins.server.repository.domain.vo.RepositoryPath;
 import io.jgitkins.server.repository.domain.vo.RepositoryVisibility;

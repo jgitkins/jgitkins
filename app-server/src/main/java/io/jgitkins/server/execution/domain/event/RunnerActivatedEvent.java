@@ -1,6 +1,6 @@
 package io.jgitkins.server.execution.domain.event;
 
-import io.jgitkins.server.domain.event.DomainEvent;
+import io.jgitkins.server.shared.domain.event.DomainEvent;
 import io.jgitkins.server.execution.domain.aggregate.Runner;
 import io.jgitkins.server.execution.domain.vo.RunnerScopeType;
 import io.jgitkins.server.execution.domain.vo.RunnerStatus;

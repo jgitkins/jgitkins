@@ -4,7 +4,7 @@ import io.jgitkins.server.collaboration.domain.aggregate.Organize;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeId;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeName;
 import io.jgitkins.server.identity.access.domain.vo.UserId;
-import io.jgitkins.server.domain.event.DomainEvent;
+import io.jgitkins.server.shared.domain.event.DomainEvent;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

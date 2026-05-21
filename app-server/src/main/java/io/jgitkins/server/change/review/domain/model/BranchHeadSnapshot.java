@@ -1,7 +1,7 @@
 package io.jgitkins.server.change.review.domain.model;
 
-import io.jgitkins.server.domain.model.vo.BranchName;
-import io.jgitkins.server.domain.model.vo.CommitHash;
+import io.jgitkins.server.shared.domain.model.vo.BranchName;
+import io.jgitkins.server.shared.domain.model.vo.CommitHash;
 
 public record BranchHeadSnapshot(
         BranchName branchName,
