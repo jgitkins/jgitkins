@@ -31,7 +31,10 @@ public class OrganizeValidator {
     }
 
     public boolean isAccessible(Organize organize, UserId userId) {
-        return userId.equals(organize.getOwnerId()) ||
-                organizeMemberPort.existsByOrganizeIdAndUserId(organize.getId(), userId);
+        return organize.getOwnerId() != null
+                && userId.getValue().equals(organize.getOwnerId().getValue()) ||
+                organizeMemberPort.existsByOrganizeIdAndUserId(
+                        organize.getId(),
+                        io.jgitkins.server.collaboration.domain.vo.MemberUserId.of(userId.getValue()));
     }
 }

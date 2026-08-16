@@ -9,11 +9,12 @@ import static org.mockito.Mockito.when;
 import io.jgitkins.server.collaboration.domain.aggregate.Organize;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeId;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeName;
+import io.jgitkins.server.collaboration.domain.vo.OwnerId;
 import io.jgitkins.server.collaboration.infrastructure.mapper.OrganizeDomainMapper;
 import io.jgitkins.server.collaboration.infrastructure.persistence.mapper.OrganizeEntityMbgMapper;
 import io.jgitkins.server.collaboration.infrastructure.persistence.model.OrganizeEntity;
 import io.jgitkins.server.collaboration.infrastructure.persistence.model.OrganizeEntityCondition;
-import io.jgitkins.server.identity.access.domain.vo.UserId;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -38,13 +39,19 @@ class OrganizePersistenceAdapterTest {
 
     @Test
     void save_persistsAndReturnsMappedDomain() {
-        Organize organize = Organize.create(OrganizeName.from("alpha_team"), UserId.of(3L), "desc");
+        Organize organize = Organize.create(
+                null,
+                OrganizeName.from("alpha_team"),
+                OwnerId.of(3L),
+                "desc",
+                LocalDateTime.of(2026, 1, 1, 10, 0),
+                java.time.Instant.parse("2026-01-01T10:00:00Z"));
         OrganizeEntity entity = new OrganizeEntity();
         Organize persisted = Organize.reconstruct(
                 OrganizeId.of(10L),
                 OrganizeName.from("alpha_team"),
                 "desc",
-                UserId.of(3L),
+                OwnerId.of(3L),
                 LocalDateTime.of(2026, 1, 1, 10, 0),
                 LocalDateTime.of(2026, 1, 1, 10, 0));
 
@@ -76,7 +83,7 @@ class OrganizePersistenceAdapterTest {
                 OrganizeId.of(10L),
                 OrganizeName.from("alpha_team"),
                 "desc",
-                UserId.of(3L),
+                OwnerId.of(3L),
                 LocalDateTime.of(2026, 1, 1, 10, 0),
                 LocalDateTime.of(2026, 1, 1, 10, 0));
 

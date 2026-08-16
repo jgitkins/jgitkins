@@ -4,7 +4,7 @@ import io.jgitkins.server.collaboration.application.port.out.OrganizeMemberPersi
 import io.jgitkins.server.collaboration.application.port.out.OrganizeMembershipQueryPort;
 import io.jgitkins.server.collaboration.domain.entity.OrganizeMember;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeId;
-import io.jgitkins.server.identity.access.domain.vo.UserId;
+import io.jgitkins.server.collaboration.domain.vo.MemberUserId;
 import io.jgitkins.server.common.infrastructure.error.InfrastructureErrorCode;
 import io.jgitkins.server.common.infrastructure.exception.InfrastructureException;
 import io.jgitkins.server.collaboration.infrastructure.mapper.OrganizeMemberDomainMapper;
@@ -36,7 +36,7 @@ public class OrganizeMemberPersistenceAdapter implements OrganizeMemberPersisten
     }
 
     @Override
-    public boolean existsByOrganizeIdAndUserId(OrganizeId organizeId, UserId userId) {
+    public boolean existsByOrganizeIdAndUserId(OrganizeId organizeId, MemberUserId userId) {
         try {
             OrganizeMemberEntityCondition condition = new OrganizeMemberEntityCondition();
             condition.createCriteria()
@@ -50,7 +50,7 @@ public class OrganizeMemberPersistenceAdapter implements OrganizeMemberPersisten
     }
 
     @Override
-    public Optional<OrganizeMember> findByOrganizeIdAndUserId(OrganizeId organizeId, UserId userId) {
+    public Optional<OrganizeMember> findByOrganizeIdAndUserId(OrganizeId organizeId, MemberUserId userId) {
         try {
             if (organizeId == null || userId == null) {
                 return Optional.empty();
@@ -70,7 +70,7 @@ public class OrganizeMemberPersistenceAdapter implements OrganizeMemberPersisten
     }
 
     @Override
-    public void deleteByOrganizeIdAndUserId(OrganizeId organizeId, UserId userId) {
+    public void deleteByOrganizeIdAndUserId(OrganizeId organizeId, MemberUserId userId) {
         try {
             OrganizeMemberEntityCondition condition = new OrganizeMemberEntityCondition();
             condition.createCriteria()

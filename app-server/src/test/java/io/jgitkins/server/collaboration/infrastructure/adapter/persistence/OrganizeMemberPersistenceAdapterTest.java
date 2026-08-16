@@ -13,7 +13,7 @@ import io.jgitkins.server.collaboration.infrastructure.mapper.OrganizeMemberDoma
 import io.jgitkins.server.collaboration.infrastructure.persistence.mapper.OrganizeMemberEntityMbgMapper;
 import io.jgitkins.server.collaboration.infrastructure.persistence.model.OrganizeMemberEntity;
 import io.jgitkins.server.collaboration.infrastructure.persistence.model.OrganizeMemberEntityCondition;
-import io.jgitkins.server.identity.access.domain.vo.UserId;
+import io.jgitkins.server.collaboration.domain.vo.MemberUserId;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -38,11 +38,11 @@ class OrganizeMemberPersistenceAdapterTest {
 
     @Test
     void save_persistsAndReturnsMappedDomain() {
-        OrganizeMember member = OrganizeMember.create(OrganizeId.of(1L), UserId.of(2L), OrganizeMemberRole.MEMBER, null);
+        OrganizeMember member = OrganizeMember.create(OrganizeId.of(1L), MemberUserId.of(2L), OrganizeMemberRole.MEMBER, null);
         OrganizeMemberEntity entity = new OrganizeMemberEntity();
         OrganizeMember persisted = OrganizeMember.create(
                 OrganizeId.of(1L),
-                UserId.of(2L),
+                MemberUserId.of(2L),
                 OrganizeMemberRole.MEMBER,
                 LocalDateTime.of(2026, 1, 3, 12, 0));
 
@@ -65,7 +65,7 @@ class OrganizeMemberPersistenceAdapterTest {
         when(organizeMemberEntityMbgMapper.countByCondition(org.mockito.ArgumentMatchers.any(OrganizeMemberEntityCondition.class)))
                 .thenReturn(1L);
 
-        boolean result = adapter.existsByOrganizeIdAndUserId(OrganizeId.of(1L), UserId.of(2L));
+        boolean result = adapter.existsByOrganizeIdAndUserId(OrganizeId.of(1L), MemberUserId.of(2L));
 
         assertThat(result).isTrue();
         ArgumentCaptor<OrganizeMemberEntityCondition> captor = ArgumentCaptor.forClass(OrganizeMemberEntityCondition.class);

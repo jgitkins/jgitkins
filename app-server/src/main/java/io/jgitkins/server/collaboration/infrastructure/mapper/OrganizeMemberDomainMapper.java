@@ -3,7 +3,7 @@ package io.jgitkins.server.collaboration.infrastructure.mapper;
 import io.jgitkins.server.collaboration.domain.entity.OrganizeMember;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeId;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeMemberRole;
-import io.jgitkins.server.identity.access.domain.vo.UserId;
+import io.jgitkins.server.collaboration.domain.vo.MemberUserId;
 import io.jgitkins.server.collaboration.infrastructure.persistence.model.OrganizeMemberEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
@@ -19,7 +19,7 @@ public interface OrganizeMemberDomainMapper {
         }
         return OrganizeMember.create(
                 OrganizeId.of(entity.getOrganizeId()),
-                UserId.of(entity.getUserId()),
+                MemberUserId.of(entity.getUserId()),
                 OrganizeMemberRole.from(entity.getRole()),
                 entity.getJoinedAt()
         );
@@ -29,7 +29,7 @@ public interface OrganizeMemberDomainMapper {
         return organizeId != null ? organizeId.getValue() : null;
     }
 
-    default Long map(UserId userId) {
+    default Long map(MemberUserId userId) {
         return userId != null ? userId.getValue() : null;
     }
 

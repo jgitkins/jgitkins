@@ -4,7 +4,7 @@ import io.jgitkins.server.collaboration.application.exception.OrganizeMemberAlre
 import io.jgitkins.server.collaboration.application.port.out.OrganizeMembershipQueryPort;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeId;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeMemberRole;
-import io.jgitkins.server.identity.access.domain.vo.UserId;
+import io.jgitkins.server.collaboration.domain.vo.MemberUserId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -18,7 +18,7 @@ public class OrganizeMemberValidator {
         return role != null ? role : OrganizeMemberRole.MEMBER;
     }
 
-    public void validateMemberNotExists(OrganizeId organizeId, UserId userId) {
+    public void validateMemberNotExists(OrganizeId organizeId, MemberUserId userId) {
         if (organizeMemberPort.existsByOrganizeIdAndUserId(organizeId, userId)) {
             throw new OrganizeMemberAlreadyExistsException(organizeId.getValue(), userId.getValue());
         }

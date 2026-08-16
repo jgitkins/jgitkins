@@ -51,7 +51,7 @@ class OrganizeControllerTest {
 
     @Test
     void createOrganize_returnsCreatedResponse() throws Exception {
-        OrganizeCreationCommand command = new OrganizeCreationCommand("core-team", 1L, "Core Team");
+        OrganizeCreationCommand command = new OrganizeCreationCommand("core-team", "Core Team");
         OrganizeCreationResult result = new OrganizeCreationResult(10L, "core-team", "Core Team", 1L, null, null);
 
         when(organizeRequestMapper.toCommand(org.mockito.ArgumentMatchers.any(OrganizeCreationRequest.class)))
@@ -62,7 +62,6 @@ class OrganizeControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(java.util.Map.of(
                                 "name", "core-team",
-                                "ownerId", 1,
                                 "description", "Core Team"
                         ))))
                 .andExpect(status().isCreated())

@@ -4,7 +4,7 @@ import io.jgitkins.server.shared.domain.exception.DomainException;
 import io.jgitkins.server.shared.domain.error.DomainProblemSpec;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeId;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeMemberRole;
-import io.jgitkins.server.identity.access.domain.vo.UserId;
+import io.jgitkins.server.collaboration.domain.vo.MemberUserId;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,12 +19,12 @@ import java.time.LocalDateTime;
 public class OrganizeMember {
 
     private final OrganizeId organizeId;
-    private final UserId userId;
+    private final MemberUserId userId;
     private final OrganizeMemberRole role;
     private final LocalDateTime joinedAt;
 
     public static OrganizeMember create(OrganizeId organizeId,
-            UserId userId,
+            MemberUserId userId,
             OrganizeMemberRole role,
             LocalDateTime joinedAt) {
         if (organizeId == null || userId == null || role == null) {

@@ -93,7 +93,7 @@ public class GitRepositoryAccessService {
         if (repo.getOwnerType() == OwnerType.ORGANIZATION && repo.getOwnerId() != null) {
             Optional<OrganizeMember> organizeMember = organizeMemberPort.findByOrganizeIdAndUserId(
                     OrganizeId.of(repo.getOwnerId().getValue()),
-                    uid
+                    io.jgitkins.server.collaboration.domain.vo.MemberUserId.of(uid.getValue())
             );
             if (organizeMember.isPresent()) {
                 var role = organizeMember.get().getRole();

@@ -3,7 +3,7 @@ package io.jgitkins.server.collaboration.infrastructure.mapper;
 import io.jgitkins.server.collaboration.domain.aggregate.Organize;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeId;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeName;
-import io.jgitkins.server.identity.access.domain.vo.UserId;
+import io.jgitkins.server.collaboration.domain.vo.OwnerId;
 import io.jgitkins.server.collaboration.infrastructure.persistence.model.OrganizeEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -29,7 +29,7 @@ public interface OrganizeDomainMapper {
                 entity.getId() != null ? OrganizeId.of(entity.getId()) : null,
                 OrganizeName.from(entity.getName()),
                 entity.getDescription(),
-                entity.getOwnerId() != null ? UserId.of(entity.getOwnerId()) : null,
+                entity.getOwnerId() != null ? OwnerId.of(entity.getOwnerId()) : null,
                 entity.getCreatedAt(),
                 entity.getUpdatedAt()
         );

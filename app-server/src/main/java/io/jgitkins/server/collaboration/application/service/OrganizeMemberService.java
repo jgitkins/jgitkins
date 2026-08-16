@@ -9,7 +9,7 @@ import io.jgitkins.server.collaboration.application.port.out.OrganizeMemberPersi
 import io.jgitkins.server.collaboration.application.validate.OrganizeMemberValidator;
 import io.jgitkins.server.collaboration.domain.entity.OrganizeMember;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeId;
-import io.jgitkins.server.identity.access.domain.vo.UserId;
+import io.jgitkins.server.collaboration.domain.vo.MemberUserId;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,7 +28,7 @@ public class OrganizeMemberService implements OrganizeMemberAddUseCase,
     @Transactional
     public void addOrganizeMember(OrganizeMemberAddCommand command) {
         OrganizeId organizeId = OrganizeId.of(command.organizeId());
-        UserId userId = UserId.of(command.userId());
+        MemberUserId userId = MemberUserId.of(command.userId());
 
         OrganizeMember member = OrganizeMember.create(
                 organizeId,
@@ -44,7 +44,7 @@ public class OrganizeMemberService implements OrganizeMemberAddUseCase,
     @Override
     @Transactional
     public void removeOrganizeMember(Long organizeId, Long userId) {
-        organizeMemberPort.deleteByOrganizeIdAndUserId(OrganizeId.of(organizeId), UserId.of(userId));
+        organizeMemberPort.deleteByOrganizeIdAndUserId(OrganizeId.of(organizeId), MemberUserId.of(userId));
     }
 
     @Override

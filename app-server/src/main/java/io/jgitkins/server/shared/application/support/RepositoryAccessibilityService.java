@@ -40,7 +40,9 @@ public class RepositoryAccessibilityService {
             OrganizeId organizeId = OrganizeId.of(repository.getOwnerId().getValue());
             return membershipCache.computeIfAbsent(
                     organizeId,
-                    id -> organizeMemberPort.existsByOrganizeIdAndUserId(id, UserId.of(userId)));
+                    id -> organizeMemberPort.existsByOrganizeIdAndUserId(
+                            id,
+                            io.jgitkins.server.collaboration.domain.vo.MemberUserId.of(userId)));
         }
         return false;
     }

@@ -82,7 +82,7 @@ public class RepositoryValidator {
     private void assertOrganizeMembership(Long organizeId) {
         Long requesterId = requireCurrentUserId();
         boolean isMember = organizeMemberPort.existsByOrganizeIdAndUserId(OrganizeId.of(organizeId),
-                UserId.of(requesterId));
+                io.jgitkins.server.collaboration.domain.vo.MemberUserId.of(requesterId));
         if (!isMember) {
             throw new OrganizeAccessDeniedException(
                     "User is not a member of the organization.");

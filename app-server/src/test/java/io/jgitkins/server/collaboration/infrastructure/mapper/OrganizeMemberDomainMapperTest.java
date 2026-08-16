@@ -6,7 +6,7 @@ import io.jgitkins.server.collaboration.domain.entity.OrganizeMember;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeId;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeMemberRole;
 import io.jgitkins.server.collaboration.infrastructure.persistence.model.OrganizeMemberEntity;
-import io.jgitkins.server.identity.access.domain.vo.UserId;
+import io.jgitkins.server.collaboration.domain.vo.MemberUserId;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
@@ -20,7 +20,7 @@ class OrganizeMemberDomainMapperTest {
         LocalDateTime joinedAt = LocalDateTime.of(2026, 1, 3, 12, 0);
         OrganizeMember member = OrganizeMember.create(
                 OrganizeId.of(1L),
-                UserId.of(2L),
+                MemberUserId.of(2L),
                 OrganizeMemberRole.OWNER,
                 joinedAt);
 
@@ -44,7 +44,7 @@ class OrganizeMemberDomainMapperTest {
         OrganizeMember member = mapper.toDomain(entity);
 
         assertThat(member.getOrganizeId()).isEqualTo(OrganizeId.of(1L));
-        assertThat(member.getUserId()).isEqualTo(UserId.of(2L));
+        assertThat(member.getUserId()).isEqualTo(MemberUserId.of(2L));
         assertThat(member.getRole()).isEqualTo(OrganizeMemberRole.OWNER);
         assertThat(member.getJoinedAt()).isEqualTo(joinedAt);
     }

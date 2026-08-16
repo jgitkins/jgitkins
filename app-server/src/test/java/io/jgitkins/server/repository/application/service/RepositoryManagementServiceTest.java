@@ -18,7 +18,7 @@ import io.jgitkins.server.shared.domain.model.vo.OwnerType;
 import io.jgitkins.server.repository.domain.vo.RepositoryId;
 import io.jgitkins.server.repository.domain.vo.RepositoryName;
 import io.jgitkins.server.repository.domain.vo.RepositoryVisibility;
-import io.jgitkins.server.identity.access.domain.vo.UserId;
+import io.jgitkins.server.collaboration.domain.vo.MemberUserId;
 import io.jgitkins.server.repository.domain.repository.RepositoryRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -92,7 +92,7 @@ class RepositoryManagementServiceTest {
                 .build();
 
         when(currentUserPersistencePort.resolveCurrentUserId()).thenReturn(Optional.of(7L));
-        when(organizeMemberPort.existsByOrganizeIdAndUserId(OrganizeId.of(10L), UserId.of(7L))).thenReturn(false);
+        when(organizeMemberPort.existsByOrganizeIdAndUserId(OrganizeId.of(10L), MemberUserId.of(7L))).thenReturn(false);
 
         assertThrows(JgitkinsException.class, () -> service.create(command));
         verify(repositoryRepository, never()).save(any(Repository.class));
