@@ -4,6 +4,8 @@ import io.jgitkins.server.collaboration.application.port.out.DomainEventPublishe
 import io.jgitkins.server.shared.domain.event.DomainEvent;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.support.TransactionSynchronization;
@@ -13,6 +15,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 @RequiredArgsConstructor
 public class CollaborationSpringDomainEventPublisher implements DomainEventPublisher {
 
+    private static final Logger log = LoggerFactory.getLogger(CollaborationSpringDomainEventPublisher.class);
     private final ApplicationEventPublisher applicationEventPublisher;
 
     @Override
@@ -22,16 +25,20 @@ public class CollaborationSpringDomainEventPublisher implements DomainEventPubli
         }
 
         List<DomainEvent> snapshot = List.copyOf(events);
-        Runnable publishEvents = () -> snapshot.forEach(applicationEventPublisher::publishEvent);
-        if (!TransactionSynchronizationManager.isSynchronizationActive()) {
-            publishEvents.run();
-            return;
+        if (!TransactionSynchronizationManager.isActualTransactionActive()
+                || !TransactionSynchronizationManager.isSynchronizationActive()) {
+            throw new IllegalStateException("Domain events require an active transaction");
         }
 
+        Runnable publishEvents = () -> snapshot.forEach(applicationEventPublisher::publishEvent);
         TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
             @Override
             public void afterCommit() {
-                publishEvents.run();
+                try {
+                    publishEvents.run();
+                } catch (RuntimeException exception) {
+                    log.error("Collaboration domain event delivery failed after transaction commit", exception);
+                }
             }
         });
     }

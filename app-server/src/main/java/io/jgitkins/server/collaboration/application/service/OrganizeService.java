@@ -48,17 +48,18 @@ public class OrganizeService implements OrganizeCreationUseCase,
         organizeValidator.validateCreation(name);
 
         // 3. 비즈니스 로직 수행 (Aggregate 생성 및 저장)
-        Organize organize = Organize.create(
+        Organize organize = Organize.createWithoutEvent(
                 null,
                 name,
                 ownerId == null ? null : OwnerId.of(ownerId.getValue()),
                 command.description(),
-                LocalDateTime.now(),
-                Instant.now());
+                LocalDateTime.now());
 
         Organize saved = organizePort.save(organize);
-        domainEventPublisher.publish(organize.getDomainEvents());
-        organize.clearDomainEvents();
+        saved.recordCreated(Instant.now());
+        List<io.jgitkins.server.shared.domain.event.DomainEvent> events = List.copyOf(saved.getDomainEvents());
+        domainEventPublisher.publish(events);
+        saved.clearDomainEvents();
         return organizeApplicationMapper.toDto(saved);
     }
 

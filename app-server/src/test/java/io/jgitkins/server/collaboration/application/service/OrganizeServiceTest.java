@@ -11,6 +11,7 @@ import static org.mockito.Mockito.when;
 
 import io.jgitkins.server.collaboration.application.dto.command.OrganizeCreationCommand;
 import io.jgitkins.server.collaboration.application.dto.result.OrganizeCreationResult;
+import io.jgitkins.server.collaboration.application.exception.OrganizeAccessDeniedException;
 import io.jgitkins.server.collaboration.application.mapper.OrganizeApplicationMapper;
 import io.jgitkins.server.collaboration.application.service.OrganizeService;
 import io.jgitkins.server.collaboration.application.port.out.DomainEventPublisher;
@@ -21,6 +22,7 @@ import io.jgitkins.server.collaboration.application.port.out.OrganizePersistence
 import io.jgitkins.server.collaboration.application.validate.OrganizeValidator;
 import io.jgitkins.core.common.exception.JgitkinsException;
 import io.jgitkins.server.collaboration.domain.aggregate.Organize;
+import io.jgitkins.server.collaboration.domain.event.OrganizeCreatedEvent;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeId;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeName;
 import io.jgitkins.server.collaboration.domain.vo.OwnerId;
@@ -73,7 +75,7 @@ class OrganizeServiceTest {
 
         when(userIdentityPort.resolveCurrentActiveUserId()).thenReturn(Optional.of(1L));
         when(organizePort.findByName(any(OrganizeName.class))).thenReturn(Optional.empty());
-        when(organizePort.save(any(Organize.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(organizePort.save(any(Organize.class))).thenReturn(sampleOrganize(1L, "org", 1L));
         when(organizeApplicationMapper.toDto(any(Organize.class)))
                 .thenReturn(new OrganizeCreationResult(null, "org", null, null, null, null));
 
@@ -81,6 +83,24 @@ class OrganizeServiceTest {
 
         assertEquals("org", response.name());
         verify(organizePort).save(any(Organize.class));
+    }
+
+    @Test
+    void createOrganize_publishesCreatedEventWithPersistedGeneratedId() {
+        OrganizeCreationCommand command = new OrganizeCreationCommand("org", "desc");
+        Organize persisted = sampleOrganize(42L, "org", 1L);
+
+        when(userIdentityPort.resolveCurrentActiveUserId()).thenReturn(Optional.of(1L));
+        when(organizePort.findByName(any(OrganizeName.class))).thenReturn(Optional.empty());
+        when(organizePort.save(any(Organize.class))).thenReturn(persisted);
+        when(organizeApplicationMapper.toDto(persisted))
+                .thenReturn(new OrganizeCreationResult(42L, "org", null, 1L, null, null));
+
+        service.createOrganize(command);
+
+        verify(domainEventPublisher).publish(argThat(events -> events.size() == 1
+                && events.get(0) instanceof OrganizeCreatedEvent event
+                && event.getOrganizeId().equals(OrganizeId.of(42L))));
     }
 
     @Test
@@ -95,12 +115,22 @@ class OrganizeServiceTest {
     }
 
     @Test
+    void createOrganize_throwsWhenCurrentUserIsMissing() {
+        OrganizeCreationCommand command = new OrganizeCreationCommand("org", "desc");
+        when(userIdentityPort.resolveCurrentActiveUserId()).thenReturn(Optional.empty());
+
+        assertThrows(OrganizeAccessDeniedException.class, () -> service.createOrganize(command));
+        verify(organizePort, never()).save(any(Organize.class));
+    }
+
+
+    @Test
     void createOrganize_usesAuthenticatedCurrentUserAsOwner() {
         OrganizeCreationCommand command = new OrganizeCreationCommand("org", "desc");
 
         when(userIdentityPort.resolveCurrentActiveUserId()).thenReturn(Optional.of(7L));
         when(organizePort.findByName(any(OrganizeName.class))).thenReturn(Optional.empty());
-        when(organizePort.save(any(Organize.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(organizePort.save(any(Organize.class))).thenReturn(sampleOrganize(1L, "org", 7L));
         when(organizeApplicationMapper.toDto(any(Organize.class)))
                 .thenReturn(new OrganizeCreationResult(null, "org", null, 7L, null, null));
 
@@ -126,6 +156,23 @@ class OrganizeServiceTest {
         assertEquals(0, results.size());
         verify(organizePort, never()).findAll();
     }
+
+    @Test
+    void getAccessibleOrganizes_allowsOwnerWithoutMembershipRow() {
+        Organize owned = sampleOrganize(10L, "owned", 7L);
+
+        when(userIdentityPort.resolveCurrentActiveUserId()).thenReturn(Optional.of(7L));
+        when(organizePort.findAll()).thenReturn(List.of(owned));
+        when(organizeApplicationMapper.toDto(owned))
+                .thenReturn(new OrganizeCreationResult(10L, "owned", null, 7L, null, null));
+
+        List<OrganizeCreationResult> results = service.getAccessibleOrganizes();
+
+        assertEquals(List.of("owned"), results.stream().map(OrganizeCreationResult::name).toList());
+        verify(organizeMemberQueryPort, never())
+                .existsByOrganizeIdAndUserId(any(OrganizeId.class), any(MemberUserId.class));
+    }
+
 
     @Test
     void getAccessibleOrganizes_includesOwnedAndMemberOrganizes() {

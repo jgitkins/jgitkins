@@ -1,5 +1,6 @@
 package io.jgitkins.server.collaboration.presentation.api.rest;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -71,6 +72,33 @@ class OrganizeControllerTest {
 
         verify(organizeCreationUseCase).createOrganize(command);
     }
+
+    @Test
+    void createOrganize_ignoresLegacyOwnerIdAndKeepsAuthenticatedOwnerResult() throws Exception {
+        OrganizeCreationCommand command = new OrganizeCreationCommand("core-team", "Core Team");
+        OrganizeCreationResult result = new OrganizeCreationResult(10L, "core-team", "Core Team", 7L, null, null);
+
+        when(organizeRequestMapper.toCommand(org.mockito.ArgumentMatchers.any(OrganizeCreationRequest.class)))
+                .thenReturn(command);
+        when(organizeCreationUseCase.createOrganize(command)).thenReturn(result);
+
+        mockMvc.perform(post("/api/organizes")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"name":"core-team","description":"Core Team","ownerId":999}
+                                """))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.data.ownerId").value(7L));
+
+        var requestCaptor = org.mockito.ArgumentCaptor.forClass(OrganizeCreationRequest.class);
+        verify(organizeRequestMapper).toCommand(requestCaptor.capture());
+        assertThat(requestCaptor.getValue().name()).isEqualTo("core-team");
+        assertThat(requestCaptor.getValue().description()).isEqualTo("Core Team");
+        assertThat(java.util.Arrays.stream(OrganizeCreationRequest.class.getRecordComponents())
+                .map(java.lang.reflect.RecordComponent::getName)
+                .toList()).doesNotContain("ownerId");
+    }
+
 
     @Test
     void getOrganizes_returnsList() throws Exception {

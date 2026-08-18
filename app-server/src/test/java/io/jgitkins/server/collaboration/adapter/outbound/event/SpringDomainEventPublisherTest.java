@@ -1,5 +1,7 @@
 package io.jgitkins.server.collaboration.adapter.outbound.event;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import io.jgitkins.server.collaboration.domain.aggregate.Organize;
@@ -22,7 +24,7 @@ class CollaborationSpringDomainEventPublisherTest {
     private ApplicationEventPublisher applicationEventPublisher;
 
     @Test
-    void publish_publishesSnapshotWhenNoTransactionIsActive() {
+    void publish_failsFastWhenNoTransactionIsActive() {
         CollaborationSpringDomainEventPublisher publisher = new CollaborationSpringDomainEventPublisher(applicationEventPublisher);
         Organize organize = Organize.create(
                 OrganizeId.of(10L),
@@ -33,8 +35,8 @@ class CollaborationSpringDomainEventPublisherTest {
                 Instant.parse("2026-08-14T00:00:00Z"));
         DomainEvent event = organize.getDomainEvents().get(0);
 
-        publisher.publish(List.of(event));
+        assertThrows(IllegalStateException.class, () -> publisher.publish(List.of(event)));
 
-        verify(applicationEventPublisher).publishEvent(event);
+        verify(applicationEventPublisher, never()).publishEvent(event);
     }
 }

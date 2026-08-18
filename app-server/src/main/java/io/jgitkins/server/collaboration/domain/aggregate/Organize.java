@@ -42,6 +42,25 @@ public class Organize extends AbstractAggregateRoot<OrganizeId> {
         return organize;
     }
 
+    public static Organize createWithoutEvent(OrganizeId id,
+                                               OrganizeName name,
+                                               OwnerId ownerId,
+                                               String description,
+                                               LocalDateTime createdAt) {
+        return new Organize(id,
+                name,
+                normalizeDescription(description),
+                ownerId,
+                createdAt,
+                createdAt);
+    }
+
+    public void recordCreated(java.time.Instant occurredAt) {
+        if (id == null) {
+            throw new IllegalStateException("Organize must be persisted before recording creation event");
+        }
+        registerEvent(OrganizeCreatedEvent.from(this, occurredAt));
+    }
     public static Organize reconstruct(OrganizeId id,
                                        OrganizeName name,
                                        String description,
