@@ -2,7 +2,7 @@
   "master": {
     "tasks": [
       {
-        "id": "1",
+        "id": 1,
         "title": "신규기능",
         "description": "사용자 가치 전달을 위한 기능 개발/확장 작업",
         "status": "pending",
@@ -80,15 +80,15 @@
         ]
       },
       {
-        "id": "2",
+        "id": 2,
         "title": "리팩토링",
         "description": "구조 개선, 품질 개선, 테스트 체계 강화 작업",
-        "status": "done",
+        "status": "in-progress",
         "dependencies": [],
         "priority": "high",
         "details": "기존 기능별 Task를 카테고리 기반(신규기능/리팩토링/보안)으로 재구성함.",
         "testStrategy": "카테고리별 우선순위에 따라 하위 작업을 순차 수행하고 회귀 테스트를 적용한다.",
-        "updatedAt": "2026-05-21T13:50:08.822Z",
+        "updatedAt": "2026-08-18T00:31:49.975Z",
         "subtasks": [
           {
             "id": 34,
@@ -141,11 +141,126 @@
             "parentTaskId": 2,
             "parentId": "2",
             "updatedAt": "2026-05-21T13:50:08.822Z"
+          },
+          {
+            "id": 38,
+            "title": "[refactor][server] collaboration Phase 1 correctness",
+            "description": "collaboration Organization 생성 vertical slice의 ID/event correctness, transaction commit/rollback semantics, authenticated/unauthenticated contract, legacy ownerId behavior, owner-only access, and minimal domain-purity guardrail을 완료한다.",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 2,
+            "updatedAt": "2026-08-18T00:30:43.061Z",
+            "parentId": "undefined"
+          },
+          {
+            "id": 39,
+            "title": "[refactor][server] identity active-account policy",
+            "description": "authenticated 사용자와 active/enabled 계정 상태를 분리하고 authoritative identity policy port/adapter와 비활성 계정의 HTTP 오류 계약을 정의·구현한다. Phase 1 correctness 완료 이후 진행.",
+            "details": "",
+            "status": "pending",
+            "dependencies": [
+              "2.38"
+            ],
+            "parentTaskId": 2,
+            "parentId": "undefined"
+          },
+          {
+            "id": 40,
+            "title": "[refactor][server] collaboration persistence port relocation",
+            "description": "OrganizePersistencePort를 collaboration domain repository 경계로 이동하고 adapter.outbound.persistence 배치, wiring, 테스트를 정리한다. Phase 1 correctness 완료 이후 진행.",
+            "details": "",
+            "status": "pending",
+            "dependencies": [
+              "2.38"
+            ],
+            "parentTaskId": 2,
+            "parentId": "undefined"
+          },
+          {
+            "id": 41,
+            "title": "[feature][server] collaboration membership lifecycle and owner transfer",
+            "description": "OrganizeMember 초대·추가·삭제와 owner transfer/deletion 불변식을 설계하고 구현한다. owner-only Phase 1 경계를 유지한 후 별도 vertical slice로 진행한다.",
+            "details": "",
+            "status": "pending",
+            "dependencies": [
+              "2.38"
+            ],
+            "parentTaskId": 2,
+            "parentId": "undefined"
+          },
+          {
+            "id": 42,
+            "title": "[infrastructure][server] transactional outbox and durable events",
+            "description": "in-process post-commit event의 비내구성 한계를 해소하기 위해 Transactional Outbox, retry, duplicate handling, consumer failure semantics를 설계·구현한다.",
+            "details": "",
+            "status": "pending",
+            "dependencies": [
+              "2.38"
+            ],
+            "parentTaskId": 2,
+            "parentId": "undefined"
+          },
+          {
+            "id": 43,
+            "title": "[refactor][server] full bounded-context architecture guardrails",
+            "description": "domain purity를 넘어 application-to-adapter 방향, bounded context 간 내부 구현 참조 금지, port 소유권, outbound adapter placement를 자동 검증한다.",
+            "details": "",
+            "status": "pending",
+            "dependencies": [
+              "2.38"
+            ],
+            "parentTaskId": 2,
+            "parentId": "undefined"
+          },
+          {
+            "id": 44,
+            "title": "[refactor][server] identity.access bounded context migration",
+            "description": "identity.access bounded context의 domain/application/adapter 경계를 조사하고, 인증 사용자 조회 port와 보안 adapter의 소유권을 정리한다. 먼저 현재 인증 계약과 active/enabled 정책을 분리한 설계·테스트 계획을 작성한 뒤 작은 vertical slice로 구현한다.",
+            "details": "",
+            "status": "pending",
+            "dependencies": [
+              "2.38"
+            ],
+            "parentTaskId": 2
+          },
+          {
+            "id": 45,
+            "title": "[refactor][server] repository bounded context migration",
+            "description": "repository bounded context의 domain/application/adapter 경계를 정리하고 collaboration 및 identity 의존을 ACL/port 경계로 제한한다. Repository 생성·조회 또는 접근 검증 중 하나의 기준 slice를 선정해 순수 domain 테스트와 adapter contract를 완성한다.",
+            "details": "",
+            "status": "pending",
+            "dependencies": [
+              "2.38"
+            ],
+            "parentTaskId": 2
+          },
+          {
+            "id": 46,
+            "title": "[refactor][server] execution bounded context migration",
+            "description": "execution bounded context의 Job/Runner domain과 application, inbound/outbound adapter 경계를 조사한다. 외부 실행 기술 의존성을 adapter로 격리하고 Job 실행 상태 전이 기준 slice와 회귀 테스트를 정의·구현한다.",
+            "details": "",
+            "status": "pending",
+            "dependencies": [
+              "2.38"
+            ],
+            "parentTaskId": 2
+          },
+          {
+            "id": 47,
+            "title": "[refactor][server] change.review bounded context migration",
+            "description": "change.review bounded context의 변경·리뷰 domain과 application 경계를 정리한다. 리뷰 상태 전이와 외부 저장소/HTTP 의존을 분리하고, 핵심 review workflow를 순수 domain 테스트 가능한 vertical slice로 전환한다.",
+            "details": "",
+            "status": "pending",
+            "dependencies": [
+              "2.38"
+            ],
+            "parentTaskId": 2
           }
         ]
       },
       {
-        "id": "3",
+        "id": 3,
         "title": "보안",
         "description": "인증/인가/자격증명/보안 회귀 강화 작업",
         "status": "cancelled",
@@ -157,7 +272,7 @@
         "subtasks": []
       },
       {
-        "id": "4",
+        "id": 4,
         "title": "운영/인프라",
         "description": "배포/모니터링/CI-CD/운영 안정성 개선 작업",
         "status": "pending",
@@ -214,7 +329,7 @@
         ]
       },
       {
-        "id": "5",
+        "id": 5,
         "title": "버그/핫픽스",
         "description": "사용자 영향 버그 및 긴급 수정 작업",
         "status": "done",
@@ -240,12 +355,14 @@
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2026-05-21T13:50:08.822Z",
+      "lastModified": "2026-08-18T00:31:49.975Z",
       "taskCount": 5,
-      "completedCount": 2,
+      "completedCount": 1,
       "tags": [
         "master"
-      ]
+      ],
+      "created": "2026-08-18T00:31:51.146Z",
+      "description": "Tasks for master context"
     }
   }
 }
