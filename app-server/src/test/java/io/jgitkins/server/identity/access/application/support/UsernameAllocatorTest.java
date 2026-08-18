@@ -6,7 +6,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import io.jgitkins.server.collaboration.application.port.out.OrganizePersistencePort;
+import io.jgitkins.server.collaboration.application.port.out.OrganizeQueryPort;
 import io.jgitkins.server.identity.access.application.port.out.UserPersistencePort;
 import io.jgitkins.server.identity.access.domain.aggregate.User;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeName;
@@ -18,7 +18,7 @@ class UsernameAllocatorTest {
     @Test
     void allocateUniqueUsername_returnsBaseWhenAvailable() {
         UserPersistencePort userPort = mock(UserPersistencePort.class);
-        OrganizePersistencePort organizePort = mock(OrganizePersistencePort.class);
+        OrganizeQueryPort organizePort = mock(OrganizeQueryPort.class);
         when(userPort.findByUsername(anyString())).thenReturn(Optional.empty());
         when(organizePort.findByName(any(OrganizeName.class))).thenReturn(Optional.empty());
 
@@ -32,7 +32,7 @@ class UsernameAllocatorTest {
     @Test
     void allocateUniqueUsername_fallsBackToProviderSuffixWhenBaseTaken() {
         UserPersistencePort userPort = mock(UserPersistencePort.class);
-        OrganizePersistencePort organizePort = mock(OrganizePersistencePort.class);
+        OrganizeQueryPort organizePort = mock(OrganizeQueryPort.class);
         when(userPort.findByUsername(anyString())).thenAnswer(invocation -> {
             String value = invocation.getArgument(0);
             if ("base".equals(value)) {

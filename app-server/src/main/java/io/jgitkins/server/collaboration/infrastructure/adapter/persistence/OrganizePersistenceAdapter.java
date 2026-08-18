@@ -1,10 +1,10 @@
 package io.jgitkins.server.collaboration.infrastructure.adapter.persistence;
 
-import io.jgitkins.server.collaboration.application.port.out.OrganizePersistencePort;
 import io.jgitkins.server.collaboration.application.port.out.OrganizeQueryPort;
 import io.jgitkins.server.collaboration.domain.aggregate.Organize;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeId;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeName;
+import io.jgitkins.server.collaboration.domain.repository.OrganizeRepository;
 import io.jgitkins.server.common.infrastructure.error.InfrastructureErrorCode;
 import io.jgitkins.server.common.infrastructure.exception.InfrastructureException;
 import io.jgitkins.server.collaboration.infrastructure.mapper.OrganizeDomainMapper;
@@ -19,7 +19,7 @@ import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
-public class OrganizePersistenceAdapter implements OrganizePersistencePort, OrganizeQueryPort {
+public class OrganizePersistenceAdapter implements OrganizeRepository, OrganizeQueryPort {
 
     private final OrganizeEntityMbgMapper organizeEntityMbgMapper;
 

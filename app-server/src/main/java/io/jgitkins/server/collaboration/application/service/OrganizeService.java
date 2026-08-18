@@ -8,13 +8,13 @@ import io.jgitkins.server.collaboration.application.port.in.OrganizeCreationUseC
 import io.jgitkins.server.collaboration.application.port.in.OrganizeDeletionUseCase;
 import io.jgitkins.server.collaboration.application.port.in.OrganizeLoadUseCase;
 import io.jgitkins.server.collaboration.application.port.out.DomainEventPublisher;
-import io.jgitkins.server.collaboration.application.port.out.OrganizePersistencePort;
 import io.jgitkins.server.collaboration.application.port.out.UserIdentityPort;
 import io.jgitkins.server.collaboration.application.validate.OrganizeValidator;
 import io.jgitkins.server.collaboration.domain.aggregate.Organize;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeId;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeName;
 import io.jgitkins.server.collaboration.domain.vo.OwnerId;
+import io.jgitkins.server.collaboration.domain.repository.OrganizeRepository;
 import io.jgitkins.server.identity.access.domain.vo.UserId;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -29,7 +29,7 @@ public class OrganizeService implements OrganizeCreationUseCase,
                                         OrganizeLoadUseCase,
                                         OrganizeDeletionUseCase {
 
-    private final OrganizePersistencePort organizePort;
+    private final OrganizeRepository organizePort;
     private final UserIdentityPort userIdentityPort;
     private final DomainEventPublisher domainEventPublisher;
     private final OrganizeValidator organizeValidator;

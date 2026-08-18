@@ -136,8 +136,10 @@
 
 외부 경계는 다음과 같다.
 
-- `OrganizePersistencePort`
-  - organization 저장, 조회, 삭제
+- `OrganizeRepository`
+  - organization aggregate 저장, 수정, 조회, 삭제
+- `OrganizeQueryPort`
+  - 다른 context가 필요한 organization 조회
 - `OrganizeMemberPersistencePort`
   - organization member 저장, 조회, 삭제
 - `CurrentUserPort`

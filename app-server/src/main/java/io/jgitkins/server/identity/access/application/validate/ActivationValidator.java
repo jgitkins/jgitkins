@@ -4,7 +4,7 @@ import io.jgitkins.server.shared.application.error.ApplicationErrorCode;
 import io.jgitkins.server.shared.application.exception.ApplicationException;
 import io.jgitkins.server.collaboration.application.exception.OrganizeAlreadyExistsException;
 import io.jgitkins.server.identity.access.application.exception.UsernameAlreadyExistsException;
-import io.jgitkins.server.collaboration.application.port.out.OrganizePersistencePort;
+import io.jgitkins.server.collaboration.application.port.out.OrganizeQueryPort;
 import io.jgitkins.server.repository.application.port.out.RepositoryQueryPort;
 import io.jgitkins.server.identity.access.application.port.out.UserPersistencePort;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeName;
@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 public class ActivationValidator {
 
     private final UserPersistencePort userPort;
-    private final OrganizePersistencePort organizePort;
+    private final OrganizeQueryPort organizePort;
     private final RepositoryQueryPort repositoryQueryPort;
 
     public Username validateUsername(String username) {

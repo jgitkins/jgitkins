@@ -169,9 +169,9 @@
           {
             "id": 40,
             "title": "[bounded-context port 분리][refactor][server] collaboration persistence port relocation",
-            "description": "OrganizePersistencePort를 collaboration domain repository 경계로 이동하고 adapter.outbound.persistence 배치, wiring, 테스트를 정리한다. Phase 1 correctness 완료 이후 진행.",
-            "details": "",
-            "status": "in-progress",
+            "description": "collaboration persistence contract의 소유권을 정리한다. domain 모델을 저장·수정·로딩하는 OrganizePersistencePort는 OrganizeRepository로 이름을 변경하고 collaboration.domain.repository로 이동한다. OrganizeQueryPort는 collaboration.application.port.out에 유지하는 좁은 read-only 조회 계약으로, 현재 호출부에 필요한 findByName을 추가한다. Phase 1 correctness 완료 이후 진행.",
+            "details": "기준 spec: /Users/hrk/gstack/plans/jgitkins-collaboration-persistence-port-relocation-spec-20260818.md. 구현 기준: 1) OrganizePersistencePort와 OrganizeQueryPort의 실제 입력·반환 타입과 production/test 호출부를 inventory한다. caller에는 identity.access.application.support.UsernameAllocator, identity.access.application.validate.ActivationValidator, repository.application.support.RepositoryLookupService, shared.application.support.RepositoryNamespaceResolver와 대응 테스트를 포함한다. 2) 현재 OrganizePersistencePort는 full aggregate persistence contract이므로 OrganizeRepository로 이름을 변경하고 collaboration.domain.repository에 둔다. 3) OrganizeQueryPort는 collaboration.application.port.out에 유지하며 findById와 findByName만 제공하는 read-only application output port로 둔다. 현재 호환성을 위해 Organize를 반환할 수 있으나 save/update/delete는 포함하지 않는다. 4) OrganizeService와 OrganizeValidator는 OrganizeRepository를 주입받도록 변경하고 validator의 unused OrganizeQueryPort import를 제거한다. 5) 현재 패키지 collaboration.infrastructure.adapter.persistence의 OrganizePersistenceAdapter를 유지하며 adapter package를 이동하지 않고, 이 adapter가 OrganizeRepository와 OrganizeQueryPort를 구현하도록 wiring을 수정한다. MyBatis generated ID·예외 동작도 유지한다. 6) OrganizePersistencePort.java를 삭제하고 production/test의 old declaration/import/reference를 모두 제거한다. 7) identity.access, repository, shared가 full OrganizeRepository를 직접 참조하지 않도록 필요한 호출부만 OrganizeQueryPort로 변경한다. username allocation, activation validation, repository lookup, namespace resolution behavior를 유지한다. 8) OrganizeServiceTest는 OrganizeRepository mock으로, UsernameAllocatorTest와 ActivationValidatorTest는 OrganizeQueryPort mock으로 갱신하고, RepositoryLoadServiceTest의 stale OrganizePersistencePort import를 제거한다. RepositoryLookupService와 RepositoryNamespaceResolver에 전용 테스트가 없으면 각각의 organization lookup behavior를 검증하는 focused test를 추가한다. Architecture tests는 OrganizeRepository의 6개 method, OrganizeQueryPort의 2개 read-only method, adapter의 두 interface 구현과 component/mapper wiring 보존을 검증한다. 9) collaboration.presentation의 adapter.in 이동은 후속 task 2.48에서 수행하며 이 task에는 포함하지 않는다. 제외: API/DB schema 변경, identity.access 전체 migration, repository 전체 migration, membership lifecycle, outbox, 전체 presentation package 이동, OrganizeQueryRepository 및 OrganizationNamespaceQuery 신설.",
+            "status": "completed",
             "dependencies": [
               "2.38"
             ],
@@ -259,6 +259,17 @@
             "dependencies": [
               "2.38",
               "2.46"
+            ],
+            "parentTaskId": 2
+          },
+          {
+            "id": 48,
+            "title": "[bounded-context adapter.in 분리][refactor][server] collaboration presentation inbound adapter relocation",
+            "description": "collaboration.presentation의 REST/Web controller, request DTO, mapper를 collaboration.adapter.in 경계로 이동한다. 기존 API route, HTTP contract, Spring component discovery, controller behavior를 유지하고, collaboration.presentation 삭제가 아니라 inbound adapter 소유권을 명시한다. 현재 bounded context별 presentation convention과의 차이를 검토하고, 후속 전체 adapter.in 표준화 범위는 별도 task로 분리한다.",
+            "details": "선행 작업은 2.40 collaboration persistence port relocation이다. 범위: OrganizeController, OrganizeMemberController, WebOrganizeController와 요청 DTO/mapper를 adapter.in.web 또는 adapter.in.rest로 이동하고, 기존 API 경로·응답 계약·Spring scan·controller 테스트를 유지한다. collaboration.presentation을 삭제하지 않고 inbound adapter로 재분류한다. 다른 bounded context의 presentation 이동은 이 task에 포함하지 않으며 별도 표준화 task로 분리한다. 검증: controller package convention test, collaboration controller tests, API contract regression, git diff --check. 제외: persistence port ownership 변경, domain/application 모델 변경, API 변경, DB schema 변경.",
+            "status": "pending",
+            "dependencies": [
+              "2.40"
             ],
             "parentTaskId": 2
           }

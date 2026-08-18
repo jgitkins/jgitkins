@@ -37,6 +37,8 @@ import io.jgitkins.server.collaboration.infrastructure.persistence.model.Organiz
 import io.jgitkins.server.collaboration.infrastructure.persistence.model.OrganizeEntityCondition;
 import io.jgitkins.server.collaboration.infrastructure.persistence.model.OrganizeMemberEntity;
 import io.jgitkins.server.collaboration.infrastructure.persistence.model.OrganizeMemberEntityCondition;
+import io.jgitkins.server.collaboration.application.port.out.OrganizeQueryPort;
+import io.jgitkins.server.collaboration.domain.repository.OrganizeRepository;
 import io.jgitkins.server.identity.access.application.service.PublicUserQueryService;
 import io.jgitkins.server.execution.application.service.PushEventHandleService;
 import io.jgitkins.server.repository.application.service.RepositoryFileService;
@@ -86,6 +88,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Arrays;
+import java.util.Set;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseEntity;
@@ -189,6 +192,23 @@ class ArchitecturePackageConventionTest {
                 RepositoryOverviewService.class);
 
         serviceClasses.forEach(serviceClass -> assertEquals(REPOSITORY_SERVICE_PACKAGE, serviceClass.getPackageName()));
+    }
+
+    @Test
+    void collaborationPersistenceContracts_haveExplicitOwnershipAndShape() {
+        assertEquals("io.jgitkins.server.collaboration.domain.repository", OrganizeRepository.class.getPackageName());
+        assertEquals("io.jgitkins.server.collaboration.application.port.out", OrganizeQueryPort.class.getPackageName());
+        assertTrue(OrganizeRepository.class.isAssignableFrom(OrganizePersistenceAdapter.class));
+        assertTrue(OrganizeQueryPort.class.isAssignableFrom(OrganizePersistenceAdapter.class));
+
+        assertEquals(Set.of("save", "update", "findById", "findByName", "findAll", "deleteById"),
+                Arrays.stream(OrganizeRepository.class.getDeclaredMethods())
+                        .map(Method::getName)
+                        .collect(java.util.stream.Collectors.toSet()));
+        assertEquals(Set.of("findById", "findByName"),
+                Arrays.stream(OrganizeQueryPort.class.getDeclaredMethods())
+                        .map(Method::getName)
+                        .collect(java.util.stream.Collectors.toSet()));
     }
 
     @Test

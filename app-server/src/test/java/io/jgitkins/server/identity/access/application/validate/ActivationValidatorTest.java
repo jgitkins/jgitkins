@@ -3,7 +3,7 @@ package io.jgitkins.server.identity.access.application.validate;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
-import io.jgitkins.server.collaboration.application.port.out.OrganizePersistencePort;
+import io.jgitkins.server.collaboration.application.port.out.OrganizeQueryPort;
 import io.jgitkins.server.repository.application.port.out.RepositoryQueryPort;
 import io.jgitkins.server.identity.access.application.port.out.UserPersistencePort;
 import io.jgitkins.server.shared.domain.model.vo.OwnerId;
@@ -21,7 +21,7 @@ class ActivationValidatorTest {
     private UserPersistencePort userPort;
 
     @Mock
-    private OrganizePersistencePort organizePort;
+    private OrganizeQueryPort organizePort;
 
     @Mock
     private RepositoryQueryPort repositoryQueryPort;

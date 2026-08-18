@@ -1,6 +1,6 @@
 package io.jgitkins.server.repository.application.support;
 
-import io.jgitkins.server.collaboration.application.port.out.OrganizePersistencePort;
+import io.jgitkins.server.collaboration.application.port.out.OrganizeQueryPort;
 import io.jgitkins.server.identity.access.application.port.out.UserPersistencePort;
 import io.jgitkins.server.collaboration.domain.aggregate.Organize;
 import io.jgitkins.server.repository.domain.aggregate.Repository;
@@ -24,7 +24,7 @@ public class RepositoryLookupService {
 
     private final RepositoryRepository repositoryRepository;
     private final UserPersistencePort userPort;
-    private final OrganizePersistencePort organizePort;
+    private final OrganizeQueryPort organizePort;
 
     public Optional<Repository> resolveByPath(String namespace, String repoName) {
         String normalizedNamespace = trimSlashes(namespace);

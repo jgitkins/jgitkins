@@ -3,8 +3,7 @@ package io.jgitkins.server.collaboration.application.validate;
 import io.jgitkins.server.collaboration.application.exception.OrganizeAlreadyExistsException;
 import io.jgitkins.server.collaboration.application.exception.OrganizeNotFoundException;
 import io.jgitkins.server.collaboration.application.port.out.OrganizeMembershipQueryPort;
-import io.jgitkins.server.collaboration.application.port.out.OrganizePersistencePort;
-import io.jgitkins.server.collaboration.application.port.out.OrganizeQueryPort;
+import io.jgitkins.server.collaboration.domain.repository.OrganizeRepository;
 import io.jgitkins.server.collaboration.domain.aggregate.Organize;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeId;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeName;
@@ -16,7 +15,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class OrganizeValidator {
 
-    private final OrganizePersistencePort organizePort;
+    private final OrganizeRepository organizePort;
     private final OrganizeMembershipQueryPort organizeMemberPort;
 
     public void validateCreation(OrganizeName name) {

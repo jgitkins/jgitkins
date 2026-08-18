@@ -18,7 +18,7 @@ import io.jgitkins.server.collaboration.application.port.out.DomainEventPublishe
 import io.jgitkins.server.collaboration.application.port.out.UserIdentityPort;
 import io.jgitkins.server.collaboration.application.port.out.OrganizeMemberPersistencePort;
 import io.jgitkins.server.collaboration.application.port.out.OrganizeMembershipQueryPort;
-import io.jgitkins.server.collaboration.application.port.out.OrganizePersistencePort;
+import io.jgitkins.server.collaboration.domain.repository.OrganizeRepository;
 import io.jgitkins.server.collaboration.application.validate.OrganizeValidator;
 import io.jgitkins.core.common.exception.JgitkinsException;
 import io.jgitkins.server.collaboration.domain.aggregate.Organize;
@@ -40,7 +40,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class OrganizeServiceTest {
 
     @Mock
-    private OrganizePersistencePort organizePort;
+    private OrganizeRepository organizePort;
 
     @Mock
     private OrganizeMemberPersistencePort organizeMemberPort;

@@ -146,7 +146,7 @@ push event에 대해 job 생성 가능 여부와 어떤 pipeline file을 실행�
 
 외부 경계는 다음과 같다.
 
-- `OrganizePersistencePort`
+- `OrganizeQueryPort`
 - `UserPersistencePort`
 - `RepositoryPersistencePort`
 - `OrganizeMemberPersistencePort`
