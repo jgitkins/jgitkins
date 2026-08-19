@@ -6,7 +6,7 @@ import io.jgitkins.server.execution.application.contract.command.DispatchJobComm
 import io.jgitkins.server.execution.application.contract.result.JobDispatchResult;
 import io.jgitkins.server.execution.application.port.in.JobDispatchUseCase;
 import io.jgitkins.server.execution.application.port.out.JobDispatchQueryPort;
-import io.jgitkins.server.repository.application.support.CloneUrlBuilder;
+import io.jgitkins.server.execution.application.port.out.CloneUrlPort;
 import io.jgitkins.server.execution.domain.aggregate.Job;
 import io.jgitkins.server.execution.domain.entity.JobHistory;
 import io.jgitkins.server.execution.domain.repository.JobRepository;
@@ -26,7 +26,7 @@ public class JobDispatchService implements JobDispatchUseCase {
 
     private final RunnerDispatchContextResolver runnerDispatchContextResolver;
     private final JobDispatchResultAssembler jobDispatchResultAssembler;
-    private final CloneUrlBuilder cloneUrlBuilder;
+    private final CloneUrlPort cloneUrlPort;
 
     private final JobDispatchQueryPort jobDispatchQueryPort;
     private final JobRepository jobRepository;
@@ -52,7 +52,7 @@ public class JobDispatchService implements JobDispatchUseCase {
             return Optional.empty();
         }
 
-        String cloneUrl = cloneUrlBuilder.build(dispatchableJob.repositoryClonePath());
+        String cloneUrl = cloneUrlPort.build(dispatchableJob.repositoryClonePath());
         return Optional.of(jobDispatchResultAssembler.assemble(
                 runnerContext,
                 dispatchableJob,

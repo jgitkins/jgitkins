@@ -20,6 +20,8 @@ public interface JobHistoryEntityMbgMapper {
 
     List<JobHistoryEntity> selectByCondition(JobHistoryEntityCondition example);
 
+    JobHistoryEntity selectLatestHistoryForUpdate(@Param("jobId") Long jobId);
+
     JobHistoryEntity selectByPrimaryKey(Long id);
 
     int updateByConditionSelective(@Param("row") JobHistoryEntity row, @Param("example") JobHistoryEntityCondition example);

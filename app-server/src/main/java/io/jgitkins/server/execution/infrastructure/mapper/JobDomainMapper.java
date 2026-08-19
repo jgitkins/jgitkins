@@ -5,8 +5,8 @@ import io.jgitkins.server.execution.domain.entity.JobHistory;
 import io.jgitkins.server.shared.domain.model.vo.BranchName;
 import io.jgitkins.server.shared.domain.model.vo.CommitHash;
 import io.jgitkins.server.shared.domain.model.vo.SequenceNumber;
-import io.jgitkins.server.identity.access.domain.vo.SystemUser;
-import io.jgitkins.server.identity.access.domain.vo.UserId;
+import io.jgitkins.server.execution.domain.vo.ExecutionSystemActor;
+import io.jgitkins.server.execution.domain.vo.ExecutionActorId;
 import io.jgitkins.server.execution.domain.vo.JobHistoryId;
 import io.jgitkins.server.execution.domain.vo.JobId;
 import io.jgitkins.server.execution.domain.vo.JobStatus;
@@ -14,7 +14,7 @@ import io.jgitkins.server.execution.domain.vo.RunnerId;
 import io.jgitkins.server.execution.infrastructure.persistence.model.DispatchableJobRow;
 import io.jgitkins.server.execution.infrastructure.persistence.model.JobEntity;
 import io.jgitkins.server.execution.infrastructure.persistence.model.JobHistoryEntity;
-import io.jgitkins.server.repository.domain.vo.RepositoryId;
+import io.jgitkins.server.execution.domain.vo.ExecutionRepositoryId;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.slf4j.Logger;
@@ -41,10 +41,10 @@ public interface JobDomainMapper {
         }
         return Job.reconstruct(
                 JobId.of(String.valueOf(entity.getId())),
-                RepositoryId.of(entity.getRepositoryId()),
+                ExecutionRepositoryId.of(entity.getRepositoryId()),
                 CommitHash.of(entity.getCommitHash()),
                 BranchName.of(entity.getBranchName()),
-                UserId.of(entity.getTriggeredBy()),
+                ExecutionActorId.of(entity.getTriggeredBy()),
                 entity.getCreatedAt(),
                 histories);
     }
@@ -55,26 +55,31 @@ public interface JobDomainMapper {
         }
         return Job.reconstruct(
                 JobId.of(String.valueOf(row.jobId())),
-                RepositoryId.of(row.repositoryId()),
+                ExecutionRepositoryId.of(row.repositoryId()),
                 CommitHash.of(row.commitHash()),
                 BranchName.of(row.branchName()),
-                UserId.of(row.triggeredBy()),
+                ExecutionActorId.of(row.triggeredBy()),
                 row.jobCreatedAt(),
                 histories);
     }
 
-    default JobHistory toHistoryDomain(JobHistoryEntity entity) {
+    default List<JobHistory> toHistoryDomain(List<JobHistoryEntity> entities) {
+        return java.util.stream.IntStream.range(0, entities.size())
+                .mapToObj(index -> toHistoryDomain(entities.get(index), index + 1))
+                .toList();
+    }
+
+    default JobHistory toHistoryDomain(JobHistoryEntity entity, int sequence) {
         if (entity == null) {
             return null;
         }
-        // DB에 없는 필드(seqNo, createdBy)는 임시값 사용
         return JobHistory.reconstruct(
                 JobHistoryId.of(String.valueOf(entity.getId())),
                 JobId.of(String.valueOf(entity.getJobId())),
-                SequenceNumber.of(1), // TODO: DB 필드 추가 필요
+                SequenceNumber.of(sequence),
                 entity.getRunnerId() != null ? RunnerId.of(String.valueOf(entity.getRunnerId())) : null,
                 JobStatus.valueOf(entity.getStatus()),
-                SystemUser.SYSTEM, // TODO: DB 필드 추가 필요
+                ExecutionSystemActor.SYSTEM,
                 entity.getCreatedAt());
     }
 

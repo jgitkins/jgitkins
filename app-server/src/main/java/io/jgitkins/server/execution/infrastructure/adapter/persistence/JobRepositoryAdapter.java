@@ -64,8 +64,9 @@ public class JobRepositoryAdapter implements JobRepository {
         try {
             Long jobIdLong = Long.parseLong(job.getId().getValue());
 
-            Optional<JobHistoryEntity> latestPersistedHistory = findLatestHistory(jobIdLong);
-            if (latestPersistedHistory.isEmpty() || !isSameHistory(latestPersistedHistory.get(), previousHistory)) {
+            jobHistoryEntityMbgMapper.selectLatestHistoryForUpdate(jobIdLong);
+            JobHistoryEntity latestPersistedHistory = selectLatestHistory(jobIdLong);
+            if (latestPersistedHistory == null || !isSameHistory(latestPersistedHistory, previousHistory)) {
                 return Optional.empty();
             }
 
@@ -85,17 +86,15 @@ public class JobRepositoryAdapter implements JobRepository {
         condition.createCriteria().andJobIdEqualTo(jobId);
         condition.setOrderByClause("CREATED_AT ASC, ID ASC");
 
-        return jobHistoryEntityMbgMapper.selectByCondition(condition).stream()
-                .map(jobDomainMapper::toHistoryDomain)
-                .toList();
+        return jobDomainMapper.toHistoryDomain(jobHistoryEntityMbgMapper.selectByCondition(condition));
     }
 
-    private Optional<JobHistoryEntity> findLatestHistory(Long jobId) {
+    private JobHistoryEntity selectLatestHistory(Long jobId) {
         JobHistoryEntityCondition condition = new JobHistoryEntityCondition();
         condition.createCriteria().andJobIdEqualTo(jobId);
         condition.setOrderByClause("CREATED_AT DESC, ID DESC");
-
-        return jobHistoryEntityMbgMapper.selectByCondition(condition).stream().findFirst();
+        List<JobHistoryEntity> histories = jobHistoryEntityMbgMapper.selectByCondition(condition);
+        return histories.isEmpty() ? null : histories.get(0);
     }
 
     private boolean isSameHistory(JobHistoryEntity latestPersisted, JobHistory expectedPreviousHistory) {

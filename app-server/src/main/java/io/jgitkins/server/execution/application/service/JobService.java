@@ -6,8 +6,8 @@ import io.jgitkins.server.execution.domain.aggregate.Job;
 import io.jgitkins.server.shared.domain.model.vo.BranchName;
 import io.jgitkins.server.shared.domain.model.vo.CommitHash;
 import io.jgitkins.server.execution.domain.repository.JobRepository;
-import io.jgitkins.server.repository.domain.vo.RepositoryId;
-import io.jgitkins.server.identity.access.domain.vo.UserId;
+import io.jgitkins.server.execution.domain.vo.ExecutionRepositoryId;
+import io.jgitkins.server.execution.domain.vo.ExecutionActorId;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,10 +26,10 @@ public class JobService implements JobCreateUseCase {
         log.info("Creating job for repo: {}, commit: {}, path: {}",
                 command.repoName(), command.commitHash(), command.pipelineFilePath());
 
-        Job job = Job.create(RepositoryId.of(command.repositoryId()),
+        Job job = Job.create(ExecutionRepositoryId.of(command.repositoryId()),
                              CommitHash.of(command.commitHash()),
                              BranchName.of(command.branchName()),
-                             UserId.of(command.triggeredBy()));
+                             ExecutionActorId.of(command.triggeredBy()));
 
         jobRepository.save(job);
 

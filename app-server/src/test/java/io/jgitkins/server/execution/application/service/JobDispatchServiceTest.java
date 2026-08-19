@@ -12,7 +12,7 @@ import io.jgitkins.server.execution.application.contract.command.DispatchJobComm
 import io.jgitkins.server.execution.application.contract.result.JobDispatchResult;
 import io.jgitkins.server.execution.application.port.out.JobDispatchQueryPort;
 import io.jgitkins.server.execution.domain.repository.JobRepository;
-import io.jgitkins.server.repository.application.support.CloneUrlBuilder;
+import io.jgitkins.server.execution.application.port.out.CloneUrlPort;
 import io.jgitkins.server.execution.application.support.JobDispatchResultAssembler;
 import io.jgitkins.server.execution.application.support.RunnerDispatchContextResolver;
 import io.jgitkins.server.execution.domain.aggregate.Job;
@@ -23,12 +23,12 @@ import io.jgitkins.server.shared.domain.model.vo.CommitHash;
 import io.jgitkins.server.execution.domain.vo.JobHistoryId;
 import io.jgitkins.server.execution.domain.vo.JobId;
 import io.jgitkins.server.execution.domain.vo.JobStatus;
-import io.jgitkins.server.repository.domain.vo.RepositoryId;
+import io.jgitkins.server.execution.domain.vo.ExecutionRepositoryId;
 import io.jgitkins.server.execution.domain.vo.RunnerScopeType;
 import io.jgitkins.server.execution.domain.vo.RunnerStatus;
 import io.jgitkins.server.shared.domain.model.vo.SequenceNumber;
-import io.jgitkins.server.identity.access.domain.vo.SystemUser;
-import io.jgitkins.server.identity.access.domain.vo.UserId;
+import io.jgitkins.server.execution.domain.vo.ExecutionSystemActor;
+import io.jgitkins.server.execution.domain.vo.ExecutionActorId;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -54,7 +54,7 @@ class JobDispatchServiceTest {
     private JobDispatchResultAssembler jobDispatchResultAssembler;
 
     @Mock
-    private CloneUrlBuilder cloneUrlBuilder;
+    private CloneUrlPort cloneUrlPort;
 
     @InjectMocks
     private JobDispatchService service;
@@ -67,7 +67,7 @@ class JobDispatchServiceTest {
 
         assertThat(result).isEmpty();
         verify(runnerDispatchContextResolver).resolve(" ");
-        verifyNoInteractions(jobDispatchQueryPort, jobRepository, jobDispatchResultAssembler, cloneUrlBuilder);
+        verifyNoInteractions(jobDispatchQueryPort, jobRepository, jobDispatchResultAssembler, cloneUrlPort);
     }
 
     @Test
@@ -79,7 +79,7 @@ class JobDispatchServiceTest {
 
         assertThat(result).isEmpty();
         verify(runnerDispatchContextResolver).resolve("token");
-        verifyNoInteractions(jobDispatchQueryPort, jobRepository, jobDispatchResultAssembler, cloneUrlBuilder);
+        verifyNoInteractions(jobDispatchQueryPort, jobRepository, jobDispatchResultAssembler, cloneUrlPort);
     }
 
     @Test
@@ -95,7 +95,7 @@ class JobDispatchServiceTest {
         assertThat(result).isEmpty();
         verify(runnerDispatchContextResolver).resolve("token");
         verify(jobDispatchQueryPort).fetchNextJob(any(RunnerDispatchContext.class));
-        verifyNoInteractions(jobRepository, jobDispatchResultAssembler, cloneUrlBuilder);
+        verifyNoInteractions(jobRepository, jobDispatchResultAssembler, cloneUrlPort);
     }
 
     @Test
@@ -107,7 +107,7 @@ class JobDispatchServiceTest {
         when(runnerDispatchContextResolver.resolve("token")).thenReturn(Optional.of(runnerContext));
         when(jobDispatchQueryPort.fetchNextJob(any(RunnerDispatchContext.class))).thenReturn(Optional.of(dispatchableJob));
         when(jobRepository.appendHistoryIfCurrent(any(Job.class), any(JobHistory.class))).thenReturn(Optional.of(999L));
-        when(cloneUrlBuilder.build("org/repo.git")).thenReturn("https://git.example/org/repo.git");
+        when(cloneUrlPort.build("org/repo.git")).thenReturn("https://git.example/org/repo.git");
         when(jobDispatchResultAssembler.assemble(any(RunnerDispatchContext.class), any(DispatchableJob.class), any(Job.class), any(Long.class), any(String.class)))
                 .thenReturn(new JobDispatchResult(
                         101L,
@@ -136,7 +136,7 @@ class JobDispatchServiceTest {
         assertThat(result.get().cloneUrl()).isEqualTo("https://git.example/org/repo.git");
 
         verify(jobRepository).appendHistoryIfCurrent(any(Job.class), any(JobHistory.class));
-        verify(cloneUrlBuilder).build("org/repo.git");
+        verify(cloneUrlPort).build("org/repo.git");
     }
 
     @Test
@@ -153,17 +153,17 @@ class JobDispatchServiceTest {
 
         assertThat(result).isEmpty();
         verify(jobRepository).appendHistoryIfCurrent(any(Job.class), any(JobHistory.class));
-        verifyNoInteractions(jobDispatchResultAssembler, cloneUrlBuilder);
+        verifyNoInteractions(jobDispatchResultAssembler, cloneUrlPort);
     }
 
     private DispatchableJob dispatchableJob(Long jobId, Long repositoryId, String clonePath) {
         LocalDateTime createdAt = LocalDateTime.of(2026, 3, 12, 10, 0);
         Job job = Job.reconstruct(
                 JobId.of(String.valueOf(jobId)),
-                RepositoryId.of(repositoryId),
+                ExecutionRepositoryId.of(repositoryId),
                 CommitHash.of("abc123def456"),
                 BranchName.of("main"),
-                UserId.of(3L),
+                ExecutionActorId.of(3L),
                 createdAt,
                 List.of(JobHistory.reconstruct(
                         JobHistoryId.generate(),
@@ -171,7 +171,7 @@ class JobDispatchServiceTest {
                         SequenceNumber.first(),
                         null,
                         JobStatus.PENDING,
-                        SystemUser.SYSTEM,
+                        ExecutionSystemActor.SYSTEM,
                         createdAt
                 ))
         );

@@ -3,13 +3,13 @@ package io.jgitkins.server.execution.domain.aggregate;
 import io.jgitkins.server.shared.domain.aggregate.AbstractAggregateRoot;
 import io.jgitkins.server.shared.domain.model.vo.BranchName;
 import io.jgitkins.server.shared.domain.model.vo.CommitHash;
-import io.jgitkins.server.identity.access.domain.vo.UserId;
+import io.jgitkins.server.execution.domain.vo.ExecutionActorId;
 import io.jgitkins.server.execution.domain.event.JobQueuedEvent;
 import io.jgitkins.server.execution.domain.entity.JobHistory;
 import io.jgitkins.server.execution.domain.vo.JobId;
 import io.jgitkins.server.execution.domain.vo.JobStatus;
 import io.jgitkins.server.execution.domain.vo.RunnerId;
-import io.jgitkins.server.repository.domain.vo.RepositoryId;
+import io.jgitkins.server.execution.domain.vo.ExecutionRepositoryId;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -28,10 +28,10 @@ import java.util.List;
 public class Job extends AbstractAggregateRoot<JobId> {
 
     private final JobId id;
-    private final RepositoryId repositoryId;
+    private final ExecutionRepositoryId repositoryId;
     private final CommitHash commitHash;
     private final BranchName branchName;
-    private final UserId triggeredBy;
+    private final ExecutionActorId triggeredBy;
     private final LocalDateTime createdAt;
 
     // Aggregate 내부 Entity Collection
@@ -41,10 +41,10 @@ public class Job extends AbstractAggregateRoot<JobId> {
      * Job 생성 (Factory Method)
      * 초기 상태는 PENDING으로 자동 생성
      */
-    public static Job create(RepositoryId repositoryId,
+    public static Job create(ExecutionRepositoryId repositoryId,
                              CommitHash commitHash,
                              BranchName branchName,
-                             UserId triggeredBy) {
+                             ExecutionActorId triggeredBy) {
         JobId jobId = JobId.generate();
         LocalDateTime now = LocalDateTime.now();
 
@@ -151,10 +151,10 @@ public class Job extends AbstractAggregateRoot<JobId> {
      */
     public static Job reconstruct(
             JobId id,
-            RepositoryId repositoryId,
+            ExecutionRepositoryId repositoryId,
             CommitHash commitHash,
             BranchName branchName,
-            UserId triggeredBy,
+            ExecutionActorId triggeredBy,
             LocalDateTime createdAt,
             List<JobHistory> histories) {
         return new Job(

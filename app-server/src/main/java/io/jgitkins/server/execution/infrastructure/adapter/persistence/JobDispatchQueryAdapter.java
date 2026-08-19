@@ -61,8 +61,6 @@ public class JobDispatchQueryAdapter implements JobDispatchQueryPort {
         condition.createCriteria().andJobIdEqualTo(jobId);
         condition.setOrderByClause("CREATED_AT ASC, ID ASC");
 
-        return jobHistoryEntityMbgMapper.selectByCondition(condition).stream()
-                .map(jobDomainMapper::toHistoryDomain)
-                .toList();
+        return jobDomainMapper.toHistoryDomain(jobHistoryEntityMbgMapper.selectByCondition(condition));
     }
 }

@@ -53,7 +53,7 @@ class JobDispatchQueryAdapterTest {
 
         when(jobDispatchQueryMapper.selectNextDispatchableJob("ORGANIZE", 33L)).thenReturn(row);
         when(jobHistoryEntityMbgMapper.selectByCondition(any())).thenReturn(List.of(latestPending));
-        when(jobDomainMapper.toHistoryDomain(any(JobHistoryEntity.class))).thenReturn(mappedHistory);
+        when(jobDomainMapper.toHistoryDomain(any())).thenReturn(List.of(mappedHistory));
         when(jobDomainMapper.toDomain(any(DispatchableJobRow.class), any())).thenReturn(mappedJob);
 
         var result = adapter.fetchNextJob(context);

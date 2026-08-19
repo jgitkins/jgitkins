@@ -1,7 +1,7 @@
 package io.jgitkins.server.execution.domain.entity;
 
 import io.jgitkins.server.shared.domain.model.vo.SequenceNumber;
-import io.jgitkins.server.identity.access.domain.vo.SystemUser;
+import io.jgitkins.server.execution.domain.vo.ExecutionSystemActor;
 import io.jgitkins.server.execution.domain.vo.JobHistoryId;
 import io.jgitkins.server.execution.domain.vo.JobId;
 import io.jgitkins.server.execution.domain.vo.JobStatus;
@@ -25,7 +25,7 @@ public class JobHistory {
     private final SequenceNumber seqNo;
     private final RunnerId runnerId; // PENDING, IN_QUEUE 단계에서는 null
     private final JobStatus status;
-    private final SystemUser createdBy; // PENDING 단계에서는 SYSTEM
+    private final ExecutionSystemActor createdBy; // PENDING 단계에서는 SYSTEM
     private final LocalDateTime createdAt;
 
     /**
@@ -38,7 +38,7 @@ public class JobHistory {
                 SequenceNumber.first(), // seq_no = 1
                 null, // runner_id는 null
                 JobStatus.PENDING,
-                SystemUser.SYSTEM, // created_by = SYSTEM
+                ExecutionSystemActor.SYSTEM, // created_by = SYSTEM
                 createdAt);
     }
 
@@ -56,7 +56,7 @@ public class JobHistory {
                 SequenceNumber.of(seqNo),
                 runnerId,
                 JobStatus.IN_PROGRESS,
-                SystemUser.SYSTEM, // created_by = SYSTEM
+                ExecutionSystemActor.SYSTEM, // created_by = SYSTEM
                 createdAt);
     }
 
@@ -71,7 +71,7 @@ public class JobHistory {
                 SequenceNumber.of(seqNo),
                 runnerId,
                 JobStatus.SUCCESS,
-                SystemUser.SYSTEM,
+                ExecutionSystemActor.SYSTEM,
                 createdAt);
     }
 
@@ -86,7 +86,7 @@ public class JobHistory {
                 SequenceNumber.of(seqNo),
                 runnerId,
                 JobStatus.FAILED,
-                SystemUser.SYSTEM,
+                ExecutionSystemActor.SYSTEM,
                 createdAt);
     }
 
@@ -99,7 +99,7 @@ public class JobHistory {
             SequenceNumber seqNo,
             RunnerId runnerId,
             JobStatus status,
-            SystemUser createdBy,
+            ExecutionSystemActor createdBy,
             LocalDateTime createdAt) {
         return new JobHistory(
                 id,
