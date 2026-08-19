@@ -1,7 +1,7 @@
 package io.jgitkins.server.change.review.infrastructure.mapper;
 
 import io.jgitkins.server.shared.domain.model.vo.CommitHash;
-import io.jgitkins.server.repository.domain.vo.RepositoryId;
+import io.jgitkins.server.change.review.domain.model.vo.ReviewRepositoryId;
 import io.jgitkins.server.change.review.domain.aggregate.PullRequest;
 import io.jgitkins.server.change.review.domain.model.BranchHeadSnapshot;
 import io.jgitkins.server.change.review.domain.model.PullRequestStatus;
@@ -16,7 +16,7 @@ public class PullRequestDomainMapper {
     public PullRequest toDomain(PullRequestEntity entity) {
         return PullRequest.rehydrate(
                 PullRequestId.of(entity.getId()),
-                RepositoryId.of(entity.getRepositoryId()),
+                ReviewRepositoryId.of(entity.getRepositoryId()),
                 BranchHeadSnapshot.of(entity.getSourceBranch(), entity.getSourceHead()),
                 BranchHeadSnapshot.of(entity.getTargetBranch(), entity.getTargetHead()),
                 PullRequestStatus.valueOf(entity.getStatus()),

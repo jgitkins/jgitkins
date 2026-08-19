@@ -1,9 +1,10 @@
-package io.jgitkins.server.common.infrastructure.adapter.git;
+package io.jgitkins.server.change.review.infrastructure.adapter.git;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import io.jgitkins.server.change.review.application.dto.command.MergeRequest;
 import io.jgitkins.server.change.review.application.dto.result.MergeResult;
-import io.jgitkins.server.common.infrastructure.adapter.git.MergeGitAdapter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -39,6 +40,41 @@ class MergeGitAdapterTest {
         assertThat(result.getStatus()).isEqualTo(MergeResult.Status.MERGEABLE);
         assertThat(result.getFastForwardPossible()).isFalse();
         assertThat(result.getMergeCommitRequired()).isTrue();
+    }
+
+    @Test
+    void mergeCreatesCommitAndUpdatesTargetRef() throws Exception {
+        createBareRepository(Scenario.DIVERGED);
+        MergeGitAdapter adapter = new MergeGitAdapter(tempDir.toString());
+        MergeRequest request = new MergeRequest("feature", "main", "merge feature", "tester", "tester@example.com");
+
+        MergeResult result = adapter.merge("team", "demo", request);
+
+        assertThat(result.getStatus()).isEqualTo(MergeResult.Status.MERGED);
+        assertThat(result.getNewCommitId()).isNotBlank();
+        assertThat(result.getResultTreeId()).isNotBlank();
+        assertThat(adapter.previewMergeability("team", "demo", "feature", "main").getStatus())
+                .isEqualTo(MergeResult.Status.ALREADY_UP_TO_DATE);
+    }
+
+    @Test
+    void mergeReportsMissingBranch() throws Exception {
+        createBareRepository(Scenario.FAST_FORWARD);
+        MergeGitAdapter adapter = new MergeGitAdapter(tempDir.toString());
+        MergeRequest request = new MergeRequest("missing", "main", null, "tester", "tester@example.com");
+
+        assertThatThrownBy(() -> adapter.merge("team", "demo", request))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Source branch not found: missing");
+    }
+
+    @Test
+    void mergePropagatesRepositoryIoFailure() {
+        MergeGitAdapter adapter = new MergeGitAdapter(tempDir.toString());
+        MergeRequest request = new MergeRequest("feature", "main", null, "tester", "tester@example.com");
+
+        assertThatThrownBy(() -> adapter.merge("missing", "demo", request))
+                .isInstanceOf(IOException.class);
     }
 
     private void createBareRepository(Scenario scenario) throws Exception {

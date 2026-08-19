@@ -1,9 +1,9 @@
-package io.jgitkins.server.common.infrastructure.adapter.git;
+package io.jgitkins.server.change.review.infrastructure.adapter.git;
 
 import io.jgitkins.server.shared.common.GitConstants;
 import io.jgitkins.server.change.review.application.dto.command.MergeRequest;
 import io.jgitkins.server.change.review.application.dto.result.MergeResult;
-import io.jgitkins.server.change.review.application.port.out.MergeGitPort;
+import io.jgitkins.server.change.review.application.port.out.MergePort;
 import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
@@ -30,7 +30,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
-public class MergeGitAdapter implements MergeGitPort {
+public class MergeGitAdapter implements MergePort {
 
     private final String rootPath;
 

@@ -12,14 +12,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jgitkins.server.change.review.application.dto.command.MergeRequest;
 import io.jgitkins.server.change.review.application.dto.result.MergeResult;
+import io.jgitkins.server.change.review.application.exception.BranchHeadNotFoundException;
 import io.jgitkins.server.change.review.application.port.in.MergeUseCase;
 import io.jgitkins.server.change.review.application.port.in.MergeabilityCheckUseCase;
+import io.jgitkins.server.common.presentation.advice.GlobalExceptionHandler;
+import io.jgitkins.server.common.presentation.advice.mapper.CompositeErrorHttpStatusMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -32,13 +36,17 @@ class MergeControllerTest {
     @Mock
     private MergeUseCase mergeUseCase;
 
+    @Mock
+    private CompositeErrorHttpStatusMapper statusMapper;
+
     private MockMvc mockMvc;
     private ObjectMapper objectMapper;
 
     @BeforeEach
     void setUp() {
         MergeController controller = new MergeController(mergeabilityCheckUseCase, mergeUseCase);
-        this.mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
+        this.mockMvc = MockMvcBuilders.standaloneSetup(controller)
+                .setControllerAdvice(new GlobalExceptionHandler(statusMapper)).build();
         this.objectMapper = new ObjectMapper();
     }
 
@@ -79,5 +87,20 @@ class MergeControllerTest {
                 .andExpect(jsonPath("$.data.newCommitId").value("abc123"));
 
         verify(mergeUseCase).performMerge(eq("team"), eq("repo"), any(MergeRequest.class));
+    }
+
+    @Test
+    void performMerge_preservesBranchNotFoundWireContract() throws Exception {
+        when(statusMapper.map(any())).thenReturn(HttpStatus.NOT_FOUND);
+        when(mergeUseCase.performMerge(eq("team"), eq("repo"), any(MergeRequest.class)))
+                .thenThrow(new BranchHeadNotFoundException("missing"));
+
+        mockMvc.perform(post("/repositories/team/repo/merge")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsBytes(new MergeRequest("missing", "main", null, "alice", "alice@test.com"))))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.error.code").value("BRANCH-404"))
+                .andExpect(jsonPath("$.error.message").value("Branch not found: missing"))
+                .andExpect(jsonPath("$.error.source").value("application"));
     }
 }

@@ -2,7 +2,7 @@ package io.jgitkins.server.change.review.infrastructure.mapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.jgitkins.server.repository.domain.vo.RepositoryId;
+import io.jgitkins.server.change.review.domain.model.vo.ReviewRepositoryId;
 import io.jgitkins.server.change.review.domain.aggregate.PullRequest;
 import io.jgitkins.server.change.review.domain.model.BranchHeadSnapshot;
 import io.jgitkins.server.change.review.domain.model.TargetDrift;
@@ -18,7 +18,7 @@ class PullRequestDomainMapperTest {
     @Test
     void toEntity_mapsPersistentPullRequestStateWithoutMergeabilityAssessment() {
         PullRequest pullRequest = PullRequest.create(
-                        RepositoryId.of(1L),
+                        ReviewRepositoryId.of(1L),
                         BranchHeadSnapshot.of("feature", "aaaaaaa"),
                         BranchHeadSnapshot.of("main", "bbbbbbb"))
                 .withIdentity(PullRequestId.of(10L), LocalDateTime.now().minusDays(1), LocalDateTime.now())
@@ -55,7 +55,7 @@ class PullRequestDomainMapperTest {
         PullRequest pullRequest = mapper.toDomain(entity);
 
         assertThat(pullRequest.getId()).isEqualTo(PullRequestId.of(10L));
-        assertThat(pullRequest.getRepositoryId()).isEqualTo(RepositoryId.of(1L));
+        assertThat(pullRequest.getRepositoryId()).isEqualTo(ReviewRepositoryId.of(1L));
         assertThat(pullRequest.getLastAssessmentSnapshot()).isNull();
         assertThat(pullRequest.getTargetDrift()).isEqualTo(TargetDrift.none());
     }

@@ -2,7 +2,7 @@ package io.jgitkins.server.change.review.domain.aggregate;
 
 import io.jgitkins.server.shared.domain.aggregate.AbstractAggregateRoot;
 import io.jgitkins.server.change.review.domain.model.changegraph.MergeabilityAssessment;
-import io.jgitkins.server.repository.domain.vo.RepositoryId;
+import io.jgitkins.server.change.review.domain.model.vo.ReviewRepositoryId;
 import io.jgitkins.server.change.review.domain.model.BranchHeadSnapshot;
 import io.jgitkins.server.change.review.domain.model.PullRequestStatus;
 import io.jgitkins.server.change.review.domain.model.TargetDrift;
@@ -14,7 +14,7 @@ import lombok.Getter;
 public class PullRequest extends AbstractAggregateRoot<PullRequestId> {
 
     private final PullRequestId id;
-    private final RepositoryId repositoryId;
+    private final ReviewRepositoryId repositoryId;
     private final BranchHeadSnapshot source;
     private final BranchHeadSnapshot target;
     private final PullRequestStatus status;
@@ -24,7 +24,7 @@ public class PullRequest extends AbstractAggregateRoot<PullRequestId> {
     private final LocalDateTime updatedAt;
 
     private PullRequest(PullRequestId id,
-                        RepositoryId repositoryId,
+                        ReviewRepositoryId repositoryId,
                         BranchHeadSnapshot source,
                         BranchHeadSnapshot target,
                         PullRequestStatus status,
@@ -33,7 +33,7 @@ public class PullRequest extends AbstractAggregateRoot<PullRequestId> {
                         LocalDateTime createdAt,
                         LocalDateTime updatedAt) {
         if (repositoryId == null) {
-            throw new IllegalArgumentException("RepositoryId must not be null");
+            throw new IllegalArgumentException("ReviewRepositoryId must not be null");
         }
         if (source == null) {
             throw new IllegalArgumentException("Source snapshot must not be null");
@@ -57,7 +57,7 @@ public class PullRequest extends AbstractAggregateRoot<PullRequestId> {
         this.updatedAt = updatedAt != null ? updatedAt : effectiveCreatedAt;
     }
 
-    public static PullRequest create(RepositoryId repositoryId,
+    public static PullRequest create(ReviewRepositoryId repositoryId,
                                      BranchHeadSnapshot source,
                                      BranchHeadSnapshot target) {
         LocalDateTime now = LocalDateTime.now();
@@ -74,7 +74,7 @@ public class PullRequest extends AbstractAggregateRoot<PullRequestId> {
     }
 
     public static PullRequest rehydrate(PullRequestId id,
-                                        RepositoryId repositoryId,
+                                        ReviewRepositoryId repositoryId,
                                         BranchHeadSnapshot source,
                                         BranchHeadSnapshot target,
                                         PullRequestStatus status,

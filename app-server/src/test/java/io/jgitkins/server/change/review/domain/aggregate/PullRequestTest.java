@@ -6,7 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import io.jgitkins.server.change.review.domain.model.changegraph.MergeabilityAssessment;
 import io.jgitkins.server.change.review.domain.model.changegraph.MergeabilityStatus;
 import io.jgitkins.server.change.review.domain.model.changegraph.MergeTopologySummary;
-import io.jgitkins.server.repository.domain.vo.RepositoryId;
+import io.jgitkins.server.change.review.domain.model.vo.ReviewRepositoryId;
 import io.jgitkins.server.change.review.domain.model.BranchHeadSnapshot;
 import io.jgitkins.server.change.review.domain.model.PullRequestStatus;
 import io.jgitkins.server.change.review.domain.model.TargetDrift;
@@ -19,12 +19,12 @@ class PullRequestTest {
     @Test
     void create_opensPullRequestWithSourceAndTargetSnapshots() {
         PullRequest pullRequest = PullRequest.create(
-                RepositoryId.of(1L),
+                ReviewRepositoryId.of(1L),
                 snapshot("feature", "aaaaaaa"),
                 snapshot("dev", "bbbbbbb"));
 
         assertThat(pullRequest.getId()).isNull();
-        assertThat(pullRequest.getRepositoryId()).isEqualTo(RepositoryId.of(1L));
+        assertThat(pullRequest.getRepositoryId()).isEqualTo(ReviewRepositoryId.of(1L));
         assertThat(pullRequest.getSource().branchName().getValue()).isEqualTo("feature");
         assertThat(pullRequest.getTarget().branchName().getValue()).isEqualTo("dev");
         assertThat(pullRequest.getStatus()).isEqualTo(PullRequestStatus.OPEN);
@@ -38,7 +38,7 @@ class PullRequestTest {
         BranchHeadSnapshot source = snapshot("feature", "aaaaaaa");
         BranchHeadSnapshot target = snapshot("feature", "bbbbbbb");
 
-        assertThatThrownBy(() -> PullRequest.create(RepositoryId.of(1L), source, target))
+        assertThatThrownBy(() -> PullRequest.create(ReviewRepositoryId.of(1L), source, target))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("different");
     }
@@ -116,7 +116,7 @@ class PullRequestTest {
 
         PullRequest pullRequest = PullRequest.rehydrate(
                 PullRequestId.of(10L),
-                RepositoryId.of(1L),
+                ReviewRepositoryId.of(1L),
                 snapshot("feature", "aaaaaaa"),
                 snapshot("dev", "bbbbbbb"),
                 PullRequestStatus.CLOSED,
@@ -133,7 +133,7 @@ class PullRequestTest {
 
     private PullRequest openPullRequest() {
         return PullRequest.create(
-                RepositoryId.of(1L),
+                ReviewRepositoryId.of(1L),
                 snapshot("feature", "aaaaaaa"),
                 snapshot("dev", "bbbbbbb"));
     }

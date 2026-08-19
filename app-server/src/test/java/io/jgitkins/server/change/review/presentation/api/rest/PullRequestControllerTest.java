@@ -12,8 +12,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jgitkins.server.change.review.application.dto.command.PullRequestCreateCommand;
 import io.jgitkins.server.change.review.application.dto.result.PullRequestDetailResult;
 import io.jgitkins.server.change.review.application.dto.result.PullRequestResult;
+import io.jgitkins.server.change.review.application.exception.RepositoryReferenceNotFoundException;
 import io.jgitkins.server.change.review.application.port.in.CreatePullRequestUseCase;
 import io.jgitkins.server.change.review.application.port.in.GetPullRequestDetailUseCase;
+import io.jgitkins.server.common.presentation.advice.GlobalExceptionHandler;
+import io.jgitkins.server.common.presentation.advice.mapper.CompositeErrorHttpStatusMapper;
 import io.jgitkins.server.change.review.presentation.dto.PullRequestCreateRequest;
 import io.jgitkins.server.change.review.domain.model.BranchHeadSnapshot;
 import io.jgitkins.server.change.review.domain.model.PullRequestStatus;
@@ -26,6 +29,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -38,13 +42,17 @@ class PullRequestControllerTest {
     @Mock
     private GetPullRequestDetailUseCase getPullRequestDetailUseCase;
 
+    @Mock
+    private CompositeErrorHttpStatusMapper statusMapper;
+
     private MockMvc mockMvc;
     private ObjectMapper objectMapper;
 
     @BeforeEach
     void setUp() {
         PullRequestController controller = new PullRequestController(createPullRequestUseCase, getPullRequestDetailUseCase);
-        this.mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
+        this.mockMvc = MockMvcBuilders.standaloneSetup(controller)
+                .setControllerAdvice(new GlobalExceptionHandler(statusMapper)).build();
         this.objectMapper = new ObjectMapper();
     }
 
@@ -93,5 +101,20 @@ class PullRequestControllerTest {
                 .andExpect(jsonPath("$.data.status").value("OPEN"));
 
         verify(getPullRequestDetailUseCase).getPullRequestDetail(PullRequestId.of(10L));
+    }
+
+    @Test
+    void createPullRequest_preservesRepositoryNotFoundWireContract() throws Exception {
+        when(statusMapper.map(any())).thenReturn(HttpStatus.NOT_FOUND);
+        when(createPullRequestUseCase.createPullRequest(any(PullRequestCreateCommand.class)))
+                .thenThrow(new RepositoryReferenceNotFoundException("team", "repo"));
+
+        mockMvc.perform(post("/repositories/team/repo/pull-requests")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsBytes(new PullRequestCreateRequest("feature", "main"))))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.error.code").value("REPO-404"))
+                .andExpect(jsonPath("$.error.message").value("Repository not found: team/repo"))
+                .andExpect(jsonPath("$.error.source").value("application"));
     }
 }

@@ -5,7 +5,7 @@ import static org.mockito.Mockito.when;
 
 import io.jgitkins.server.change.review.application.dto.command.MergeRequest;
 import io.jgitkins.server.change.review.application.dto.result.MergeResult;
-import io.jgitkins.server.change.review.application.port.out.MergeGitPort;
+import io.jgitkins.server.change.review.application.port.out.MergePort;
 import io.jgitkins.server.shared.application.change.MergeabilityAssessmentAssembler;
 import io.jgitkins.server.change.review.domain.model.changegraph.MergeabilityAssessment;
 import io.jgitkins.server.change.review.domain.model.changegraph.MergeabilityStatus;
@@ -21,7 +21,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class MergeServiceTest {
 
     @Mock
-    private MergeGitPort mergeGitPort;
+    private MergePort mergePort;
 
     @Mock
     private MergeabilityAssessmentAssembler mergeabilityAssessmentAssembler;
@@ -32,7 +32,7 @@ class MergeServiceTest {
     @Test
     void checkMergeability_delegatesToPort() throws IOException {
         MergeResult result = MergeResult.builder().build();
-        when(mergeGitPort.previewMergeability("task", "repo", "src", "dst")).thenReturn(result);
+        when(mergePort.previewMergeability("task", "repo", "src", "dst")).thenReturn(result);
 
         MergeResult response = service.checkMergeability("task", "repo", "src", "dst");
 
@@ -43,7 +43,7 @@ class MergeServiceTest {
     void performMerge_delegatesToPort() throws IOException {
         MergeResult result = MergeResult.builder().build();
         MergeRequest request = new MergeRequest();
-        when(mergeGitPort.merge("task", "repo", request)).thenReturn(result);
+        when(mergePort.merge("task", "repo", request)).thenReturn(result);
 
         MergeResult response = service.performMerge("task", "repo", request);
 
@@ -61,7 +61,7 @@ class MergeServiceTest {
                 null,
                 "mergeable");
 
-        when(mergeGitPort.previewMergeability("task", "repo", "src", "dst")).thenReturn(result);
+        when(mergePort.previewMergeability("task", "repo", "src", "dst")).thenReturn(result);
         when(mergeabilityAssessmentAssembler.toAssessment(result)).thenReturn(assessment);
 
         MergeabilityAssessment response = service.evaluateMergeability("task", "repo", "src", "dst");
