@@ -1,4 +1,4 @@
-package io.jgitkins.server.collaboration.presentation.api.web;
+package io.jgitkins.server.collaboration.adapter.in.web;
 
 import io.jgitkins.server.collaboration.application.dto.result.OrganizeCreationResult;
 import io.jgitkins.server.collaboration.application.port.in.OrganizeLoadUseCase;

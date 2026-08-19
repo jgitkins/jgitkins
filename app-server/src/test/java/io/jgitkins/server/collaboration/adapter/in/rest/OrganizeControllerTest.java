@@ -1,4 +1,4 @@
-package io.jgitkins.server.collaboration.presentation.api.rest;
+package io.jgitkins.server.collaboration.adapter.in.rest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
@@ -16,9 +16,9 @@ import io.jgitkins.server.collaboration.application.dto.result.OrganizeCreationR
 import io.jgitkins.server.collaboration.application.port.in.OrganizeCreationUseCase;
 import io.jgitkins.server.collaboration.application.port.in.OrganizeDeletionUseCase;
 import io.jgitkins.server.collaboration.application.port.in.OrganizeLoadUseCase;
-import io.jgitkins.server.collaboration.presentation.api.rest.OrganizeController;
-import io.jgitkins.server.collaboration.presentation.dto.OrganizeCreationRequest;
-import io.jgitkins.server.collaboration.presentation.mapper.OrganizeRequestMapper;
+import io.jgitkins.server.collaboration.adapter.in.rest.OrganizeController;
+import io.jgitkins.server.collaboration.adapter.in.rest.dto.request.OrganizeCreationRequest;
+import io.jgitkins.server.collaboration.adapter.in.rest.mapper.OrganizeRequestMapper;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,0 +1,415 @@
+{
+  "components": {
+    "schemas": {
+      "ApiError": {
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "ApiResponseListOrganizeCreationResult": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/OrganizeCreationResult"
+            },
+            "type": "array"
+          },
+          "error": {
+            "$ref": "#/components/schemas/ApiError"
+          }
+        },
+        "type": "object"
+      },
+      "ApiResponseListOrganizeMemberSummary": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/OrganizeMemberSummary"
+            },
+            "type": "array"
+          },
+          "error": {
+            "$ref": "#/components/schemas/ApiError"
+          }
+        },
+        "type": "object"
+      },
+      "ApiResponseOrganizeCreationResult": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/OrganizeCreationResult"
+          },
+          "error": {
+            "$ref": "#/components/schemas/ApiError"
+          }
+        },
+        "type": "object"
+      },
+      "ApiResponseVoid": {
+        "properties": {
+          "data": {
+            "type": "object"
+          },
+          "error": {
+            "$ref": "#/components/schemas/ApiError"
+          }
+        },
+        "type": "object"
+      },
+      "OrganizeCreationRequest": {
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "OrganizeCreationResult": {
+        "properties": {
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "id": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "ownerId": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "OrganizeMemberAddRequest": {
+        "properties": {
+          "role": {
+            "enum": [
+              "OWNER",
+              "MAINTAINER",
+              "MEMBER"
+            ],
+            "type": "string"
+          },
+          "userId": {
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "OrganizeMemberSummary": {
+        "properties": {
+          "joinedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "role": {
+            "enum": [
+              "OWNER",
+              "MAINTAINER",
+              "MEMBER"
+            ],
+            "type": "string"
+          },
+          "userId": {
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      }
+    }
+  },
+  "paths": {
+    "/api/internal/organizes": {
+      "get": {
+        "operationId": "getAccessibleOrganizes_1",
+        "responses": {
+          "200": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseListOrganizeCreationResult"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "summary": "List Accessible Organizes (Web)",
+        "tags": [
+          "Web Organize"
+        ]
+      }
+    },
+    "/api/organizes": {
+      "get": {
+        "operationId": "getOrganizes",
+        "responses": {
+          "200": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseListOrganizeCreationResult"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "summary": "List Organizes",
+        "tags": [
+          "Organize Management"
+        ]
+      },
+      "post": {
+        "operationId": "createOrganize",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrganizeCreationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOrganizeCreationResult"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "summary": "Create Organize",
+        "tags": [
+          "Organize Management"
+        ]
+      }
+    },
+    "/api/organizes/me": {
+      "get": {
+        "operationId": "getAccessibleOrganizes",
+        "responses": {
+          "200": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseListOrganizeCreationResult"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "summary": "List Accessible Organizes",
+        "tags": [
+          "Organize Management"
+        ]
+      }
+    },
+    "/api/organizes/{organizeId}": {
+      "delete": {
+        "operationId": "deleteOrganize",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "organizeId",
+            "required": true,
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseVoid"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "summary": "Delete Organize",
+        "tags": [
+          "Organize Management"
+        ]
+      },
+      "get": {
+        "operationId": "getOrganize",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "organizeId",
+            "required": true,
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOrganizeCreationResult"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "summary": "Get Organize",
+        "tags": [
+          "Organize Management"
+        ]
+      }
+    },
+    "/api/organizes/{organizeId}/members": {
+      "get": {
+        "operationId": "listMembers_1",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "organizeId",
+            "required": true,
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseListOrganizeMemberSummary"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "summary": "List organize members",
+        "tags": [
+          "Organize Members"
+        ]
+      },
+      "post": {
+        "operationId": "addMember_1",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "organizeId",
+            "required": true,
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrganizeMemberAddRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseVoid"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "summary": "Add organize member",
+        "tags": [
+          "Organize Members"
+        ]
+      }
+    },
+    "/api/organizes/{organizeId}/members/{userId}": {
+      "delete": {
+        "operationId": "removeMember_1",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "organizeId",
+            "required": true,
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseVoid"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "summary": "Remove organize member",
+        "tags": [
+          "Organize Members"
+        ]
+      }
+    }
+  }
+}

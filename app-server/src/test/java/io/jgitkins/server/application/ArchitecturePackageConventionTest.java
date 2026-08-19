@@ -48,12 +48,17 @@ import io.jgitkins.server.execution.presentation.api.rest.RunnerController;
 import io.jgitkins.server.identity.access.presentation.api.rest.AdminUserController;
 import io.jgitkins.server.change.review.presentation.api.rest.MergeController;
 import io.jgitkins.server.identity.access.presentation.api.rest.OAuthController;
-import io.jgitkins.server.collaboration.presentation.api.rest.OrganizeController;
-import io.jgitkins.server.collaboration.presentation.api.rest.OrganizeMemberController;
+import io.jgitkins.server.collaboration.adapter.in.rest.OrganizeController;
+import io.jgitkins.server.collaboration.adapter.in.rest.OrganizeMemberController;
+import io.jgitkins.server.collaboration.adapter.in.rest.dto.request.OrganizeCreationRequest;
+import io.jgitkins.server.collaboration.adapter.in.rest.dto.request.OrganizeMemberAddRequest;
+import io.jgitkins.server.collaboration.adapter.in.rest.dto.request.OrganizeUpdateRequest;
+import io.jgitkins.server.collaboration.adapter.in.rest.mapper.OrganizeMemberRequestMapper;
+import io.jgitkins.server.collaboration.adapter.in.rest.mapper.OrganizeRequestMapper;
 import io.jgitkins.server.identity.access.presentation.api.rest.SignupController;
 import io.jgitkins.server.identity.access.presentation.api.rest.UserController;
 import io.jgitkins.server.identity.access.presentation.api.rest.UserCredentialController;
-import io.jgitkins.server.collaboration.presentation.api.web.WebOrganizeController;
+import io.jgitkins.server.collaboration.adapter.in.web.WebOrganizeController;
 import io.jgitkins.server.repository.presentation.api.web.WebRepositoryController;
 import io.jgitkins.core.web.api.response.ApiResponse;
 import io.jgitkins.server.change.review.presentation.api.rest.PullRequestController;
@@ -289,7 +294,7 @@ class ArchitecturePackageConventionTest {
     }
 
     @Test
-    void collaborationControllers_resideInCollaborationPresentationPackage() {
+    void collaborationControllers_resideInInboundAdapterPackages() {
         List<Class<?>> controllerClasses = List.of(
                 OrganizeController.class,
                 OrganizeMemberController.class,
@@ -297,10 +302,24 @@ class ArchitecturePackageConventionTest {
 
         controllerClasses.forEach(controllerClass -> {
             String packageName = controllerClass.getPackageName();
-            boolean matchesRest = packageName.equals("io.jgitkins.server.collaboration.presentation.api.rest");
-            boolean matchesWeb = packageName.equals("io.jgitkins.server.collaboration.presentation.api.web");
+            boolean matchesRest = packageName.equals("io.jgitkins.server.collaboration.adapter.in.rest");
+            boolean matchesWeb = packageName.equals("io.jgitkins.server.collaboration.adapter.in.web");
             assertTrue(matchesRest || matchesWeb);
         });
+    }
+
+    @Test
+    void collaborationInboundContracts_resideInExpectedPackages() {
+        assertEquals("io.jgitkins.server.collaboration.adapter.in.rest.dto.request",
+                OrganizeCreationRequest.class.getPackageName());
+        assertEquals("io.jgitkins.server.collaboration.adapter.in.rest.dto.request",
+                OrganizeMemberAddRequest.class.getPackageName());
+        assertEquals("io.jgitkins.server.collaboration.adapter.in.rest.dto.request",
+                OrganizeUpdateRequest.class.getPackageName());
+        assertEquals("io.jgitkins.server.collaboration.adapter.in.rest.mapper",
+                OrganizeRequestMapper.class.getPackageName());
+        assertEquals("io.jgitkins.server.collaboration.adapter.in.rest.mapper",
+                OrganizeMemberRequestMapper.class.getPackageName());
     }
 
     @Test
@@ -319,6 +338,21 @@ class ArchitecturePackageConventionTest {
         assertNoJavaFiles(
                 "src/main/java/io/jgitkins/server/application",
                 "app-server/src/main/java/io/jgitkins/server/application");
+    }
+
+    @Test
+    void collaborationPresentationSources_areRemoved() throws IOException {
+        assertNoJavaFiles(
+                "src/main/java/io/jgitkins/server/collaboration/presentation",
+                "app-server/src/main/java/io/jgitkins/server/collaboration/presentation");
+    }
+
+    @Test
+    void collaborationInboundAdapters_doNotImportInfrastructure() throws IOException {
+        Path inboundRoot = resolveExistingPath(
+                "src/main/java/io/jgitkins/server/collaboration/adapter/in",
+                "app-server/src/main/java/io/jgitkins/server/collaboration/adapter/in");
+        assertNoImports(inboundRoot, "import io.jgitkins.server.collaboration.infrastructure.");
     }
 
     @Test

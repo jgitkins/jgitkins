@@ -1,4 +1,4 @@
-package io.jgitkins.server.collaboration.presentation.api.rest;
+package io.jgitkins.server.collaboration.adapter.in.rest;
 
 import io.jgitkins.server.collaboration.application.dto.command.OrganizeMemberAddCommand;
 import io.jgitkins.server.collaboration.application.dto.result.OrganizeMemberSummary;
@@ -6,7 +6,8 @@ import io.jgitkins.server.collaboration.application.port.in.OrganizeMemberAddUse
 import io.jgitkins.server.collaboration.application.port.in.OrganizeMemberQueryUseCase;
 import io.jgitkins.server.collaboration.application.port.in.OrganizeMemberRemoveUseCase;
 import io.jgitkins.core.web.api.response.ApiResponse;
-import io.jgitkins.server.collaboration.presentation.dto.OrganizeMemberAddRequest;
+import io.jgitkins.server.collaboration.adapter.in.rest.dto.request.OrganizeMemberAddRequest;
+import io.jgitkins.server.collaboration.adapter.in.rest.mapper.OrganizeMemberRequestMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -28,12 +29,13 @@ public class OrganizeMemberController {
     private final OrganizeMemberAddUseCase organizeMemberAddUseCase;
     private final OrganizeMemberQueryUseCase organizeMemberQueryUseCase;
     private final OrganizeMemberRemoveUseCase organizeMemberRemoveUseCase;
+    private final OrganizeMemberRequestMapper organizeMemberRequestMapper;
 
     @Operation(summary = "Add organize member")
     @PostMapping
     public ResponseEntity<ApiResponse<Void>> addMember(@PathVariable Long organizeId,
                                                        @RequestBody OrganizeMemberAddRequest request) {
-        OrganizeMemberAddCommand command = new OrganizeMemberAddCommand(organizeId, request.userId(), request.role());
+        OrganizeMemberAddCommand command = organizeMemberRequestMapper.toCommand(organizeId, request);
         organizeMemberAddUseCase.addOrganizeMember(command);
         return ApiResponse.ok();
     }

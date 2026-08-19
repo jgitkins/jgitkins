@@ -1,4 +1,4 @@
-package io.jgitkins.server.collaboration.presentation.dto;
+package io.jgitkins.server.collaboration.adapter.in.rest.dto.request;
 
 public record OrganizeUpdateRequest(
         String name,

@@ -1,4 +1,4 @@
-package io.jgitkins.server.collaboration.presentation.api.rest;
+package io.jgitkins.server.collaboration.adapter.in.rest;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -13,7 +13,10 @@ import io.jgitkins.server.collaboration.application.dto.result.OrganizeMemberSum
 import io.jgitkins.server.collaboration.application.port.in.OrganizeMemberAddUseCase;
 import io.jgitkins.server.collaboration.application.port.in.OrganizeMemberQueryUseCase;
 import io.jgitkins.server.collaboration.application.port.in.OrganizeMemberRemoveUseCase;
-import io.jgitkins.server.collaboration.presentation.api.rest.OrganizeMemberController;
+import io.jgitkins.server.collaboration.adapter.in.rest.OrganizeMemberController;
+import io.jgitkins.server.collaboration.adapter.in.rest.dto.request.OrganizeMemberAddRequest;
+import io.jgitkins.server.collaboration.adapter.in.rest.mapper.OrganizeMemberRequestMapper;
+import io.jgitkins.server.collaboration.application.dto.command.OrganizeMemberAddCommand;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeMemberRole;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -44,8 +47,14 @@ class OrganizeMemberControllerTest {
     @MockBean
     private OrganizeMemberRemoveUseCase organizeMemberRemoveUseCase;
 
+    @MockBean
+    private OrganizeMemberRequestMapper organizeMemberRequestMapper;
+
     @Test
     void addMember_returnsOk() throws Exception {
+        when(organizeMemberRequestMapper.toCommand(org.mockito.ArgumentMatchers.eq(1L),
+                org.mockito.ArgumentMatchers.any(OrganizeMemberAddRequest.class)))
+                .thenReturn(new OrganizeMemberAddCommand(1L, 2L, OrganizeMemberRole.MEMBER));
         String body = objectMapper.writeValueAsString(java.util.Map.of(
                 "userId", 2,
                 "role", "MEMBER"
@@ -66,6 +75,9 @@ class OrganizeMemberControllerTest {
 
     @Test
     void addMember_allowsMissingRoleAndPassesNullRole() throws Exception {
+        when(organizeMemberRequestMapper.toCommand(org.mockito.ArgumentMatchers.eq(1L),
+                org.mockito.ArgumentMatchers.any(OrganizeMemberAddRequest.class)))
+                .thenReturn(new OrganizeMemberAddCommand(1L, 3L, null));
         String body = objectMapper.writeValueAsString(java.util.Map.of(
                 "userId", 3
         ));
