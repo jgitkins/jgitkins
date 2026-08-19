@@ -1,9 +1,8 @@
 package io.jgitkins.server.collaboration.application.port.out;
 
-import io.jgitkins.server.collaboration.domain.vo.OrganizeId;
-import io.jgitkins.server.collaboration.domain.vo.MemberUserId;
+import io.jgitkins.server.collaboration.domain.vo.OrganizeMemberRole;
+import java.util.Optional;
 
 public interface OrganizeMembershipQueryPort {
-
-    boolean existsByOrganizeIdAndUserId(OrganizeId organizeId, MemberUserId userId);
+    Optional<OrganizeMemberRole> findRoleByOrganizeIdAndUserId(Long organizeId, Long userId);
 }

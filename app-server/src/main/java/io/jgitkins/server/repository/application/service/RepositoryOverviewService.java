@@ -2,7 +2,7 @@ package io.jgitkins.server.repository.application.service;
 
 import io.jgitkins.server.repository.application.contract.result.FileEntry;
 import io.jgitkins.server.repository.application.contract.internal.RepositoryKey;
-import io.jgitkins.server.identity.access.application.port.out.CurrentUserPort;
+import io.jgitkins.server.repository.application.port.out.RepositoryActorPort;
 import io.jgitkins.server.repository.application.port.out.FileGitPort;
 import io.jgitkins.server.repository.application.contract.result.BranchSearchResult;
 import io.jgitkins.server.repository.application.contract.result.RepositoryOverviewResult;
@@ -27,7 +27,7 @@ public class RepositoryOverviewService implements RepositoryOverviewUseCase {
 	private final RepositoryQueryPort repositoryQueryPort;
 	private final BranchQueryPort branchQueryPort;
 	private final FileGitPort fileGitPort;
-	private final CurrentUserPort currentUserPort;
+	private final RepositoryActorPort currentUserPort;
 	private final GitRepositoryAccessService gitRepositoryAccessService;
 
 	@Override

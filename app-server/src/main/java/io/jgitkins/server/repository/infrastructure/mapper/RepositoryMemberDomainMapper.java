@@ -3,7 +3,7 @@ package io.jgitkins.server.repository.infrastructure.mapper;
 import io.jgitkins.server.repository.domain.model.RepositoryMember;
 import io.jgitkins.server.repository.domain.vo.RepositoryId;
 import io.jgitkins.server.repository.domain.vo.RepositoryMemberRole;
-import io.jgitkins.server.identity.access.domain.vo.UserId;
+import io.jgitkins.server.repository.domain.vo.RepositoryMemberUserId;
 import io.jgitkins.server.repository.infrastructure.persistence.model.RepositoryMemberEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -22,7 +22,7 @@ public interface RepositoryMemberDomainMapper {
         }
         return RepositoryMember.create(
                 RepositoryId.of(entity.getRepositoryId()),
-                UserId.of(entity.getUserId()),
+                RepositoryMemberUserId.of(entity.getUserId()),
                 RepositoryMemberRole.valueOf(entity.getRole()),
                 entity.getAddedAt());
     }

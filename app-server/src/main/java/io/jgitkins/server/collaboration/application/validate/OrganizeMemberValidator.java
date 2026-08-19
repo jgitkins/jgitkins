@@ -19,7 +19,7 @@ public class OrganizeMemberValidator {
     }
 
     public void validateMemberNotExists(OrganizeId organizeId, MemberUserId userId) {
-        if (organizeMemberPort.existsByOrganizeIdAndUserId(organizeId, userId)) {
+        if (organizeMemberPort.findRoleByOrganizeIdAndUserId(organizeId.getValue(), userId.getValue()).isPresent()) {
             throw new OrganizeMemberAlreadyExistsException(organizeId.getValue(), userId.getValue());
         }
     }

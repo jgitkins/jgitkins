@@ -7,7 +7,7 @@ import static org.mockito.Mockito.when;
 
 import io.jgitkins.server.shared.application.error.ApplicationErrorCode;
 import io.jgitkins.server.repository.application.port.in.GitRepositoryAccessUseCase;
-import io.jgitkins.server.identity.access.application.port.out.CurrentUserPort;
+import io.jgitkins.server.repository.application.port.out.RepositoryActorPort;
 import io.jgitkins.core.common.exception.JgitkinsException;
 import io.jgitkins.server.repository.domain.aggregate.Repository;
 import io.jgitkins.server.repository.application.contract.result.RepositoryPermission;
@@ -22,7 +22,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class RepositoryAccessValidatorTest {
 
     @Mock
-    private CurrentUserPort currentUserPersistencePort;
+    private RepositoryActorPort currentUserPersistencePort;
 
     @Mock
     private GitRepositoryAccessUseCase gitRepositoryAccessUseCase;

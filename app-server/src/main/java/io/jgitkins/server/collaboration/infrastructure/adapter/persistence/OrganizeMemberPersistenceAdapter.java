@@ -24,6 +24,20 @@ public class OrganizeMemberPersistenceAdapter implements OrganizeMemberPersisten
     private final OrganizeMemberDomainMapper organizeMemberDomainMapper;
 
     @Override
+    public Optional<io.jgitkins.server.collaboration.domain.vo.OrganizeMemberRole> findRoleByOrganizeIdAndUserId(Long organizeId, Long userId) {
+        try {
+            if (organizeId == null || userId == null) return Optional.empty();
+            OrganizeMemberEntityCondition condition = new OrganizeMemberEntityCondition();
+            condition.createCriteria().andOrganizeIdEqualTo(organizeId).andUserIdEqualTo(userId);
+            return organizeMemberMapper.selectByCondition(condition).stream().findFirst()
+                    .map(entity -> io.jgitkins.server.collaboration.domain.vo.OrganizeMemberRole.from(entity.getRole()));
+        } catch (Exception e) {
+            throw new InfrastructureException(InfrastructureErrorCode.PERSISTENCE_OPERATION_FAILED,
+                    "Database operation failed during find organize member role", e);
+        }
+    }
+
+    @Override
     public OrganizeMember save(OrganizeMember member) {
         try {
             OrganizeMemberEntity entity = organizeMemberDomainMapper.toEntity(member);

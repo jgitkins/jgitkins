@@ -1,11 +1,10 @@
 package io.jgitkins.server.repository.application.support;
 
-import io.jgitkins.server.collaboration.application.port.out.OrganizeQueryPort;
-import io.jgitkins.server.identity.access.application.port.out.UserQueryPort;
-import io.jgitkins.server.collaboration.domain.aggregate.Organize;
+import io.jgitkins.server.repository.application.port.out.OrganizationNamespacePort;
+import io.jgitkins.server.repository.application.port.out.UserNamespacePort;
 import io.jgitkins.server.repository.domain.aggregate.Repository;
 
-import io.jgitkins.server.collaboration.domain.vo.OrganizeName;
+
 import io.jgitkins.server.shared.domain.model.vo.OwnerId;
 import io.jgitkins.server.shared.domain.model.vo.OwnerType;
 import io.jgitkins.server.repository.domain.vo.RepositoryName;
@@ -23,8 +22,8 @@ import org.springframework.stereotype.Component;
 public class RepositoryLookupService {
 
     private final RepositoryRepository repositoryRepository;
-    private final UserQueryPort userQueryPort;
-    private final OrganizeQueryPort organizePort;
+    private final UserNamespacePort userNamespacePort;
+    private final OrganizationNamespacePort organizationNamespacePort;
 
     public Optional<Repository> resolveByPath(String namespace, String repoName) {
         String normalizedNamespace = trimSlashes(namespace);
@@ -58,7 +57,7 @@ public class RepositoryLookupService {
     }
 
     private Optional<Repository> findUserOwned(String namespace, String repoName) {
-        Optional<Long> userId = userQueryPort.findUserIdByUsername(namespace);
+        Optional<Long> userId = userNamespacePort.findUserIdByUsername(namespace);
         if (userId.isEmpty()) {
             return Optional.empty();
         }
@@ -70,20 +69,20 @@ public class RepositoryLookupService {
     }
 
     private Optional<Repository> findOrganizationOwned(String namespace, String repoName) {
-        Optional<Organize> organize = findOrganizationByNamespace(namespace);
-        if (organize.isEmpty()) {
+        Optional<Long> organizationId = findOrganizationByNamespace(namespace);
+        if (organizationId.isEmpty()) {
             return Optional.empty();
         }
 
         return repositoryRepository.findByOwnerAndPath(
                 OwnerType.ORGANIZATION,
-                OwnerId.of(organize.get().getId().getValue()),
+                OwnerId.of(organizationId.get()),
                 RepositoryPath.from(repoName));
     }
 
-    private Optional<Organize> findOrganizationByNamespace(String namespace) {
+    private Optional<Long> findOrganizationByNamespace(String namespace) {
         try {
-            return organizePort.findByName(OrganizeName.from(namespace));
+            return organizationNamespacePort.findOrganizationIdByName(namespace);
         } catch (IllegalArgumentException ex) {
             log.debug("invalid organization namespace. namespace={}", namespace, ex);
             return Optional.empty();

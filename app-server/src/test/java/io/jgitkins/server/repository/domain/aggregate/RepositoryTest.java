@@ -32,7 +32,7 @@ class RepositoryTest {
         );
 
         assertThat(repository.getId()).isNull();
-        assertThat(repository.getOrganizeId().getValue()).isEqualTo(1L);
+        assertThat(repository.getOwnerId().getValue()).isEqualTo(1L);
         assertThat(repository.getName().getValue()).isEqualTo("demo");
         assertThat(repository.getPath().getValue()).isEqualTo("demo-path");
         assertThat(repository.getDefaultBranch().getValue()).isEqualTo("main");

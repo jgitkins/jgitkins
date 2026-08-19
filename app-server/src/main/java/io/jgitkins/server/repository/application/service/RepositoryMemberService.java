@@ -9,6 +9,7 @@ import io.jgitkins.server.repository.application.support.membership.RepositoryMe
 import io.jgitkins.server.repository.application.validate.RepositoryMemberValidator;
 import io.jgitkins.server.repository.domain.model.RepositoryMember;
 import io.jgitkins.server.repository.domain.vo.RepositoryId;
+import io.jgitkins.server.repository.domain.vo.RepositoryMemberUserId;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,11 +28,8 @@ public class RepositoryMemberService implements RepositoryMemberManagementUseCas
     @Transactional
     public void addRepositoryMember(RepositoryMemberAddCommand command) {
         repositoryMemberValidator.validateAddCommand(command);
-
         RepositoryMember member = repositoryMembershipFactory.createMember(command);
-        if (repositoryMemberValidator.isAlreadyMember(member.getRepositoryId(), member.getUserId())) {
-            return;
-        }
+        if (repositoryMemberValidator.isAlreadyMember(member.getRepositoryId(), member.getUserId())) return;
         repositoryMemberPort.save(member);
     }
 
@@ -40,22 +38,15 @@ public class RepositoryMemberService implements RepositoryMemberManagementUseCas
     public void removeRepositoryMember(Long repositoryId, Long userId) {
         repositoryMemberValidator.validateMemberIdentifiers(repositoryId, userId);
         repositoryMemberPort.deleteByRepositoryIdAndUserId(
-                RepositoryId.of(repositoryId),
-                io.jgitkins.server.identity.access.domain.vo.UserId.of(userId)
-        );
+                RepositoryId.of(repositoryId), RepositoryMemberUserId.of(userId));
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<RepositoryMemberSummary> getRepositoryMembers(Long repositoryId) {
         repositoryMemberValidator.validateRepositoryId(repositoryId);
-        return repositoryMemberPort.findAllByRepositoryId(RepositoryId.of(repositoryId))
-                .stream()
-                .map(member -> new RepositoryMemberSummary(
-                        member.getUserId().getValue(),
-                        member.getRole(),
-                        member.getAddedAt()
-                ))
+        return repositoryMemberPort.findAllByRepositoryId(RepositoryId.of(repositoryId)).stream()
+                .map(member -> new RepositoryMemberSummary(member.getUserId().getValue(), member.getRole(), member.getAddedAt()))
                 .toList();
     }
 }

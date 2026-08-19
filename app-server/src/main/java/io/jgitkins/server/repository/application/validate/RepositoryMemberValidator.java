@@ -4,7 +4,7 @@ import io.jgitkins.server.repository.application.contract.command.RepositoryMemb
 import io.jgitkins.server.repository.application.exception.MemberIdentifierRequiredException;
 import io.jgitkins.server.repository.application.port.out.RepositoryMemberPersistencePort;
 import io.jgitkins.server.repository.domain.vo.RepositoryId;
-import io.jgitkins.server.identity.access.domain.vo.UserId;
+import io.jgitkins.server.repository.domain.vo.RepositoryMemberUserId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -18,7 +18,7 @@ public class RepositoryMemberValidator {
     public void validateAddCommand(RepositoryMemberAddCommand command) {
         if (command == null || command.repositoryId() == null || command.userId() == null) {
             throw new MemberIdentifierRequiredException(
-                    "RepositoryId and UserId are required to add a repository member");
+                    "RepositoryId and RepositoryMemberUserId are required to add a repository member");
         }
     }
 
@@ -32,11 +32,11 @@ public class RepositoryMemberValidator {
     public void validateMemberIdentifiers(Long repositoryId, Long userId) {
         if (repositoryId == null || userId == null) {
             throw new MemberIdentifierRequiredException(
-                    "RepositoryId and UserId are required");
+                    "RepositoryId and RepositoryMemberUserId are required");
         }
     }
 
-    public boolean isAlreadyMember(RepositoryId repositoryId, UserId userId) {
+    public boolean isAlreadyMember(RepositoryId repositoryId, RepositoryMemberUserId userId) {
         return repositoryMemberPort.existsByRepositoryIdAndUserId(repositoryId, userId);
     }
 }

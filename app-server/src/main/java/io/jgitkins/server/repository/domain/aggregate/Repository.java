@@ -3,7 +3,7 @@ package io.jgitkins.server.repository.domain.aggregate;
 import io.jgitkins.server.shared.domain.aggregate.AbstractAggregateRoot;
 import io.jgitkins.server.repository.domain.event.RepositorySynchronizedEvent;
 import io.jgitkins.server.shared.domain.model.vo.BranchName;
-import io.jgitkins.server.collaboration.domain.vo.OrganizeId;
+
 import io.jgitkins.server.shared.domain.model.vo.OwnerId;
 import io.jgitkins.server.shared.domain.model.vo.OwnerType;
 import io.jgitkins.server.repository.domain.vo.RepositoryId;
@@ -175,10 +175,5 @@ public class Repository extends AbstractAggregateRoot<RepositoryId> {
                               lastSyncedAt != null);
     }
 
-    public OrganizeId getOrganizeId() {
-        if (ownerType == OwnerType.ORGANIZATION && ownerId != null) {
-            return OrganizeId.of(ownerId.getValue());
-        }
-        return null;
-    }
+
 }

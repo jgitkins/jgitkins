@@ -2,7 +2,7 @@ package io.jgitkins.server.repository.domain.model;
 
 import io.jgitkins.server.repository.domain.vo.RepositoryId;
 import io.jgitkins.server.repository.domain.vo.RepositoryMemberRole;
-import io.jgitkins.server.identity.access.domain.vo.UserId;
+import io.jgitkins.server.repository.domain.vo.RepositoryMemberUserId;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -13,12 +13,12 @@ import lombok.Getter;
 public class RepositoryMember {
 
     private final RepositoryId repositoryId;
-    private final UserId userId;
+    private final RepositoryMemberUserId userId;
     private final RepositoryMemberRole role;
     private final LocalDateTime addedAt;
 
     public static RepositoryMember create(RepositoryId repositoryId,
-                                          UserId userId,
+                                          RepositoryMemberUserId userId,
                                           RepositoryMemberRole role,
                                           LocalDateTime addedAt) {
         if (repositoryId == null || userId == null || role == null) {

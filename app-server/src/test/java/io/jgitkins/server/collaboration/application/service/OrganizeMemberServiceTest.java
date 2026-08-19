@@ -18,6 +18,7 @@ import io.jgitkins.server.collaboration.domain.vo.OrganizeMemberRole;
 import io.jgitkins.server.collaboration.domain.vo.MemberUserId;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -46,7 +47,7 @@ class OrganizeMemberServiceTest {
 
     @Test
     void addOrganizeMember_savesWhenNotExists() {
-        when(organizeMemberQueryPort.existsByOrganizeIdAndUserId(OrganizeId.of(1L), MemberUserId.of(2L))).thenReturn(false);
+        when(organizeMemberQueryPort.findRoleByOrganizeIdAndUserId(1L, 2L)).thenReturn(Optional.empty());
 
         OrganizeMemberAddCommand command = new OrganizeMemberAddCommand(1L, 2L, OrganizeMemberRole.OWNER);
 
@@ -59,7 +60,7 @@ class OrganizeMemberServiceTest {
 
     @Test
     void addOrganizeMember_usesMemberRoleWhenRoleIsMissing() {
-        when(organizeMemberQueryPort.existsByOrganizeIdAndUserId(OrganizeId.of(1L), MemberUserId.of(2L))).thenReturn(false);
+        when(organizeMemberQueryPort.findRoleByOrganizeIdAndUserId(1L, 2L)).thenReturn(Optional.empty());
 
         OrganizeMemberAddCommand command = new OrganizeMemberAddCommand(1L, 2L, null);
 
@@ -72,7 +73,7 @@ class OrganizeMemberServiceTest {
 
     @Test
     void addOrganizeMember_throwsWhenAlreadyExists() {
-        when(organizeMemberQueryPort.existsByOrganizeIdAndUserId(OrganizeId.of(1L), MemberUserId.of(2L))).thenReturn(true);
+        when(organizeMemberQueryPort.findRoleByOrganizeIdAndUserId(1L, 2L)).thenReturn(Optional.of(OrganizeMemberRole.MEMBER));
 
         OrganizeMemberAddCommand command = new OrganizeMemberAddCommand(1L, 2L, OrganizeMemberRole.MEMBER);
 

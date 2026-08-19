@@ -1,6 +1,6 @@
 package io.jgitkins.server.repository.application.validate;
 
-import io.jgitkins.server.identity.access.application.port.out.CurrentUserPort;
+import io.jgitkins.server.repository.application.port.out.RepositoryActorPort;
 import io.jgitkins.server.repository.application.port.in.GitRepositoryAccessUseCase;
 import io.jgitkins.server.shared.application.error.ApplicationErrorCode;
 import io.jgitkins.server.shared.application.exception.ApplicationException;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class RepositoryAccessValidator {
 
-    private final CurrentUserPort currentUserPersistencePort;
+    private final RepositoryActorPort currentUserPersistencePort;
     private final GitRepositoryAccessUseCase gitRepositoryAccessUseCase;
 
     public void validateReadAccess(Repository repository) {

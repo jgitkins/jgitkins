@@ -3,7 +3,7 @@ package io.jgitkins.server.repository.infrastructure.adapter.persistence;
 import io.jgitkins.server.repository.application.port.out.RepositoryMemberPersistencePort;
 import io.jgitkins.server.repository.domain.model.RepositoryMember;
 import io.jgitkins.server.repository.domain.vo.RepositoryId;
-import io.jgitkins.server.identity.access.domain.vo.UserId;
+import io.jgitkins.server.repository.domain.vo.RepositoryMemberUserId;
 import io.jgitkins.server.common.infrastructure.error.InfrastructureErrorCode;
 import io.jgitkins.server.common.infrastructure.exception.InfrastructureException;
 import io.jgitkins.server.repository.infrastructure.mapper.RepositoryMemberDomainMapper;
@@ -22,7 +22,7 @@ public class RepositoryMemberPersistenceAdapter implements RepositoryMemberPersi
     private final RepositoryMemberDomainMapper repositoryMemberDomainMapper;
 
     @Override
-    public boolean existsByRepositoryIdAndUserId(RepositoryId repositoryId, UserId userId) {
+    public boolean existsByRepositoryIdAndUserId(RepositoryId repositoryId, RepositoryMemberUserId userId) {
         try {
             if (repositoryId == null || userId == null) {
                 return false;
@@ -39,7 +39,7 @@ public class RepositoryMemberPersistenceAdapter implements RepositoryMemberPersi
     }
 
     @Override
-    public Optional<RepositoryMember> findByRepositoryIdAndUserId(RepositoryId repositoryId, UserId userId) {
+    public Optional<RepositoryMember> findByRepositoryIdAndUserId(RepositoryId repositoryId, RepositoryMemberUserId userId) {
         try {
             if (repositoryId == null || userId == null) {
                 return Optional.empty();
@@ -71,7 +71,7 @@ public class RepositoryMemberPersistenceAdapter implements RepositoryMemberPersi
     }
 
     @Override
-    public void deleteByRepositoryIdAndUserId(RepositoryId repositoryId, UserId userId) {
+    public void deleteByRepositoryIdAndUserId(RepositoryId repositoryId, RepositoryMemberUserId userId) {
         try {
             RepositoryMemberEntityCondition condition = new RepositoryMemberEntityCondition();
             condition.createCriteria()

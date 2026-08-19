@@ -16,7 +16,7 @@ import io.jgitkins.core.common.exception.JgitkinsException;
 import io.jgitkins.server.repository.domain.model.RepositoryMember;
 import io.jgitkins.server.repository.domain.vo.RepositoryId;
 import io.jgitkins.server.repository.domain.vo.RepositoryMemberRole;
-import io.jgitkins.server.identity.access.domain.vo.UserId;
+import io.jgitkins.server.repository.domain.vo.RepositoryMemberUserId;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,7 +43,7 @@ class RepositoryMemberServiceTest {
 
     @Test
     void addRepositoryMember_savesWithRequestedRoleWhenNotExists() {
-        when(repositoryMemberPort.existsByRepositoryIdAndUserId(RepositoryId.of(1L), UserId.of(2L))).thenReturn(false);
+        when(repositoryMemberPort.existsByRepositoryIdAndUserId(RepositoryId.of(1L), RepositoryMemberUserId.of(2L))).thenReturn(false);
 
         RepositoryMemberAddCommand command = new RepositoryMemberAddCommand(1L, 2L, RepositoryMemberRole.MAINTAINER);
 
@@ -56,7 +56,7 @@ class RepositoryMemberServiceTest {
 
     @Test
     void addRepositoryMember_usesReaderRoleWhenRoleMissing() {
-        when(repositoryMemberPort.existsByRepositoryIdAndUserId(RepositoryId.of(1L), UserId.of(2L))).thenReturn(false);
+        when(repositoryMemberPort.existsByRepositoryIdAndUserId(RepositoryId.of(1L), RepositoryMemberUserId.of(2L))).thenReturn(false);
 
         RepositoryMemberAddCommand command = new RepositoryMemberAddCommand(1L, 2L, null);
 
@@ -69,7 +69,7 @@ class RepositoryMemberServiceTest {
 
     @Test
     void addRepositoryMember_doesNothingWhenAlreadyExists() {
-        when(repositoryMemberPort.existsByRepositoryIdAndUserId(RepositoryId.of(1L), UserId.of(2L))).thenReturn(true);
+        when(repositoryMemberPort.existsByRepositoryIdAndUserId(RepositoryId.of(1L), RepositoryMemberUserId.of(2L))).thenReturn(true);
 
         RepositoryMemberAddCommand command = new RepositoryMemberAddCommand(1L, 2L, RepositoryMemberRole.WRITER);
 
@@ -90,7 +90,7 @@ class RepositoryMemberServiceTest {
     void removeRepositoryMember_deletesByRepositoryAndUser() {
         service.removeRepositoryMember(1L, 2L);
 
-        verify(repositoryMemberPort).deleteByRepositoryIdAndUserId(RepositoryId.of(1L), UserId.of(2L));
+        verify(repositoryMemberPort).deleteByRepositoryIdAndUserId(RepositoryId.of(1L), RepositoryMemberUserId.of(2L));
     }
 
     @Test
@@ -104,7 +104,7 @@ class RepositoryMemberServiceTest {
         LocalDateTime addedAt = LocalDateTime.of(2026, 1, 1, 0, 0);
         RepositoryMember member = RepositoryMember.create(
                 RepositoryId.of(1L),
-                UserId.of(2L),
+                RepositoryMemberUserId.of(2L),
                 RepositoryMemberRole.WRITER,
                 addedAt
         );
