@@ -1,10 +1,10 @@
 package io.jgitkins.server.repository.application.support;
 
 import io.jgitkins.server.collaboration.application.port.out.OrganizeQueryPort;
-import io.jgitkins.server.identity.access.application.port.out.UserPersistencePort;
+import io.jgitkins.server.identity.access.application.port.out.UserQueryPort;
 import io.jgitkins.server.collaboration.domain.aggregate.Organize;
 import io.jgitkins.server.repository.domain.aggregate.Repository;
-import io.jgitkins.server.identity.access.domain.aggregate.User;
+
 import io.jgitkins.server.collaboration.domain.vo.OrganizeName;
 import io.jgitkins.server.shared.domain.model.vo.OwnerId;
 import io.jgitkins.server.shared.domain.model.vo.OwnerType;
@@ -23,7 +23,7 @@ import org.springframework.stereotype.Component;
 public class RepositoryLookupService {
 
     private final RepositoryRepository repositoryRepository;
-    private final UserPersistencePort userPort;
+    private final UserQueryPort userQueryPort;
     private final OrganizeQueryPort organizePort;
 
     public Optional<Repository> resolveByPath(String namespace, String repoName) {
@@ -58,14 +58,14 @@ public class RepositoryLookupService {
     }
 
     private Optional<Repository> findUserOwned(String namespace, String repoName) {
-        Optional<User> user = userPort.findByUsername(namespace);
-        if (user.isEmpty()) {
+        Optional<Long> userId = userQueryPort.findUserIdByUsername(namespace);
+        if (userId.isEmpty()) {
             return Optional.empty();
         }
 
         return repositoryRepository.findByOwnerAndName(
                 OwnerType.USER,
-                OwnerId.of(user.get().getId()),
+                OwnerId.of(userId.get()),
                 RepositoryName.from(repoName));
     }
 

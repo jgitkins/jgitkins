@@ -20,7 +20,8 @@ import io.jgitkins.server.identity.access.application.port.out.CurrentUserPort;
 import io.jgitkins.server.identity.access.application.port.out.TokenIssuerPort;
 import io.jgitkins.server.identity.access.application.port.out.UserCredentialPersistencePort;
 import io.jgitkins.server.identity.access.application.port.out.UserIdentityPersistencePort;
-import io.jgitkins.server.identity.access.application.port.out.UserPersistencePort;
+import io.jgitkins.server.identity.access.application.port.out.UserQueryPort;
+import io.jgitkins.server.identity.access.domain.repository.UserRepository;
 import io.jgitkins.server.identity.access.application.service.AdminUserService;
 import io.jgitkins.server.repository.application.service.CommitService;
 import io.jgitkins.server.change.review.application.service.MergeService;
@@ -181,9 +182,10 @@ class ArchitecturePackageConventionTest {
                 TokenIssuerPort.class,
                 UserCredentialPersistencePort.class,
                 UserIdentityPersistencePort.class,
-                UserPersistencePort.class);
+                UserQueryPort.class);
 
         portClasses.forEach(portClass -> assertEquals(IDENTITY_ACCESS_PORT_OUT_PACKAGE, portClass.getPackageName()));
+        assertEquals("io.jgitkins.server.identity.access.domain.repository", UserRepository.class.getPackageName());
     }
 
     @Test
@@ -397,6 +399,25 @@ class ArchitecturePackageConventionTest {
     }
 
     @Test
+    void identityAccessMigration_removesLegacyUserPortReferences() throws IOException {
+        String legacyPortName = "User" + "PersistencePort";
+        String legacyImport = "import io.jgitkins.server.identity.access.application.port.out." + legacyPortName;
+        String legacyClassLiteral = legacyPortName + ".class";
+        assertNoSourceText(resolveExistingPath(
+                "src/main/java/io/jgitkins/server",
+                "app-server/src/main/java/io/jgitkins/server"), legacyImport);
+        assertNoSourceText(resolveExistingPath(
+                "src/test/java/io/jgitkins/server",
+                "app-server/src/test/java/io/jgitkins/server"), legacyImport);
+        assertNoSourceText(resolveExistingPath(
+                "src/main/java/io/jgitkins/server",
+                "app-server/src/main/java/io/jgitkins/server"), legacyClassLiteral);
+        assertNoSourceText(resolveExistingPath(
+                "src/test/java/io/jgitkins/server",
+                "app-server/src/test/java/io/jgitkins/server"), legacyClassLiteral);
+    }
+
+    @Test
     void coreModules_doNotImportApplicationModules() throws IOException {
         List<Path> coreRoots = Stream.of(
                         "core-common/src/main/java",
@@ -495,6 +516,15 @@ class ArchitecturePackageConventionTest {
                 String source = Files.readString(javaFile);
                 assertFalse(source.lines().anyMatch(line -> line.startsWith(disallowedImportPrefix)),
                         () -> "Source must not import " + disallowedImportPrefix + ": " + javaFile);
+            }
+        }
+    }
+
+    private void assertNoSourceText(Path root, String disallowedText) throws IOException {
+        try (Stream<Path> files = Files.walk(root)) {
+            for (Path sourceFile : files.filter(path -> path.toString().endsWith(".java")).toList()) {
+                assertFalse(Files.readString(sourceFile).contains(disallowedText),
+                        () -> "Source must not contain " + disallowedText + ": " + sourceFile);
             }
         }
     }

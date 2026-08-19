@@ -1,52 +1,41 @@
 package io.jgitkins.server.identity.access.application.validate;
 
+import io.jgitkins.server.identity.access.application.exception.OrganizeAlreadyExistsException;
+import io.jgitkins.server.identity.access.application.exception.UsernameAlreadyExistsException;
+import io.jgitkins.server.identity.access.application.port.out.OrganizationNameUniquenessPort;
+import io.jgitkins.server.identity.access.application.port.out.OwnedRepositoryCountPort;
+import io.jgitkins.server.identity.access.domain.repository.UserRepository;
+import io.jgitkins.server.identity.access.domain.vo.Username;
 import io.jgitkins.server.shared.application.error.ApplicationErrorCode;
 import io.jgitkins.server.shared.application.exception.ApplicationException;
-import io.jgitkins.server.collaboration.application.exception.OrganizeAlreadyExistsException;
-import io.jgitkins.server.identity.access.application.exception.UsernameAlreadyExistsException;
-import io.jgitkins.server.collaboration.application.port.out.OrganizeQueryPort;
-import io.jgitkins.server.repository.application.port.out.RepositoryQueryPort;
-import io.jgitkins.server.identity.access.application.port.out.UserPersistencePort;
-import io.jgitkins.server.collaboration.domain.vo.OrganizeName;
-import io.jgitkins.server.shared.domain.model.vo.OwnerId;
-import io.jgitkins.server.shared.domain.model.vo.OwnerType;
-import io.jgitkins.server.identity.access.domain.vo.Username;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
 public class ActivationValidator {
-
-    private final UserPersistencePort userPort;
-    private final OrganizeQueryPort organizePort;
-    private final RepositoryQueryPort repositoryQueryPort;
+    private final UserRepository userRepository;
+    private final OrganizationNameUniquenessPort organizationNameUniquenessPort;
+    private final OwnedRepositoryCountPort ownedRepositoryCountPort;
 
     public Username validateUsername(String username) {
         return Username.from(username);
     }
 
     public void validateUsernameNotTaken(Username requested, Long userId) {
-        userPort.findByUsername(requested.getValue())
+        userRepository.findByUsername(requested.getValue())
                 .filter(existing -> !existing.getId().equals(userId))
-                .ifPresent(existing -> {
-                    throw new UsernameAlreadyExistsException("Username already exists");
-                });
+                .ifPresent(existing -> { throw new UsernameAlreadyExistsException("Username already exists"); });
     }
 
     public void validateOrganizeNameNotTakenIfCompatible(Username requested) {
-        if (!requested.isOrganizeNameCompatible()) {
-            return;
+        if (!organizationNameUniquenessPort.isAvailableForUsername(requested.getValue())) {
+            throw new OrganizeAlreadyExistsException();
         }
-        organizePort.findByName(OrganizeName.from(requested.getValue()))
-                .ifPresent(existing -> {
-                    throw new OrganizeAlreadyExistsException("Namespace already exists");
-                });
     }
 
     public void validateUserHasNoRepositories(Long userId) {
-        long count = repositoryQueryPort.countByOwner(OwnerType.USER, OwnerId.of(userId));
-        if (count > 0) {
+        if (ownedRepositoryCountPort.countByUserId(userId) > 0) {
             throw new ApplicationException(ApplicationErrorCode.UNPROCESSABLE,
                     "Cannot rename user with existing repositories");
         }

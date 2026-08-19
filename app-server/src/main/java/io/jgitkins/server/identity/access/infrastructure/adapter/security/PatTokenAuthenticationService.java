@@ -1,7 +1,7 @@
 package io.jgitkins.server.identity.access.infrastructure.adapter.security;
 
 import io.jgitkins.server.identity.access.application.port.out.UserCredentialPersistencePort;
-import io.jgitkins.server.identity.access.application.port.out.UserPersistencePort;
+import io.jgitkins.server.identity.access.application.port.out.UserQueryPort;
 import io.jgitkins.server.identity.access.domain.entity.UserCredential;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +22,7 @@ public class PatTokenAuthenticationService {
     private static final String PAT_PREFIX = "jkpat_";
     private static final String PROVIDER_PAT = "PAT";
 
-    private final UserPersistencePort userPort;
+    private final UserQueryPort userQueryPort;
     private final UserCredentialPersistencePort userCredentialPort;
     private final PasswordEncoder passwordEncoder;
 
@@ -34,7 +34,7 @@ public class PatTokenAuthenticationService {
             throw new BadCredentialsException("Invalid token format");
         }
 
-        Long userId = userPort.findUserIdByUsername(username)
+        Long userId = userQueryPort.findUserIdByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         List<UserCredential> credentials = userCredentialPort.findAllByUserIdAndProvider(userId, PROVIDER_PAT);

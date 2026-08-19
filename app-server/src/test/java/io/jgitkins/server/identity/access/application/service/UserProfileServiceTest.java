@@ -4,7 +4,7 @@ import io.jgitkins.core.common.exception.JgitkinsException;
 import io.jgitkins.server.shared.domain.error.DomainErrorCode;
 import io.jgitkins.server.shared.domain.error.DomainProblemSpec;
 import io.jgitkins.server.identity.access.application.port.out.CurrentUserPort;
-import io.jgitkins.server.identity.access.application.port.out.UserPersistencePort;
+import io.jgitkins.server.identity.access.domain.repository.UserRepository;
 import io.jgitkins.server.identity.access.application.validate.ActivationValidator;
 import io.jgitkins.server.identity.access.domain.aggregate.User;
 import io.jgitkins.server.identity.access.domain.vo.UserStatus;
@@ -32,7 +32,7 @@ class UserProfileServiceTest {
     private CurrentUserPort currentUserPersistencePort;
 
     @Mock
-    private UserPersistencePort userPort;
+    private UserRepository userRepository;
 
     @Mock
     private ActivationValidator validator;
@@ -46,8 +46,8 @@ class UserProfileServiceTest {
         when(validator.validateUsername("new_name")).thenReturn(requested);
         when(currentUserPersistencePort.resolveCurrentUserId()).thenReturn(Optional.of(1L));
         User pending = User.createWithStatus("temp", "a@b.com", "User", null, UserStatus.PENDING).withId(1L);
-        when(userPort.findById(1L)).thenReturn(Optional.of(pending));
-        when(userPort.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(userRepository.findById(1L)).thenReturn(Optional.of(pending));
+        when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         service.activate("new_name");
 
@@ -56,7 +56,7 @@ class UserProfileServiceTest {
         verify(validator).validateUserHasNoRepositories(1L);
 
         ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
-        verify(userPort).save(captor.capture());
+        verify(userRepository).save(captor.capture());
 
         User saved = captor.getValue();
         assertEquals("new_name", saved.getUsername());
@@ -69,12 +69,12 @@ class UserProfileServiceTest {
         when(validator.validateUsername("new_name")).thenReturn(requested);
         when(currentUserPersistencePort.resolveCurrentUserId()).thenReturn(Optional.of(1L));
         User activeUser = User.createWithStatus("active_user", "a@b.com", "User", null, UserStatus.ACTIVE).withId(1L);
-        when(userPort.findById(1L)).thenReturn(Optional.of(activeUser));
+        when(userRepository.findById(1L)).thenReturn(Optional.of(activeUser));
 
         JgitkinsException exception = assertThrows(JgitkinsException.class, () -> service.activate("new_name"));
 
         assertSame(DomainErrorCode.INVALID_STATE, exception.getErrorCode());
         assertSame(DomainProblemSpec.USER_ALREADY_ACTIVATED, exception.getProblemSpec());
-        verify(userPort, never()).save(any(User.class));
+        verify(userRepository, never()).save(any(User.class));
     }
 }

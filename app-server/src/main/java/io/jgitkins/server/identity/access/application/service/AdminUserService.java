@@ -7,8 +7,10 @@ import io.jgitkins.server.identity.access.application.mapper.UserApplicationMapp
 import io.jgitkins.server.identity.access.application.port.in.AdminUserQueryUseCase;
 import io.jgitkins.server.identity.access.application.port.in.AdminUserUpdateUseCase;
 import io.jgitkins.server.identity.access.application.port.out.UserIdentityPersistencePort;
-import io.jgitkins.server.identity.access.application.port.out.UserPersistencePort;
+import io.jgitkins.server.identity.access.application.port.out.UserQueryPort;
+import io.jgitkins.server.identity.access.application.contract.result.UserQueryResult;
 import io.jgitkins.server.identity.access.domain.aggregate.User;
+import io.jgitkins.server.identity.access.domain.repository.UserRepository;
 import io.jgitkins.server.identity.access.domain.vo.UserStatus;
 import java.util.List;
 import java.util.Locale;
@@ -20,14 +22,15 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class AdminUserService implements AdminUserQueryUseCase, AdminUserUpdateUseCase {
 
-    private final UserPersistencePort userPort;
+    private final UserQueryPort userQueryPort;
+    private final UserRepository userRepository;
     private final UserIdentityPersistencePort userIdentityPort;
     private final UserApplicationMapper userApplicationMapper;
 
     @Override
     @Transactional(readOnly = true)
     public List<UserAdminSummary> getUsers() {
-        return userPort.findAll()
+        return userQueryPort.findAll()
                 .stream()
                 .map(userApplicationMapper::toAdminSummary)
                 .toList();
@@ -36,7 +39,7 @@ public class AdminUserService implements AdminUserQueryUseCase, AdminUserUpdateU
     @Override
     @Transactional(readOnly = true)
     public UserAdminDetail getUser(Long userId) {
-        User user = userPort.findById(userId)
+        UserQueryResult user = userQueryPort.findUserDetailsById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found")); // TODO: 도메인 예외 throw
 
         List<UserIdentitySummary> identities = userIdentityPort.findAllByUserId(userId)
@@ -53,7 +56,7 @@ public class AdminUserService implements AdminUserQueryUseCase, AdminUserUpdateU
 
         // TODO: 상태에 대한 순수 유효성 검증은 API (@Valid) 단으로 이관
         UserStatus normalized = normalizeStatus(status);
-        User user = userPort.findById(userId)
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found")); // TODO: 도메인 예외 throw
         User updated = User.rehydrate(
                 user.getId(),
@@ -66,7 +69,7 @@ public class AdminUserService implements AdminUserQueryUseCase, AdminUserUpdateU
                 user.getLastLoginAt(),
                 user.getCreatedAt(),
                 user.getUpdatedAt());
-        userPort.save(updated);
+        userRepository.save(updated);
     }
 
     private UserStatus normalizeStatus(String status) {

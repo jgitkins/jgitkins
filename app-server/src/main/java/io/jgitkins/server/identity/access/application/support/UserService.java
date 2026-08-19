@@ -2,7 +2,7 @@ package io.jgitkins.server.identity.access.application.support;
 
 import io.jgitkins.server.identity.access.application.dto.command.UserLoginOrSignUpCommand;
 import io.jgitkins.server.identity.access.application.port.out.UserIdentityPersistencePort;
-import io.jgitkins.server.identity.access.application.port.out.UserPersistencePort;
+import io.jgitkins.server.identity.access.domain.repository.UserRepository;
 import io.jgitkins.server.identity.access.domain.aggregate.User;
 import io.jgitkins.server.identity.access.domain.entity.UserIdentity;
 import io.jgitkins.server.identity.access.domain.vo.UserStatus;
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class UserService {
 
-        private final UserPersistencePort userPort;
+        private final UserRepository userRepository;
         private final UserIdentityPersistencePort userIdentityPort;
         private final UsernameAllocator usernameAllocator;
         private final UserProfileUpdater userProfileUpdater;
@@ -36,7 +36,7 @@ public class UserService {
                         UserLoginOrSignUpCommand command,
                         LocalDateTime loginAt) {
 
-                User user = userPort.findById(identity.getUserId())
+                User user = userRepository.findById(identity.getUserId())
                                 .orElseThrow(() -> new IllegalStateException("User not found for identity"));
 
                 User persistedUser = persistUserWithUpdates(user, command.email(), command.name(),
@@ -86,7 +86,7 @@ public class UserService {
                 if (email == null || email.isBlank()) {
                         return Optional.empty();
                 }
-                return userPort.findByEmail(email.trim());
+                return userRepository.findByEmail(email.trim());
         }
 
         private User createPendingUser(String email,
@@ -106,7 +106,7 @@ public class UserService {
                         String avatarUrl,
                         LocalDateTime loginAt) {
                 User updatedUser = userProfileUpdater.applyUserUpdates(user, email, name, avatarUrl, loginAt);
-                return userPort.save(updatedUser);
+                return userRepository.save(updatedUser);
         }
 
 }

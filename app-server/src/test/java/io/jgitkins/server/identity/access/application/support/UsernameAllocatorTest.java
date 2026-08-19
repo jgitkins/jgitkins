@@ -7,45 +7,29 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import io.jgitkins.server.collaboration.application.port.out.OrganizeQueryPort;
-import io.jgitkins.server.identity.access.application.port.out.UserPersistencePort;
-import io.jgitkins.server.identity.access.domain.aggregate.User;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeName;
+import io.jgitkins.server.identity.access.application.port.out.UserQueryPort;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
 class UsernameAllocatorTest {
-
     @Test
     void allocateUniqueUsername_returnsBaseWhenAvailable() {
-        UserPersistencePort userPort = mock(UserPersistencePort.class);
+        UserQueryPort userQueryPort = mock(UserQueryPort.class);
         OrganizeQueryPort organizePort = mock(OrganizeQueryPort.class);
-        when(userPort.findByUsername(anyString())).thenReturn(Optional.empty());
+        when(userQueryPort.existsByUsername(anyString())).thenReturn(false);
         when(organizePort.findByName(any(OrganizeName.class))).thenReturn(Optional.empty());
-
-        UsernameAllocator allocator = new UsernameAllocator(userPort, organizePort);
-
-        String result = allocator.allocateUniqueUsername("base", "provider-sub");
-
-        assertEquals("base", result);
+        UsernameAllocator allocator = new UsernameAllocator(userQueryPort, organizePort);
+        assertEquals("base", allocator.allocateUniqueUsername("base", "provider-sub"));
     }
 
     @Test
     void allocateUniqueUsername_fallsBackToProviderSuffixWhenBaseTaken() {
-        UserPersistencePort userPort = mock(UserPersistencePort.class);
+        UserQueryPort userQueryPort = mock(UserQueryPort.class);
         OrganizeQueryPort organizePort = mock(OrganizeQueryPort.class);
-        when(userPort.findByUsername(anyString())).thenAnswer(invocation -> {
-            String value = invocation.getArgument(0);
-            if ("base".equals(value)) {
-                return Optional.of(User.create("base", null, null, null));
-            }
-            return Optional.empty();
-        });
+        when(userQueryPort.existsByUsername(anyString())).thenAnswer(invocation -> "base".equals(invocation.getArgument(0)));
         when(organizePort.findByName(any(OrganizeName.class))).thenReturn(Optional.empty());
-
-        UsernameAllocator allocator = new UsernameAllocator(userPort, organizePort);
-
-        String result = allocator.allocateUniqueUsername("base", "ABCDEF123456");
-
-        assertEquals("base-123456", result);
+        UsernameAllocator allocator = new UsernameAllocator(userQueryPort, organizePort);
+        assertEquals("base-123456", allocator.allocateUniqueUsername("base", "ABCDEF123456"));
     }
 }

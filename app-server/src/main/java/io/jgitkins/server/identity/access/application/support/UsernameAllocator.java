@@ -1,7 +1,7 @@
 package io.jgitkins.server.identity.access.application.support;
 
 import io.jgitkins.server.collaboration.application.port.out.OrganizeQueryPort;
-import io.jgitkins.server.identity.access.application.port.out.UserPersistencePort;
+import io.jgitkins.server.identity.access.application.port.out.UserQueryPort;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeName;
 import java.util.Optional;
 import java.util.UUID;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class UsernameAllocator {
 
-	private final UserPersistencePort userPort;
+	private final UserQueryPort userQueryPort;
 	private final OrganizeQueryPort organizePort;
 
 	public String deriveBaseUsername(String email, String providerName, String providerSub) {
@@ -47,7 +47,7 @@ public class UsernameAllocator {
 	}
 
 	private boolean isNamespaceAvailable(String username) {
-		if (userPort.findByUsername(username).isPresent()) {
+		if (userQueryPort.existsByUsername(username)) {
 			return false;
 		}
 		return findOrganizeByName(username).isEmpty();

@@ -3,11 +3,9 @@ package io.jgitkins.server.identity.access.application.validate;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
-import io.jgitkins.server.collaboration.application.port.out.OrganizeQueryPort;
-import io.jgitkins.server.repository.application.port.out.RepositoryQueryPort;
-import io.jgitkins.server.identity.access.application.port.out.UserPersistencePort;
-import io.jgitkins.server.shared.domain.model.vo.OwnerId;
-import io.jgitkins.server.shared.domain.model.vo.OwnerType;
+import io.jgitkins.server.identity.access.application.port.out.OrganizationNameUniquenessPort;
+import io.jgitkins.server.identity.access.application.port.out.OwnedRepositoryCountPort;
+import io.jgitkins.server.identity.access.domain.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -16,18 +14,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 class ActivationValidatorTest {
-
-    @Mock
-    private UserPersistencePort userPort;
-
-    @Mock
-    private OrganizeQueryPort organizePort;
-
-    @Mock
-    private RepositoryQueryPort repositoryQueryPort;
-
-    @InjectMocks
-    private ActivationValidator validator;
+    @Mock private UserRepository userRepository;
+    @Mock private OrganizationNameUniquenessPort organizationNameUniquenessPort;
+    @Mock private OwnedRepositoryCountPort ownedRepositoryCountPort;
+    @InjectMocks private ActivationValidator validator;
 
     @Test
     void validateUsername_throwsWhenInvalid() {
@@ -36,8 +26,7 @@ class ActivationValidatorTest {
 
     @Test
     void validateUserHasNoRepositories_throwsWhenOwnedRepositoriesExist() {
-        when(repositoryQueryPort.countByOwner(OwnerType.USER, OwnerId.of(1L))).thenReturn(1L);
-
+        when(ownedRepositoryCountPort.countByUserId(1L)).thenReturn(1L);
         assertThrows(RuntimeException.class, () -> validator.validateUserHasNoRepositories(1L));
     }
 }

@@ -3,7 +3,7 @@ package io.jgitkins.server.repository.application.service;
 import io.jgitkins.server.repository.application.contract.result.RepositoryResult;
 import io.jgitkins.server.identity.access.application.port.out.CurrentUserPort;
 import io.jgitkins.server.repository.application.port.out.RepositoryQueryPort;
-import io.jgitkins.server.identity.access.application.port.out.UserPersistencePort;
+import io.jgitkins.server.identity.access.application.port.out.UserQueryPort;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,13 +25,13 @@ class RepositoryLoadServiceTest {
     @Mock
     private CurrentUserPort currentUserPort;
     @Mock
-    private UserPersistencePort userPort;
+    private UserQueryPort userQueryPort;
 
     private RepositoryLoadService service;
 
     @BeforeEach
     void setUp() {
-        service = new RepositoryLoadService(repositoryQueryPort, currentUserPort, userPort);
+        service = new RepositoryLoadService(repositoryQueryPort, currentUserPort, userQueryPort);
     }
 
     @Test
@@ -65,7 +65,7 @@ class RepositoryLoadServiceTest {
         List<RepositoryResult> expected = List.of(
                 new RepositoryResult(1L, null, "public", null, null, null, null, null, null, null, null, false, null, null, null)
         );
-        when(userPort.findUserIdByUsername("alice")).thenReturn(Optional.of(7L));
+        when(userQueryPort.findUserIdByUsername("alice")).thenReturn(Optional.of(7L));
         when(currentUserPort.resolveCurrentUserId()).thenReturn(Optional.of(9L));
         when(repositoryQueryPort.loadUserRepositories("alice", 9L)).thenReturn(expected);
 

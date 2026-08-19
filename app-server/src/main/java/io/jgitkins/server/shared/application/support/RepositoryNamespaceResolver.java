@@ -3,9 +3,9 @@ package io.jgitkins.server.shared.application.support;
 import io.jgitkins.server.collaboration.application.exception.OrganizeNotFoundException;
 import io.jgitkins.server.identity.access.application.exception.UserNotFoundException;
 import io.jgitkins.server.collaboration.application.port.out.OrganizeQueryPort;
-import io.jgitkins.server.identity.access.application.port.out.UserPersistencePort;
+import io.jgitkins.server.identity.access.application.port.out.UserQueryPort;
 import io.jgitkins.server.repository.domain.aggregate.Repository;
-import io.jgitkins.server.identity.access.domain.aggregate.User;
+
 import io.jgitkins.server.shared.domain.model.vo.OwnerId;
 import io.jgitkins.server.shared.domain.model.vo.OwnerType;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 public class RepositoryNamespaceResolver {
 
     private final OrganizeQueryPort organizePort;
-    private final UserPersistencePort userPort;
+    private final UserQueryPort userQueryPort;
 
     public String resolve(Repository repository) {
         return resolve(repository.getOwnerType(), repository.getOwnerId());
@@ -28,9 +28,8 @@ public class RepositoryNamespaceResolver {
                     .map(org -> org.getName().getValue())
                     .orElseThrow(OrganizeNotFoundException::new);
         } else {
-            User user = userPort.findById(ownerId.getValue())
+            return userQueryPort.findUsernameById(ownerId.getValue())
                     .orElseThrow(UserNotFoundException::new);
-            return user.getUsername();
         }
     }
 }

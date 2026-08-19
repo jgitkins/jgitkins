@@ -6,7 +6,7 @@ import io.jgitkins.server.identity.access.application.exception.UserNotFoundExce
 import io.jgitkins.server.repository.application.port.in.RepositoryLoadUseCase;
 import io.jgitkins.server.identity.access.application.port.out.CurrentUserPort;
 import io.jgitkins.server.repository.application.port.out.RepositoryQueryPort;
-import io.jgitkins.server.identity.access.application.port.out.UserPersistencePort;
+import io.jgitkins.server.identity.access.application.port.out.UserQueryPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +19,7 @@ public class RepositoryLoadService implements RepositoryLoadUseCase {
 
     private final RepositoryQueryPort repositoryQueryPort;
     private final CurrentUserPort currentUserPort;
-    private final UserPersistencePort userPort;
+    private final UserQueryPort userQueryPort;
 
     @Override
     @Transactional(readOnly = true)
@@ -47,7 +47,7 @@ public class RepositoryLoadService implements RepositoryLoadUseCase {
     public List<RepositoryResult> loadUserRepositories(String username) {
         String normalizedUsername = username != null ? username.trim() : "";
 
-        userPort.findUserIdByUsername(normalizedUsername)
+        userQueryPort.findUserIdByUsername(normalizedUsername)
                 .orElseThrow(() -> new UserNotFoundException("User not found: " + normalizedUsername));
 
         Long requesterId = currentUserPort.resolveCurrentUserId().orElse(null);

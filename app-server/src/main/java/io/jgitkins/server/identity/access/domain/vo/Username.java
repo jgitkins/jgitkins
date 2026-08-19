@@ -1,19 +1,11 @@
 package io.jgitkins.server.identity.access.domain.vo;
 
-import io.jgitkins.server.collaboration.domain.vo.OrganizeName;
+import java.util.Objects;
 import java.util.regex.Pattern;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
 
-/**
- * Username value object.
- */
-@Getter
-@EqualsAndHashCode
-public class Username {
-
+/** Username value object. */
+public final class Username {
     private static final Pattern ALLOWED = Pattern.compile("^[A-Za-z0-9._-]+$");
-
     private final String value;
 
     private Username(String value) {
@@ -34,8 +26,20 @@ public class Username {
         return new Username(value);
     }
 
-    public boolean isOrganizeNameCompatible() {
-        return OrganizeName.isValid(value);
+    public String getValue() {
+        return value;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) return true;
+        if (!(other instanceof Username username)) return false;
+        return value.equals(username.value);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(value);
     }
 
     @Override
