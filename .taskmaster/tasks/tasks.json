@@ -170,7 +170,7 @@
             "id": 40,
             "title": "[bounded-context port 분리][refactor][server] collaboration persistence port relocation",
             "description": "collaboration persistence contract의 소유권을 정리한다. domain 모델을 저장·수정·로딩하는 OrganizePersistencePort는 OrganizeRepository로 이름을 변경하고 collaboration.domain.repository로 이동한다. OrganizeQueryPort는 collaboration.application.port.out에 유지하는 좁은 read-only 조회 계약으로, 현재 호출부에 필요한 findByName을 추가한다. Phase 1 correctness 완료 이후 진행.",
-            "details": "기준 spec: /Users/hrk/gstack/plans/jgitkins-collaboration-persistence-port-relocation-spec-20260818.md. 구현 기준: 1) OrganizePersistencePort와 OrganizeQueryPort의 실제 입력·반환 타입과 production/test 호출부를 inventory한다. caller에는 identity.access.application.support.UsernameAllocator, identity.access.application.validate.ActivationValidator, repository.application.support.RepositoryLookupService, shared.application.support.RepositoryNamespaceResolver와 대응 테스트를 포함한다. 2) 현재 OrganizePersistencePort는 full aggregate persistence contract이므로 OrganizeRepository로 이름을 변경하고 collaboration.domain.repository에 둔다. 3) OrganizeQueryPort는 collaboration.application.port.out에 유지하며 findById와 findByName만 제공하는 read-only application output port로 둔다. 현재 호환성을 위해 Organize를 반환할 수 있으나 save/update/delete는 포함하지 않는다. 4) OrganizeService와 OrganizeValidator는 OrganizeRepository를 주입받도록 변경하고 validator의 unused OrganizeQueryPort import를 제거한다. 5) 현재 패키지 collaboration.infrastructure.adapter.persistence의 OrganizePersistenceAdapter를 유지하며 adapter package를 이동하지 않고, 이 adapter가 OrganizeRepository와 OrganizeQueryPort를 구현하도록 wiring을 수정한다. MyBatis generated ID·예외 동작도 유지한다. 6) OrganizePersistencePort.java를 삭제하고 production/test의 old declaration/import/reference를 모두 제거한다. 7) identity.access, repository, shared가 full OrganizeRepository를 직접 참조하지 않도록 필요한 호출부만 OrganizeQueryPort로 변경한다. username allocation, activation validation, repository lookup, namespace resolution behavior를 유지한다. 8) OrganizeServiceTest는 OrganizeRepository mock으로, UsernameAllocatorTest와 ActivationValidatorTest는 OrganizeQueryPort mock으로 갱신하고, RepositoryLoadServiceTest의 stale OrganizePersistencePort import를 제거한다. RepositoryLookupService와 RepositoryNamespaceResolver에 전용 테스트가 없으면 각각의 organization lookup behavior를 검증하는 focused test를 추가한다. Architecture tests는 OrganizeRepository의 6개 method, OrganizeQueryPort의 2개 read-only method, adapter의 두 interface 구현과 component/mapper wiring 보존을 검증한다. 9) collaboration.presentation의 adapter.in 이동은 후속 task 2.48에서 수행하며 이 task에는 포함하지 않는다. 제외: API/DB schema 변경, identity.access 전체 migration, repository 전체 migration, membership lifecycle, outbox, 전체 presentation package 이동, OrganizeQueryRepository 및 OrganizationNamespaceQuery 신설.",
+            "details": "기준 spec: ~/.gstack/plans/jgitkins-collaboration-persistence-port-relocation-spec-20260818.md. 구현 기준: 1) OrganizePersistencePort와 OrganizeQueryPort의 실제 입력·반환 타입과 production/test 호출부를 inventory한다. caller에는 identity.access.application.support.UsernameAllocator, identity.access.application.validate.ActivationValidator, repository.application.support.RepositoryLookupService, shared.application.support.RepositoryNamespaceResolver와 대응 테스트를 포함한다. 2) 현재 OrganizePersistencePort는 full aggregate persistence contract이므로 OrganizeRepository로 이름을 변경하고 collaboration.domain.repository에 둔다. 3) OrganizeQueryPort는 collaboration.application.port.out에 유지하며 findById와 findByName만 제공하는 read-only application output port로 둔다. 현재 호환성을 위해 Organize를 반환할 수 있으나 save/update/delete는 포함하지 않는다. 4) OrganizeService와 OrganizeValidator는 OrganizeRepository를 주입받도록 변경하고 validator의 unused OrganizeQueryPort import를 제거한다. 5) 현재 패키지 collaboration.infrastructure.adapter.persistence의 OrganizePersistenceAdapter를 유지하며 adapter package를 이동하지 않고, 이 adapter가 OrganizeRepository와 OrganizeQueryPort를 구현하도록 wiring을 수정한다. MyBatis generated ID·예외 동작도 유지한다. 6) OrganizePersistencePort.java를 삭제하고 production/test의 old declaration/import/reference를 모두 제거한다. 7) identity.access, repository, shared가 full OrganizeRepository를 직접 참조하지 않도록 필요한 호출부만 OrganizeQueryPort로 변경한다. username allocation, activation validation, repository lookup, namespace resolution behavior를 유지한다. 8) OrganizeServiceTest는 OrganizeRepository mock으로, UsernameAllocatorTest와 ActivationValidatorTest는 OrganizeQueryPort mock으로 갱신하고, RepositoryLoadServiceTest의 stale OrganizePersistencePort import를 제거한다. RepositoryLookupService와 RepositoryNamespaceResolver에 전용 테스트가 없으면 각각의 organization lookup behavior를 검증하는 focused test를 추가한다. Architecture tests는 OrganizeRepository의 6개 method, OrganizeQueryPort의 2개 read-only method, adapter의 두 interface 구현과 component/mapper wiring 보존을 검증한다. 9) collaboration.presentation의 adapter.in 이동은 후속 task 2.48에서 수행하며 이 task에는 포함하지 않는다. 제외: API/DB schema 변경, identity.access 전체 migration, repository 전체 migration, membership lifecycle, outbox, 전체 presentation package 이동, OrganizeQueryRepository 및 OrganizationNamespaceQuery 신설.",
             "status": "completed",
             "dependencies": [
               "2.38"
@@ -219,8 +219,8 @@
             "id": 44,
             "title": "[bounded-context migration][refactor][server] identity.access bounded context migration",
             "description": "identity.access bounded context의 domain/application/adapter 경계를 조사하고, 인증 사용자 조회 port와 보안 adapter의 소유권을 정리한다. 먼저 현재 인증 계약과 active/enabled 정책을 분리한 설계·테스트 계획을 작성한 뒤 작은 vertical slice로 구현한다.",
-            "details": "",
-            "status": "pending",
+            "details": "기준 문서: ~/.gstack/plans/jgitkins-identity-access-bounded-context-migration-office-hours-20260819.md. 첫 기준 vertical slice는 User activation/profile이다. User aggregate의 PENDING→ACTIVE 전이, CurrentUserPort, identity persistence ownership, cross-context read ACL, REST compatibility를 하나의 검증 가능한 slice로 정리한다. OAuth login/signup, credential, admin user, active-account policy, 전체 identity presentation 이동과 API/DB schema 변경은 제외한다. CEO review 이후 implementation spec을 별도 작성한다.",
+            "status": "done",
             "dependencies": [
               "2.38"
             ],
@@ -231,7 +231,7 @@
             "title": "[bounded-context migration][refactor][server] repository bounded context migration",
             "description": "repository bounded context의 domain/application/adapter 경계를 정리하고 collaboration 및 identity 의존을 ACL/port 경계로 제한한다. Repository 생성·조회 또는 접근 검증 중 하나의 기준 slice를 선정해 순수 domain 테스트와 adapter contract를 완성한다.",
             "details": "",
-            "status": "pending",
+            "status": "done",
             "dependencies": [
               "2.38",
               "2.44"
@@ -243,7 +243,7 @@
             "title": "[bounded-context migration][refactor][server] execution bounded context migration",
             "description": "execution bounded context의 Job/Runner domain과 application, inbound/outbound adapter 경계를 조사한다. 외부 실행 기술 의존성을 adapter로 격리하고 Job 실행 상태 전이 기준 slice와 회귀 테스트를 정의·구현한다.",
             "details": "",
-            "status": "pending",
+            "status": "done",
             "dependencies": [
               "2.38",
               "2.45"
@@ -255,7 +255,7 @@
             "title": "[bounded-context migration][refactor][server] change.review bounded context migration",
             "description": "change.review bounded context의 변경·리뷰 domain과 application 경계를 정리한다. 리뷰 상태 전이와 외부 저장소/HTTP 의존을 분리하고, 핵심 review workflow를 순수 domain 테스트 가능한 vertical slice로 전환한다.",
             "details": "",
-            "status": "pending",
+            "status": "done",
             "dependencies": [
               "2.38",
               "2.46"
