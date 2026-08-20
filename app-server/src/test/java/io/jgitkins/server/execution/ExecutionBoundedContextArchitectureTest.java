@@ -35,7 +35,7 @@ class ExecutionBoundedContextArchitectureTest {
                 .toList();
         assertThat(hits).as("unexpected foreign imports in migrated execution roots").isEmpty();
 
-        assertThat(sourceFiles(MAIN.resolve("infrastructure/adapter/acl"))
+        assertThat(sourceFiles(MAIN.resolve("adapter/out/acl"))
                 .flatMap(path -> lines(path).stream()
                         .filter(line -> line.startsWith("import ") && line.contains("CloneUrlBuilder"))).toList())
                 .hasSize(1);

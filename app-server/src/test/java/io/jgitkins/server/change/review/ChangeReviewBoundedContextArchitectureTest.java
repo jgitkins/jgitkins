@@ -50,10 +50,10 @@ class ChangeReviewBoundedContextArchitectureTest {
                 boolean foreignImport = source.lines().anyMatch(line -> line.startsWith("import io.jgitkins.server.repository.")
                         || line.startsWith("import io.jgitkins.server.identity.")
                         || line.startsWith("import io.jgitkins.server.collaboration."));
-                boolean allowlisted = normalized.endsWith("/infrastructure/adapter/acl/RepositoryReferenceAclAdapter.java")
-                        || normalized.endsWith("/infrastructure/adapter/acl/BranchHeadAclAdapter.java")
-                        || normalized.endsWith("/infrastructure/adapter/acl/RepositoryReferenceAclAdapterTest.java")
-                        || normalized.endsWith("/infrastructure/adapter/acl/BranchHeadAclAdapterTest.java");
+                boolean allowlisted = normalized.endsWith("/adapter/out/acl/RepositoryReferenceAclAdapter.java")
+                        || normalized.endsWith("/adapter/out/acl/BranchHeadAclAdapter.java")
+                        || normalized.endsWith("/adapter/out/acl/RepositoryReferenceAclAdapterTest.java")
+                        || normalized.endsWith("/adapter/out/acl/BranchHeadAclAdapterTest.java");
                 assertThat(foreignImport && !allowlisted)
                         .as("foreign bounded-context import outside ACL allowlist: " + path)
                         .isFalse();
@@ -67,13 +67,13 @@ class ChangeReviewBoundedContextArchitectureTest {
         assertZeroReferences(sources, "io.jgitkins.server.repository.application.port.out.BranchGitPort");
         assertZeroReferences(sources, "MergeGitPort");
 
-        Path repositoryAcl = MAIN.resolve("io/jgitkins/server/change/review/infrastructure/adapter/acl/RepositoryReferenceAclAdapter.java");
-        Path branchAcl = MAIN.resolve("io/jgitkins/server/change/review/infrastructure/adapter/acl/BranchHeadAclAdapter.java");
-        Path movedGit = MAIN.resolve("io/jgitkins/server/change/review/infrastructure/adapter/git/MergeGitAdapter.java");
+        Path repositoryAcl = MAIN.resolve("io/jgitkins/server/change/review/adapter/out/acl/RepositoryReferenceAclAdapter.java");
+        Path branchAcl = MAIN.resolve("io/jgitkins/server/change/review/adapter/out/acl/BranchHeadAclAdapter.java");
+        Path movedGit = MAIN.resolve("io/jgitkins/server/change/review/adapter/out/git/MergeGitAdapter.java");
         assertThat(Files.exists(repositoryAcl)).isTrue();
         assertThat(Files.exists(branchAcl)).isTrue();
         assertThat(Files.exists(movedGit)).isTrue();
-        assertThat(Files.exists(TEST.resolve("io/jgitkins/server/change/review/infrastructure/adapter/git/MergeGitAdapterTest.java"))).isTrue();
+        assertThat(Files.exists(TEST.resolve("io/jgitkins/server/change/review/adapter/out/git/MergeGitAdapterTest.java"))).isTrue();
         assertThat(Files.exists(PROJECT.resolve("app-server/src/main/java/io/jgitkins/server/common/infrastructure/adapter/git/MergeGitAdapter.java"))).isFalse();
         assertThat(Files.exists(PROJECT.resolve("app-server/src/test/java/io/jgitkins/server/common/infrastructure/adapter/git/MergeGitAdapterTest.java"))).isFalse();
 
@@ -88,8 +88,8 @@ class ChangeReviewBoundedContextArchitectureTest {
         assertThat(Files.exists(MAIN.resolve("io/jgitkins/server/change/review/application/port/out/RepositoryReferencePort.java"))).isTrue();
         assertThat(Files.exists(MAIN.resolve("io/jgitkins/server/change/review/application/port/out/BranchHeadPort.java"))).isTrue();
         assertThat(Files.exists(MAIN.resolve("io/jgitkins/server/change/review/application/port/out/MergePort.java"))).isTrue();
-        assertThat(Files.exists(MAIN.resolve("io/jgitkins/server/change/review/presentation/api/rest/PullRequestController.java"))).isTrue();
-        assertThat(Files.exists(MAIN.resolve("io/jgitkins/server/change/review/presentation/api/rest/MergeController.java"))).isTrue();
+        assertThat(Files.exists(MAIN.resolve("io/jgitkins/server/change/review/adapter/in/rest/PullRequestController.java"))).isTrue();
+        assertThat(Files.exists(MAIN.resolve("io/jgitkins/server/change/review/adapter/in/rest/MergeController.java"))).isTrue();
     }
 
     private void assertZeroReferences(Map<Path, String> sources, String token) {

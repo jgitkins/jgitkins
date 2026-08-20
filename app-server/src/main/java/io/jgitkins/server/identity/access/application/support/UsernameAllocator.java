@@ -1,9 +1,7 @@
 package io.jgitkins.server.identity.access.application.support;
 
-import io.jgitkins.server.collaboration.application.port.out.OrganizeQueryPort;
+import io.jgitkins.server.identity.access.application.port.out.OrganizationNameUniquenessPort;
 import io.jgitkins.server.identity.access.application.port.out.UserQueryPort;
-import io.jgitkins.server.collaboration.domain.vo.OrganizeName;
-import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -13,7 +11,7 @@ import org.springframework.stereotype.Component;
 public class UsernameAllocator {
 
 	private final UserQueryPort userQueryPort;
-	private final OrganizeQueryPort organizePort;
+	private final OrganizationNameUniquenessPort organizationNameUniquenessPort;
 
 	public String deriveBaseUsername(String email, String providerName, String providerSub) {
 		// TODO: email 등 문자열 기본 검증 책임은 호출자(Controller 또는 상위 Service)로 이전
@@ -47,17 +45,7 @@ public class UsernameAllocator {
 	}
 
 	private boolean isNamespaceAvailable(String username) {
-		if (userQueryPort.existsByUsername(username)) {
-			return false;
-		}
-		return findOrganizeByName(username).isEmpty();
-	}
-
-	private Optional<io.jgitkins.server.collaboration.domain.aggregate.Organize> findOrganizeByName(String namespace) {
-		try {
-			return organizePort.findByName(OrganizeName.from(namespace));
-		} catch (IllegalArgumentException e) {
-			return Optional.empty();
-		}
+		return !userQueryPort.existsByUsername(username)
+				&& organizationNameUniquenessPort.isAvailableForUsername(username);
 	}
 }

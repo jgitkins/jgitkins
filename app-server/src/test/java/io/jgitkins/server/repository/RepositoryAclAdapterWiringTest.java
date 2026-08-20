@@ -6,10 +6,10 @@ import io.jgitkins.server.repository.application.port.out.OrganizationMembership
 import io.jgitkins.server.repository.application.port.out.OrganizationNamespacePort;
 import io.jgitkins.server.repository.application.port.out.RepositoryActorPort;
 import io.jgitkins.server.repository.application.port.out.UserNamespacePort;
-import io.jgitkins.server.repository.infrastructure.adapter.acl.OrganizationMembershipAclAdapter;
-import io.jgitkins.server.repository.infrastructure.adapter.acl.OrganizationNamespaceAclAdapter;
-import io.jgitkins.server.repository.infrastructure.adapter.acl.RepositoryActorAclAdapter;
-import io.jgitkins.server.repository.infrastructure.adapter.acl.UserNamespaceAclAdapter;
+import io.jgitkins.server.repository.adapter.out.acl.OrganizationMembershipAclAdapter;
+import io.jgitkins.server.repository.adapter.out.acl.OrganizationNamespaceAclAdapter;
+import io.jgitkins.server.repository.adapter.out.acl.RepositoryActorAclAdapter;
+import io.jgitkins.server.repository.adapter.out.acl.UserNamespaceAclAdapter;
 import org.junit.jupiter.api.Test;
 import org.springframework.stereotype.Component;
 

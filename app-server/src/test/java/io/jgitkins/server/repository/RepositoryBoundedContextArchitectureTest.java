@@ -75,7 +75,7 @@ class RepositoryBoundedContextArchitectureTest {
                 "application/service/RepositoryMemberService.java",
                 "application/validate/RepositoryMemberValidator.java",
                 "application/support/membership/RepositoryMembershipFactory.java",
-                "infrastructure/adapter/persistence/RepositoryMemberPersistenceAdapter.java",
+                "adapter/out/persistence/RepositoryMemberPersistenceAdapter.java",
                 "infrastructure/mapper/RepositoryMemberDomainMapper.java");
 
         for (String ownedPath : ownedPaths) {

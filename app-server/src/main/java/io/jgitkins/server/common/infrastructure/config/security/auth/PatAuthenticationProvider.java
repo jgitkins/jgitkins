@@ -1,6 +1,6 @@
 package io.jgitkins.server.common.infrastructure.config.security.auth;
 
-import io.jgitkins.server.identity.access.infrastructure.adapter.security.PatTokenAuthenticationService;
+import io.jgitkins.server.identity.access.adapter.out.security.PatTokenAuthenticationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

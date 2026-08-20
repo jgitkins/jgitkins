@@ -28,8 +28,8 @@ import io.jgitkins.server.change.review.application.service.MergeService;
 import io.jgitkins.server.identity.access.application.service.OAuthLoginService;
 import io.jgitkins.server.collaboration.application.service.OrganizeMemberService;
 import io.jgitkins.server.collaboration.application.service.OrganizeService;
-import io.jgitkins.server.collaboration.infrastructure.adapter.persistence.OrganizeMemberPersistenceAdapter;
-import io.jgitkins.server.collaboration.infrastructure.adapter.persistence.OrganizePersistenceAdapter;
+import io.jgitkins.server.collaboration.adapter.out.persistence.OrganizeMemberPersistenceAdapter;
+import io.jgitkins.server.collaboration.adapter.out.persistence.OrganizePersistenceAdapter;
 import io.jgitkins.server.collaboration.infrastructure.mapper.OrganizeDomainMapper;
 import io.jgitkins.server.collaboration.infrastructure.mapper.OrganizeMemberDomainMapper;
 import io.jgitkins.server.collaboration.infrastructure.persistence.mapper.OrganizeEntityMbgMapper;
@@ -45,10 +45,10 @@ import io.jgitkins.server.execution.application.service.PushEventHandleService;
 import io.jgitkins.server.repository.application.service.RepositoryFileService;
 import io.jgitkins.server.identity.access.application.service.UserCredentialService;
 import io.jgitkins.server.identity.access.application.service.UserProfileService;
-import io.jgitkins.server.execution.presentation.api.rest.RunnerController;
-import io.jgitkins.server.identity.access.presentation.api.rest.AdminUserController;
-import io.jgitkins.server.change.review.presentation.api.rest.MergeController;
-import io.jgitkins.server.identity.access.presentation.api.rest.OAuthController;
+import io.jgitkins.server.execution.adapter.in.rest.RunnerController;
+import io.jgitkins.server.identity.access.adapter.in.rest.AdminUserController;
+import io.jgitkins.server.change.review.adapter.in.rest.MergeController;
+import io.jgitkins.server.identity.access.adapter.in.rest.OAuthController;
 import io.jgitkins.server.collaboration.adapter.in.rest.OrganizeController;
 import io.jgitkins.server.collaboration.adapter.in.rest.OrganizeMemberController;
 import io.jgitkins.server.collaboration.adapter.in.rest.dto.request.OrganizeCreationRequest;
@@ -56,25 +56,25 @@ import io.jgitkins.server.collaboration.adapter.in.rest.dto.request.OrganizeMemb
 import io.jgitkins.server.collaboration.adapter.in.rest.dto.request.OrganizeUpdateRequest;
 import io.jgitkins.server.collaboration.adapter.in.rest.mapper.OrganizeMemberRequestMapper;
 import io.jgitkins.server.collaboration.adapter.in.rest.mapper.OrganizeRequestMapper;
-import io.jgitkins.server.identity.access.presentation.api.rest.SignupController;
-import io.jgitkins.server.identity.access.presentation.api.rest.UserController;
-import io.jgitkins.server.identity.access.presentation.api.rest.UserCredentialController;
+import io.jgitkins.server.identity.access.adapter.in.rest.SignupController;
+import io.jgitkins.server.identity.access.adapter.in.rest.UserController;
+import io.jgitkins.server.identity.access.adapter.in.rest.UserCredentialController;
 import io.jgitkins.server.collaboration.adapter.in.web.WebOrganizeController;
-import io.jgitkins.server.repository.presentation.api.web.WebRepositoryController;
+import io.jgitkins.server.repository.adapter.in.web.WebRepositoryController;
 import io.jgitkins.core.web.api.response.ApiResponse;
-import io.jgitkins.server.change.review.presentation.api.rest.PullRequestController;
+import io.jgitkins.server.change.review.adapter.in.rest.PullRequestController;
 import io.jgitkins.server.repository.application.service.BranchLoadService;
 import io.jgitkins.server.repository.application.service.BranchManagementService;
 import io.jgitkins.server.repository.application.service.RepositoryLoadService;
 import io.jgitkins.server.repository.application.service.RepositoryManagementService;
 import io.jgitkins.server.repository.application.service.RepositoryMemberService;
 import io.jgitkins.server.repository.application.service.RepositoryOverviewService;
-import io.jgitkins.server.repository.presentation.api.rest.BranchController;
-import io.jgitkins.server.repository.presentation.api.rest.RepositoryCommitController;
-import io.jgitkins.server.repository.presentation.api.rest.RepositoryContentController;
-import io.jgitkins.server.repository.presentation.api.rest.RepositoryFileController;
-import io.jgitkins.server.repository.presentation.api.rest.RepositoryManagementController;
-import io.jgitkins.server.repository.presentation.api.rest.RepositoryMemberController;
+import io.jgitkins.server.repository.adapter.in.rest.BranchController;
+import io.jgitkins.server.repository.adapter.in.rest.RepositoryCommitController;
+import io.jgitkins.server.repository.adapter.in.rest.RepositoryContentController;
+import io.jgitkins.server.repository.adapter.in.rest.RepositoryFileController;
+import io.jgitkins.server.repository.adapter.in.rest.RepositoryManagementController;
+import io.jgitkins.server.repository.adapter.in.rest.RepositoryMemberController;
 import io.jgitkins.server.repository.application.support.branch.BranchFactory;
 import io.jgitkins.server.shared.application.support.RepositoryAccessibilityService;
 import io.jgitkins.server.shared.application.support.RepositoryNamespaceResolver;
@@ -107,7 +107,7 @@ class ArchitecturePackageConventionTest {
     private static final String CHANGE_REVIEW_SERVICE_PACKAGE = "io.jgitkins.server.change.review.application.service";
     private static final String EXECUTION_SERVICE_PACKAGE = "io.jgitkins.server.execution.application.service";
     private static final String COLLABORATION_APPLICATION_SERVICE_PACKAGE = "io.jgitkins.server.collaboration.application.service";
-    private static final String COLLABORATION_INFRASTRUCTURE_ADAPTER_PACKAGE = "io.jgitkins.server.collaboration.infrastructure.adapter.persistence";
+    private static final String COLLABORATION_INFRASTRUCTURE_ADAPTER_PACKAGE = "io.jgitkins.server.collaboration.adapter.out.persistence";
     private static final String COLLABORATION_INFRASTRUCTURE_MAPPER_PACKAGE = "io.jgitkins.server.collaboration.infrastructure.mapper";
     private static final String COLLABORATION_INFRASTRUCTURE_PERSISTENCE_MODEL_PACKAGE = "io.jgitkins.server.collaboration.infrastructure.persistence.model";
     private static final String COLLABORATION_INFRASTRUCTURE_PERSISTENCE_MAPPER_PACKAGE = "io.jgitkins.server.collaboration.infrastructure.persistence.mapper";
@@ -278,7 +278,7 @@ class ArchitecturePackageConventionTest {
                 UserController.class,
                 UserCredentialController.class,
                 PullRequestController.class,
-                io.jgitkins.server.change.review.presentation.api.rest.MergeController.class,
+                io.jgitkins.server.change.review.adapter.in.rest.MergeController.class,
                 WebOrganizeController.class,
                 WebRepositoryController.class,
                 RunnerController.class,
@@ -328,10 +328,10 @@ class ArchitecturePackageConventionTest {
     void changeReviewControllers_resideInChangeReviewPresentationPackage() {
         List<Class<?>> controllerClasses = List.of(
                 PullRequestController.class,
-                io.jgitkins.server.change.review.presentation.api.rest.MergeController.class);
+                io.jgitkins.server.change.review.adapter.in.rest.MergeController.class);
 
         controllerClasses.forEach(controllerClass -> assertEquals(
-                "io.jgitkins.server.change.review.presentation.api.rest",
+                "io.jgitkins.server.change.review.adapter.in.rest",
                 controllerClass.getPackageName()));
     }
 
@@ -379,8 +379,47 @@ class ArchitecturePackageConventionTest {
                 "src/main/java/io/jgitkins/server/identity/access/application",
                 "app-server/src/main/java/io/jgitkins/server/identity/access/application");
         assertNoInfrastructureImports(identityAccessApplicationRoot);
+        assertNoImports(identityAccessApplicationRoot, "import io.jgitkins.server.collaboration.");
     }
 
+    @Test
+    void identityCollaborationAclBoundary_hasExactProductionAndFixtureAllowlist() throws IOException {
+        Path identityRoot = resolveExistingPath(
+                "src/main/java/io/jgitkins/server/identity/access",
+                "app-server/src/main/java/io/jgitkins/server/identity/access");
+        List<Path> javaFiles;
+        try (Stream<Path> files = Files.walk(identityRoot)) {
+            javaFiles = files.filter(path -> path.toString().endsWith(".java")).toList();
+        }
+        Path productionAdapter = resolveExistingPath(
+                "src/main/java/io/jgitkins/server/identity/access/adapter/out/acl/OrganizationNameUniquenessAclAdapter.java",
+                "app-server/src/main/java/io/jgitkins/server/identity/access/adapter/out/acl/OrganizationNameUniquenessAclAdapter.java");
+        long productionCollaborationImports = javaFiles.stream()
+                .flatMap(path -> {
+                    try { return Files.readAllLines(path).stream(); }
+                    catch (IOException e) { throw new IllegalStateException(e); }
+                })
+                .filter(line -> line.startsWith("import io.jgitkins.server.collaboration."))
+                .count();
+        assertEquals(2, productionCollaborationImports);
+        assertEquals(2, Files.readAllLines(productionAdapter).stream()
+                .filter(line -> line.startsWith("import io.jgitkins.server.collaboration.")).count());
+        assertNoImports(identityRoot.resolve("application"), "import io.jgitkins.server.collaboration.");
+        assertNoImports(identityRoot.resolve("domain"), "import io.jgitkins.server.collaboration.");
+
+        Path fixture = resolveExistingPath(
+                "src/test/java/io/jgitkins/server/identity/access/adapter/out/acl/OrganizationNameUniquenessAclAdapterTest.java",
+                "app-server/src/test/java/io/jgitkins/server/identity/access/adapter/out/acl/OrganizationNameUniquenessAclAdapterTest.java");
+        long fixtureImports = Files.readAllLines(fixture).stream()
+                .filter(line -> line.startsWith("import io.jgitkins.server.collaboration.")).count();
+        assertEquals(3, fixtureImports);
+        assertEquals(1, Files.readAllLines(fixture).stream()
+                .filter(line -> line.contains("import io.jgitkins.server.collaboration.application.port.out.OrganizeQueryPort;")).count());
+        assertEquals(1, Files.readAllLines(fixture).stream()
+                .filter(line -> line.contains("import io.jgitkins.server.collaboration.domain.vo.OrganizeName;")).count());
+        assertEquals(1, Files.readAllLines(fixture).stream()
+                .filter(line -> line.contains("import io.jgitkins.server.collaboration.domain.aggregate.Organize;")).count());
+    }
     @Test
     void repositoryInfrastructureSources_doNotImportLegacyOrganizeInfrastructurePackages() throws IOException {
         Path repositoryInfrastructureRoot = resolveExistingPath(
@@ -393,8 +432,8 @@ class ArchitecturePackageConventionTest {
     @Test
     void repositoryGitAdapters_doNotImportRepositoryApplicationExceptions() throws IOException {
         Path repositoryGitAdapterRoot = resolveExistingPath(
-                "src/main/java/io/jgitkins/server/repository/infrastructure/adapter/git",
-                "app-server/src/main/java/io/jgitkins/server/repository/infrastructure/adapter/git");
+                "src/main/java/io/jgitkins/server/repository/adapter/out/git",
+                "app-server/src/main/java/io/jgitkins/server/repository/adapter/out/git");
         assertNoImports(repositoryGitAdapterRoot, "import io.jgitkins.server.repository.application.exception.");
     }
 

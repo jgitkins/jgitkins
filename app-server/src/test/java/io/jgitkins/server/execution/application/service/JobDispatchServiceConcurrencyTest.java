@@ -24,7 +24,7 @@ import io.jgitkins.server.execution.domain.vo.JobHistoryId;
 import io.jgitkins.server.execution.domain.vo.JobId;
 import io.jgitkins.server.execution.domain.vo.JobStatus;
 import io.jgitkins.server.execution.infrastructure.persistence.mapper.JobHistoryEntityMbgMapper;
-import io.jgitkins.server.execution.infrastructure.adapter.persistence.JobRepositoryAdapter;
+import io.jgitkins.server.execution.adapter.out.persistence.JobRepositoryAdapter;
 
 import io.jgitkins.server.shared.domain.model.vo.BranchName;
 import io.jgitkins.server.shared.domain.model.vo.CommitHash;
