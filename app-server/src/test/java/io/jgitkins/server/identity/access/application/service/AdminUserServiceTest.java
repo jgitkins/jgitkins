@@ -62,7 +62,7 @@ class AdminUserServiceTest {
         LocalDateTime now = LocalDateTime.now();
         User user = User.rehydrate(3L, "carol", "carol@example.com", "Carol", null, UserAuthority.USER,
                 UserStatus.ACTIVE, now, now, now);
-        when(userRepository.findById(3L)).thenReturn(Optional.of(user));
+        when(userRepository.findByIdForUpdate(3L)).thenReturn(Optional.of(user));
         when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
         adminUserService.updateUserStatus(3L, "blocked");
         verify(userRepository).save(any(User.class));

@@ -59,6 +59,16 @@ public class UserPersistenceAdapter implements UserRepository, UserQueryPort {
     }
 
     @Override
+    public Optional<User> findByIdForUpdate(Long id) {
+        try {
+            if (id == null) return Optional.empty();
+            return Optional.ofNullable(userDomainMapper.toDomain(userEntityMbgMapper.selectByPrimaryKeyForUpdate(id)));
+        } catch (Exception e) {
+            throw persistence("Database operation failed during locked find user by id", e);
+        }
+    }
+
+    @Override
     public User save(User user) {
         try {
             UserEntity entity = userDomainMapper.toEntity(user);

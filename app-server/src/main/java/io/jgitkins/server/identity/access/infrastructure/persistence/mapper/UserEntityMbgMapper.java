@@ -22,6 +22,8 @@ public interface UserEntityMbgMapper {
 
     UserEntity selectByPrimaryKey(Long id);
 
+    UserEntity selectByPrimaryKeyForUpdate(Long id);
+
     int updateByConditionSelective(@Param("row") UserEntity row, @Param("example") UserEntityCondition example);
 
     int updateByCondition(@Param("row") UserEntity row, @Param("example") UserEntityCondition example);

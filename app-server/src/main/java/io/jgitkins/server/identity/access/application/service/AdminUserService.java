@@ -56,7 +56,7 @@ public class AdminUserService implements AdminUserQueryUseCase, AdminUserUpdateU
 
         // TODO: 상태에 대한 순수 유효성 검증은 API (@Valid) 단으로 이관
         UserStatus normalized = normalizeStatus(status);
-        User user = userRepository.findById(userId)
+        User user = userRepository.findByIdForUpdate(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found")); // TODO: 도메인 예외 throw
         User updated = User.rehydrate(
                 user.getId(),

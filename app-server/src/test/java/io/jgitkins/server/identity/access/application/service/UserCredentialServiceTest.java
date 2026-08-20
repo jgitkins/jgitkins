@@ -7,14 +7,17 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import io.jgitkins.server.identity.access.application.dto.command.UserCredentialIssueCommand;
 import io.jgitkins.server.identity.access.application.dto.result.UserCredentialIssueResult;
 import io.jgitkins.server.identity.access.application.dto.result.UserCredentialSummary;
-import io.jgitkins.server.shared.application.error.ApplicationErrorCode;
 import io.jgitkins.server.identity.access.application.mapper.UserCredentialApplicationMapper;
-import io.jgitkins.server.identity.access.application.port.out.CurrentUserPort;
+import io.jgitkins.server.identity.access.application.port.out.ActiveAccountPolicyPort;
+import io.jgitkins.server.identity.access.application.exception.UserNotFoundException;
+import io.jgitkins.server.shared.application.error.ApplicationProblemSpec;
+import io.jgitkins.server.shared.application.exception.ApplicationException;
 import io.jgitkins.core.common.exception.JgitkinsException;
 import io.jgitkins.server.identity.access.application.port.out.UserCredentialPersistencePort;
 import io.jgitkins.server.identity.access.domain.entity.UserCredential;
@@ -27,6 +30,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.InOrder;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -37,7 +41,7 @@ class UserCredentialServiceTest {
     private UserCredentialPersistencePort port;
 
     @Mock
-    private CurrentUserPort currentUserPersistencePort;
+    private ActiveAccountPolicyPort activeAccountPolicyPort;
 
     @Mock
     private PasswordEncoder encoder;
@@ -48,12 +52,12 @@ class UserCredentialServiceTest {
 
     @BeforeEach
     void setUp() {
-        service = new UserCredentialService(currentUserPersistencePort, port, encoder, userCredentialApplicationMapper);
+        service = new UserCredentialService(activeAccountPolicyPort, port, encoder, userCredentialApplicationMapper);
     }
 
     @Test
     void issueToken_issuesPlainCredentialAndPersistsHashedCredential() {
-        when(currentUserPersistencePort.resolveCurrentUserId()).thenReturn(Optional.of(1L));
+        when(activeAccountPolicyPort.requireActiveUserId()).thenReturn(1L);
         when(encoder.encode(any())).thenReturn("hashed");
         when(port.save(any(UserCredential.class))).thenAnswer(invocation -> {
             UserCredential credential = invocation.getArgument(0);
@@ -84,7 +88,7 @@ class UserCredentialServiceTest {
         LocalDateTime updatedAt = LocalDateTime.of(2024, 1, 2, 0, 0);
         UserCredential credential = UserCredential.rehydrate(7L, 2L, "PAT", "n", "d", "hash", createdAt, updatedAt);
 
-        when(currentUserPersistencePort.resolveCurrentUserId()).thenReturn(Optional.of(2L));
+        when(activeAccountPolicyPort.requireActiveUserId()).thenReturn(2L);
         when(port.findAllByUserIdAndProvider(2L, "PAT")).thenReturn(List.of(credential));
         List<UserCredentialSummary> result = service.getCredentials();
 
@@ -100,7 +104,7 @@ class UserCredentialServiceTest {
 
     @Test
     void removeCredential_deletesByCredentialIdAndUserId() {
-        when(currentUserPersistencePort.resolveCurrentUserId()).thenReturn(Optional.of(3L));
+        when(activeAccountPolicyPort.requireActiveUserId()).thenReturn(3L);
 
         service.removeCredential(9L);
 
@@ -109,10 +113,49 @@ class UserCredentialServiceTest {
 
     @Test
     void getCredentials_throwsUnauthorizedWhenCurrentUserMissing() {
-        when(currentUserPersistencePort.resolveCurrentUserId()).thenReturn(Optional.empty());
+        when(activeAccountPolicyPort.requireActiveUserId())
+                .thenThrow(new ApplicationException(ApplicationProblemSpec.UNAUTHENTICATED, "Unauthenticated"));
 
-        JgitkinsException exception = assertThrows(JgitkinsException.class, () -> service.getCredentials());
+        assertThrows(ApplicationException.class, () -> service.getCredentials());
+    }
 
-        assertSame(ApplicationErrorCode.UNAUTHENTICATED, exception.getErrorCode());
+    @Test
+    void policyDenialsPropagateBeforeCredentialSideEffects() {
+        when(activeAccountPolicyPort.requireActiveUserId())
+                .thenThrow(new ApplicationException(ApplicationProblemSpec.ACCESS_DENIED, "Access denied"));
+        assertThrows(ApplicationException.class,
+                () -> service.issueCredential(new UserCredentialIssueCommand("token", "desc", null)));
+        assertThrows(ApplicationException.class, service::getCredentials);
+        assertThrows(ApplicationException.class, () -> service.removeCredential(9L));
+        verifyNoInteractions(port, encoder);
+    }
+
+    @Test
+    void missingUserPropagatesBeforeCredentialSideEffects() {
+        when(activeAccountPolicyPort.requireActiveUserId()).thenThrow(new UserNotFoundException());
+        assertThrows(UserNotFoundException.class,
+                () -> service.issueCredential(new UserCredentialIssueCommand("token", "desc", null)));
+        verifyNoInteractions(port, encoder);
+    }
+
+    @Test
+    void policyRunsBeforeEachCredentialSideEffect() {
+        when(activeAccountPolicyPort.requireActiveUserId()).thenReturn(1L);
+        when(encoder.encode(any())).thenReturn("hashed");
+        when(port.save(any(UserCredential.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(port.findAllByUserIdAndProvider(1L, "PAT")).thenReturn(List.of());
+
+        service.issueCredential(new UserCredentialIssueCommand("token", "desc", null));
+        service.getCredentials();
+        service.removeCredential(9L);
+
+        InOrder order = org.mockito.Mockito.inOrder(activeAccountPolicyPort, encoder, port);
+        order.verify(activeAccountPolicyPort).requireActiveUserId();
+        order.verify(encoder).encode(any());
+        order.verify(port).save(any(UserCredential.class));
+        order.verify(activeAccountPolicyPort).requireActiveUserId();
+        order.verify(port).findAllByUserIdAndProvider(1L, "PAT");
+        order.verify(activeAccountPolicyPort).requireActiveUserId();
+        order.verify(port).deleteByIdAndUserId(9L, 1L);
     }
 }

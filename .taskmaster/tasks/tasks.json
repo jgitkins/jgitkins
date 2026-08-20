@@ -2,7 +2,7 @@
   "master": {
     "tasks": [
       {
-        "id": 1,
+        "id": "1",
         "title": "신규기능",
         "description": "사용자 가치 전달을 위한 기능 개발/확장 작업",
         "status": "pending",
@@ -80,7 +80,7 @@
         ]
       },
       {
-        "id": 2,
+        "id": "2",
         "title": "리팩토링",
         "description": "구조 개선, 품질 개선, 테스트 체계 강화 작업",
         "status": "in-progress",
@@ -88,7 +88,7 @@
         "priority": "high",
         "details": "기존 기능별 Task를 카테고리 기반(신규기능/리팩토링/보안)으로 재구성함.",
         "testStrategy": "카테고리별 우선순위에 따라 하위 작업을 순차 수행하고 회귀 테스트를 적용한다.",
-        "updatedAt": "2026-08-18T00:31:49.975Z",
+        "updatedAt": "2026-08-20T06:57:07.225Z",
         "subtasks": [
           {
             "id": 34,
@@ -158,13 +158,14 @@
             "title": "[refactor][server] identity active-account policy",
             "description": "authenticated 사용자와 active/enabled 계정 상태를 분리하고 authoritative identity policy port/adapter와 비활성 계정의 HTTP 오류 계약을 정의·구현한다. Phase 1 correctness 완료 이후 진행.",
             "details": "",
-            "status": "pending",
+            "status": "done",
             "dependencies": [
               "2.38",
               "2.44"
             ],
             "parentTaskId": 2,
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2026-08-20T06:57:07.225Z"
           },
           {
             "id": 40,
@@ -224,7 +225,8 @@
             "dependencies": [
               "2.38"
             ],
-            "parentTaskId": 2
+            "parentTaskId": 2,
+            "parentId": "undefined"
           },
           {
             "id": 45,
@@ -236,7 +238,8 @@
               "2.38",
               "2.44"
             ],
-            "parentTaskId": 2
+            "parentTaskId": 2,
+            "parentId": "undefined"
           },
           {
             "id": 46,
@@ -248,7 +251,8 @@
               "2.38",
               "2.45"
             ],
-            "parentTaskId": 2
+            "parentTaskId": 2,
+            "parentId": "undefined"
           },
           {
             "id": 47,
@@ -260,7 +264,8 @@
               "2.38",
               "2.46"
             ],
-            "parentTaskId": 2
+            "parentTaskId": 2,
+            "parentId": "undefined"
           },
           {
             "id": 48,
@@ -271,12 +276,13 @@
             "dependencies": [
               "2.40"
             ],
-            "parentTaskId": 2
+            "parentTaskId": 2,
+            "parentId": "undefined"
           }
         ]
       },
       {
-        "id": 3,
+        "id": "3",
         "title": "보안",
         "description": "인증/인가/자격증명/보안 회귀 강화 작업",
         "status": "cancelled",
@@ -288,7 +294,7 @@
         "subtasks": []
       },
       {
-        "id": 4,
+        "id": "4",
         "title": "운영/인프라",
         "description": "배포/모니터링/CI-CD/운영 안정성 개선 작업",
         "status": "pending",
@@ -345,7 +351,7 @@
         ]
       },
       {
-        "id": 5,
+        "id": "5",
         "title": "버그/핫픽스",
         "description": "사용자 영향 버그 및 긴급 수정 작업",
         "status": "done",
@@ -371,14 +377,12 @@
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2026-08-18T00:31:49.975Z",
+      "lastModified": "2026-08-20T06:57:07.226Z",
       "taskCount": 5,
       "completedCount": 1,
       "tags": [
         "master"
-      ],
-      "created": "2026-08-18T00:31:51.146Z",
-      "description": "Tasks for master context"
+      ]
     }
   }
 }
