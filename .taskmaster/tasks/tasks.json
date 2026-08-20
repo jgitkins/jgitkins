@@ -180,46 +180,6 @@
             "parentId": "undefined"
           },
           {
-            "id": 41,
-            "title": "[feature][server] collaboration membership lifecycle and owner transfer",
-            "description": "OrganizeMember 초대·추가·삭제와 owner transfer/deletion 불변식을 설계하고 구현한다. owner-only Phase 1 경계를 유지한 후 별도 vertical slice로 진행한다.",
-            "details": "",
-            "status": "pending",
-            "dependencies": [
-              "2.38"
-            ],
-            "parentTaskId": 2,
-            "parentId": "undefined"
-          },
-          {
-            "id": 42,
-            "title": "[infrastructure][server] transactional outbox and durable events",
-            "description": "in-process post-commit event의 비내구성 한계를 해소하기 위해 Transactional Outbox, retry, duplicate handling, consumer failure semantics를 설계·구현한다.",
-            "details": "",
-            "status": "pending",
-            "dependencies": [
-              "2.38"
-            ],
-            "parentTaskId": 2,
-            "parentId": "undefined"
-          },
-          {
-            "id": 43,
-            "title": "[bounded-context architecture guardrail][refactor][server] full bounded-context architecture guardrails",
-            "description": "domain purity를 넘어 application-to-adapter 방향, bounded context 간 내부 구현 참조 금지, port 소유권, outbound adapter placement를 자동 검증한다.",
-            "details": "Canonical Taskmaster meaning: final bounded-context architecture guardrails after Tasks 2.49, 2.50, and 2.51. Supersedes the stale legacy logging interpretation in .taskmaster/tasks/task_002.md and .taskmaster/docs/refactor/task_2_43_plan.md. Enforce common negative import rules across all five contexts, exact ACL allowlists, application port ownership, adapter.in and adapter.out placement, deliberate illegal-import fixture tests, and full architecture/full-regression selectors. Do not change API, DB schema, or bounded-context behavior.",
-            "status": "pending",
-            "dependencies": [
-              "2.38",
-              "2.47",
-              "2.49",
-              "2.50",
-              "2.51"
-            ],
-            "parentTaskId": 2,
-            "parentId": "undefined"
-          },
-          {
             "id": 44,
             "title": "[bounded-context migration][refactor][server] identity.access bounded context migration",
             "description": "identity.access bounded context의 domain/application/adapter 경계를 조사하고, 인증 사용자 조회 port와 보안 adapter의 소유권을 정리한다. 먼저 현재 인증 계약과 active/enabled 정책을 분리한 설계·테스트 계획을 작성한 뒤 작은 vertical slice로 구현한다.",
@@ -328,7 +288,8 @@
             "dependencies": [
               "2.40"
             ],
-            "parentTaskId": 2
+            "parentTaskId": 2,
+            "priority": "high"
           },
           {
             "id": 53,
@@ -339,7 +300,122 @@
             "dependencies": [
               "2.52"
             ],
-            "parentTaskId": 2
+            "parentTaskId": 2,
+            "priority": "high"
+          },
+          {
+            "id": 54,
+            "title": "[bounded-context contract 분리][refactor][P1][server] repository cross-context contract cleanup",
+            "description": "repository application이 collaboration/identity/execution의 foreign domain type, exception, port를 직접 참조하는 경계를 정리한다.",
+            "details": "대상: RepositoryValidator, RepositoryLoadService, CloneUrlBuilder 및 실제 caller/test 전수. repository가 소유하는 ACL/read contract와 error translation을 정의하고, collaboration OrganizeId/OrganizeAccessDeniedException/OrganizeMemberPersistencePort, identity UserId/UserNotFoundException/CurrentUserPort/UserQueryPort, execution RuntimeConfigPort 직접 참조를 책임별로 교체한다. foreign aggregate/value/exception 구현 누수는 금지하고 API/DB/schema/wire behavior는 유지한다. 검증: production/test import matrix, caller/constructor matrix, ACL contract behavior tests, architecture negative-import gate, compile 및 clean full regression. 2.43 final guardrail 전에 완료.",
+            "status": "pending",
+            "dependencies": [
+              "2.45",
+              "2.49",
+              "2.50",
+              "2.51"
+            ],
+            "parentTaskId": 2,
+            "priority": "high"
+          },
+          {
+            "id": 55,
+            "title": "[bounded-context ACL 분리][refactor][P1][server] collaboration identity ACL cleanup",
+            "description": "collaboration application의 identity.domain.vo.UserId 직접 참조를 제거하고 identity-owned ACL/read contract 뒤로 격리한다.",
+            "details": "대상: OrganizeService, OrganizeValidator 및 모든 production/test caller. 인증 사용자 식별자 semantics를 보존하면서 collaboration이 소유하는 application port 또는 ACL contract와 identity adapter translation을 명시한다. identity domain object가 collaboration application/domain으로 유입되지 않는 source gate와 behavior tests를 추가한다. API/DB/permission semantics 변경은 제외하고 2.43 final guardrail 전에 완료한다.",
+            "status": "pending",
+            "dependencies": [
+              "2.40",
+              "2.51"
+            ],
+            "parentTaskId": 2,
+            "priority": "high"
+          },
+          {
+            "id": 56,
+            "title": "[bounded-context application 분리][refactor][P1][server] application technology purity slice",
+            "description": "각 bounded context application의 Spring stereotype/transaction/security/HTTP 기술 의존을 단계적으로 제거하는 첫 executable slice를 수행한다.",
+            "details": "첫 slice는 collaboration을 기준 context로 삼고, application service/validator/port에서 Spring annotation, transaction annotation, MultipartFile 등 기술 타입을 제거하거나 composition/configuration port로 치환한다. domain purity는 유지하고 inbound/outbound compatibility는 보존한다. 이후 identity/repository/execution/change.review 확장 기준을 기록한다. 검증: framework-free application unit tests, forbidden-import architecture gate, Spring wiring regression, full regression. 전체 context 일괄 전환은 제외.",
+            "status": "pending",
+            "dependencies": [
+              "2.38"
+            ],
+            "parentTaskId": 2,
+            "priority": "high"
+          },
+          {
+            "id": 57,
+            "title": "[bounded-context composition-root 분리][refactor][P1][server] common context-specific wiring ownership",
+            "description": "common infrastructure/configuration이 bounded-context application API와 outbound implementation을 직접 소유하는 경계를 정리한다.",
+            "details": "대상: SecurityConfig, OAuth2LoginSuccessHandler, GitSmartHttpAuthFilter/Authorizer, PatAuthenticationProvider, PushHook, CommitFileFactory와 실제 caller. generic common technical infrastructure와 context-specific composition wiring을 분리하고, context-owned configuration adapter 또는 명시적 composition root ownership을 결정한다. OAuth/HTTP/Git hook behavior 및 bean discovery를 보존한다. 검증: bean wiring/context tests, source ownership gate, API compatibility, full regression.",
+            "status": "pending",
+            "dependencies": [
+              "2.49",
+              "2.50",
+              "2.51"
+            ],
+            "parentTaskId": 2,
+            "priority": "high"
+          },
+          {
+            "id": 58,
+            "title": "[bounded-context infrastructure 소유권][refactor][P2][server] persistence config generated asset ownership policy",
+            "description": "adapter/out 구현체와 infrastructure persistence/config/generated 자산의 ownership 규칙을 명시하고 자동 검증한다.",
+            "details": "MyBatis mapper interface/XML, entity/domain mapper, MBG generated source, schema/resource, datasource/configuration, generic common infrastructure와 context-owned adapter implementation의 경계를 inventory한다. 새 implementation placement는 adapter/out으로 단일화하고 retained technical/generated assets는 명시적 allowlist로 관리한다. source path/package/ownership architecture test를 추가하며 behavior/API/DB schema 변경은 제외한다.",
+            "status": "pending",
+            "dependencies": [
+              "2.50"
+            ],
+            "parentTaskId": 2,
+            "priority": "medium"
+          },
+          {
+            "id": 43,
+            "title": "[bounded-context architecture guardrail][refactor][server] full bounded-context architecture guardrails",
+            "description": "domain purity를 넘어 application-to-adapter 방향, bounded context 간 내부 구현 참조 금지, port 소유권, outbound adapter placement를 자동 검증한다.",
+            "details": "Canonical Taskmaster meaning: final bounded-context architecture guardrails after remediation Tasks 2.54-2.58 and completed Tasks 2.49-2.51. Consumes external evidence report `/Users/hrk/.gstack/projects/jgitkins/hrk-main-design-20260821-architecture-analysis.md`. Enforce common negative import rules across all five contexts, application technology-import policy, exact ACL allowlists, application port ownership, adapter.in and adapter.out placement, common/configuration ownership, retained infrastructure/generated allowlists, deliberate illegal-import fixture tests, and full architecture/full-regression selectors. Do not change API, DB schema, or bounded-context behavior.",
+            "status": "pending",
+            "dependencies": [
+              "2.38",
+              "2.47",
+              "2.49",
+              "2.50",
+              "2.51",
+              "2.54",
+              "2.55",
+              "2.56",
+              "2.57",
+              "2.58"
+            ],
+            "parentTaskId": 2,
+            "parentId": "undefined",
+            "priority": "high"
+          },
+          {
+            "id": 41,
+            "title": "[feature][server] collaboration membership lifecycle and owner transfer",
+            "description": "OrganizeMember 초대·추가·삭제와 owner transfer/deletion 불변식을 설계하고 구현한다. owner-only Phase 1 경계를 유지한 후 별도 vertical slice로 진행한다.",
+            "details": "",
+            "status": "pending",
+            "dependencies": [
+              "2.38"
+            ],
+            "parentTaskId": 2,
+            "parentId": "undefined",
+            "priority": "medium"
+          },
+          {
+            "id": 42,
+            "title": "[infrastructure][server] transactional outbox and durable events",
+            "description": "in-process post-commit event의 비내구성 한계를 해소하기 위해 Transactional Outbox, retry, duplicate handling, consumer failure semantics를 설계·구현한다.",
+            "details": "",
+            "status": "pending",
+            "dependencies": [
+              "2.38"
+            ],
+            "parentTaskId": 2,
+            "parentId": "undefined",
+            "priority": "low"
           }
         ]
       },
@@ -446,7 +522,8 @@
         "master"
       ],
       "created": "2026-08-20T13:40:19.913Z",
-      "description": "Tasks for master context"
+      "description": "Tasks for master context",
+      "lastPlanningUpdate": "2026-08-21: registered architecture remediation tasks 54-58 and reprioritized pending backlog"
     }
   }
 }
