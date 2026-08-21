@@ -88,7 +88,7 @@
         "priority": "high",
         "details": "기존 기능별 Task를 카테고리 기반(신규기능/리팩토링/보안)으로 재구성함.",
         "testStrategy": "카테고리별 우선순위에 따라 하위 작업을 순차 수행하고 회귀 테스트를 적용한다.",
-        "updatedAt": "2026-08-21T02:38:02.156Z",
+        "updatedAt": "2026-08-21T02:42:47.599Z",
         "subtasks": [
           {
             "id": 34,
@@ -347,14 +347,15 @@
             "title": "[context-all][bounded-context application 분리][refactor][app-server] application technology purity slice",
             "description": "각 bounded context application의 Spring stereotype/transaction/security/HTTP 기술 의존을 단계적으로 제거하는 첫 executable slice를 수행한다.",
             "details": "Exact scope: `collaboration.application.validate.OrganizeValidator`, `OrganizeMemberValidator`, and collaboration application port contracts only. Add `collaboration.infrastructure.config.CollaborationApplicationConfiguration` with explicit `@Bean` methods for the two validators; validator constructors remain port-based. Deferred and not modified here: `collaboration.application.service.OrganizeService` (future collaboration application purity slice, not yet registered), `collaboration.application.service.OrganizeMemberService` (2.41 feature/purity follow-up), and all identity/access, repository, execution, change/review application services. Exact selectors: existing `io.jgitkins.server.collaboration.application.service.OrganizeServiceTest`, `OrganizeMemberServiceTest`, `CollaborationInboundAdapterWiringTest`; new `io.jgitkins.server.collaboration.application.validate.OrganizeValidatorTest`, `OrganizeMemberValidatorTest`, `CollaborationApplicationConfigurationTest`; plus `io.jgitkins.server.application.ArchitecturePackageConventionTest`. Forbidden Spring/transaction/HTTP/security imports in the in-scope application files must be zero.\n\nCanonical integrated implementation spec: /Users/hrk/.gstack/plans/jgitkins-bounded-context-remediation-roadmap-20260821-spec.md\nStatus: ENGINEERING PASS.",
-            "status": "pending",
+            "status": "done",
             "dependencies": [
               "2.38",
               "2.55"
             ],
             "parentTaskId": 2,
             "priority": "high",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2026-08-21T02:42:47.599Z"
           },
           {
             "id": 57,
@@ -534,7 +535,7 @@
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2026-08-21T02:38:02.156Z",
+      "lastModified": "2026-08-21T02:42:47.599Z",
       "taskCount": 5,
       "completedCount": 1,
       "tags": [
