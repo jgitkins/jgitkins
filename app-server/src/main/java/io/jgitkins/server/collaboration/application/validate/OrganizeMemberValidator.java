@@ -6,9 +6,6 @@ import io.jgitkins.server.collaboration.domain.vo.OrganizeId;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeMemberRole;
 import io.jgitkins.server.collaboration.domain.vo.MemberUserId;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
-
-@Component
 @RequiredArgsConstructor
 public class OrganizeMemberValidator {
 
