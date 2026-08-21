@@ -22,7 +22,7 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
-class CollaborationSpringDomainEventPublisherTransactionTest {
+public class CollaborationSpringDomainEventPublisherTransactionTest {
 
     private ApplicationEventPublisher applicationEventPublisher;
     private JdbcTemplate jdbcTemplate;

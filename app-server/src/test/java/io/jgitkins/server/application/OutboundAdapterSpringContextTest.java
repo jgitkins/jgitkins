@@ -3,7 +3,7 @@ package io.jgitkins.server.application;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.jgitkins.server.JGitkinsServerApplication;
-import io.jgitkins.server.common.infrastructure.config.security.auth.PatAuthenticationProvider;
+import io.jgitkins.server.identity.access.adapter.in.security.PatAuthenticationProvider;
 import io.jgitkins.server.collaboration.adapter.out.persistence.OrganizePersistenceAdapter;
 import io.jgitkins.server.execution.application.service.JobDispatchService;
 import io.jgitkins.server.repository.application.service.RepositoryOverviewService;
@@ -48,7 +48,7 @@ import org.springframework.core.env.Environment;
 @ActiveProfiles("test")
 @ResourceLock("outbound-adapter-spring-context")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
-class OutboundAdapterSpringContextTest {
+public class OutboundAdapterSpringContextTest {
     @TempDir
     static Path runtimeVolume;
 

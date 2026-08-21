@@ -1,4 +1,4 @@
-package io.jgitkins.server.common.infrastructure.config.security.auth;
+package io.jgitkins.server.identity.access.adapter.in.security;
 
 import io.jgitkins.server.identity.access.adapter.out.security.PatTokenAuthenticationService;
 import lombok.RequiredArgsConstructor;

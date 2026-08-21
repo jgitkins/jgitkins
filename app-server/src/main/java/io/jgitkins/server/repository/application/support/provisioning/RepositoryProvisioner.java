@@ -3,7 +3,7 @@ package io.jgitkins.server.repository.application.support.provisioning;
 import io.jgitkins.server.repository.application.contract.result.CommitFile;
 import io.jgitkins.server.repository.application.port.out.CommitGitPort;
 import io.jgitkins.server.repository.application.port.out.RepositoryGitPort;
-import io.jgitkins.server.common.factory.CommitFileFactory;
+import io.jgitkins.server.repository.application.support.CommitFilePreparer;
 import io.jgitkins.server.repository.domain.aggregate.Repository;
 import io.jgitkins.server.repository.domain.model.vo.InitialCommitOptions;
 import io.jgitkins.server.repository.domain.repository.RepositoryRepository;
@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class RepositoryProvisioner {
 
-    private final CommitFileFactory commitFileFactory;
+    private final CommitFilePreparer commitFilePreparer;
     private final RepositoryRepository repositoryRepository;
     private final BranchRepository branchPort;
     private final RepositoryNamespaceResolver repositoryNamespaceResolver;
@@ -66,7 +66,7 @@ public class RepositoryProvisioner {
         String repoName = repository.getName().getValue();
         String branchName = repository.getDefaultBranch().getValue();
 
-        List<CommitFile> files = commitFileFactory.prepareInitialFile(repoName);
+        List<CommitFile> files = commitFilePreparer.prepareInitialFile(repoName);
         commitGitPort.commit(
                 namespace,
                 repoName,

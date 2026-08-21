@@ -1,6 +1,5 @@
 package io.jgitkins.server.common.infrastructure.adapter.security;
 
-import io.jgitkins.server.identity.access.application.port.out.TokenIssuerPort;
 import io.jgitkins.server.common.infrastructure.config.security.JwtProperties;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -15,11 +14,10 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class JwtService implements TokenIssuerPort {
+public class JwtService {
 
     private final JwtProperties jwtProperties;
 
-    @Override
     public String issueToken(Long userId, List<String> roles) {
         if (userId == null) {
             throw new IllegalArgumentException("userId is required");

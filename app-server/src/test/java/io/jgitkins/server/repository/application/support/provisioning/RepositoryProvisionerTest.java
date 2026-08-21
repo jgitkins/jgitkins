@@ -9,7 +9,7 @@ import static org.mockito.Mockito.when;
 import io.jgitkins.server.repository.application.contract.result.CommitFile;
 import io.jgitkins.server.repository.application.port.out.CommitGitPort;
 import io.jgitkins.server.repository.application.port.out.RepositoryGitPort;
-import io.jgitkins.server.common.factory.CommitFileFactory;
+import io.jgitkins.server.repository.application.support.CommitFilePreparer;
 import io.jgitkins.server.repository.domain.entity.Branch;
 import io.jgitkins.server.repository.domain.aggregate.Repository;
 import io.jgitkins.server.shared.domain.model.vo.BranchName;
@@ -30,7 +30,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class RepositoryProvisionerTest {
 
     @Mock
-    private CommitFileFactory commitFileFactory;
+    private CommitFilePreparer commitFilePreparer;
     @Mock
     private RepositoryRepository repositoryRepository;
     @Mock
@@ -47,7 +47,7 @@ class RepositoryProvisionerTest {
     @BeforeEach
     void setUp() {
         repositoryProvisioner = new RepositoryProvisioner(
-                commitFileFactory,
+                commitFilePreparer,
                 repositoryRepository,
                 branchPort,
                 repositoryNamespaceResolver,
@@ -87,7 +87,7 @@ class RepositoryProvisionerTest {
         when(repository.getName()).thenReturn(RepositoryName.from("sample-repo"));
         when(repository.getDefaultBranch()).thenReturn(BranchName.of("main"));
         when(repositoryNamespaceResolver.resolve(repository)).thenReturn("alice");
-        when(commitFileFactory.prepareInitialFile("sample-repo")).thenReturn(files);
+        when(commitFilePreparer.prepareInitialFile("sample-repo")).thenReturn(files);
         when(repository.markInit(any())).thenReturn(initialized);
         when(repositoryRepository.update(initialized)).thenReturn(initialized);
 

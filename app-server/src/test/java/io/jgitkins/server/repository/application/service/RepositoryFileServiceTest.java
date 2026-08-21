@@ -5,7 +5,7 @@ import io.jgitkins.server.repository.application.contract.command.FileUploadInfo
 import io.jgitkins.server.repository.application.port.out.CommitGitPort;
 import io.jgitkins.server.repository.application.port.out.FileGitPort;
 import io.jgitkins.server.repository.application.validate.RepositoryAccessValidator;
-import io.jgitkins.server.common.factory.CommitFileFactory;
+import io.jgitkins.server.repository.application.support.CommitFilePreparer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -24,7 +24,7 @@ import static org.mockito.Mockito.when;
 class RepositoryFileServiceTest {
 
     @Mock
-    private CommitFileFactory commitFileFactory;
+    private CommitFilePreparer commitFilePreparer;
 
     @Mock
     private CommitGitPort commitGitPort;
@@ -46,7 +46,7 @@ class RepositoryFileServiceTest {
         request.setAuthorName("author");
         request.setAuthorEmail("a@b.com");
         List<CommitFile> files = List.of(CommitFile.builder().path("README.md").build());
-        when(commitFileFactory.prepareUploadFile(file, request)).thenReturn(files);
+        when(commitFilePreparer.prepareUploadFile(file, request)).thenReturn(files);
 
         service.uploadFileToRepository("task", "repo", "main", file, request);
 
@@ -61,7 +61,7 @@ class RepositoryFileServiceTest {
         FileUploadInfo request = new FileUploadInfo();
         request.setCommitMessage("msg");
         List<CommitFile> files = List.of(CommitFile.builder().path("README.md").build());
-        when(commitFileFactory.prepareUploadFile(file, request)).thenReturn(files);
+        when(commitFilePreparer.prepareUploadFile(file, request)).thenReturn(files);
 
         service.uploadFileToRepository("task", "repo", "main", file, request);
 

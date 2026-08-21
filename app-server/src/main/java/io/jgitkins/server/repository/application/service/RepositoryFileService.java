@@ -9,7 +9,7 @@ import io.jgitkins.server.repository.application.port.in.FileUploadUseCase;
 import io.jgitkins.server.repository.application.port.out.CommitGitPort;
 import io.jgitkins.server.repository.application.port.out.FileGitPort;
 import io.jgitkins.server.repository.application.validate.RepositoryAccessValidator;
-import io.jgitkins.server.common.factory.CommitFileFactory;
+import io.jgitkins.server.repository.application.support.CommitFilePreparer;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,7 +25,7 @@ public class RepositoryFileService implements FileUploadUseCase,
     private static final String DEFAULT_AUTHOR_NAME = "jgitkins";
     private static final String DEFAULT_AUTHOR_EMAIL = "no-reply@jgitkins.local";
 
-    private final CommitFileFactory commitFileFactory;
+    private final CommitFilePreparer commitFilePreparer;
     private final CommitGitPort commitGitPort;
     private final FileGitPort fileGitPort;
     private final RepositoryAccessValidator repositoryAccessValidator;
@@ -39,7 +39,7 @@ public class RepositoryFileService implements FileUploadUseCase,
             FileUploadInfo request) {
         repositoryAccessValidator.validateCanCommit(namespace, repoName);
 
-        List<CommitFile> files = commitFileFactory.prepareUploadFile(file, request);
+        List<CommitFile> files = commitFilePreparer.prepareUploadFile(file, request);
 
         commitGitPort.commit(namespace,
                 repoName,
