@@ -2,7 +2,7 @@
   "master": {
     "tasks": [
       {
-        "id": 1,
+        "id": "1",
         "title": "신규기능",
         "description": "사용자 가치 전달을 위한 기능 개발/확장 작업",
         "status": "pending",
@@ -80,7 +80,7 @@
         ]
       },
       {
-        "id": 2,
+        "id": "2",
         "title": "리팩토링",
         "description": "구조 개선, 품질 개선, 테스트 체계 강화 작업",
         "status": "in-progress",
@@ -88,7 +88,7 @@
         "priority": "high",
         "details": "기존 기능별 Task를 카테고리 기반(신규기능/리팩토링/보안)으로 재구성함.",
         "testStrategy": "카테고리별 우선순위에 따라 하위 작업을 순차 수행하고 회귀 테스트를 적용한다.",
-        "updatedAt": "2026-08-20T06:57:07.225Z",
+        "updatedAt": "2026-08-21T02:18:00.398Z",
         "subtasks": [
           {
             "id": 34,
@@ -255,7 +255,8 @@
               "2.47",
               "2.48"
             ],
-            "parentTaskId": 2
+            "parentTaskId": 2,
+            "parentId": "undefined"
           },
           {
             "id": 50,
@@ -266,7 +267,8 @@
             "dependencies": [
               "2.49"
             ],
-            "parentTaskId": 2
+            "parentTaskId": 2,
+            "parentId": "undefined"
           },
           {
             "id": 51,
@@ -277,19 +279,22 @@
             "dependencies": [
               "2.50"
             ],
-            "parentTaskId": 2
+            "parentTaskId": 2,
+            "parentId": "undefined"
           },
           {
             "id": 52,
             "title": "[context-collaboration][refactor][app-server] OrganizeRepository naming cleanup",
             "description": "타입을 OrganizeRepository로 변경한 collaboration service/validator에서 이전 포트명 organizePort가 남아 있는 변수명을 소유 책임에 맞게 정리한다.",
             "details": "Repository 타입과 변수명 불일치를 collaboration 패키지에 한정하지 않고 production/test Java 전체에서 전수검사한다. 현재 확인된 `OrganizeRepository` 변수명 대상은 app-server/src/main/java/io/jgitkins/server/collaboration/application/service/OrganizeService.java의 `private final OrganizeRepository organizePort`, app-server/src/main/java/io/jgitkins/server/collaboration/application/validate/OrganizeValidator.java의 동일 선언, app-server/src/test/java/io/jgitkins/server/collaboration/application/service/OrganizeServiceTest.java의 `private OrganizeRepository organizePort`다. 이 세 곳의 변수명을 `organizeRepository`로 통일하고 constructor/Lombok 생성자 사용부·메서드 호출부·테스트 fixture 명칭을 함께 정리한다. 이후 repository-wide 검사로 `OrganizeRepository` 선언/필드/파라미터/지역변수의 의미상 변수명이 이전 포트 명칭으로 남아 있는지 확인한다. 반대로 `OrganizeQueryPort`를 사용하는 RepositoryNamespaceResolver와 UsernameAllocator의 `organizePort`는 타입에 맞는 이름이므로 변경하지 않는다. 검증: `OrganizeRepository` 선언 전수검사 및 허용/수정 목록 대조, old-name zero-reference within OrganizeRepository declarations, collaboration focused tests, compile, git diff --check. API·행동·포트 시그니처 변경은 금지. Priority: low.\n\nCanonical integrated implementation spec: /Users/hrk/.gstack/plans/jgitkins-bounded-context-remediation-roadmap-20260821-spec.md\nStatus: ENGINEERING PASS.",
-            "status": "pending",
+            "status": "done",
             "dependencies": [
               "2.40"
             ],
             "parentTaskId": 2,
-            "priority": "high"
+            "priority": "high",
+            "updatedAt": "2026-08-21T02:18:00.398Z",
+            "parentId": "undefined"
           },
           {
             "id": 53,
@@ -301,7 +306,8 @@
               "2.52"
             ],
             "parentTaskId": 2,
-            "priority": "high"
+            "priority": "high",
+            "parentId": "undefined"
           },
           {
             "id": 54,
@@ -316,7 +322,8 @@
               "2.51"
             ],
             "parentTaskId": 2,
-            "priority": "high"
+            "priority": "high",
+            "parentId": "undefined"
           },
           {
             "id": 55,
@@ -329,7 +336,8 @@
               "2.51"
             ],
             "parentTaskId": 2,
-            "priority": "high"
+            "priority": "high",
+            "parentId": "undefined"
           },
           {
             "id": 56,
@@ -342,7 +350,8 @@
               "2.55"
             ],
             "parentTaskId": 2,
-            "priority": "high"
+            "priority": "high",
+            "parentId": "undefined"
           },
           {
             "id": 57,
@@ -356,7 +365,8 @@
               "2.51"
             ],
             "parentTaskId": 2,
-            "priority": "high"
+            "priority": "high",
+            "parentId": "undefined"
           },
           {
             "id": 58,
@@ -368,7 +378,8 @@
               "2.50"
             ],
             "parentTaskId": 2,
-            "priority": "medium"
+            "priority": "medium",
+            "parentId": "undefined"
           },
           {
             "id": 43,
@@ -425,7 +436,7 @@
         ]
       },
       {
-        "id": 3,
+        "id": "3",
         "title": "보안",
         "description": "인증/인가/자격증명/보안 회귀 강화 작업",
         "status": "cancelled",
@@ -437,7 +448,7 @@
         "subtasks": []
       },
       {
-        "id": 4,
+        "id": "4",
         "title": "운영/인프라",
         "description": "배포/모니터링/CI-CD/운영 안정성 개선 작업",
         "status": "pending",
@@ -494,7 +505,7 @@
         ]
       },
       {
-        "id": 5,
+        "id": "5",
         "title": "버그/핫픽스",
         "description": "사용자 영향 버그 및 긴급 수정 작업",
         "status": "done",
@@ -520,15 +531,12 @@
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2026-08-20T06:57:07.226Z",
+      "lastModified": "2026-08-21T02:18:00.398Z",
       "taskCount": 5,
       "completedCount": 1,
       "tags": [
         "master"
-      ],
-      "created": "2026-08-20T13:40:19.913Z",
-      "description": "Tasks for master context",
-      "lastPlanningUpdate": "2026-08-21: registered architecture remediation tasks 54-58 and reprioritized pending backlog"
+      ]
     }
   }
 }
