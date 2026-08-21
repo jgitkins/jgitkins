@@ -413,14 +413,27 @@
           },
           {
             "id": 41,
-            "title": "[context-collaboration][feature][app-server] membership lifecycle and owner transfer",
-            "description": "OrganizeMember 초대·추가·삭제와 owner transfer/deletion 불변식을 설계하고 구현한다. owner-only Phase 1 경계를 유지한 후 별도 vertical slice로 진행한다.",
-            "details": "\n\nCanonical integrated implementation spec: /Users/hrk/.gstack/plans/jgitkins-bounded-context-remediation-roadmap-20260821-spec.md\nStatus: ENGINEERING PASS.",
+            "title": "[context-collaboration][feature][app-server] membership lifecycle",
+            "description": "GitLab식 membership lifecycle을 구현한다. owner transfer와 Organize.ownerId 제거는 별도 후속 task 59에서 수행한다.",
+            "details": "현재 범위: OrganizeMember 초대·추가·삭제·조회와 role 정책을 구현한다. GitLab식 동작을 기준으로 member role을 권한 모델로 사용하되, 이번 task에서는 기존 Organize.ownerId를 호환성을 위해 유지한다. 현재 owner가 member lifecycle을 변경할 수 있는 authorization과 최소 1명의 OWNER 유지 규칙을 정의하고 테스트한다. owner transfer, Organize.ownerId 제거, owner source-of-truth 단일화, 관련 API/ACL/repository 참조 migration은 후속 59 strict owner membership migration task로 명시적으로 제외한다. 기존 API/DB schema/wire contract는 유지한다. 선행: 2.54, 2.55.\n\nCanonical integrated implementation spec: /Users/hrk/.gstack/plans/jgitkins-bounded-context-remediation-roadmap-20260821-spec.md\nStatus: ENGINEERING PASS.",
             "status": "pending",
             "dependencies": [
               "2.38",
               "2.54",
               "2.55"
+            ],
+            "parentTaskId": 2,
+            "parentId": "undefined",
+            "priority": "medium"
+          },
+          {
+            "id": "59",
+            "title": "[context-collaboration][bounded-context owner model][refactor][app-server] strict GitLab owner membership migration",
+            "description": "GitLab식 strict owner 모델로 전환한다. OrganizeMember OWNER role을 단일 source of truth로 만들고 Organize.ownerId와 관련 참조를 제거 또는 migration한다.",
+            "details": "후속 범위: 2.41에서 유지한 Organize.ownerId compatibility projection을 제거하고 OrganizeMember.role=OWNER를 owner 권한과 식별의 단일 source of truth로 전환한다. owner transfer, 최소 1명의 human OWNER invariant, 유일 owner self-removal/delete 금지, owner/member role transition을 최종 모델로 확정한다. Organize aggregate, persistence entity/mapper, OrganizeValidator, repository owner lookup/namespace 흐름, application DTO/API와 모든 production/test caller를 inventory한 뒤 단계적으로 migration한다. 기존 데이터의 ownerId와 OWNER membership 불일치 보정 전략, API/DB schema compatibility 및 migration 필요 여부를 별도 설계한다. 2.41 완료 후에만 시작하며, 2.41의 GitLab-like behavior와 호환 projection을 전제로 한다. 별도 CEO/engineering review와 exact caller/selector ledger PASS 전에는 구현하지 않는다.",
+            "status": "pending",
+            "dependencies": [
+              "2.41"
             ],
             "parentTaskId": 2,
             "parentId": "undefined",
