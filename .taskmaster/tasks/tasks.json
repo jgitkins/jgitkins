@@ -88,7 +88,7 @@
         "priority": "high",
         "details": "기존 기능별 Task를 카테고리 기반(신규기능/리팩토링/보안)으로 재구성함.",
         "testStrategy": "카테고리별 우선순위에 따라 하위 작업을 순차 수행하고 회귀 테스트를 적용한다.",
-        "updatedAt": "2026-08-21T02:29:01.194Z",
+        "updatedAt": "2026-08-21T02:31:53.312Z",
         "subtasks": [
           {
             "id": 34,
@@ -315,7 +315,7 @@
             "title": "[context-repository][bounded-context contract 분리][refactor][app-server] cross-context contract cleanup",
             "description": "repository application이 collaboration/identity/execution의 foreign domain type, exception, port를 직접 참조하는 경계를 정리한다.",
             "details": "Exact contract: `RepositoryValidator` fields become `RepositoryRepository repositoryRepository`, existing repository-owned `OrganizationMembershipPort organizationMembershipPort`, and existing repository-owned `RepositoryActorPort repositoryActorPort`. `organizationMembershipPort.findRoleByOrganizationIdAndUserId(organizeId, requesterId).isPresent()` is the membership predicate; empty role throws repository-owned `RepositoryAccessDeniedException` with the existing message semantics. `RepositoryAccessibilityService` moves to `repository.application.support`; its method signatures use `Map<Long, Boolean>` cache keys and `Long organizationId`, never `OrganizeId`. `RepositoryLoadService` fields and constructor become exactly `RepositoryQueryPort repositoryQueryPort`, `RepositoryActorPort repositoryActorPort`, and existing repository-owned `UserNamespacePort userNamespacePort`; preserve username lookup and repository-owned error mapping. `CloneUrlBuilder` uses new repository-owned `RepositoryEndpointPort` (`restScheme()`, `serviceHost()`); `RepositoryEndpointAclAdapter` under `repository.adapter.out.config` delegates to execution `RuntimeConfigPort`. Existing selectors: `RepositoryLoadServiceTest`, `RepositoryLookupServiceTest`, `RepositoryAccessValidatorTest`, `RepositoryManagementServiceTest`, `RepositoryAclAdapterWiringTest`, `OrganizationMembershipAclAdapterTest`, `RepositoryActorAclAdapterTest`, `UserNamespaceAclAdapterTest`. New exact selectors: `RepositoryValidatorTest`, `RepositoryAccessibilityServiceTest`, `CloneUrlBuilderTest`, `RepositoryEndpointAclAdapterTest`. `RepositoryAclAdapterWiringTest` asserts affected persistence/mapper constructor edges. Source gate rejects foreign repository application imports.\n\nCanonical integrated implementation spec: /Users/hrk/.gstack/plans/jgitkins-bounded-context-remediation-roadmap-20260821-spec.md\nStatus: ENGINEERING PASS.",
-            "status": "pending",
+            "status": "done",
             "dependencies": [
               "2.45",
               "2.49",
@@ -324,7 +324,8 @@
             ],
             "parentTaskId": 2,
             "priority": "high",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2026-08-21T02:31:53.312Z"
           },
           {
             "id": 55,
@@ -532,7 +533,7 @@
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2026-08-21T02:29:01.194Z",
+      "lastModified": "2026-08-21T02:31:53.312Z",
       "taskCount": 5,
       "completedCount": 1,
       "tags": [
