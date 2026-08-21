@@ -88,7 +88,7 @@
         "priority": "high",
         "details": "기존 기능별 Task를 카테고리 기반(신규기능/리팩토링/보안)으로 재구성함.",
         "testStrategy": "카테고리별 우선순위에 따라 하위 작업을 순차 수행하고 회귀 테스트를 적용한다.",
-        "updatedAt": "2026-08-21T02:42:47.599Z",
+        "updatedAt": "2026-08-21T03:50:37.729Z",
         "subtasks": [
           {
             "id": 34,
@@ -362,7 +362,7 @@
             "title": "[context-all][bounded-context composition-root 분리][refactor][app-server] context-specific wiring ownership",
             "description": "common infrastructure/configuration이 bounded-context application API와 outbound implementation을 직접 소유하는 경계를 정리한다.",
             "details": "Exact common allowlist: `common.infrastructure.config.security.SecurityConfig` may import only `identity.access.application.port.in.OAuthLoginUseCase`; `common.infrastructure.config.security.handler.OAuth2LoginSuccessHandler` may import only identity `OAuthLoginCommand`, `OAuthLoginResult`, and `OAuthLoginUseCase`; `common.infrastructure.config.filter.GitSmartHttpAuthFilter` and `common.infrastructure.config.git.GitSmartHttpAuthorizer` may import only `repository.application.port.in.GitRepositoryAccessUseCase`; `common.infrastructure.config.git.hook.push.PushHook` may import execution `PushEventHandleUseCase` plus shared command/port/resolver contracts. `PatAuthenticationProvider` and `CommitFileFactory` are excluded because they move out of common. `PatAuthenticationProvider` moves to `identity.access.adapter.in.security`; `OutboundAdapterSpringContextTest` must update its import/assertion to the new package and continue asserting the same bean. `CommitFileFactory` moves to `repository.adapter.in.rest.factory`; `CommitFileFactoryTest` moves with it and remains exact selector `io.jgitkins.server.repository.adapter.in.rest.factory.CommitFileFactoryTest`. Existing selectors: `ArchitecturePackageConventionTest`, `OutboundAdapterSpringContextTest`, `GitSmartHttpCanonicalRedirectFilterTest`, `PushHookCommandTranslatorTest`, `OAuthLoginServiceTest`, `OAuthControllerTest`, `CurrentUserSecurityAdapterTest`; new `identity.access.adapter.in.security.PatAuthenticationProviderTest`. Common source gate rejects non-allowlisted context outbound/domain/application DTO imports.\n\nCanonical integrated implementation spec: /Users/hrk/.gstack/plans/jgitkins-bounded-context-remediation-roadmap-20260821-spec.md\nStatus: ENGINEERING PASS.",
-            "status": "pending",
+            "status": "done",
             "dependencies": [
               "2.49",
               "2.50",
@@ -370,20 +370,22 @@
             ],
             "parentTaskId": 2,
             "priority": "high",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2026-08-21T03:50:35.858Z"
           },
           {
             "id": 58,
             "title": "[context-all][bounded-context infrastructure 소유권][refactor][app-server] persistence generated asset ownership policy",
             "description": "adapter/out 구현체와 infrastructure persistence/config/generated 자산의 ownership 규칙을 명시하고 자동 검증한다.",
             "details": "Exact retained technical/generated allowlist: `app-server/src/main/java/io/jgitkins/server/*/infrastructure/persistence/model/**` (27 Java model files including condition classes), `app-server/src/main/java/io/jgitkins/server/*/infrastructure/persistence/mapper/**` (14 Java mapper files), `app-server/src/main/java/io/jgitkins/server/*/infrastructure/mapper/**` (12 Java mapper files), `app-server/src/main/resources/mapper/mbg/**` (13 XML resources), and `app-server/src/main/resources/mapper/custom/**` (1 XML resource). Configuration ownership is out of scope and belongs to 2.57. New handwritten adapter implementations must use context `adapter/out/**`. Exact existing selector ledger (35): io.jgitkins.server.application.ArchitecturePackageConventionTest, io.jgitkins.server.application.OutboundAdapterSpringContextTest, io.jgitkins.server.change.review.ChangeReviewBoundedContextArchitectureTest, io.jgitkins.server.change.review.adapter.out.acl.BranchHeadAclAdapterTest, io.jgitkins.server.change.review.adapter.out.acl.ChangeReviewAclWiringTest, io.jgitkins.server.change.review.adapter.out.acl.RepositoryReferenceAclAdapterTest, io.jgitkins.server.change.review.adapter.out.git.MergeGitAdapterTest, io.jgitkins.server.change.review.adapter.out.persistence.PullRequestPersistenceAdapterTest, io.jgitkins.server.collaboration.adapter.out.acl.InProcessUserIdentityAdapterTest, io.jgitkins.server.collaboration.adapter.out.event.CollaborationSpringDomainEventPublisherTransactionTest, io.jgitkins.server.collaboration.adapter.out.event.CollaborationSpringDomainEventPublisherTest, io.jgitkins.server.collaboration.adapter.out.persistence.OrganizeMemberPersistenceAdapterTest, io.jgitkins.server.collaboration.adapter.out.persistence.OrganizePersistenceAdapterIntegrationTest, io.jgitkins.server.collaboration.adapter.out.persistence.OrganizePersistenceAdapterTest, io.jgitkins.server.execution.ExecutionBoundedContextArchitectureTest, io.jgitkins.server.execution.adapter.out.acl.ExecutionAclWiringTest, io.jgitkins.server.execution.adapter.out.acl.RepositoryCloneUrlAclAdapterTest, io.jgitkins.server.execution.adapter.out.git.PipelineConfigGitAdapterTest, io.jgitkins.server.execution.adapter.out.persistence.JobDispatchQueryAdapterTest, io.jgitkins.server.execution.adapter.out.persistence.JobRepositoryAdapterTest, io.jgitkins.server.identity.access.ActiveAccountPolicyArchitectureTest, io.jgitkins.server.identity.access.adapter.out.acl.OrganizationNameUniquenessAclAdapterTest, io.jgitkins.server.identity.access.adapter.out.persistence.UserActivationPersistenceIntegrationTest, io.jgitkins.server.identity.access.adapter.out.persistence.UserPersistenceAdapterForUpdateTest, io.jgitkins.server.identity.access.adapter.out.policy.ActiveAccountPolicyAdapterTest, io.jgitkins.server.identity.access.adapter.out.security.CurrentUserSecurityAdapterTest, io.jgitkins.server.identity.access.adapter.out.security.PatTokenAuthenticationServiceTest, io.jgitkins.server.repository.RepositoryAclAdapterWiringTest, io.jgitkins.server.repository.RepositoryBoundedContextArchitectureTest, io.jgitkins.server.repository.adapter.out.acl.OrganizationMembershipAclAdapterTest, io.jgitkins.server.repository.adapter.out.acl.RepositoryActorAclAdapterTest, io.jgitkins.server.repository.adapter.out.acl.UserNamespaceAclAdapterTest, io.jgitkins.server.repository.adapter.out.git.BranchGitAdapterTest, io.jgitkins.server.repository.adapter.out.git.RepositoryGitCommitAdapterTest, io.jgitkins.server.repository.adapter.out.git.RepositoryGitFileAdapterTest. New selector: `io.jgitkins.server.application.InfrastructureOwnershipArchitectureTest` with positive retained-path and negative misplaced-adapter fixtures. No schema/generated descriptor behavior change. Generated `build/` and `bin/` outputs are excluded from the ownership scan.\n\nCanonical integrated implementation spec: /Users/hrk/.gstack/plans/jgitkins-bounded-context-remediation-roadmap-20260821-spec.md\nStatus: ENGINEERING PASS.",
-            "status": "pending",
+            "status": "done",
             "dependencies": [
               "2.50"
             ],
             "parentTaskId": 2,
             "priority": "medium",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2026-08-21T03:50:37.729Z"
           },
           {
             "id": 43,
@@ -535,7 +537,7 @@
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2026-08-21T02:42:47.599Z",
+      "lastModified": "2026-08-21T03:50:37.729Z",
       "taskCount": 5,
       "completedCount": 1,
       "tags": [
