@@ -307,7 +307,7 @@
             "id": 54,
             "title": "[context-repository][bounded-context contract 분리][refactor][app-server] cross-context contract cleanup",
             "description": "repository application이 collaboration/identity/execution의 foreign domain type, exception, port를 직접 참조하는 경계를 정리한다.",
-            "details": "대상: RepositoryValidator, RepositoryLoadService, CloneUrlBuilder 및 실제 caller/test 전수. repository가 소유하는 ACL/read contract와 error translation을 정의하고, collaboration OrganizeId/OrganizeAccessDeniedException/OrganizeMemberPersistencePort, identity UserId/UserNotFoundException/CurrentUserPort/UserQueryPort, execution RuntimeConfigPort 직접 참조를 책임별로 교체한다. foreign aggregate/value/exception 구현 누수는 금지하고 API/DB/schema/wire behavior는 유지한다. 검증: production/test import matrix, caller/constructor matrix, ACL contract behavior tests, architecture negative-import gate, compile 및 clean full regression. 2.43 final guardrail 전에 완료.",
+            "details": "Exact contract: `RepositoryValidator` fields become `RepositoryRepository repositoryRepository`, existing repository-owned `OrganizationMembershipPort organizationMembershipPort`, and existing repository-owned `RepositoryActorPort repositoryActorPort`. `organizationMembershipPort.findRoleByOrganizationIdAndUserId(organizeId, requesterId).isPresent()` is the membership predicate; empty role throws repository-owned `RepositoryAccessDeniedException` with the existing message semantics. `RepositoryAccessibilityService` moves to `repository.application.support`; its method signatures use `Map<Long, Boolean>` cache keys and `Long organizationId`, never `OrganizeId`. `RepositoryLoadService` fields and constructor become exactly `RepositoryQueryPort repositoryQueryPort`, `RepositoryActorPort repositoryActorPort`, and existing repository-owned `UserNamespacePort userNamespacePort`; preserve username lookup and repository-owned error mapping. `CloneUrlBuilder` uses new repository-owned `RepositoryEndpointPort` (`restScheme()`, `serviceHost()`); `RepositoryEndpointAclAdapter` under `repository.adapter.out.config` delegates to execution `RuntimeConfigPort`. Existing selectors: `RepositoryLoadServiceTest`, `RepositoryLookupServiceTest`, `RepositoryAccessValidatorTest`, `RepositoryManagementServiceTest`, `RepositoryAclAdapterWiringTest`, `OrganizationMembershipAclAdapterTest`, `RepositoryActorAclAdapterTest`, `UserNamespaceAclAdapterTest`. New exact selectors: `RepositoryValidatorTest`, `RepositoryAccessibilityServiceTest`, `CloneUrlBuilderTest`, `RepositoryEndpointAclAdapterTest`. `RepositoryAclAdapterWiringTest` asserts affected persistence/mapper constructor edges. Source gate rejects foreign repository application imports.",
             "status": "pending",
             "dependencies": [
               "2.45",
@@ -322,7 +322,7 @@
             "id": 55,
             "title": "[context-collaboration][bounded-context ACL 분리][refactor][app-server] identity ACL cleanup",
             "description": "collaboration application의 identity.domain.vo.UserId 직접 참조를 제거하고 identity-owned ACL/read contract 뒤로 격리한다.",
-            "details": "대상: OrganizeService, OrganizeValidator 및 모든 production/test caller. 인증 사용자 식별자 semantics를 보존하면서 collaboration이 소유하는 application port 또는 ACL contract와 identity adapter translation을 명시한다. identity domain object가 collaboration application/domain으로 유입되지 않는 source gate와 behavior tests를 추가한다. API/DB/permission semantics 변경은 제외하고 2.43 final guardrail 전에 완료한다.",
+            "details": "Exact API: `OrganizeValidator.isAccessible(Organize organize, Long currentUserId)`; it compares the aggregate owner ID with the numeric ID and asks `OrganizeMembershipQueryPort.findRoleByOrganizeIdAndUserId(organize.id, currentUserId)` for membership. `OrganizeService.getAccessibleOrganizes()` passes the `Long` returned by `UserIdentityPort.resolveCurrentActiveUserId()` directly. `OrganizeService.createOrganize()` uses `OwnerId.of(resolvedUserId)` directly and removes identity `UserId` conversion/import. Existing selectors: `OrganizeServiceTest`, `OrganizeMemberServiceTest`, `CollaborationInboundAdapterWiringTest`, `CollaborationInboundOpenApiContractTest`; new selectors: `OrganizeValidatorTest`, `OrganizeMemberValidatorTest`; updated `InProcessUserIdentityAdapterTest`. Collaboration application/domain identity import zero gate mandatory.",
             "status": "pending",
             "dependencies": [
               "2.40",
@@ -335,10 +335,11 @@
             "id": 56,
             "title": "[context-all][bounded-context application 분리][refactor][app-server] application technology purity slice",
             "description": "각 bounded context application의 Spring stereotype/transaction/security/HTTP 기술 의존을 단계적으로 제거하는 첫 executable slice를 수행한다.",
-            "details": "첫 slice는 collaboration을 기준 context로 삼고, application service/validator/port에서 Spring annotation, transaction annotation, MultipartFile 등 기술 타입을 제거하거나 composition/configuration port로 치환한다. domain purity는 유지하고 inbound/outbound compatibility는 보존한다. 이후 identity/repository/execution/change.review 확장 기준을 기록한다. 검증: framework-free application unit tests, forbidden-import architecture gate, Spring wiring regression, full regression. 전체 context 일괄 전환은 제외.",
+            "details": "Exact scope: `collaboration.application.validate.OrganizeValidator`, `OrganizeMemberValidator`, and collaboration application port contracts only. Add `collaboration.infrastructure.config.CollaborationApplicationConfiguration` with explicit `@Bean` methods for the two validators; validator constructors remain port-based. Deferred and not modified here: `collaboration.application.service.OrganizeService` (future collaboration application purity slice, not yet registered), `collaboration.application.service.OrganizeMemberService` (2.41 feature/purity follow-up), and all identity/access, repository, execution, change/review application services. Exact selectors: existing `io.jgitkins.server.collaboration.application.service.OrganizeServiceTest`, `OrganizeMemberServiceTest`, `CollaborationInboundAdapterWiringTest`; new `io.jgitkins.server.collaboration.application.validate.OrganizeValidatorTest`, `OrganizeMemberValidatorTest`, `CollaborationApplicationConfigurationTest`; plus `io.jgitkins.server.application.ArchitecturePackageConventionTest`. Forbidden Spring/transaction/HTTP/security imports in the in-scope application files must be zero.",
             "status": "pending",
             "dependencies": [
-              "2.38"
+              "2.38",
+              "2.55"
             ],
             "parentTaskId": 2,
             "priority": "high"
@@ -347,7 +348,7 @@
             "id": 57,
             "title": "[context-all][bounded-context composition-root 분리][refactor][app-server] context-specific wiring ownership",
             "description": "common infrastructure/configuration이 bounded-context application API와 outbound implementation을 직접 소유하는 경계를 정리한다.",
-            "details": "대상: SecurityConfig, OAuth2LoginSuccessHandler, GitSmartHttpAuthFilter/Authorizer, PatAuthenticationProvider, PushHook, CommitFileFactory와 실제 caller. generic common technical infrastructure와 context-specific composition wiring을 분리하고, context-owned configuration adapter 또는 명시적 composition root ownership을 결정한다. OAuth/HTTP/Git hook behavior 및 bean discovery를 보존한다. 검증: bean wiring/context tests, source ownership gate, API compatibility, full regression.",
+            "details": "Exact common allowlist: `common.infrastructure.config.security.SecurityConfig` may import only `identity.access.application.port.in.OAuthLoginUseCase`; `common.infrastructure.config.security.handler.OAuth2LoginSuccessHandler` may import only identity `OAuthLoginCommand`, `OAuthLoginResult`, and `OAuthLoginUseCase`; `common.infrastructure.config.filter.GitSmartHttpAuthFilter` and `common.infrastructure.config.git.GitSmartHttpAuthorizer` may import only `repository.application.port.in.GitRepositoryAccessUseCase`; `common.infrastructure.config.git.hook.push.PushHook` may import execution `PushEventHandleUseCase` plus shared command/port/resolver contracts. `PatAuthenticationProvider` and `CommitFileFactory` are excluded because they move out of common. `PatAuthenticationProvider` moves to `identity.access.adapter.in.security`; `OutboundAdapterSpringContextTest` must update its import/assertion to the new package and continue asserting the same bean. `CommitFileFactory` moves to `repository.adapter.in.rest.factory`; `CommitFileFactoryTest` moves with it and remains exact selector `io.jgitkins.server.repository.adapter.in.rest.factory.CommitFileFactoryTest`. Existing selectors: `ArchitecturePackageConventionTest`, `OutboundAdapterSpringContextTest`, `GitSmartHttpCanonicalRedirectFilterTest`, `PushHookCommandTranslatorTest`, `OAuthLoginServiceTest`, `OAuthControllerTest`, `CurrentUserSecurityAdapterTest`; new `identity.access.adapter.in.security.PatAuthenticationProviderTest`. Common source gate rejects non-allowlisted context outbound/domain/application DTO imports.",
             "status": "pending",
             "dependencies": [
               "2.49",
@@ -359,9 +360,9 @@
           },
           {
             "id": 58,
-            "title": "[context-all][bounded-context infrastructure 소유권][refactor][app-server] persistence config generated asset ownership policy",
+            "title": "[context-all][bounded-context infrastructure 소유권][refactor][app-server] persistence generated asset ownership policy",
             "description": "adapter/out 구현체와 infrastructure persistence/config/generated 자산의 ownership 규칙을 명시하고 자동 검증한다.",
-            "details": "MyBatis mapper interface/XML, entity/domain mapper, MBG generated source, schema/resource, datasource/configuration, generic common infrastructure와 context-owned adapter implementation의 경계를 inventory한다. 새 implementation placement는 adapter/out으로 단일화하고 retained technical/generated assets는 명시적 allowlist로 관리한다. source path/package/ownership architecture test를 추가하며 behavior/API/DB schema 변경은 제외한다.",
+            "details": "Exact retained technical/generated allowlist: `*/infrastructure/persistence/model/**` (27 Java model files including condition classes), `*/infrastructure/persistence/mapper/**` (14 Java mapper files), `*/infrastructure/mapper/**` (12 Java mapper files), `src/main/resources/mapper/mbg/**` (13 XML resources), and `src/main/resources/mapper/custom/**` (1 XML resource). Configuration ownership is out of scope and belongs to 2.57. New handwritten adapter implementations must use context `adapter/out/**`. Exact existing selector ledger (35): io.jgitkins.server.application.ArchitecturePackageConventionTest, io.jgitkins.server.application.OutboundAdapterSpringContextTest, io.jgitkins.server.change.review.ChangeReviewBoundedContextArchitectureTest, io.jgitkins.server.change.review.adapter.out.acl.BranchHeadAclAdapterTest, io.jgitkins.server.change.review.adapter.out.acl.ChangeReviewAclWiringTest, io.jgitkins.server.change.review.adapter.out.acl.RepositoryReferenceAclAdapterTest, io.jgitkins.server.change.review.adapter.out.git.MergeGitAdapterTest, io.jgitkins.server.change.review.adapter.out.persistence.PullRequestPersistenceAdapterTest, io.jgitkins.server.collaboration.adapter.out.acl.InProcessUserIdentityAdapterTest, io.jgitkins.server.collaboration.adapter.out.event.CollaborationSpringDomainEventPublisherTransactionTest, io.jgitkins.server.collaboration.adapter.out.event.SpringDomainEventPublisherTest, io.jgitkins.server.collaboration.adapter.out.persistence.OrganizeMemberPersistenceAdapterTest, io.jgitkins.server.collaboration.adapter.out.persistence.OrganizePersistenceAdapterIntegrationTest, io.jgitkins.server.collaboration.adapter.out.persistence.OrganizePersistenceAdapterTest, io.jgitkins.server.execution.ExecutionBoundedContextArchitectureTest, io.jgitkins.server.execution.adapter.out.acl.ExecutionAclWiringTest, io.jgitkins.server.execution.adapter.out.acl.RepositoryCloneUrlAclAdapterTest, io.jgitkins.server.execution.adapter.out.git.PipelineConfigGitAdapterTest, io.jgitkins.server.execution.adapter.out.persistence.JobDispatchQueryAdapterTest, io.jgitkins.server.execution.adapter.out.persistence.JobRepositoryAdapterTest, io.jgitkins.server.identity.access.ActiveAccountPolicyArchitectureTest, io.jgitkins.server.identity.access.adapter.out.acl.OrganizationNameUniquenessAclAdapterTest, io.jgitkins.server.identity.access.adapter.out.persistence.UserActivationPersistenceIntegrationTest, io.jgitkins.server.identity.access.adapter.out.persistence.UserPersistenceAdapterForUpdateTest, io.jgitkins.server.identity.access.adapter.out.policy.ActiveAccountPolicyAdapterTest, io.jgitkins.server.identity.access.adapter.out.security.CurrentUserSecurityAdapterTest, io.jgitkins.server.identity.access.adapter.out.security.PatTokenAuthenticationServiceTest, io.jgitkins.server.repository.RepositoryAclAdapterWiringTest, io.jgitkins.server.repository.RepositoryBoundedContextArchitectureTest, io.jgitkins.server.repository.adapter.out.acl.OrganizationMembershipAclAdapterTest, io.jgitkins.server.repository.adapter.out.acl.RepositoryActorAclAdapterTest, io.jgitkins.server.repository.adapter.out.acl.UserNamespaceAclAdapterTest, io.jgitkins.server.repository.adapter.out.git.BranchGitAdapterTest, io.jgitkins.server.repository.adapter.out.git.RepositoryGitCommitAdapterTest, io.jgitkins.server.repository.adapter.out.git.RepositoryGitFileAdapterTest. New selector: `io.jgitkins.server.application.InfrastructureOwnershipArchitectureTest` with positive retained-path and negative misplaced-adapter fixtures. No schema/generated descriptor behavior change.",
             "status": "pending",
             "dependencies": [
               "2.50"
@@ -381,6 +382,7 @@
               "2.49",
               "2.50",
               "2.51",
+              "2.53",
               "2.54",
               "2.55",
               "2.56",
@@ -398,7 +400,9 @@
             "details": "",
             "status": "pending",
             "dependencies": [
-              "2.38"
+              "2.38",
+              "2.54",
+              "2.55"
             ],
             "parentTaskId": 2,
             "parentId": "undefined",
@@ -411,7 +415,8 @@
             "details": "",
             "status": "pending",
             "dependencies": [
-              "2.38"
+              "2.38",
+              "2.43"
             ],
             "parentTaskId": 2,
             "parentId": "undefined",
