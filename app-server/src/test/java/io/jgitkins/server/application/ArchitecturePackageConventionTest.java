@@ -76,7 +76,7 @@ import io.jgitkins.server.repository.adapter.in.rest.RepositoryFileController;
 import io.jgitkins.server.repository.adapter.in.rest.RepositoryManagementController;
 import io.jgitkins.server.repository.adapter.in.rest.RepositoryMemberController;
 import io.jgitkins.server.repository.application.support.branch.BranchFactory;
-import io.jgitkins.server.shared.application.support.RepositoryAccessibilityService;
+import io.jgitkins.server.repository.application.support.RepositoryAccessibilityService;
 import io.jgitkins.server.shared.application.support.RepositoryNamespaceResolver;
 import io.jgitkins.server.repository.application.support.membership.RepositoryMembershipFactory;
 import io.jgitkins.server.repository.application.support.ownership.RepositoryOwnershipPolicy;

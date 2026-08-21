@@ -6,13 +6,10 @@ import io.jgitkins.server.repository.application.exception.MemberIdentifierRequi
 import io.jgitkins.server.repository.application.exception.RepositoryAccessDeniedException;
 import io.jgitkins.server.repository.application.exception.RepositoryAlreadyExistsException;
 import io.jgitkins.server.repository.application.exception.RepositoryNotInitializedException;
-import io.jgitkins.server.collaboration.application.exception.OrganizeAccessDeniedException;
-import io.jgitkins.server.collaboration.domain.vo.OrganizeId;
-import io.jgitkins.server.identity.access.application.port.out.CurrentUserPort;
-import io.jgitkins.server.collaboration.application.port.out.OrganizeMemberPersistencePort;
+import io.jgitkins.server.repository.application.port.out.OrganizationMembershipPort;
+import io.jgitkins.server.repository.application.port.out.RepositoryActorPort;
 import io.jgitkins.server.repository.domain.aggregate.Repository;
 import io.jgitkins.server.shared.domain.model.vo.*;
-import io.jgitkins.server.identity.access.domain.vo.UserId;
 import io.jgitkins.server.shared.application.exception.UnauthenticatedException;
 import io.jgitkins.server.repository.domain.vo.RepositoryName;
 import io.jgitkins.server.repository.domain.repository.RepositoryRepository;
@@ -24,8 +21,8 @@ import org.springframework.stereotype.Component;
 public class RepositoryValidator {
 
     private final RepositoryRepository repositoryRepository;
-    private final OrganizeMemberPersistencePort organizeMemberPort;
-    private final CurrentUserPort currentUserPersistencePort;
+    private final OrganizationMembershipPort organizationMembershipPort;
+    private final RepositoryActorPort repositoryActorPort;
 
     public void validateCreation(OwnerType ownerType, Long organizeId, RepositoryName repositoryName) {
         validateOwnership(ownerType, organizeId);
@@ -75,16 +72,17 @@ public class RepositoryValidator {
         // 인증 실패는 ApplicationException으로 처리 - presentation 계층(Spring Security)에서 이미
         // 필터링하지만
         // 서비스 내부에서 currentUserId 조회 실패는 application 정책 위반으로 간주
-        return currentUserPersistencePort.resolveCurrentUserId()
+        return repositoryActorPort.resolveCurrentUserId()
                 .orElseThrow(UnauthenticatedException::new);
     }
 
     private void assertOrganizeMembership(Long organizeId) {
         Long requesterId = requireCurrentUserId();
-        boolean isMember = organizeMemberPort.existsByOrganizeIdAndUserId(OrganizeId.of(organizeId),
-                io.jgitkins.server.collaboration.domain.vo.MemberUserId.of(requesterId));
+        boolean isMember = organizationMembershipPort
+                .findRoleByOrganizationIdAndUserId(organizeId, requesterId)
+                .isPresent();
         if (!isMember) {
-            throw new OrganizeAccessDeniedException(
+            throw new RepositoryAccessDeniedException(
                     "User is not a member of the organization.");
         }
     }

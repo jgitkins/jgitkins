@@ -1,9 +1,9 @@
 package io.jgitkins.server.repository.application.service;
 
 import io.jgitkins.server.repository.application.contract.result.RepositoryResult;
-import io.jgitkins.server.identity.access.application.port.out.CurrentUserPort;
+import io.jgitkins.server.repository.application.port.out.RepositoryActorPort;
 import io.jgitkins.server.repository.application.port.out.RepositoryQueryPort;
-import io.jgitkins.server.identity.access.application.port.out.UserQueryPort;
+import io.jgitkins.server.repository.application.port.out.UserNamespacePort;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,15 +23,15 @@ class RepositoryLoadServiceTest {
     @Mock
     private RepositoryQueryPort repositoryQueryPort;
     @Mock
-    private CurrentUserPort currentUserPort;
+    private RepositoryActorPort repositoryActorPort;
     @Mock
-    private UserQueryPort userQueryPort;
+    private UserNamespacePort userNamespacePort;
 
     private RepositoryLoadService service;
 
     @BeforeEach
     void setUp() {
-        service = new RepositoryLoadService(repositoryQueryPort, currentUserPort, userQueryPort);
+        service = new RepositoryLoadService(repositoryQueryPort, repositoryActorPort, userNamespacePort);
     }
 
     @Test
@@ -52,7 +52,7 @@ class RepositoryLoadServiceTest {
                 new RepositoryResult(3L, null, "org", null, null, null, null, null, null, null, null, false, null, null, null)
         );
 
-        when(currentUserPort.resolveCurrentUserId()).thenReturn(Optional.of(7L));
+        when(repositoryActorPort.resolveCurrentUserId()).thenReturn(Optional.of(7L));
         when(repositoryQueryPort.loadVisibleRepositories(7L)).thenReturn(expected);
 
         List<RepositoryResult> response = service.loadRepositories();
@@ -65,8 +65,8 @@ class RepositoryLoadServiceTest {
         List<RepositoryResult> expected = List.of(
                 new RepositoryResult(1L, null, "public", null, null, null, null, null, null, null, null, false, null, null, null)
         );
-        when(userQueryPort.findUserIdByUsername("alice")).thenReturn(Optional.of(7L));
-        when(currentUserPort.resolveCurrentUserId()).thenReturn(Optional.of(9L));
+        when(userNamespacePort.findUserIdByUsername("alice")).thenReturn(Optional.of(7L));
+        when(repositoryActorPort.resolveCurrentUserId()).thenReturn(Optional.of(9L));
         when(repositoryQueryPort.loadUserRepositories("alice", 9L)).thenReturn(expected);
 
         List<RepositoryResult> response = service.loadUserRepositories("alice");

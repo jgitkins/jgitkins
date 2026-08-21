@@ -1,11 +1,9 @@
-package io.jgitkins.server.shared.application.support;
+package io.jgitkins.server.repository.application.support;
 
-import io.jgitkins.server.collaboration.application.port.out.OrganizeMembershipQueryPort;
+import io.jgitkins.server.repository.application.port.out.OrganizationMembershipPort;
 import io.jgitkins.server.repository.domain.aggregate.Repository;
-import io.jgitkins.server.collaboration.domain.vo.OrganizeId;
 import io.jgitkins.server.shared.domain.model.vo.OwnerType;
 import io.jgitkins.server.repository.domain.vo.RepositoryVisibility;
-import io.jgitkins.server.identity.access.domain.vo.UserId;
 import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -15,12 +13,12 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class RepositoryAccessibilityService {
 
-    private final OrganizeMembershipQueryPort organizeMemberPort;
+    private final OrganizationMembershipPort organizationMembershipPort;
 
     public boolean isVisibleToRequester(
             Repository repository,
             Optional<Long> requesterId,
-            Map<OrganizeId, Boolean> membershipCache) {
+            Map<Long, Boolean> membershipCache) {
         if (repository == null) {
             return false;
         }
@@ -37,10 +35,12 @@ public class RepositoryAccessibilityService {
                     && userId.equals(repository.getOwnerId().getValue());
         }
         if (repository.getOwnerType() == OwnerType.ORGANIZATION && repository.getOwnerId() != null) {
-            OrganizeId organizeId = OrganizeId.of(repository.getOwnerId().getValue());
+            Long organizationId = repository.getOwnerId().getValue();
             return membershipCache.computeIfAbsent(
-                    organizeId,
-                    id -> organizeMemberPort.findRoleByOrganizeIdAndUserId(id.getValue(), userId).isPresent());
+                    organizationId,
+                    id -> organizationMembershipPort
+                            .findRoleByOrganizationIdAndUserId(id, userId)
+                            .isPresent());
         }
         return false;
     }

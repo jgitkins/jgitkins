@@ -2,11 +2,10 @@ package io.jgitkins.server.repository.application.service;
 
 import io.jgitkins.server.repository.application.contract.result.RepositoryResult;
 import io.jgitkins.server.repository.application.exception.RepositoryNotFoundException;
-import io.jgitkins.server.identity.access.application.exception.UserNotFoundException;
 import io.jgitkins.server.repository.application.port.in.RepositoryLoadUseCase;
-import io.jgitkins.server.identity.access.application.port.out.CurrentUserPort;
 import io.jgitkins.server.repository.application.port.out.RepositoryQueryPort;
-import io.jgitkins.server.identity.access.application.port.out.UserQueryPort;
+import io.jgitkins.server.repository.application.port.out.RepositoryActorPort;
+import io.jgitkins.server.repository.application.port.out.UserNamespacePort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,8 +17,8 @@ import java.util.List;
 public class RepositoryLoadService implements RepositoryLoadUseCase {
 
     private final RepositoryQueryPort repositoryQueryPort;
-    private final CurrentUserPort currentUserPort;
-    private final UserQueryPort userQueryPort;
+    private final RepositoryActorPort repositoryActorPort;
+    private final UserNamespacePort userNamespacePort;
 
     @Override
     @Transactional(readOnly = true)
@@ -38,7 +37,7 @@ public class RepositoryLoadService implements RepositoryLoadUseCase {
     @Override
     @Transactional(readOnly = true)
     public List<RepositoryResult> loadRepositories() {
-        Long requesterId = currentUserPort.resolveCurrentUserId().orElse(null);
+        Long requesterId = repositoryActorPort.resolveCurrentUserId().orElse(null);
         return repositoryQueryPort.loadVisibleRepositories(requesterId);
     }
 
@@ -47,10 +46,10 @@ public class RepositoryLoadService implements RepositoryLoadUseCase {
     public List<RepositoryResult> loadUserRepositories(String username) {
         String normalizedUsername = username != null ? username.trim() : "";
 
-        userQueryPort.findUserIdByUsername(normalizedUsername)
-                .orElseThrow(() -> new UserNotFoundException("User not found: " + normalizedUsername));
+        userNamespacePort.findUserIdByUsername(normalizedUsername)
+                .orElseThrow(() -> new RepositoryNotFoundException("User not found: " + normalizedUsername));
 
-        Long requesterId = currentUserPort.resolveCurrentUserId().orElse(null);
+        Long requesterId = repositoryActorPort.resolveCurrentUserId().orElse(null);
         return repositoryQueryPort.loadUserRepositories(normalizedUsername, requesterId);
     }
 }
