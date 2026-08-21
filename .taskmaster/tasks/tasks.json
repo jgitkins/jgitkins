@@ -88,7 +88,7 @@
         "priority": "high",
         "details": "기존 기능별 Task를 카테고리 기반(신규기능/리팩토링/보안)으로 재구성함.",
         "testStrategy": "카테고리별 우선순위에 따라 하위 작업을 순차 수행하고 회귀 테스트를 적용한다.",
-        "updatedAt": "2026-08-21T02:31:53.312Z",
+        "updatedAt": "2026-08-21T02:38:02.156Z",
         "subtasks": [
           {
             "id": 34,
@@ -332,14 +332,15 @@
             "title": "[context-collaboration][bounded-context ACL 분리][refactor][app-server] identity ACL cleanup",
             "description": "collaboration application의 identity.domain.vo.UserId 직접 참조를 제거하고 identity-owned ACL/read contract 뒤로 격리한다.",
             "details": "Exact API: `OrganizeValidator.isAccessible(Organize organize, Long currentUserId)`; it compares the aggregate owner ID with the numeric ID and asks `OrganizeMembershipQueryPort.findRoleByOrganizeIdAndUserId(organize.id, currentUserId)` for membership. `OrganizeService.getAccessibleOrganizes()` passes the `Long` returned by `UserIdentityPort.resolveCurrentActiveUserId()` directly. `OrganizeService.createOrganize()` uses `OwnerId.of(resolvedUserId)` directly and removes identity `UserId` conversion/import. Existing selectors: `OrganizeServiceTest`, `OrganizeMemberServiceTest`, `CollaborationInboundAdapterWiringTest`, `CollaborationInboundOpenApiContractTest`; new selectors: `OrganizeValidatorTest`, `OrganizeMemberValidatorTest`; updated `InProcessUserIdentityAdapterTest`. Collaboration application/domain identity import zero gate mandatory.\n\nCanonical integrated implementation spec: /Users/hrk/.gstack/plans/jgitkins-bounded-context-remediation-roadmap-20260821-spec.md\nStatus: ENGINEERING PASS.",
-            "status": "pending",
+            "status": "done",
             "dependencies": [
               "2.40",
               "2.51"
             ],
             "parentTaskId": 2,
             "priority": "high",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2026-08-21T02:38:02.156Z"
           },
           {
             "id": 56,
@@ -533,7 +534,7 @@
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2026-08-21T02:31:53.312Z",
+      "lastModified": "2026-08-21T02:38:02.156Z",
       "taskCount": 5,
       "completedCount": 1,
       "tags": [
