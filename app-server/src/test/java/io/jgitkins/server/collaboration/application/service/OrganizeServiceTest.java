@@ -42,7 +42,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class OrganizeServiceTest {
 
     @Mock
-    private OrganizeRepository organizePort;
+    private OrganizeRepository organizeRepository;
 
     @Mock
     private OrganizeMemberPersistencePort organizeMemberPort;
@@ -64,10 +64,10 @@ class OrganizeServiceTest {
     @BeforeEach
     void setUp() {
         service = new OrganizeService(
-                organizePort,
+                organizeRepository,
                 userIdentityPort,
                 domainEventPublisher,
-                new OrganizeValidator(organizePort, organizeMemberQueryPort),
+                new OrganizeValidator(organizeRepository, organizeMemberQueryPort),
                 organizeApplicationMapper);
     }
 
@@ -76,15 +76,15 @@ class OrganizeServiceTest {
         OrganizeCreationCommand command = new OrganizeCreationCommand("org", "desc");
 
         when(userIdentityPort.resolveCurrentActiveUserId()).thenReturn(Optional.of(1L));
-        when(organizePort.findByName(any(OrganizeName.class))).thenReturn(Optional.empty());
-        when(organizePort.save(any(Organize.class))).thenReturn(sampleOrganize(1L, "org", 1L));
+        when(organizeRepository.findByName(any(OrganizeName.class))).thenReturn(Optional.empty());
+        when(organizeRepository.save(any(Organize.class))).thenReturn(sampleOrganize(1L, "org", 1L));
         when(organizeApplicationMapper.toDto(any(Organize.class)))
                 .thenReturn(new OrganizeCreationResult(null, "org", null, null, null, null));
 
         OrganizeCreationResult response = service.createOrganize(command);
 
         assertEquals("org", response.name());
-        verify(organizePort).save(any(Organize.class));
+        verify(organizeRepository).save(any(Organize.class));
     }
 
     @Test
@@ -93,8 +93,8 @@ class OrganizeServiceTest {
         Organize persisted = sampleOrganize(42L, "org", 1L);
 
         when(userIdentityPort.resolveCurrentActiveUserId()).thenReturn(Optional.of(1L));
-        when(organizePort.findByName(any(OrganizeName.class))).thenReturn(Optional.empty());
-        when(organizePort.save(any(Organize.class))).thenReturn(persisted);
+        when(organizeRepository.findByName(any(OrganizeName.class))).thenReturn(Optional.empty());
+        when(organizeRepository.save(any(Organize.class))).thenReturn(persisted);
         when(organizeApplicationMapper.toDto(persisted))
                 .thenReturn(new OrganizeCreationResult(42L, "org", null, 1L, null, null));
 
@@ -109,11 +109,11 @@ class OrganizeServiceTest {
     void createOrganize_throwsWhenOrganizeNameExists() {
         OrganizeCreationCommand command = new OrganizeCreationCommand("duplicate", "desc");
         when(userIdentityPort.resolveCurrentActiveUserId()).thenReturn(Optional.of(1L));
-        when(organizePort.findByName(any(OrganizeName.class)))
+        when(organizeRepository.findByName(any(OrganizeName.class)))
                 .thenReturn(Optional.of(sampleOrganize(1L, "duplicate", 1L)));
 
         assertThrows(JgitkinsException.class, () -> service.createOrganize(command));
-        verify(organizePort, never()).save(any(Organize.class));
+        verify(organizeRepository, never()).save(any(Organize.class));
     }
 
     @Test
@@ -122,7 +122,7 @@ class OrganizeServiceTest {
         when(userIdentityPort.resolveCurrentActiveUserId()).thenReturn(Optional.empty());
 
         assertThrows(OrganizeAccessDeniedException.class, () -> service.createOrganize(command));
-        verify(organizePort, never()).save(any(Organize.class));
+        verify(organizeRepository, never()).save(any(Organize.class));
     }
 
 
@@ -131,20 +131,20 @@ class OrganizeServiceTest {
         OrganizeCreationCommand command = new OrganizeCreationCommand("org", "desc");
 
         when(userIdentityPort.resolveCurrentActiveUserId()).thenReturn(Optional.of(7L));
-        when(organizePort.findByName(any(OrganizeName.class))).thenReturn(Optional.empty());
-        when(organizePort.save(any(Organize.class))).thenReturn(sampleOrganize(1L, "org", 7L));
+        when(organizeRepository.findByName(any(OrganizeName.class))).thenReturn(Optional.empty());
+        when(organizeRepository.save(any(Organize.class))).thenReturn(sampleOrganize(1L, "org", 7L));
         when(organizeApplicationMapper.toDto(any(Organize.class)))
                 .thenReturn(new OrganizeCreationResult(null, "org", null, 7L, null, null));
 
         service.createOrganize(command);
 
-        verify(organizePort).save(argThat(organize ->
+        verify(organizeRepository).save(argThat(organize ->
                 organize.getOwnerId() != null && organize.getOwnerId().getValue().equals(7L)));
     }
 
     @Test
     void getOrganize_throwsWhenNotFound() {
-        when(organizePort.findById(OrganizeId.of(99L))).thenReturn(Optional.empty());
+        when(organizeRepository.findById(OrganizeId.of(99L))).thenReturn(Optional.empty());
 
         assertThrows(JgitkinsException.class, () -> service.getOrganize(99L));
     }
@@ -156,7 +156,7 @@ class OrganizeServiceTest {
         List<OrganizeCreationResult> results = service.getAccessibleOrganizes();
 
         assertEquals(0, results.size());
-        verify(organizePort, never()).findAll();
+        verify(organizeRepository, never()).findAll();
     }
 
     @Test
@@ -164,7 +164,7 @@ class OrganizeServiceTest {
         Organize owned = sampleOrganize(10L, "owned", 7L);
 
         when(userIdentityPort.resolveCurrentActiveUserId()).thenReturn(Optional.of(7L));
-        when(organizePort.findAll()).thenReturn(List.of(owned));
+        when(organizeRepository.findAll()).thenReturn(List.of(owned));
         when(organizeApplicationMapper.toDto(owned))
                 .thenReturn(new OrganizeCreationResult(10L, "owned", null, 7L, null, null));
 
@@ -183,7 +183,7 @@ class OrganizeServiceTest {
         Organize other = sampleOrganize(12L, "other", 30L);
 
         when(userIdentityPort.resolveCurrentActiveUserId()).thenReturn(Optional.of(7L));
-        when(organizePort.findAll()).thenReturn(List.of(owned, member, other));
+        when(organizeRepository.findAll()).thenReturn(List.of(owned, member, other));
         when(organizeMemberQueryPort.findRoleByOrganizeIdAndUserId(11L, 7L)).thenReturn(Optional.of(OrganizeMemberRole.MEMBER));
         when(organizeMemberQueryPort.findRoleByOrganizeIdAndUserId(12L, 7L)).thenReturn(Optional.empty());
         when(organizeApplicationMapper.toDto(owned))
@@ -202,19 +202,19 @@ class OrganizeServiceTest {
     @Test
     void deleteOrganize_deletesWhenExists() {
         Organize existing = sampleOrganize(3L, "org3", 1L);
-        when(organizePort.findById(OrganizeId.of(3L))).thenReturn(Optional.of(existing));
+        when(organizeRepository.findById(OrganizeId.of(3L))).thenReturn(Optional.of(existing));
 
         service.deleteOrganize(3L);
 
-        verify(organizePort).deleteById(OrganizeId.of(3L));
+        verify(organizeRepository).deleteById(OrganizeId.of(3L));
     }
 
     @Test
     void deleteOrganize_throwsWhenMissing() {
-        when(organizePort.findById(OrganizeId.of(404L))).thenReturn(Optional.empty());
+        when(organizeRepository.findById(OrganizeId.of(404L))).thenReturn(Optional.empty());
 
         assertThrows(JgitkinsException.class, () -> service.deleteOrganize(404L));
-        verify(organizePort, never()).deleteById(any(OrganizeId.class));
+        verify(organizeRepository, never()).deleteById(any(OrganizeId.class));
     }
 
     private Organize sampleOrganize(Long id, String name, Long ownerId) {

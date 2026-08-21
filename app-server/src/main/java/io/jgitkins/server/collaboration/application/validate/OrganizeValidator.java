@@ -15,17 +15,17 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class OrganizeValidator {
 
-    private final OrganizeRepository organizePort;
+    private final OrganizeRepository organizeRepository;
     private final OrganizeMembershipQueryPort organizeMemberPort;
 
     public void validateCreation(OrganizeName name) {
-        if (organizePort.findByName(name).isPresent()) {
+        if (organizeRepository.findByName(name).isPresent()) {
             throw new OrganizeAlreadyExistsException("Organize name already exists: " + name.getValue());
         }
     }
 
     public Organize findByIdOrThrow(Long organizeId) {
-        return organizePort.findById(OrganizeId.of(organizeId))
+        return organizeRepository.findById(OrganizeId.of(organizeId))
                 .orElseThrow(() -> new OrganizeNotFoundException(organizeId));
     }
 

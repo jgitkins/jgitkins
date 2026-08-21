@@ -29,7 +29,7 @@ public class OrganizeService implements OrganizeCreationUseCase,
                                         OrganizeLoadUseCase,
                                         OrganizeDeletionUseCase {
 
-    private final OrganizeRepository organizePort;
+    private final OrganizeRepository organizeRepository;
     private final UserIdentityPort userIdentityPort;
     private final DomainEventPublisher domainEventPublisher;
     private final OrganizeValidator organizeValidator;
@@ -55,7 +55,7 @@ public class OrganizeService implements OrganizeCreationUseCase,
                 command.description(),
                 LocalDateTime.now());
 
-        Organize saved = organizePort.save(organize);
+        Organize saved = organizeRepository.save(organize);
         saved.recordCreated(Instant.now());
         List<io.jgitkins.server.shared.domain.event.DomainEvent> events = List.copyOf(saved.getDomainEvents());
         domainEventPublisher.publish(events);
@@ -72,7 +72,7 @@ public class OrganizeService implements OrganizeCreationUseCase,
     @Override
     @Transactional(readOnly = true)
     public List<OrganizeCreationResult> getOrganizes() {
-        return organizePort.findAll().stream()
+        return organizeRepository.findAll().stream()
                 .map(organizeApplicationMapper::toDto)
                 .toList();
     }
@@ -83,7 +83,7 @@ public class OrganizeService implements OrganizeCreationUseCase,
         return userIdentityPort.resolveCurrentActiveUserId()
                 .map(id -> {
                     UserId userId = UserId.of(id);
-                    return organizePort.findAll().stream()
+                    return organizeRepository.findAll().stream()
                             .filter(org -> organizeValidator.isAccessible(org, userId))
                             .map(organizeApplicationMapper::toDto)
                             .toList();
@@ -95,6 +95,6 @@ public class OrganizeService implements OrganizeCreationUseCase,
     @Transactional
     public void deleteOrganize(Long organizeId) {
         organizeValidator.findByIdOrThrow(organizeId);
-        organizePort.deleteById(OrganizeId.of(organizeId));
+        organizeRepository.deleteById(OrganizeId.of(organizeId));
     }
 }
