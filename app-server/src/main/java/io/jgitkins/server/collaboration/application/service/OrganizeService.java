@@ -15,7 +15,6 @@ import io.jgitkins.server.collaboration.domain.vo.OrganizeId;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeName;
 import io.jgitkins.server.collaboration.domain.vo.OwnerId;
 import io.jgitkins.server.collaboration.domain.repository.OrganizeRepository;
-import io.jgitkins.server.identity.access.domain.vo.UserId;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -40,8 +39,7 @@ public class OrganizeService implements OrganizeCreationUseCase,
     public OrganizeCreationResult createOrganize(OrganizeCreationCommand command) {
         // 1. 입력 정합성 검증 (Domain VO 생성)
         OrganizeName name = OrganizeName.from(command.name());
-        UserId ownerId = userIdentityPort.resolveCurrentActiveUserId()
-                .map(UserId::of)
+        Long ownerId = userIdentityPort.resolveCurrentActiveUserId()
                 .orElseThrow(() -> new OrganizeAccessDeniedException("An authenticated user is required"));
 
         // 2. 데이터 정합성 검증
@@ -51,7 +49,7 @@ public class OrganizeService implements OrganizeCreationUseCase,
         Organize organize = Organize.createWithoutEvent(
                 null,
                 name,
-                ownerId == null ? null : OwnerId.of(ownerId.getValue()),
+                OwnerId.of(ownerId),
                 command.description(),
                 LocalDateTime.now());
 
@@ -81,13 +79,10 @@ public class OrganizeService implements OrganizeCreationUseCase,
     @Transactional(readOnly = true)
     public List<OrganizeCreationResult> getAccessibleOrganizes() {
         return userIdentityPort.resolveCurrentActiveUserId()
-                .map(id -> {
-                    UserId userId = UserId.of(id);
-                    return organizeRepository.findAll().stream()
-                            .filter(org -> organizeValidator.isAccessible(org, userId))
-                            .map(organizeApplicationMapper::toDto)
-                            .toList();
-                })
+                .map(id -> organizeRepository.findAll().stream()
+                        .filter(org -> organizeValidator.isAccessible(org, id))
+                        .map(organizeApplicationMapper::toDto)
+                        .toList())
                 .orElse(List.of());
     }
 

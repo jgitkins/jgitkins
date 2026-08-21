@@ -7,7 +7,6 @@ import io.jgitkins.server.collaboration.domain.repository.OrganizeRepository;
 import io.jgitkins.server.collaboration.domain.aggregate.Organize;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeId;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeName;
-import io.jgitkins.server.identity.access.domain.vo.UserId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -29,10 +28,13 @@ public class OrganizeValidator {
                 .orElseThrow(() -> new OrganizeNotFoundException(organizeId));
     }
 
-    public boolean isAccessible(Organize organize, UserId userId) {
-        return organize.getOwnerId() != null
-                && userId.getValue().equals(organize.getOwnerId().getValue()) ||
-                organizeMemberPort.findRoleByOrganizeIdAndUserId(
-                        organize.getId().getValue(), userId.getValue()).isPresent();
+    public boolean isAccessible(Organize organize, Long currentUserId) {
+        if (organize == null || currentUserId == null || organize.getId() == null) {
+            return false;
+        }
+        boolean isOwner = organize.getOwnerId() != null
+                && currentUserId.equals(organize.getOwnerId().getValue());
+        return isOwner || organizeMemberPort.findRoleByOrganizeIdAndUserId(
+                organize.getId().getValue(), currentUserId).isPresent();
     }
 }
