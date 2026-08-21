@@ -281,7 +281,7 @@
           },
           {
             "id": 52,
-            "title": "[refactor][server] OrganizeRepository 변수명 정합성 수정",
+            "title": "[context-collaboration][refactor][app-server] OrganizeRepository naming cleanup",
             "description": "타입을 OrganizeRepository로 변경한 collaboration service/validator에서 이전 포트명 organizePort가 남아 있는 변수명을 소유 책임에 맞게 정리한다.",
             "details": "Repository 타입과 변수명 불일치를 collaboration 패키지에 한정하지 않고 production/test Java 전체에서 전수검사한다. 현재 확인된 `OrganizeRepository` 변수명 대상은 app-server/src/main/java/io/jgitkins/server/collaboration/application/service/OrganizeService.java의 `private final OrganizeRepository organizePort`, app-server/src/main/java/io/jgitkins/server/collaboration/application/validate/OrganizeValidator.java의 동일 선언, app-server/src/test/java/io/jgitkins/server/collaboration/application/service/OrganizeServiceTest.java의 `private OrganizeRepository organizePort`다. 이 세 곳의 변수명을 `organizeRepository`로 통일하고 constructor/Lombok 생성자 사용부·메서드 호출부·테스트 fixture 명칭을 함께 정리한다. 이후 repository-wide 검사로 `OrganizeRepository` 선언/필드/파라미터/지역변수의 의미상 변수명이 이전 포트 명칭으로 남아 있는지 확인한다. 반대로 `OrganizeQueryPort`를 사용하는 RepositoryNamespaceResolver와 UsernameAllocator의 `organizePort`는 타입에 맞는 이름이므로 변경하지 않는다. 검증: `OrganizeRepository` 선언 전수검사 및 허용/수정 목록 대조, old-name zero-reference within OrganizeRepository declarations, collaboration focused tests, compile, git diff --check. API·행동·포트 시그니처 변경은 금지. Priority: low.",
             "status": "pending",
@@ -293,7 +293,7 @@
           },
           {
             "id": 53,
-            "title": "[bugfix][server, runner] app-server/app-runner 컴파일 계약 복구",
+            "title": "[app-server,app-runner][bugfix] compile contract recovery",
             "description": "리뷰에서 확인된 app-server와 app-runner의 타입·생성코드·stale import 컴파일 오류를 원인별로 복구하고 전체 compile/test gate를 통과시킨다.",
             "details": "현재 오류군을 한 번에 우회하지 않고 원인별로 닫는다. 1) JAVA_HOME을 JDK 17 `$HOME/.sdkman/candidates/java/17.0.19-tem`으로 고정해 재현한다. 2) app-runner의 `JobResultReportPort`, `JobFetchPort`, `RunnerJobService`, `JobGrpcClient`, `GrpcSignatureHelper`, `JobResultStatusMapper`가 참조하는 app-server execution contract와 generated gRPC/protobuf source의 canonical owner·Gradle dependency·package를 대조하고, `JobPayload`, `JobResultStatus`, `JobDispatchServiceGrpc`, request/response generated types가 compile classpath에 있도록 복구한다. app-runner/app-server의 duplicate `job-dispatch.proto`는 source-of-truth와 generation/synchronization 규칙을 확인하며 wire descriptor를 변경하지 않는다. 3) app-server의 `ArchitecturePackageConventionTest` stale imports와 collaboration `OrganizeRepository`/`OrganizeMembershipQueryPort` caller/test references를 현재 선언과 대조해 필요한 import/method contract를 정합화한다. 4) `RunnerDomainMapper`, `JobExecutionMapper` MapStruct 생성 실패는 선행 Java 타입 오류가 제거된 뒤 재생성·검증하고, MapStruct workaround를 먼저 추가하지 않는다. 5) app-server execution gRPC controller/test의 generated type imports를 canonical generated package와 대조한다. 범위 밖: inbound/outbound adapter placement(2.49/2.50), identity ACL cleanup(2.51), config/infrastructure/adapter 계층 정책 협의, API/protobuf wire contract redesign. 검증: `export JAVA_HOME=$HOME/.sdkman/candidates/java/17.0.19-tem; export PATH=$JAVA_HOME/bin:$PATH; ./gradlew :app-server:compileJava :app-server:compileTestJava :app-runner:compileJava --no-build-cache`, focused execution/collaboration tests, `./gradlew clean test --no-build-cache`, source/XML gate, git diff --check. 실패 시 MapStruct 연쇄 오류와 root cause를 분리 보고한다. Priority: high.",
             "status": "pending",
@@ -305,7 +305,7 @@
           },
           {
             "id": 54,
-            "title": "[bounded-context contract 분리][refactor][P1][server] repository cross-context contract cleanup",
+            "title": "[context-repository][bounded-context contract 분리][refactor][app-server] cross-context contract cleanup",
             "description": "repository application이 collaboration/identity/execution의 foreign domain type, exception, port를 직접 참조하는 경계를 정리한다.",
             "details": "대상: RepositoryValidator, RepositoryLoadService, CloneUrlBuilder 및 실제 caller/test 전수. repository가 소유하는 ACL/read contract와 error translation을 정의하고, collaboration OrganizeId/OrganizeAccessDeniedException/OrganizeMemberPersistencePort, identity UserId/UserNotFoundException/CurrentUserPort/UserQueryPort, execution RuntimeConfigPort 직접 참조를 책임별로 교체한다. foreign aggregate/value/exception 구현 누수는 금지하고 API/DB/schema/wire behavior는 유지한다. 검증: production/test import matrix, caller/constructor matrix, ACL contract behavior tests, architecture negative-import gate, compile 및 clean full regression. 2.43 final guardrail 전에 완료.",
             "status": "pending",
@@ -320,7 +320,7 @@
           },
           {
             "id": 55,
-            "title": "[bounded-context ACL 분리][refactor][P1][server] collaboration identity ACL cleanup",
+            "title": "[context-collaboration][bounded-context ACL 분리][refactor][app-server] identity ACL cleanup",
             "description": "collaboration application의 identity.domain.vo.UserId 직접 참조를 제거하고 identity-owned ACL/read contract 뒤로 격리한다.",
             "details": "대상: OrganizeService, OrganizeValidator 및 모든 production/test caller. 인증 사용자 식별자 semantics를 보존하면서 collaboration이 소유하는 application port 또는 ACL contract와 identity adapter translation을 명시한다. identity domain object가 collaboration application/domain으로 유입되지 않는 source gate와 behavior tests를 추가한다. API/DB/permission semantics 변경은 제외하고 2.43 final guardrail 전에 완료한다.",
             "status": "pending",
@@ -333,7 +333,7 @@
           },
           {
             "id": 56,
-            "title": "[bounded-context application 분리][refactor][P1][server] application technology purity slice",
+            "title": "[context-all][bounded-context application 분리][refactor][app-server] application technology purity slice",
             "description": "각 bounded context application의 Spring stereotype/transaction/security/HTTP 기술 의존을 단계적으로 제거하는 첫 executable slice를 수행한다.",
             "details": "첫 slice는 collaboration을 기준 context로 삼고, application service/validator/port에서 Spring annotation, transaction annotation, MultipartFile 등 기술 타입을 제거하거나 composition/configuration port로 치환한다. domain purity는 유지하고 inbound/outbound compatibility는 보존한다. 이후 identity/repository/execution/change.review 확장 기준을 기록한다. 검증: framework-free application unit tests, forbidden-import architecture gate, Spring wiring regression, full regression. 전체 context 일괄 전환은 제외.",
             "status": "pending",
@@ -345,7 +345,7 @@
           },
           {
             "id": 57,
-            "title": "[bounded-context composition-root 분리][refactor][P1][server] common context-specific wiring ownership",
+            "title": "[context-all][bounded-context composition-root 분리][refactor][app-server] context-specific wiring ownership",
             "description": "common infrastructure/configuration이 bounded-context application API와 outbound implementation을 직접 소유하는 경계를 정리한다.",
             "details": "대상: SecurityConfig, OAuth2LoginSuccessHandler, GitSmartHttpAuthFilter/Authorizer, PatAuthenticationProvider, PushHook, CommitFileFactory와 실제 caller. generic common technical infrastructure와 context-specific composition wiring을 분리하고, context-owned configuration adapter 또는 명시적 composition root ownership을 결정한다. OAuth/HTTP/Git hook behavior 및 bean discovery를 보존한다. 검증: bean wiring/context tests, source ownership gate, API compatibility, full regression.",
             "status": "pending",
@@ -359,7 +359,7 @@
           },
           {
             "id": 58,
-            "title": "[bounded-context infrastructure 소유권][refactor][P2][server] persistence config generated asset ownership policy",
+            "title": "[context-all][bounded-context infrastructure 소유권][refactor][app-server] persistence config generated asset ownership policy",
             "description": "adapter/out 구현체와 infrastructure persistence/config/generated 자산의 ownership 규칙을 명시하고 자동 검증한다.",
             "details": "MyBatis mapper interface/XML, entity/domain mapper, MBG generated source, schema/resource, datasource/configuration, generic common infrastructure와 context-owned adapter implementation의 경계를 inventory한다. 새 implementation placement는 adapter/out으로 단일화하고 retained technical/generated assets는 명시적 allowlist로 관리한다. source path/package/ownership architecture test를 추가하며 behavior/API/DB schema 변경은 제외한다.",
             "status": "pending",
@@ -371,7 +371,7 @@
           },
           {
             "id": 43,
-            "title": "[bounded-context architecture guardrail][refactor][server] full bounded-context architecture guardrails",
+            "title": "[context-all][bounded-context architecture guardrail][refactor][app-server] full architecture guardrails",
             "description": "domain purity를 넘어 application-to-adapter 방향, bounded context 간 내부 구현 참조 금지, port 소유권, outbound adapter placement를 자동 검증한다.",
             "details": "Canonical Taskmaster meaning: final bounded-context architecture guardrails after remediation Tasks 2.54-2.58 and completed Tasks 2.49-2.51. Consumes external evidence report `/Users/hrk/.gstack/projects/jgitkins/hrk-main-design-20260821-architecture-analysis.md`. Enforce common negative import rules across all five contexts, application technology-import policy, exact ACL allowlists, application port ownership, adapter.in and adapter.out placement, common/configuration ownership, retained infrastructure/generated allowlists, deliberate illegal-import fixture tests, and full architecture/full-regression selectors. Do not change API, DB schema, or bounded-context behavior.",
             "status": "pending",
@@ -393,7 +393,7 @@
           },
           {
             "id": 41,
-            "title": "[feature][server] collaboration membership lifecycle and owner transfer",
+            "title": "[context-collaboration][feature][app-server] membership lifecycle and owner transfer",
             "description": "OrganizeMember 초대·추가·삭제와 owner transfer/deletion 불변식을 설계하고 구현한다. owner-only Phase 1 경계를 유지한 후 별도 vertical slice로 진행한다.",
             "details": "",
             "status": "pending",
@@ -406,7 +406,7 @@
           },
           {
             "id": 42,
-            "title": "[infrastructure][server] transactional outbox and durable events",
+            "title": "[context-all][infrastructure][app-server] transactional outbox and durable events",
             "description": "in-process post-commit event의 비내구성 한계를 해소하기 위해 Transactional Outbox, retry, duplicate handling, consumer failure semantics를 설계·구현한다.",
             "details": "",
             "status": "pending",
