@@ -64,6 +64,22 @@ public class OrganizePersistenceAdapter implements OrganizeRepository, OrganizeQ
     }
 
     @Override
+    public Organize lockByIdForMembershipMutation(OrganizeId organizeId) {
+        try {
+            OrganizeEntity entity = organizeEntityMbgMapper.selectByOrganizeIdForUpdate(organizeId.getValue());
+            if (entity == null) {
+                throw new io.jgitkins.server.collaboration.application.exception.OrganizeNotFoundException(organizeId.getValue());
+            }
+            return organizeDomainMapper.toDomain(entity);
+        } catch (io.jgitkins.server.collaboration.application.exception.OrganizeNotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new InfrastructureException(InfrastructureErrorCode.PERSISTENCE_OPERATION_FAILED,
+                    "Database operation failed during lock organize for membership mutation", e);
+        }
+    }
+
+    @Override
     public Optional<Organize> findByName(OrganizeName name) {
         try {
             OrganizeEntityCondition condition = new OrganizeEntityCondition();

@@ -9,6 +9,7 @@ public enum ApplicationProblemSpec implements ProblemSpec<ApplicationErrorCode> 
     REPOSITORY_ACCESS_DENIED(ApplicationErrorCode.ACCESS_DENIED, "REPO-403", "Access denied to repository", "repository.accessDenied"),
     USER_NOT_FOUND(ApplicationErrorCode.NOT_FOUND, "USER-404", "User not found", "user.notFound"),
     ORGANIZE_NOT_FOUND(ApplicationErrorCode.NOT_FOUND, "ORG-404", "Organization not found", "organize.notFound"),
+    ORGANIZE_MEMBER_NOT_FOUND(ApplicationErrorCode.NOT_FOUND, "ORG-MEMBER-404", "Organization member not found", "organize.memberNotFound"),
     REPOSITORY_NOT_FOUND(ApplicationErrorCode.NOT_FOUND, "REPO-404", "Repository not found", "repository.notFound"),
     RUNNER_NOT_FOUND(ApplicationErrorCode.NOT_FOUND, "RUNNER-404", "Runner not found", "runner.notFound"),
     BRANCH_NOT_FOUND(ApplicationErrorCode.NOT_FOUND, "BRANCH-404", "Branch not found", "branch.notFound"),

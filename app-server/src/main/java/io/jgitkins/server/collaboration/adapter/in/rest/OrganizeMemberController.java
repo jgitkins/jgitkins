@@ -5,6 +5,9 @@ import io.jgitkins.server.collaboration.application.dto.result.OrganizeMemberSum
 import io.jgitkins.server.collaboration.application.port.in.OrganizeMemberAddUseCase;
 import io.jgitkins.server.collaboration.application.port.in.OrganizeMemberQueryUseCase;
 import io.jgitkins.server.collaboration.application.port.in.OrganizeMemberRemoveUseCase;
+import io.jgitkins.server.collaboration.application.port.out.UserIdentityPort;
+import io.jgitkins.server.shared.application.error.ApplicationErrorCode;
+import io.jgitkins.server.shared.application.exception.ApplicationException;
 import io.jgitkins.core.web.api.response.ApiResponse;
 import io.jgitkins.server.collaboration.adapter.in.rest.dto.request.OrganizeMemberAddRequest;
 import io.jgitkins.server.collaboration.adapter.in.rest.mapper.OrganizeMemberRequestMapper;
@@ -30,12 +33,16 @@ public class OrganizeMemberController {
     private final OrganizeMemberQueryUseCase organizeMemberQueryUseCase;
     private final OrganizeMemberRemoveUseCase organizeMemberRemoveUseCase;
     private final OrganizeMemberRequestMapper organizeMemberRequestMapper;
+    private final UserIdentityPort userIdentityPort;
 
     @Operation(summary = "Add organize member")
     @PostMapping
     public ResponseEntity<ApiResponse<Void>> addMember(@PathVariable Long organizeId,
                                                        @RequestBody OrganizeMemberAddRequest request) {
-        OrganizeMemberAddCommand command = organizeMemberRequestMapper.toCommand(organizeId, request);
+        Long requesterUserId = userIdentityPort.resolveCurrentActiveUserId()
+                .orElseThrow(() -> new ApplicationException(ApplicationErrorCode.UNAUTHENTICATED,
+                        "Authentication required"));
+        OrganizeMemberAddCommand command = organizeMemberRequestMapper.toCommand(organizeId, request, requesterUserId);
         organizeMemberAddUseCase.addOrganizeMember(command);
         return ApiResponse.ok();
     }
@@ -44,7 +51,10 @@ public class OrganizeMemberController {
     @DeleteMapping("/{userId}")
     public ResponseEntity<ApiResponse<Void>> removeMember(@PathVariable Long organizeId,
                                                           @PathVariable Long userId) {
-        organizeMemberRemoveUseCase.removeOrganizeMember(organizeId, userId);
+        Long requesterUserId = userIdentityPort.resolveCurrentActiveUserId()
+                .orElseThrow(() -> new ApplicationException(ApplicationErrorCode.UNAUTHENTICATED,
+                        "Authentication required"));
+        organizeMemberRemoveUseCase.removeOrganizeMember(organizeId, requesterUserId, userId);
         return ApiResponse.noContent();
     }
 

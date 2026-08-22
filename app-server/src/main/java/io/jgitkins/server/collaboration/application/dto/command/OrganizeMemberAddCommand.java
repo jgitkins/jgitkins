@@ -5,6 +5,7 @@ import io.jgitkins.server.collaboration.domain.vo.OrganizeMemberRole;
 public record OrganizeMemberAddCommand(
         Long organizeId,
         Long userId,
-        OrganizeMemberRole role
+        OrganizeMemberRole role,
+        Long requesterUserId
 ) {
 }

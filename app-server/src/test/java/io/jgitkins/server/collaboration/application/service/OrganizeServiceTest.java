@@ -23,6 +23,7 @@ import io.jgitkins.server.collaboration.domain.repository.OrganizeRepository;
 import io.jgitkins.server.collaboration.application.validate.OrganizeValidator;
 import io.jgitkins.core.common.exception.JgitkinsException;
 import io.jgitkins.server.collaboration.domain.aggregate.Organize;
+import io.jgitkins.server.collaboration.domain.entity.OrganizeMember;
 import io.jgitkins.server.collaboration.domain.event.OrganizeCreatedEvent;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeId;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeMemberRole;
@@ -65,6 +66,7 @@ class OrganizeServiceTest {
     void setUp() {
         service = new OrganizeService(
                 organizeRepository,
+                organizeMemberPort,
                 userIdentityPort,
                 domainEventPublisher,
                 new OrganizeValidator(organizeRepository, organizeMemberQueryPort),
@@ -105,6 +107,24 @@ class OrganizeServiceTest {
                 && event.getOrganizeId().equals(OrganizeId.of(42L))));
     }
 
+    @Test
+    void createOrganize_bootstrapsCreatorAsOwnerMembership() {
+        OrganizeCreationCommand command = new OrganizeCreationCommand("bootstrap", "desc");
+        Organize persisted = sampleOrganize(42L, "bootstrap", 7L);
+
+        when(userIdentityPort.resolveCurrentActiveUserId()).thenReturn(Optional.of(7L));
+        when(organizeRepository.findByName(any(OrganizeName.class))).thenReturn(Optional.empty());
+        when(organizeRepository.save(any(Organize.class))).thenReturn(persisted);
+        when(organizeApplicationMapper.toDto(persisted))
+                .thenReturn(new OrganizeCreationResult(42L, "bootstrap", null, 7L, null, null));
+
+        service.createOrganize(command);
+
+        verify(organizeMemberPort).save(argThat(member ->
+                member.getOrganizeId().equals(OrganizeId.of(42L))
+                        && member.getUserId().equals(MemberUserId.of(7L))
+                        && member.getRole() == OrganizeMemberRole.OWNER));
+    }
     @Test
     void createOrganize_throwsWhenOrganizeNameExists() {
         OrganizeCreationCommand command = new OrganizeCreationCommand("duplicate", "desc");

@@ -24,6 +24,8 @@ public interface OrganizeEntityMbgMapper {
 
     OrganizeEntity selectByPrimaryKey(Long id);
 
+    OrganizeEntity selectByOrganizeIdForUpdate(@Param("organizeId") Long organizeId);
+
     int updateByConditionSelective(@Param("row") OrganizeEntity row, @Param("example") OrganizeEntityCondition example);
 
     int updateByConditionWithBLOBs(@Param("row") OrganizeEntity row, @Param("example") OrganizeEntityCondition example);

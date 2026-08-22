@@ -1,6 +1,7 @@
 package io.jgitkins.server.collaboration.application.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -8,11 +9,12 @@ import static org.mockito.Mockito.when;
 
 import io.jgitkins.server.collaboration.application.dto.command.OrganizeMemberAddCommand;
 import io.jgitkins.server.collaboration.application.dto.result.OrganizeMemberSummary;
+import io.jgitkins.server.collaboration.application.exception.OrganizeAccessDeniedException;
+import io.jgitkins.server.collaboration.application.exception.OrganizeMemberNotFoundException;
 import io.jgitkins.server.collaboration.application.port.out.OrganizeMemberPersistencePort;
 import io.jgitkins.server.collaboration.application.port.out.OrganizeMembershipQueryPort;
-import io.jgitkins.server.collaboration.application.service.OrganizeMemberService;
-import io.jgitkins.server.collaboration.application.validate.OrganizeMemberValidator;
 import io.jgitkins.server.collaboration.domain.entity.OrganizeMember;
+import io.jgitkins.server.collaboration.domain.repository.OrganizeRepository;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeId;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeMemberRole;
 import io.jgitkins.server.collaboration.domain.vo.MemberUserId;
@@ -22,70 +24,98 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 class OrganizeMemberServiceTest {
 
-    @Mock
-    private OrganizeMemberPersistencePort organizeMemberPort;
-
-    @Mock
-    private OrganizeMembershipQueryPort organizeMemberQueryPort;
+    @Mock private OrganizeMemberPersistencePort organizeMemberPort;
+    @Mock private OrganizeMembershipQueryPort organizeMemberQueryPort;
+    @Mock private OrganizeRepository organizeRepository;
 
     private OrganizeMemberService service;
 
     @BeforeEach
     void setUp() {
-        service = new OrganizeMemberService(
-                organizeMemberPort,
-                new OrganizeMemberValidator(organizeMemberQueryPort)
-        );
+        service = new OrganizeMemberService(organizeMemberPort, organizeMemberQueryPort, organizeRepository);
     }
 
     @Test
-    void addOrganizeMember_savesWhenNotExists() {
+    void addOrganizeMember_ownerCanAssignRequestedRole() {
+        when(organizeRepository.findById(OrganizeId.of(1L))).thenReturn(Optional.of(org.mockito.Mockito.mock(io.jgitkins.server.collaboration.domain.aggregate.Organize.class)));
+        when(organizeMemberQueryPort.countOwnersByOrganizeId(1L)).thenReturn(1L);
+        when(organizeMemberQueryPort.findRoleByOrganizeIdAndUserId(1L, 7L)).thenReturn(Optional.of(OrganizeMemberRole.OWNER));
         when(organizeMemberQueryPort.findRoleByOrganizeIdAndUserId(1L, 2L)).thenReturn(Optional.empty());
 
-        OrganizeMemberAddCommand command = new OrganizeMemberAddCommand(1L, 2L, OrganizeMemberRole.OWNER);
+        service.addOrganizeMember(new OrganizeMemberAddCommand(1L, 2L, OrganizeMemberRole.MAINTAINER, 7L));
 
-        service.addOrganizeMember(command);
-
-        ArgumentCaptor<OrganizeMember> memberCaptor = ArgumentCaptor.forClass(OrganizeMember.class);
-        verify(organizeMemberPort).save(memberCaptor.capture());
-        assertEquals(OrganizeMemberRole.OWNER, memberCaptor.getValue().getRole());
+        verify(organizeMemberPort).save(org.mockito.ArgumentMatchers.argThat(member ->
+                member.getRole() == OrganizeMemberRole.MAINTAINER && member.getUserId().equals(MemberUserId.of(2L))));
     }
 
     @Test
-    void addOrganizeMember_usesMemberRoleWhenRoleIsMissing() {
-        when(organizeMemberQueryPort.findRoleByOrganizeIdAndUserId(1L, 2L)).thenReturn(Optional.empty());
+    void addOrganizeMember_nonOwnerCannotAdd() {
+        when(organizeRepository.findById(OrganizeId.of(1L))).thenReturn(Optional.of(org.mockito.Mockito.mock(io.jgitkins.server.collaboration.domain.aggregate.Organize.class)));
+        when(organizeMemberQueryPort.countOwnersByOrganizeId(1L)).thenReturn(1L);
+        when(organizeMemberQueryPort.findRoleByOrganizeIdAndUserId(1L, 7L)).thenReturn(Optional.of(OrganizeMemberRole.MEMBER));
 
-        OrganizeMemberAddCommand command = new OrganizeMemberAddCommand(1L, 2L, null);
-
-        service.addOrganizeMember(command);
-
-        ArgumentCaptor<OrganizeMember> memberCaptor = ArgumentCaptor.forClass(OrganizeMember.class);
-        verify(organizeMemberPort).save(memberCaptor.capture());
-        assertEquals(OrganizeMemberRole.MEMBER, memberCaptor.getValue().getRole());
-    }
-
-    @Test
-    void addOrganizeMember_throwsWhenAlreadyExists() {
-        when(organizeMemberQueryPort.findRoleByOrganizeIdAndUserId(1L, 2L)).thenReturn(Optional.of(OrganizeMemberRole.MEMBER));
-
-        OrganizeMemberAddCommand command = new OrganizeMemberAddCommand(1L, 2L, OrganizeMemberRole.MEMBER);
-
-        org.junit.jupiter.api.Assertions.assertThrows(RuntimeException.class, () -> service.addOrganizeMember(command));
+        assertThrows(OrganizeAccessDeniedException.class,
+                () -> service.addOrganizeMember(new OrganizeMemberAddCommand(1L, 2L, OrganizeMemberRole.MEMBER, 7L)));
         verify(organizeMemberPort, never()).save(any());
     }
 
     @Test
-    void removeOrganizeMember_deletesByOrganizeAndUser() {
-        service.removeOrganizeMember(1L, 2L);
+    void addOrganizeMember_nullRoleDefaultsToMember() {
+        when(organizeRepository.findById(OrganizeId.of(1L))).thenReturn(Optional.of(org.mockito.Mockito.mock(io.jgitkins.server.collaboration.domain.aggregate.Organize.class)));
+        when(organizeMemberQueryPort.countOwnersByOrganizeId(1L)).thenReturn(1L);
+        when(organizeMemberQueryPort.findRoleByOrganizeIdAndUserId(1L, 7L)).thenReturn(Optional.of(OrganizeMemberRole.OWNER));
+        when(organizeMemberQueryPort.findRoleByOrganizeIdAndUserId(1L, 2L)).thenReturn(Optional.empty());
 
-        verify(organizeMemberPort).deleteByOrganizeIdAndUserId(OrganizeId.of(1L), MemberUserId.of(2L));
+        service.addOrganizeMember(new OrganizeMemberAddCommand(1L, 2L, null, 7L));
+
+        verify(organizeMemberPort).save(org.mockito.ArgumentMatchers.argThat(member -> member.getRole() == OrganizeMemberRole.MEMBER));
+    }
+
+    @Test
+    void removeOrganizeMember_missingRequesterIsDenied() {
+        assertThrows(OrganizeAccessDeniedException.class,
+                () -> service.removeOrganizeMember(1L, null, 7L));
+    }
+
+    @Test
+    void removeOrganizeMember_memberCanRemoveSelf() {
+        when(organizeRepository.lockByIdForMembershipMutation(OrganizeId.of(1L))).thenReturn(null);
+        when(organizeMemberQueryPort.countOwnersByOrganizeId(1L)).thenReturn(1L);
+        when(organizeMemberQueryPort.findRoleByOrganizeIdAndUserId(1L, 7L)).thenReturn(Optional.of(OrganizeMemberRole.MEMBER));
+        when(organizeMemberPort.findByOrganizeIdAndUserId(OrganizeId.of(1L), MemberUserId.of(7L)))
+                .thenReturn(Optional.of(OrganizeMember.create(OrganizeId.of(1L), MemberUserId.of(7L), OrganizeMemberRole.MEMBER, null)));
+
+        service.removeOrganizeMember(1L, 7L, 7L);
+
+        verify(organizeMemberPort).deleteByOrganizeIdAndUserId(OrganizeId.of(1L), MemberUserId.of(7L));
+    }
+
+    @Test
+    void removeOrganizeMember_soleOwnerCannotRemoveSelf() {
+        when(organizeRepository.lockByIdForMembershipMutation(OrganizeId.of(1L))).thenReturn(null);
+        when(organizeMemberQueryPort.countOwnersByOrganizeId(1L)).thenReturn(1L);
+        when(organizeMemberQueryPort.findRoleByOrganizeIdAndUserId(1L, 7L)).thenReturn(Optional.of(OrganizeMemberRole.OWNER));
+        when(organizeMemberPort.findByOrganizeIdAndUserId(OrganizeId.of(1L), MemberUserId.of(7L)))
+                .thenReturn(Optional.of(OrganizeMember.create(OrganizeId.of(1L), MemberUserId.of(7L), OrganizeMemberRole.OWNER, null)));
+
+        assertThrows(OrganizeAccessDeniedException.class, () -> service.removeOrganizeMember(1L, 7L, 7L));
+        verify(organizeMemberPort, never()).deleteByOrganizeIdAndUserId(any(), any());
+    }
+
+    @Test
+    void removeOrganizeMember_missingTargetIsNotFound() {
+        when(organizeRepository.lockByIdForMembershipMutation(OrganizeId.of(1L))).thenReturn(null);
+        when(organizeMemberQueryPort.countOwnersByOrganizeId(1L)).thenReturn(1L);
+        when(organizeMemberQueryPort.findRoleByOrganizeIdAndUserId(1L, 7L)).thenReturn(Optional.of(OrganizeMemberRole.OWNER));
+        when(organizeMemberPort.findByOrganizeIdAndUserId(OrganizeId.of(1L), MemberUserId.of(9L))).thenReturn(Optional.empty());
+
+        assertThrows(OrganizeMemberNotFoundException.class, () -> service.removeOrganizeMember(1L, 7L, 9L));
     }
 
     @Test
@@ -101,5 +131,4 @@ class OrganizeMemberServiceTest {
         assertEquals(OrganizeMemberRole.OWNER, result.get(0).role());
         assertEquals(joinedAt, result.get(0).joinedAt());
     }
-
 }

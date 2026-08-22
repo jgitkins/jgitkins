@@ -11,5 +11,6 @@ public interface OrganizeMemberRequestMapper {
     @Mapping(target = "organizeId", source = "organizeId")
     @Mapping(target = "userId", source = "request.userId")
     @Mapping(target = "role", source = "request.role")
-    OrganizeMemberAddCommand toCommand(Long organizeId, OrganizeMemberAddRequest request);
+    @Mapping(target = "requesterUserId", source = "requesterUserId")
+    OrganizeMemberAddCommand toCommand(Long organizeId, OrganizeMemberAddRequest request, Long requesterUserId);
 }

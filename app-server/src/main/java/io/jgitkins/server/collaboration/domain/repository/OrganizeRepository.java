@@ -10,6 +10,7 @@ public interface OrganizeRepository {
     Organize save(Organize organize);
     Organize update(Organize organize);
     Optional<Organize> findById(OrganizeId organizeId);
+    Organize lockByIdForMembershipMutation(OrganizeId organizeId);
     Optional<Organize> findByName(OrganizeName name);
     List<Organize> findAll();
     void deleteById(OrganizeId organizeId);

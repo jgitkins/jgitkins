@@ -16,10 +16,12 @@ class OrganizeMemberRequestMapperTest {
     void toCommand_mapsPathVariableAndRequestFields() {
         OrganizeMemberAddCommand command = mapper.toCommand(
                 41L,
-                new OrganizeMemberAddRequest(9L, OrganizeMemberRole.MEMBER));
+                new OrganizeMemberAddRequest(9L, OrganizeMemberRole.MEMBER),
+                7L);
 
         assertThat(command.organizeId()).isEqualTo(41L);
         assertThat(command.userId()).isEqualTo(9L);
         assertThat(command.role()).isEqualTo(OrganizeMemberRole.MEMBER);
+        assertThat(command.requesterUserId()).isEqualTo(7L);
     }
 }

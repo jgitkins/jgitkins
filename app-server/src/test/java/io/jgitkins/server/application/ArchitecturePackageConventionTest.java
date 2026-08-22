@@ -208,7 +208,7 @@ class ArchitecturePackageConventionTest {
         assertTrue(OrganizeRepository.class.isAssignableFrom(OrganizePersistenceAdapter.class));
         assertTrue(OrganizeQueryPort.class.isAssignableFrom(OrganizePersistenceAdapter.class));
 
-        assertEquals(Set.of("save", "update", "findById", "findByName", "findAll", "deleteById"),
+        assertEquals(Set.of("save", "update", "findById", "lockByIdForMembershipMutation", "findByName", "findAll", "deleteById"),
                 Arrays.stream(OrganizeRepository.class.getDeclaredMethods())
                         .map(Method::getName)
                         .collect(java.util.stream.Collectors.toSet()));

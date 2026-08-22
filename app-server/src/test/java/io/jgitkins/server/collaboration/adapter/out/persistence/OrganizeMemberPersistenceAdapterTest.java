@@ -74,6 +74,15 @@ class OrganizeMemberPersistenceAdapterTest {
     }
 
     @Test
+    void countOwnersByOrganizeId_usesOwnerRolePredicate() {
+        when(organizeMemberEntityMbgMapper.countByCondition(org.mockito.ArgumentMatchers.any(OrganizeMemberEntityCondition.class)))
+                .thenReturn(2L);
+
+        assertThat(adapter.countOwnersByOrganizeId(1L)).isEqualTo(2L);
+        verify(organizeMemberEntityMbgMapper).countByCondition(org.mockito.ArgumentMatchers.any(OrganizeMemberEntityCondition.class));
+    }
+
+    @Test
     void findAllByOrganizeId_mapsAllMembers() {
         OrganizeMemberEntity first = new OrganizeMemberEntity();
         first.setOrganizeId(1L);

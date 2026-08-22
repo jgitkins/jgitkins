@@ -6,7 +6,10 @@ import io.jgitkins.server.collaboration.application.port.in.OrganizeMemberAddUse
 import io.jgitkins.server.collaboration.application.port.in.OrganizeMemberQueryUseCase;
 import io.jgitkins.server.collaboration.application.port.in.OrganizeMemberRemoveUseCase;
 import io.jgitkins.server.collaboration.application.port.out.OrganizeMemberPersistencePort;
-import io.jgitkins.server.collaboration.application.validate.OrganizeMemberValidator;
+import io.jgitkins.server.collaboration.application.port.out.OrganizeMembershipQueryPort;
+import io.jgitkins.server.collaboration.domain.repository.OrganizeRepository;
+import io.jgitkins.server.collaboration.application.exception.OrganizeAccessDeniedException;
+import io.jgitkins.server.collaboration.application.exception.OrganizeMemberNotFoundException;
 import io.jgitkins.server.collaboration.domain.entity.OrganizeMember;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeId;
 import io.jgitkins.server.collaboration.domain.vo.MemberUserId;
@@ -22,29 +25,67 @@ public class OrganizeMemberService implements OrganizeMemberAddUseCase,
                                                OrganizeMemberQueryUseCase {
 
     private final OrganizeMemberPersistencePort organizeMemberPort;
-    private final OrganizeMemberValidator organizeMemberValidator;
+    private final OrganizeMembershipQueryPort organizeMembershipQueryPort;
+    private final OrganizeRepository organizeRepository;
 
     @Override
     @Transactional
     public void addOrganizeMember(OrganizeMemberAddCommand command) {
+        if (command.requesterUserId() == null) {
+            throw new OrganizeAccessDeniedException("Authentication required");
+        }
         OrganizeId organizeId = OrganizeId.of(command.organizeId());
+        if (organizeRepository.findById(organizeId).isEmpty()) {
+            throw new io.jgitkins.server.collaboration.application.exception.OrganizeNotFoundException(command.organizeId());
+        }
+        organizeRepository.lockByIdForMembershipMutation(organizeId);
+        if (organizeMembershipQueryPort.countOwnersByOrganizeId(command.organizeId()) == 0) {
+            throw new OrganizeAccessDeniedException("Organization membership migration is required");
+        }
+        if (organizeMembershipQueryPort.findRoleByOrganizeIdAndUserId(
+                command.organizeId(), command.requesterUserId())
+                .filter(role -> role == io.jgitkins.server.collaboration.domain.vo.OrganizeMemberRole.OWNER)
+                .isEmpty()) {
+            throw new OrganizeAccessDeniedException("Only an organization owner can add members");
+        }
         MemberUserId userId = MemberUserId.of(command.userId());
-
+        if (organizeMembershipQueryPort.findRoleByOrganizeIdAndUserId(command.organizeId(), command.userId()).isPresent()) {
+            throw new io.jgitkins.server.collaboration.application.exception.OrganizeMemberAlreadyExistsException(
+                    command.organizeId(), command.userId());
+        }
         OrganizeMember member = OrganizeMember.create(
                 organizeId,
                 userId,
-                organizeMemberValidator.resolveRole(command.role()),
-                null
-        );
-
-        organizeMemberValidator.validateMemberNotExists(member.getOrganizeId(), member.getUserId());
+                command.role() != null ? command.role() : io.jgitkins.server.collaboration.domain.vo.OrganizeMemberRole.MEMBER,
+                null);
         organizeMemberPort.save(member);
     }
 
     @Override
     @Transactional
-    public void removeOrganizeMember(Long organizeId, Long userId) {
-        organizeMemberPort.deleteByOrganizeIdAndUserId(OrganizeId.of(organizeId), MemberUserId.of(userId));
+    public void removeOrganizeMember(Long organizeId, Long requesterUserId, Long targetUserId) {
+        if (organizeId == null || requesterUserId == null || targetUserId == null) {
+            throw new OrganizeAccessDeniedException("Authentication and member identifiers are required");
+        }
+        OrganizeId id = OrganizeId.of(organizeId);
+        organizeRepository.lockByIdForMembershipMutation(id);
+        long ownerCount = organizeMembershipQueryPort.countOwnersByOrganizeId(organizeId);
+        if (ownerCount == 0) {
+            throw new OrganizeAccessDeniedException("Organization membership migration is required");
+        }
+        io.jgitkins.server.collaboration.domain.vo.OrganizeMemberRole requesterRole =
+                organizeMembershipQueryPort.findRoleByOrganizeIdAndUserId(organizeId, requesterUserId)
+                        .orElseThrow(() -> new OrganizeAccessDeniedException("Requester is not an organization member"));
+        boolean selfRemoval = requesterUserId.equals(targetUserId);
+        if (!selfRemoval && requesterRole != io.jgitkins.server.collaboration.domain.vo.OrganizeMemberRole.OWNER) {
+            throw new OrganizeAccessDeniedException("Only an organization owner can remove another member");
+        }
+        OrganizeMember target = organizeMemberPort.findByOrganizeIdAndUserId(id, MemberUserId.of(targetUserId))
+                .orElseThrow(() -> new OrganizeMemberNotFoundException(organizeId, targetUserId));
+        if (target.getRole() == io.jgitkins.server.collaboration.domain.vo.OrganizeMemberRole.OWNER && ownerCount <= 1) {
+            throw new OrganizeAccessDeniedException("Organization must retain an active owner");
+        }
+        organizeMemberPort.deleteByOrganizeIdAndUserId(id, MemberUserId.of(targetUserId));
     }
 
     @Override

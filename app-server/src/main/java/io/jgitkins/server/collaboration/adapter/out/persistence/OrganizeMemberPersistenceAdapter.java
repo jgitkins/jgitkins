@@ -38,6 +38,18 @@ public class OrganizeMemberPersistenceAdapter implements OrganizeMemberPersisten
     }
 
     @Override
+    public long countOwnersByOrganizeId(Long organizeId) {
+        try {
+            OrganizeMemberEntityCondition condition = new OrganizeMemberEntityCondition();
+            condition.createCriteria().andOrganizeIdEqualTo(organizeId).andRoleEqualTo("OWNER");
+            return organizeMemberMapper.countByCondition(condition);
+        } catch (Exception e) {
+            throw new InfrastructureException(InfrastructureErrorCode.PERSISTENCE_OPERATION_FAILED,
+                    "Database operation failed during count organize owners", e);
+        }
+    }
+
+    @Override
     public OrganizeMember save(OrganizeMember member) {
         try {
             OrganizeMemberEntity entity = organizeMemberDomainMapper.toEntity(member);

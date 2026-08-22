@@ -13,6 +13,7 @@ import io.jgitkins.server.collaboration.application.dto.result.OrganizeMemberSum
 import io.jgitkins.server.collaboration.application.port.in.OrganizeMemberAddUseCase;
 import io.jgitkins.server.collaboration.application.port.in.OrganizeMemberQueryUseCase;
 import io.jgitkins.server.collaboration.application.port.in.OrganizeMemberRemoveUseCase;
+import io.jgitkins.server.collaboration.application.port.out.UserIdentityPort;
 import io.jgitkins.server.collaboration.adapter.in.rest.OrganizeMemberController;
 import io.jgitkins.server.collaboration.adapter.in.rest.dto.request.OrganizeMemberAddRequest;
 import io.jgitkins.server.collaboration.adapter.in.rest.mapper.OrganizeMemberRequestMapper;
@@ -50,11 +51,15 @@ class OrganizeMemberControllerTest {
     @MockBean
     private OrganizeMemberRequestMapper organizeMemberRequestMapper;
 
+    @MockBean
+    private UserIdentityPort userIdentityPort;
+
     @Test
     void addMember_returnsOk() throws Exception {
+        when(userIdentityPort.resolveCurrentActiveUserId()).thenReturn(java.util.Optional.of(7L));
         when(organizeMemberRequestMapper.toCommand(org.mockito.ArgumentMatchers.eq(1L),
-                org.mockito.ArgumentMatchers.any(OrganizeMemberAddRequest.class)))
-                .thenReturn(new OrganizeMemberAddCommand(1L, 2L, OrganizeMemberRole.MEMBER));
+                org.mockito.ArgumentMatchers.any(OrganizeMemberAddRequest.class), org.mockito.ArgumentMatchers.eq(7L)))
+                .thenReturn(new OrganizeMemberAddCommand(1L, 2L, OrganizeMemberRole.MEMBER, 7L));
         String body = objectMapper.writeValueAsString(java.util.Map.of(
                 "userId", 2,
                 "role", "MEMBER"
@@ -75,9 +80,10 @@ class OrganizeMemberControllerTest {
 
     @Test
     void addMember_allowsMissingRoleAndPassesNullRole() throws Exception {
+        when(userIdentityPort.resolveCurrentActiveUserId()).thenReturn(java.util.Optional.of(7L));
         when(organizeMemberRequestMapper.toCommand(org.mockito.ArgumentMatchers.eq(1L),
-                org.mockito.ArgumentMatchers.any(OrganizeMemberAddRequest.class)))
-                .thenReturn(new OrganizeMemberAddCommand(1L, 3L, null));
+                org.mockito.ArgumentMatchers.any(OrganizeMemberAddRequest.class), org.mockito.ArgumentMatchers.eq(7L)))
+                .thenReturn(new OrganizeMemberAddCommand(1L, 3L, null, 7L));
         String body = objectMapper.writeValueAsString(java.util.Map.of(
                 "userId", 3
         ));
@@ -96,10 +102,11 @@ class OrganizeMemberControllerTest {
 
     @Test
     void removeMember_returnsNoContent() throws Exception {
+        when(userIdentityPort.resolveCurrentActiveUserId()).thenReturn(java.util.Optional.of(7L));
         mockMvc.perform(delete("/api/organizes/1/members/2"))
                 .andExpect(status().isNoContent());
 
-        verify(organizeMemberRemoveUseCase).removeOrganizeMember(1L, 2L);
+        verify(organizeMemberRemoveUseCase).removeOrganizeMember(1L, 7L, 2L);
     }
 
     @Test

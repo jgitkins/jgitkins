@@ -5,4 +5,5 @@ import java.util.Optional;
 
 public interface OrganizeMembershipQueryPort {
     Optional<OrganizeMemberRole> findRoleByOrganizeIdAndUserId(Long organizeId, Long userId);
+    long countOwnersByOrganizeId(Long organizeId);
 }

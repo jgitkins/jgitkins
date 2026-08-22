@@ -98,9 +98,15 @@
 현재 기준 불변식은 다음과 같다.
 
 1. organization 생성 시 name은 중복될 수 없다.
-2. `OrganizeMember` 생성 시 `organizeId`, `userId`, `role`은 필수다.
-3. organization member의 기본 role은 `MEMBER`다.
-4. 같은 `organizeId + userId` 조합은 중복 생성할 수 없다.
+2. organization 생성 시 creator의 `OrganizeMember(OWNER)` row가 organization row와 같은 transaction에서 생성된다.
+3. `OrganizeMember` 생성 시 `organizeId`, `userId`, `role`은 필수다.
+4. organization member의 기본 role은 `MEMBER`다.
+5. 같은 `organizeId + userId` 조합은 중복 생성할 수 없다.
+6. membership mutation은 trusted requester identity를 사용한다.
+7. 다른 member의 add/remove는 `OWNER`만 수행할 수 있다.
+8. `MEMBER`와 `MAINTAINER`는 자신을 제거할 수 있다.
+9. OWNER self-remove와 다른 OWNER 제거는 active OWNER가 하나 이상 남을 때만 허용된다.
+10. active membership은 `ORGANIZE_MEMBER` row의 존재로 정의한다. invitation/pending 상태는 없다.
 
 ### 주요 시나리오
 
@@ -111,8 +117,10 @@
 1. `OrganizeService`가 생성 요청을 받는다.
 2. `OrganizeName`과 `ownerId`를 만든다.
 3. `OrganizeValidator.validateCreation(...)`가 name 중복을 검증한다.
-4. `Organize.create(...)`로 aggregate를 만든다.
-5. 저장 후 결과 DTO를 반환한다.
+4. `OrganizeRepository.save(...)`로 organization을 저장하고 generated `OrganizeId`를 얻는다.
+5. 생성자의 `OrganizeMember(OWNER)`를 같은 transaction에서 저장한다.
+6. `OrganizeCreatedEvent`를 after-commit delivery로 등록한다.
+7. 결과 DTO를 반환한다.
 
 #### 2. Organization 조회와 접근 가능 여부
 
@@ -126,11 +134,12 @@
 
 현재 흐름은 다음과 같다.
 
-1. `OrganizeMemberService`가 `organizeId`, `userId`를 만든다.
-2. role이 없으면 `MEMBER`를 사용한다.
-3. 중복 멤버 여부를 검증한다.
-4. `OrganizeMember.create(...)`로 멤버십을 만든다.
-5. 저장하거나 삭제한다.
+1. inbound adapter가 `UserIdentityPort`로 requester를 resolve한다.
+2. organization이 없거나 legacy owner-only 상태면 mutation을 거부한다.
+3. add는 OWNER requester만 MEMBER/MAINTAINER/OWNER를 즉시 추가한다.
+4. remove는 organization row를 `SELECT ... FOR UPDATE`로 잠근다.
+5. requester role과 target을 검증하고, OWNER count가 0이 되지 않을 때만 삭제한다.
+6. missing target은 not-found error로 반환하며 성공으로 처리하지 않는다.
 
 ### 외부 시스템과의 경계
 

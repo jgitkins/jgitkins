@@ -70,6 +70,17 @@ class OrganizePersistenceAdapterTest {
     }
 
     @Test
+    void lockByIdForMembershipMutation_usesForUpdateMapperMethod() {
+        OrganizeEntity entity = new OrganizeEntity();
+        Organize mapped = mock(Organize.class);
+        when(organizeEntityMbgMapper.selectByOrganizeIdForUpdate(10L)).thenReturn(entity);
+        when(organizeDomainMapper.toDomain(entity)).thenReturn(mapped);
+
+        assertThat(adapter.lockByIdForMembershipMutation(OrganizeId.of(10L))).isSameAs(mapped);
+        verify(organizeEntityMbgMapper).selectByOrganizeIdForUpdate(10L);
+    }
+
+    @Test
     void findByName_returnsMappedOrganizeWhenPresent() {
         OrganizeEntity entity = new OrganizeEntity();
         entity.setId(10L);
