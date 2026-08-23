@@ -8,11 +8,14 @@ import io.jgitkins.server.collaboration.application.port.in.OrganizeLoadUseCase;
 import io.jgitkins.core.web.api.response.ApiResponse;
 import io.jgitkins.server.collaboration.adapter.in.rest.dto.request.OrganizeCreationRequest;
 import io.jgitkins.server.collaboration.adapter.in.rest.mapper.OrganizeRequestMapper;
+import io.jgitkins.server.collaboration.adapter.in.support.RequesterUserIdResolver;
+import io.jgitkins.server.collaboration.application.exception.OrganizeAccessDeniedException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import java.util.List;
 
@@ -27,11 +30,16 @@ public class OrganizeController {
     private final OrganizeDeletionUseCase organizeDeletionUseCase;
 
     private final OrganizeRequestMapper organizeRequestMapper;
+    private final RequesterUserIdResolver requesterUserIdResolver;
 
     @Operation(summary = "Create Organize")
     @PostMapping
-    public ResponseEntity<ApiResponse<OrganizeCreationResult>> createOrganize(@RequestBody OrganizeCreationRequest request) {
-        OrganizeCreationCommand command = organizeRequestMapper.toCommand(request);
+    public ResponseEntity<ApiResponse<OrganizeCreationResult>> createOrganize(
+            @RequestBody OrganizeCreationRequest request,
+            @AuthenticationPrincipal(expression = "username") String subject) {
+        Long requesterUserId = requesterUserIdResolver.resolve(subject)
+                .orElseThrow(() -> new OrganizeAccessDeniedException("An authenticated user is required"));
+        OrganizeCreationCommand command = organizeRequestMapper.toCommand(request, requesterUserId);
         OrganizeCreationResult result = organizeCreationUseCase.createOrganize(command);
         return ApiResponse.created(result.id(), result);
     }
@@ -44,8 +52,10 @@ public class OrganizeController {
 
     @Operation(summary = "List Accessible Organizes")
     @GetMapping("/me")
-    public ResponseEntity<ApiResponse<List<OrganizeCreationResult>>> getAccessibleOrganizes() {
-        return ApiResponse.ok(organizeLoadUseCase.getAccessibleOrganizes());
+    public ResponseEntity<ApiResponse<List<OrganizeCreationResult>>> getAccessibleOrganizes(
+            @AuthenticationPrincipal(expression = "username") String subject) {
+        return ApiResponse.ok(organizeLoadUseCase.getAccessibleOrganizes(
+                requesterUserIdResolver.resolve(subject).orElse(null)));
     }
 
     @Operation(summary = "Get Organize")

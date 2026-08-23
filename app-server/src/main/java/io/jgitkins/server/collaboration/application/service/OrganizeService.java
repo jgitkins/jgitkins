@@ -9,7 +9,7 @@ import io.jgitkins.server.collaboration.application.port.in.OrganizeDeletionUseC
 import io.jgitkins.server.collaboration.application.port.in.OrganizeLoadUseCase;
 import io.jgitkins.server.collaboration.application.port.out.DomainEventPublisher;
 import io.jgitkins.server.collaboration.application.port.out.OrganizeMemberPersistencePort;
-import io.jgitkins.server.collaboration.application.port.out.UserIdentityPort;
+
 import io.jgitkins.server.collaboration.application.validate.OrganizeValidator;
 import io.jgitkins.server.collaboration.domain.aggregate.Organize;
 import io.jgitkins.server.collaboration.domain.entity.OrganizeMember;
@@ -33,7 +33,7 @@ public class OrganizeService implements OrganizeCreationUseCase,
 
     private final OrganizeRepository organizeRepository;
     private final OrganizeMemberPersistencePort organizeMemberPersistencePort;
-    private final UserIdentityPort userIdentityPort;
+
     private final DomainEventPublisher domainEventPublisher;
     private final OrganizeValidator organizeValidator;
     private final OrganizeApplicationMapper organizeApplicationMapper;
@@ -43,8 +43,10 @@ public class OrganizeService implements OrganizeCreationUseCase,
     public OrganizeCreationResult createOrganize(OrganizeCreationCommand command) {
         // 1. 입력 정합성 검증 (Domain VO 생성)
         OrganizeName name = OrganizeName.from(command.name());
-        Long ownerId = userIdentityPort.resolveCurrentActiveUserId()
-                .orElseThrow(() -> new OrganizeAccessDeniedException("An authenticated user is required"));
+        Long ownerId = command.requesterUserId();
+        if (ownerId == null) {
+            throw new OrganizeAccessDeniedException("An authenticated user is required");
+        }
 
         // 2. 데이터 정합성 검증
         organizeValidator.validateCreation(name);
@@ -86,13 +88,14 @@ public class OrganizeService implements OrganizeCreationUseCase,
 
     @Override
     @Transactional(readOnly = true)
-    public List<OrganizeCreationResult> getAccessibleOrganizes() {
-        return userIdentityPort.resolveCurrentActiveUserId()
-                .map(id -> organizeRepository.findAll().stream()
-                        .filter(org -> organizeValidator.isAccessible(org, id))
-                        .map(organizeApplicationMapper::toDto)
-                        .toList())
-                .orElse(List.of());
+    public List<OrganizeCreationResult> getAccessibleOrganizes(Long requesterUserId) {
+        if (requesterUserId == null) {
+            return List.of();
+        }
+        return organizeRepository.findAll().stream()
+                .filter(org -> organizeValidator.isAccessible(org, requesterUserId))
+                .map(organizeApplicationMapper::toDto)
+                .toList();
     }
 
     @Override

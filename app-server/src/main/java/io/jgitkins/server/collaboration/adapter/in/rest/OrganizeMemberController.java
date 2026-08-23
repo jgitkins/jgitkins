@@ -5,7 +5,7 @@ import io.jgitkins.server.collaboration.application.dto.result.OrganizeMemberSum
 import io.jgitkins.server.collaboration.application.port.in.OrganizeMemberAddUseCase;
 import io.jgitkins.server.collaboration.application.port.in.OrganizeMemberQueryUseCase;
 import io.jgitkins.server.collaboration.application.port.in.OrganizeMemberRemoveUseCase;
-import io.jgitkins.server.collaboration.application.port.out.UserIdentityPort;
+import io.jgitkins.server.collaboration.adapter.in.support.RequesterUserIdResolver;
 import io.jgitkins.server.shared.application.error.ApplicationErrorCode;
 import io.jgitkins.server.shared.application.exception.ApplicationException;
 import io.jgitkins.core.web.api.response.ApiResponse;
@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 @RestController
 @RequiredArgsConstructor
@@ -33,13 +34,14 @@ public class OrganizeMemberController {
     private final OrganizeMemberQueryUseCase organizeMemberQueryUseCase;
     private final OrganizeMemberRemoveUseCase organizeMemberRemoveUseCase;
     private final OrganizeMemberRequestMapper organizeMemberRequestMapper;
-    private final UserIdentityPort userIdentityPort;
+    private final RequesterUserIdResolver requesterUserIdResolver;
 
     @Operation(summary = "Add organize member")
     @PostMapping
     public ResponseEntity<ApiResponse<Void>> addMember(@PathVariable Long organizeId,
-                                                       @RequestBody OrganizeMemberAddRequest request) {
-        Long requesterUserId = userIdentityPort.resolveCurrentActiveUserId()
+                                                       @RequestBody OrganizeMemberAddRequest request,
+                                                       @AuthenticationPrincipal(expression = "username") String subject) {
+        Long requesterUserId = requesterUserIdResolver.resolve(subject)
                 .orElseThrow(() -> new ApplicationException(ApplicationErrorCode.UNAUTHENTICATED,
                         "Authentication required"));
         OrganizeMemberAddCommand command = organizeMemberRequestMapper.toCommand(organizeId, request, requesterUserId);
@@ -50,8 +52,9 @@ public class OrganizeMemberController {
     @Operation(summary = "Remove organize member")
     @DeleteMapping("/{userId}")
     public ResponseEntity<ApiResponse<Void>> removeMember(@PathVariable Long organizeId,
-                                                          @PathVariable Long userId) {
-        Long requesterUserId = userIdentityPort.resolveCurrentActiveUserId()
+                                                          @PathVariable Long userId,
+                                                          @AuthenticationPrincipal(expression = "username") String subject) {
+        Long requesterUserId = requesterUserIdResolver.resolve(subject)
                 .orElseThrow(() -> new ApplicationException(ApplicationErrorCode.UNAUTHENTICATED,
                         "Authentication required"));
         organizeMemberRemoveUseCase.removeOrganizeMember(organizeId, requesterUserId, userId);

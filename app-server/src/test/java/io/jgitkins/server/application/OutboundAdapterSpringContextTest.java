@@ -13,6 +13,11 @@ import io.jgitkins.server.repository.application.validate.RepositoryAccessValida
 import io.jgitkins.server.repository.adapter.out.acl.OrganizationMembershipAclAdapter;
 import io.jgitkins.server.execution.adapter.out.acl.RepositoryCloneUrlAclAdapter;
 import io.jgitkins.server.identity.access.adapter.out.security.PatTokenAuthenticationService;
+import io.jgitkins.server.identity.access.adapter.in.security.JwtAuthenticationFilter;
+import io.jgitkins.server.identity.access.adapter.out.security.JwtTokenIssuerAdapter;
+import io.jgitkins.server.identity.access.adapter.out.security.JwtTokenVerifierAdapter;
+import io.jgitkins.server.identity.access.application.service.JwtAuthService;
+import io.jgitkins.server.identity.access.infrastructure.config.security.JwtProperties;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.nio.file.Files;
@@ -93,6 +98,13 @@ public class OutboundAdapterSpringContextTest {
         assertThat(applicationContext.getBean(OrganizationMembershipAclAdapter.class)).isNotNull();
 
         assertThat(applicationContext.getBean(RepositoryCloneUrlAclAdapter.class)).isNotNull();
+        assertThat(applicationContext.getBeansOfType(JwtAuthenticationFilter.class)).hasSize(1);
+        assertThat(applicationContext.getBeansOfType(JwtAuthService.class)).hasSize(1);
+        assertThat(applicationContext.getBeansOfType(JwtTokenIssuerAdapter.class)).hasSize(1);
+        assertThat(applicationContext.getBeansOfType(JwtTokenVerifierAdapter.class)).hasSize(1);
+        assertThat(applicationContext.getBeansOfType(JwtProperties.class)).hasSize(1);
+        assertThat(environment.getProperty("jgitkins.security.jwt.secret")).isEqualTo("test-jwt-secret-test-jwt-secret");
+        assertThat(environment.getProperty("jgitkins.security.jwt.ttl-seconds", Long.class)).isEqualTo(900L);
     }
 
     private static int freePort() {

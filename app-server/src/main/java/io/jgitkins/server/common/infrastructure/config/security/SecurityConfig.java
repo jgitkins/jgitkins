@@ -2,13 +2,13 @@ package io.jgitkins.server.common.infrastructure.config.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jgitkins.core.security.handler.SecurityErrorResponseWriter;
-import io.jgitkins.server.common.infrastructure.adapter.security.JwtService;
 import io.jgitkins.server.common.infrastructure.config.filter.GitSmartHttpAuthFilter;
-import io.jgitkins.server.common.infrastructure.config.filter.JwtAuthenticationFilter;
 import io.jgitkins.server.common.infrastructure.config.security.handler.ApiAccessDeniedHandler;
 import io.jgitkins.server.common.infrastructure.config.security.handler.ApiAnauthorizeHandler;
 import io.jgitkins.server.common.infrastructure.config.security.handler.OAuth2LoginSuccessHandler;
 import io.jgitkins.server.identity.access.application.port.in.OAuthLoginUseCase;
+import io.jgitkins.server.identity.access.adapter.in.security.JwtAuthenticationFilter;
+import io.jgitkins.server.identity.access.application.service.JwtAuthService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -68,9 +68,9 @@ public class SecurityConfig {
     }
 
     @Bean
-    JwtAuthenticationFilter jwtAuthenticationFilter(JwtService jwtService,
+    JwtAuthenticationFilter jwtAuthenticationFilter(JwtAuthService jwtAuthService,
                                                     ApiAnauthorizeHandler apiAnauthorizeHandler) {
-        return new JwtAuthenticationFilter(jwtService, apiAnauthorizeHandler);
+        return new JwtAuthenticationFilter(jwtAuthService, apiAnauthorizeHandler);
     }
 
     @Bean

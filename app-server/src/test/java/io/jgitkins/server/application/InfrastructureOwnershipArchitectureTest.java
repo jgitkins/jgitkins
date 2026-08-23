@@ -19,7 +19,20 @@ public class InfrastructureOwnershipArchitectureTest {
             ? Path.of("app-server") : Path.of(".");
     private static final Path JAVA_ROOT = PROJECT_ROOT.resolve("src/main/java");
     private static final Path SERVER_ROOT = JAVA_ROOT.resolve("io/jgitkins/server");
+    private static final Path TEST_JAVA_ROOT = PROJECT_ROOT.resolve("src/test/java");
+    private static final Path TEST_SERVER_ROOT = TEST_JAVA_ROOT.resolve("io/jgitkins/server");
     private static final Path RESOURCE_ROOT = PROJECT_ROOT.resolve("src/main/resources");
+
+    // Every bounded context owns its inbound/outbound adapter tree. The only
+    // retained common adapter is the documented push-event bridge below.
+    private static final Set<String> OWNED_ADAPTER_ROOTS = Set.of(
+            "change/review/adapter/in", "change/review/adapter/out",
+            "collaboration/adapter/in", "collaboration/adapter/out",
+            "execution/adapter/in", "execution/adapter/out",
+            "identity/access/adapter/in", "identity/access/adapter/out",
+            "repository/adapter/in", "repository/adapter/out");
+    private static final Set<String> DOCUMENTED_COMMON_ADAPTERS = Set.of(
+            "common/infrastructure/adapter/PushEventRequestAdapter.java");
 
     private static final Set<String> EXPECTED_MODELS = Set.of(
             "io/jgitkins/server/change/review/infrastructure/persistence/model/PullRequestEntity.java",
@@ -104,13 +117,17 @@ public class InfrastructureOwnershipArchitectureTest {
                     "io.jgitkins.server.identity.access.application.dto.result.OAuthLoginResult",
                     "io.jgitkins.server.identity.access.application.port.in.OAuthLoginUseCase"),
             "common/infrastructure/config/security/SecurityConfig.java", Set.of(
-                    "io.jgitkins.server.identity.access.application.port.in.OAuthLoginUseCase"),
+                    "io.jgitkins.server.identity.access.application.port.in.OAuthLoginUseCase",
+                    "io.jgitkins.server.identity.access.adapter.in.security.JwtAuthenticationFilter",
+                    "io.jgitkins.server.identity.access.application.service.JwtAuthService"),
             "common/infrastructure/config/filter/GitSmartHttpAuthFilter.java", Set.of(
                     "io.jgitkins.server.repository.application.port.in.GitRepositoryAccessUseCase"),
             "common/infrastructure/config/git/GitSmartHttpAuthorizer.java", Set.of(
                     "io.jgitkins.server.repository.application.port.in.GitRepositoryAccessUseCase"),
             "common/infrastructure/config/git/hook/push/PushHook.java", Set.of(
-                    "io.jgitkins.server.execution.application.port.in.PushEventHandleUseCase")
+                    "io.jgitkins.server.execution.application.port.in.PushEventHandleUseCase"),
+            "common/presentation/advice/GlobalExceptionHandlerTest.java", Set.of(
+                    "io.jgitkins.server.repository.application.exception.RepositoryNotFoundException")
     );
 
     @Test
@@ -125,24 +142,27 @@ public class InfrastructureOwnershipArchitectureTest {
     @Test
     void commonForeignContextImportsAreExactlyAllowlisted() throws IOException {
         Set<String> violations = new HashSet<>();
-        Path commonRoot = SERVER_ROOT.resolve("common");
-        try (Stream<Path> paths = Files.walk(commonRoot)) {
-            paths.filter(path -> Files.isRegularFile(path) && path.toString().endsWith(".java"))
-                    .forEach(path -> {
-                        try {
-                            String relativePath = SERVER_ROOT.relativize(path).toString().replace('\\', '/');
-                            Set<String> allowedImports = ALLOWED_COMMON_IMPORTS.getOrDefault(relativePath, Set.of());
-                            Files.readAllLines(path).stream()
-                                    .map(String::trim)
-                                    .filter(line -> line.startsWith("import io.jgitkins.server."))
-                                    .filter(line -> isForeignContextImport(line))
-                                    .map(line -> line.substring("import ".length(), line.length() - 1))
-                                    .filter(importName -> !allowedImports.contains(importName))
-                                    .forEach(importName -> violations.add(relativePath + " -> " + importName));
-                        } catch (IOException e) {
-                            throw new IllegalStateException(e);
-                        }
-                    });
+        for (Path sourceRoot : List.of(SERVER_ROOT, TEST_SERVER_ROOT)) {
+            Path commonRoot = sourceRoot.resolve("common");
+            if (!Files.exists(commonRoot)) continue;
+            try (Stream<Path> paths = Files.walk(commonRoot)) {
+                paths.filter(path -> Files.isRegularFile(path) && path.toString().endsWith(".java"))
+                        .forEach(path -> {
+                            try {
+                                String relativePath = sourceRoot.relativize(path).toString().replace('\\', '/');
+                                Set<String> allowedImports = ALLOWED_COMMON_IMPORTS.getOrDefault(relativePath, Set.of());
+                                Files.readAllLines(path).stream()
+                                        .map(String::trim)
+                                        .filter(line -> line.startsWith("import io.jgitkins.server."))
+                                        .filter(line -> isForeignContextImport(line))
+                                        .map(line -> line.substring("import ".length(), line.length() - 1))
+                                        .filter(importName -> !allowedImports.contains(importName))
+                                        .forEach(importName -> violations.add(relativePath + " -> " + importName));
+                            } catch (IOException e) {
+                                throw new IllegalStateException(e);
+                            }
+                        });
+            }
         }
         assertTrue(violations.isEmpty(), () -> "Unallowlisted common foreign imports: " + violations);
     }
@@ -181,19 +201,24 @@ public class InfrastructureOwnershipArchitectureTest {
         assertTrue(!isAllowedInfrastructureAdapterPath("repository/infrastructure/adapter/UnexpectedAdapter.java"));
         assertTrue(!isAllowedInfrastructureAdapterPath("repository/application/adapter/UnexpectedAdapter.java"));
         assertTrue(!isAllowedInfrastructureAdapterPath("repository/infrastructure/foo/UnexpectedAdapter.java"));
-        assertTrue(isAllowedInfrastructureAdapterPath("repository/adapter/out/acl/RepositoryActorAclAdapter.java"));
+        assertTrue(!isAllowedInfrastructureAdapterPath("repository/adapter/outside/UnexpectedAdapter.java"));
+        assertTrue(!isAllowedInfrastructureAdapterPath("/repository/adapter/out/UnexpectedAdapter.java.bak"));
+        assertTrue(isAllowedInfrastructureAdapterPath("./repository/adapter/out/acl/RepositoryActorAclAdapter.java"));
         assertTrue(isAllowedInfrastructureAdapterPath("common/infrastructure/adapter/PushEventRequestAdapter.java"));
-        assertTrue(isAllowedInfrastructureAdapterPath("common/infrastructure/adapter/security/JwtService.java"));
+        assertTrue(!isAllowedInfrastructureAdapterPath("common/infrastructure/adapter/security/JwtService.java"));
     }
 
     @Test
-    void handwrittenAdaptersRemainOnlyInOwnedAdapterRoots() throws IOException {
+    void handwrittenAdaptersRemainOnlyInOwnedAdapterRootsAcrossMainAndTestSources() throws IOException {
         Set<String> violations = new HashSet<>();
-        try (Stream<Path> paths = Files.walk(SERVER_ROOT)) {
-            paths.filter(path -> Files.isRegularFile(path) && path.getFileName().toString().endsWith("Adapter.java"))
-                    .map(path -> path.toString().replace(SERVER_ROOT + "/", ""))
-                    .filter(path -> !isAllowedInfrastructureAdapterPath(path))
-                    .forEach(violations::add);
+        for (Path sourceRoot : List.of(SERVER_ROOT, TEST_SERVER_ROOT)) {
+            if (!Files.exists(sourceRoot)) continue;
+            try (Stream<Path> paths = Files.walk(sourceRoot)) {
+                paths.filter(path -> Files.isRegularFile(path) && path.getFileName().toString().endsWith("Adapter.java"))
+                        .map(path -> sourceRoot.relativize(path).toString().replace('\\', '/'))
+                        .filter(path -> !isAllowedInfrastructureAdapterPath(path))
+                        .forEach(violations::add);
+            }
         }
         assertTrue(violations.isEmpty(), () -> "Handwritten adapters outside owned adapter roots: " + violations);
     }
@@ -214,9 +239,14 @@ public class InfrastructureOwnershipArchitectureTest {
     }
 
     private boolean isAllowedInfrastructureAdapterPath(String path) {
-        return path.contains("/adapter/in/") || path.contains("/adapter/out/")
-                || path.equals("common/infrastructure/adapter/PushEventRequestAdapter.java")
-                || path.equals("common/infrastructure/adapter/security/JwtService.java");
+        String normalized = path.replace('\\', '/');
+        while (normalized.startsWith("./")) normalized = normalized.substring(2);
+        while (normalized.startsWith("/")) normalized = normalized.substring(1);
+        if (!normalized.endsWith(".java")) return false;
+        final String normalizedPath = normalized;
+        if (DOCUMENTED_COMMON_ADAPTERS.contains(normalizedPath)) return true;
+        return OWNED_ADAPTER_ROOTS.stream()
+                .anyMatch(root -> normalizedPath.startsWith(root + "/"));
     }
 
     private Set<String> pathsUnder(String serverPrefix, String suffix, String extension) throws IOException {

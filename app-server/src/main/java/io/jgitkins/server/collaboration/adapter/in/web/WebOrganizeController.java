@@ -2,6 +2,7 @@ package io.jgitkins.server.collaboration.adapter.in.web;
 
 import io.jgitkins.server.collaboration.application.dto.result.OrganizeCreationResult;
 import io.jgitkins.server.collaboration.application.port.in.OrganizeLoadUseCase;
+import io.jgitkins.server.collaboration.adapter.in.support.RequesterUserIdResolver;
 import io.jgitkins.core.web.api.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 @RestController
 @RequiredArgsConstructor
@@ -19,10 +21,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class WebOrganizeController {
 
 	private final OrganizeLoadUseCase organizeLoadUseCase;
+	private final RequesterUserIdResolver requesterUserIdResolver;
 
 	@Operation(summary = "List Accessible Organizes (Web)")
 	@GetMapping
-	public ResponseEntity<ApiResponse<List<OrganizeCreationResult>>> getAccessibleOrganizes() {
-		return ApiResponse.ok(organizeLoadUseCase.getAccessibleOrganizes());
+	public ResponseEntity<ApiResponse<List<OrganizeCreationResult>>> getAccessibleOrganizes(
+			@AuthenticationPrincipal(expression = "username") String subject) {
+		return ApiResponse.ok(organizeLoadUseCase.getAccessibleOrganizes(
+				requesterUserIdResolver.resolve(subject).orElse(null)));
 	}
 }

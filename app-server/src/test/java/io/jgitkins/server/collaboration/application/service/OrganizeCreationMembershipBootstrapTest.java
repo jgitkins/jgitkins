@@ -10,7 +10,6 @@ import io.jgitkins.server.collaboration.application.dto.result.OrganizeCreationR
 import io.jgitkins.server.collaboration.application.mapper.OrganizeApplicationMapper;
 import io.jgitkins.server.collaboration.application.port.out.DomainEventPublisher;
 import io.jgitkins.server.collaboration.application.port.out.OrganizeMemberPersistencePort;
-import io.jgitkins.server.collaboration.application.port.out.UserIdentityPort;
 import io.jgitkins.server.collaboration.application.validate.OrganizeValidator;
 import io.jgitkins.server.collaboration.domain.entity.OrganizeMember;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeId;
@@ -61,15 +60,13 @@ class OrganizeCreationMembershipBootstrapTest {
         memberRepository = new OrganizeMemberPersistenceAdapter(
                 new SqlSessionTemplate(factory).getMapper(OrganizeMemberEntityMbgMapper.class),
                 org.mapstruct.factory.Mappers.getMapper(OrganizeMemberDomainMapper.class));
-        UserIdentityPort userIdentityPort = Mockito.mock(UserIdentityPort.class);
         DomainEventPublisher domainEventPublisher = Mockito.mock(DomainEventPublisher.class);
         OrganizeValidator organizeValidator = Mockito.mock(OrganizeValidator.class);
         OrganizeApplicationMapper organizeApplicationMapper = Mockito.mock(OrganizeApplicationMapper.class);
-        Mockito.when(userIdentityPort.resolveCurrentActiveUserId()).thenReturn(java.util.Optional.of(7L));
         Mockito.when(organizeApplicationMapper.toDto(Mockito.any())).thenReturn(
                 new OrganizeCreationResult(1L, "team", null, 7L, null, null));
         organizeService = new OrganizeService(
-                organizeRepository, memberRepository, userIdentityPort, domainEventPublisher,
+                organizeRepository, memberRepository, domainEventPublisher,
                 organizeValidator, organizeApplicationMapper);
         transactionTemplate = new TransactionTemplate(new DataSourceTransactionManager(dataSource));
     }
@@ -82,7 +79,7 @@ class OrganizeCreationMembershipBootstrapTest {
     @Test
     void organizationAndCreatorOwnerMembershipCommitTogether() {
         transactionTemplate.executeWithoutResult(status -> {
-            organizeService.createOrganize(new OrganizeCreationCommand("team", "description"));
+            organizeService.createOrganize(new OrganizeCreationCommand("team", "description", 7L));
         });
 
         assertThat(jdbcTemplate.queryForObject("select count(*) from ORGANIZE", Integer.class)).isEqualTo(1);
@@ -93,7 +90,7 @@ class OrganizeCreationMembershipBootstrapTest {
     @Test
     void membershipFailureRollsBackOrganizationWrite() {
         assertThatThrownBy(() -> transactionTemplate.executeWithoutResult(status -> {
-            organizeService.createOrganize(new OrganizeCreationCommand("rollback", "description"));
+            organizeService.createOrganize(new OrganizeCreationCommand("rollback", "description", 7L));
             throw new IllegalStateException("required membership write failed");
         })).isInstanceOf(IllegalStateException.class);
 
@@ -103,20 +100,18 @@ class OrganizeCreationMembershipBootstrapTest {
 
     @Test
     void memberPersistenceFailureRollsBackOrganizationWrite() {
-        UserIdentityPort userIdentityPort = Mockito.mock(UserIdentityPort.class);
         DomainEventPublisher domainEventPublisher = Mockito.mock(DomainEventPublisher.class);
         OrganizeValidator organizeValidator = Mockito.mock(OrganizeValidator.class);
         OrganizeApplicationMapper organizeApplicationMapper = Mockito.mock(OrganizeApplicationMapper.class);
         OrganizeMemberPersistencePort failingMemberPersistence = Mockito.mock(OrganizeMemberPersistencePort.class);
         Mockito.doThrow(new IllegalStateException("membership insert failed"))
                 .when(failingMemberPersistence).save(Mockito.any());
-        Mockito.when(userIdentityPort.resolveCurrentActiveUserId()).thenReturn(java.util.Optional.of(7L));
         OrganizeService failingService = new OrganizeService(
-                organizeRepository, failingMemberPersistence, userIdentityPort, domainEventPublisher,
+                organizeRepository, failingMemberPersistence, domainEventPublisher,
                 organizeValidator, organizeApplicationMapper);
 
         assertThatThrownBy(() -> transactionTemplate.executeWithoutResult(status ->
-                failingService.createOrganize(new OrganizeCreationCommand("member-failure", "description"))))
+                failingService.createOrganize(new OrganizeCreationCommand("member-failure", "description", 7L))))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("membership insert failed");
 

@@ -1,4 +1,4 @@
-package io.jgitkins.server.common.infrastructure.config.security;
+package io.jgitkins.server.identity.access.infrastructure.config.security;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 @Component
 @ConfigurationProperties(prefix = "jgitkins.security.jwt")
 public class JwtProperties {
-
     private String secret;
     private long ttlSeconds;
 }
