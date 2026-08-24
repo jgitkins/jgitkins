@@ -428,6 +428,47 @@
             "updatedAt": "2026-08-22T18:55:00Z"
           },
           {
+            "id": "60",
+            "title": "[context-all][identity][refactor][app-server] current user resolution inbound filter migration",
+            "description": "애플리케이션이 CurrentUserPort를 직접 호출해 요청자를 해석하는 구조를 inbound security/filter 계층으로 이관하고, application use-case에는 명시적인 numeric requester ID를 전달한다.",
+            "details": "Office Hours decision: collaboration inbound adapters explicitly supply requester identity. Add one Spring bean `collaboration.adapter.in.support.RequesterUserIdResolver` with `Optional<Long> resolve(String subject)`; null, blank, and nonnumeric subjects resolve empty and conversion occurs exactly once. Inject it into OrganizeController, OrganizeMemberController, and WebOrganizeController. Define `OrganizeRequestMapper.toCommand(OrganizeCreationRequest request, Long requesterUserId)` with `@Mapping(target = \"requesterUserId\", source = \"requesterUserId\")`; remove the old overload. Preserve endpoint contracts: create empty requester -> OrganizeAccessDeniedException, HTTP 403, ORG-403, `An authenticated user is required`, source application; `/api/organizes/me` and `/api/internal/organizes` -> null requester, HTTP 200 empty list; member add/remove -> current raw UNAUTHENTICATED, HTTP 401, source application. Scope is collaboration vertical slice only; all other CurrentUserPort callers receive inventory retain/defer dispositions. Artifact: docs/architecture/current-user-caller-disposition.md. Exclude JWT relocation (2.61), owner migration (2.59), schema/wire changes, and global current-user context. Verify these exact selectors: io.jgitkins.server.collaboration.application.service.OrganizeServiceTest, io.jgitkins.server.collaboration.application.service.OrganizeCreationMembershipBootstrapTest, io.jgitkins.server.collaboration.application.service.OrganizeMemberServiceTest, io.jgitkins.server.collaboration.adapter.in.rest.OrganizeControllerTest, io.jgitkins.server.collaboration.adapter.in.rest.OrganizeMemberControllerTest, io.jgitkins.server.collaboration.adapter.in.web.WebOrganizeControllerTest, io.jgitkins.server.collaboration.infrastructure.config.CollaborationApplicationConfigurationTest, io.jgitkins.server.application.CollaborationInboundAdapterWiringTest, io.jgitkins.server.application.CollaborationInboundOpenApiContractTest, and io.jgitkins.server.application.ArchitecturePackageConventionTest. Each selector requires isolated XML with tests>0 and failures=0/errors=0, followed by compile, full regression, source gates, and diff-check. Prerequisite: 2.51, 2.57.",
+            "status": "done",
+            "dependencies": [
+              "2.51",
+              "2.57"
+            ],
+            "parentTaskId": 2,
+            "parentId": "undefined",
+            "priority": "high"
+          },
+          {
+            "id": "61",
+            "title": "[context-identity][refactor][app-server] common authentication ownership migration",
+            "description": "common에 위치한 JWT/filter/authentication 책임을 identity bounded context로 이동하고 JwtAuthService의 기술 의존을 application port와 adapter로 분리한다.",
+            "details": "Office Hours decision: identity owns `JwtAuthenticationFilter` and `JwtAuthService`. Exact boundary: identity.access.adapter.in.security.JwtAuthenticationFilter -> identity.access.application.service.JwtAuthService.authenticate(String) -> identity.access.application.port.out.JwtTokenVerifierPort.verify(String) -> identity.access.adapter.out.security.JwtTokenVerifierAdapter. JwtAuthService returns Optional<JwtAuthenticationResult>; null/nonnumeric subject, absent/blank/malformed/expired/signature-invalid/invalid-key tokens fail closed, absent roles -> immutable List.of(), present roles must be a non-null list of non-null strings or fail closed. Preserve issueToken claims, timestamps, TTL, exceptions, `jgitkins.security.jwt` prefix, String secret, and long ttlSeconds. SecurityConfig is the sole filter bean owner; exact permitted identity imports are OAuthLoginUseCase, JwtAuthenticationFilter, and JwtAuthService only. IdentityAuthenticationConfiguration registers exactly one JwtAuthService bean from JwtTokenVerifierPort. InfrastructureOwnershipArchitectureTest scans both app-server/src/main/java and src/test/java, removes common JwtService allowlist, and enforces positive/negative assertions. Literal focused selector ledger: JwtTokenCodecTest, JwtAuthServiceTest, JwtAuthenticationFilterTest, OAuthLoginServiceTest, JwtTokenIssuerAdapterTest, OutboundAdapterSpringContextTest, InfrastructureOwnershipArchitectureTest; each has XML tests>0/failures=0/errors=0. No DB/schema migration; rollback restores exact baseline component/SecurityConfig registration. Exclude claim/expiry/algorithm/secret wire changes, login behavior, active-account redesign, and unrelated common security primitives. Prerequisite: 2.60.",
+            "status": "done",
+            "dependencies": [
+              "2.60"
+            ],
+            "parentTaskId": 2,
+            "parentId": "undefined",
+            "priority": "high"
+          },
+          {
+            "id": "62",
+            "title": "[context-collaboration][refactor][app-server] OrganizeValidator rule ownership verification",
+            "description": "OrganizeValidator의 세 규칙에 대한 application/domain ownership matrix를 확정하고, 현재 domain 이동이 정당화되지 않으면 명시적인 no-move closure로 종료한다.",
+            "details": "Office Hours decision: the three live OrganizeValidator rules remain application-owned unless a concrete pure invariant is evidenced. validateCreation uses OrganizeRepository.findByName -> OrganizeAlreadyExistsException; findByIdOrThrow uses OrganizeRepository.findById -> OrganizeNotFoundException; isAccessible uses retained ownerId and OrganizeMembershipQueryPort. Produce docs/bounded-context/collaboration/organize-validator-rule-ownership.md with exact caller/dependency/exception/owner matrix and explicit no-move closure. Task 2.56 is the baseline; extending its CollaborationDomainPurityTest and fixture/assertion mechanism is allowed, but do not recreate the gate. The gate parses import lines from every collaboration domain production source, rejects application/adapter/infrastructure prefixes, security imports matching `io\\.jgitkins\\.server\\..*\\.security\\.`, JWT, servlet, Spring, MyBatis, JPA, and JGit imports, compiles the regex with Pattern.compile and asserts it matches `import io.jgitkins.server.identity.access.adapter.in.security.JwtAuthenticationFilter;`, and includes one synthetic negative rejection per category. Preserve Task 2.41 behavior and exclude Task 2.59 owner migration, schema/API changes, generic validator decomposition, and unjustified wiring changes. Run each exact selector sequentially with isolated test-results and immediate XML tests>0/failures=0/errors=0: OrganizeValidatorTest, OrganizeValidatorRuleContractTest, OrganizeServiceTest, OrganizeCreationMembershipBootstrapTest, CollaborationApplicationConfigurationTest, CollaborationInboundAdapterWiringTest, OrganizeMemberValidatorTest, ArchitecturePackageConventionTest, OrganizeMemberServiceTest. Then compile, full regression, and diff-check. Prerequisite: 2.41, 2.56.",
+            "status": "done",
+            "dependencies": [
+              "2.41",
+              "2.56"
+            ],
+            "parentTaskId": 2,
+            "parentId": "undefined",
+            "priority": "high"
+          },
+          {
             "id": "59",
             "title": "[context-collaboration][bounded-context owner model][refactor][app-server] strict GitLab owner membership migration",
             "description": "GitLab식 strict owner 모델로 전환한다. OrganizeMember OWNER role을 단일 source of truth로 만들고 Organize.ownerId와 관련 참조를 제거 또는 migration한다.",
