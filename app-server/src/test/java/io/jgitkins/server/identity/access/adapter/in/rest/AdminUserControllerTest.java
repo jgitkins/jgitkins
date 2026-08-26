@@ -13,6 +13,7 @@ import io.jgitkins.server.identity.access.application.dto.result.UserAdminSummar
 import io.jgitkins.server.identity.access.application.dto.result.UserIdentitySummary;
 import io.jgitkins.server.identity.access.application.port.in.AdminUserQueryUseCase;
 import io.jgitkins.server.identity.access.application.port.in.AdminUserUpdateUseCase;
+import io.jgitkins.server.common.presentation.advice.mapper.CompositeErrorHttpStatusMapper;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -35,6 +36,14 @@ class AdminUserControllerTest {
 
     @MockBean
     private AdminUserQueryUseCase adminUserQueryUseCase;
+
+    /**
+     * GlobalExceptionHandler is a @RestControllerAdvice, so the slice includes it, but its
+     * CompositeErrorHttpStatusMapper dependency is not a web component and is excluded. Mocked
+     * here so the slice can build the advice without pulling the whole error-mapping graph in.
+     */
+    @MockBean
+    private CompositeErrorHttpStatusMapper compositeErrorHttpStatusMapper;
 
     @MockBean
     private AdminUserUpdateUseCase adminUserUpdateUseCase;

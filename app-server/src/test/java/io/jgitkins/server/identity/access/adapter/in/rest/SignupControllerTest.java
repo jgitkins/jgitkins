@@ -7,6 +7,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jgitkins.server.identity.access.application.port.in.SignupUseCase;
+import io.jgitkins.server.common.presentation.advice.mapper.CompositeErrorHttpStatusMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -27,6 +28,14 @@ class SignupControllerTest {
 
     @MockBean
     private SignupUseCase signupUseCase;
+
+    /**
+     * GlobalExceptionHandler is a @RestControllerAdvice, so the slice includes it, but its
+     * CompositeErrorHttpStatusMapper dependency is not a web component and is excluded. Mocked
+     * here so the slice can build the advice without pulling the whole error-mapping graph in.
+     */
+    @MockBean
+    private CompositeErrorHttpStatusMapper compositeErrorHttpStatusMapper;
 
     @Test
     void activate_callsUseCaseAndReturnsOk() throws Exception {

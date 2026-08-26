@@ -13,6 +13,7 @@ import io.jgitkins.server.repository.application.contract.result.RepositoryMembe
 import io.jgitkins.server.repository.application.port.in.RepositoryMemberLoadUseCase;
 import io.jgitkins.server.repository.application.port.in.RepositoryMemberManagementUseCase;
 import io.jgitkins.server.repository.domain.vo.RepositoryMemberRole;
+import io.jgitkins.server.common.presentation.advice.mapper.CompositeErrorHttpStatusMapper;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -35,6 +36,14 @@ class RepositoryMemberControllerTest {
 
     @MockBean
     private RepositoryMemberManagementUseCase repositoryMemberManagementUseCase;
+
+    /**
+     * GlobalExceptionHandler is a @RestControllerAdvice, so the slice includes it, but its
+     * CompositeErrorHttpStatusMapper dependency is not a web component and is excluded. Mocked
+     * here so the slice can build the advice without pulling the whole error-mapping graph in.
+     */
+    @MockBean
+    private CompositeErrorHttpStatusMapper compositeErrorHttpStatusMapper;
 
     @MockBean
     private RepositoryMemberLoadUseCase repositoryMemberLoadUseCase;

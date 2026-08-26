@@ -24,6 +24,7 @@ import io.jgitkins.server.collaboration.adapter.in.rest.dto.request.OrganizeCrea
 import io.jgitkins.server.collaboration.adapter.in.rest.mapper.OrganizeRequestMapper;
 import io.jgitkins.server.collaboration.adapter.in.support.RequesterUserIdResolver;
 import io.jgitkins.server.common.presentation.advice.GlobalExceptionHandler;
+import io.jgitkins.server.support.PermissiveSliceSecurityConfig;
 import io.jgitkins.server.common.presentation.advice.mapper.CompositeErrorHttpStatusMapper;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -40,7 +41,7 @@ import org.springframework.test.web.servlet.MockMvc;
 @WebMvcTest(OrganizeController.class)
 @AutoConfigureMockMvc
 @WithMockUser(username = "7")
-@Import(GlobalExceptionHandler.class)
+@Import({GlobalExceptionHandler.class, PermissiveSliceSecurityConfig.class})
 class OrganizeControllerTest {
 
     @BeforeEach

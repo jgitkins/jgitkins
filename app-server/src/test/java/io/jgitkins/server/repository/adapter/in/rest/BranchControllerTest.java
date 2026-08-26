@@ -17,6 +17,7 @@ import io.jgitkins.server.repository.application.port.in.BranchLoadUseCase;
 import io.jgitkins.server.repository.application.port.in.BranchManagementUseCase;
 import io.jgitkins.server.repository.adapter.in.rest.dto.request.BranchCreateRequest;
 import io.jgitkins.server.repository.adapter.in.rest.mapper.BranchRequestMapper;
+import io.jgitkins.server.common.presentation.advice.mapper.CompositeErrorHttpStatusMapper;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,14 @@ class BranchControllerTest {
 
     @MockBean
     private BranchLoadUseCase branchLoadUseCase;
+
+    /**
+     * GlobalExceptionHandler is a @RestControllerAdvice, so the slice includes it, but its
+     * CompositeErrorHttpStatusMapper dependency is not a web component and is excluded. Mocked
+     * here so the slice can build the advice without pulling the whole error-mapping graph in.
+     */
+    @MockBean
+    private CompositeErrorHttpStatusMapper compositeErrorHttpStatusMapper;
 
     @MockBean
     private BranchManagementUseCase branchManagementUseCase;
