@@ -47,29 +47,42 @@ public class OrganizePersistenceSelectorConfiguration {
     static final String PROPERTY_NAME = PersistenceImplementationSelector.propertyName(MODULE_SLUG, CAPABILITY_SLUG);
 
     /**
-     * The resolved selection, exposed as a bean so a cutover and a rollback are distinguishable by
-     * inspection rather than assumed from the deployment that was intended.
+     * The resolved selection for this capability slice, and only this one.
+     *
+     * <p>Wrapped in a capability-specific type rather than exposed as a bare
+     * {@link PersistenceImplementation}. Every slice in the 2.70-2.77 chain will expose its own
+     * resolved selection, and a bare enum bean would give the context N beans of one type. Injection
+     * would then resolve only by parameter-name matching, which silently depends on compiling with
+     * {@code -parameters} and breaks the moment anyone injects the type without matching the bean
+     * name. A distinct record per slice makes each selection unambiguous by construction.
+     *
+     * <p>Exposed as a bean at all so a cutover and a rollback are distinguishable by inspection
+     * rather than assumed from the deployment that was intended.
      */
+    public record OrganizePersistenceSelection(PersistenceImplementation implementation) {
+    }
+
     @Bean
-    PersistenceImplementation organizePersistenceImplementation(Environment environment) {
-        return PersistenceImplementationSelector.resolve(PROPERTY_NAME, environment.getProperty(PROPERTY_NAME));
+    OrganizePersistenceSelection organizePersistenceSelection(Environment environment) {
+        return new OrganizePersistenceSelection(
+                PersistenceImplementationSelector.resolve(PROPERTY_NAME, environment.getProperty(PROPERTY_NAME)));
     }
 
     @Bean
     OrganizePersistenceAdapter organizePersistenceAdapter(
-            PersistenceImplementation organizePersistenceImplementation,
+            OrganizePersistenceSelection organizePersistenceSelection,
             OrganizeEntityMbgMapper organizeEntityMbgMapper,
             OrganizeDomainMapper organizeDomainMapper) {
-        requireWiredImplementation(organizePersistenceImplementation);
+        requireWiredImplementation(organizePersistenceSelection.implementation());
         return new OrganizePersistenceAdapter(organizeEntityMbgMapper, organizeDomainMapper);
     }
 
     @Bean
     OrganizeMemberPersistenceAdapter organizeMemberPersistenceAdapter(
-            PersistenceImplementation organizePersistenceImplementation,
+            OrganizePersistenceSelection organizePersistenceSelection,
             OrganizeMemberEntityMbgMapper organizeMemberEntityMbgMapper,
             OrganizeMemberDomainMapper organizeMemberDomainMapper) {
-        requireWiredImplementation(organizePersistenceImplementation);
+        requireWiredImplementation(organizePersistenceSelection.implementation());
         return new OrganizeMemberPersistenceAdapter(organizeMemberEntityMbgMapper, organizeMemberDomainMapper);
     }
 

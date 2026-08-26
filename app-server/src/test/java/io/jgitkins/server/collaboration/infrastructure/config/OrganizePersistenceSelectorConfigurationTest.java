@@ -13,6 +13,7 @@ import io.jgitkins.server.collaboration.infrastructure.mapper.OrganizeDomainMapp
 import io.jgitkins.server.collaboration.infrastructure.mapper.OrganizeMemberDomainMapper;
 import io.jgitkins.server.collaboration.infrastructure.persistence.mapper.OrganizeEntityMbgMapper;
 import io.jgitkins.server.collaboration.infrastructure.persistence.mapper.OrganizeMemberEntityMbgMapper;
+import io.jgitkins.server.collaboration.infrastructure.config.OrganizePersistenceSelectorConfiguration.OrganizePersistenceSelection;
 import io.jgitkins.server.common.infrastructure.config.PersistenceImplementation;
 import io.jgitkins.server.common.infrastructure.exception.InvalidPersistenceSelectorException;
 import org.junit.jupiter.api.Test;
@@ -39,7 +40,7 @@ class OrganizePersistenceSelectorConfigurationTest {
     void absentPropertyBindsMybatisAdapterPair() {
         runner.run(context -> {
             assertThat(context).hasNotFailed();
-            assertThat(context.getBean(PersistenceImplementation.class))
+            assertThat(context.getBean(OrganizePersistenceSelection.class).implementation())
                     .isEqualTo(PersistenceImplementation.MYBATIS);
             assertThat(context).hasSingleBean(OrganizePersistenceAdapter.class);
             assertThat(context).hasSingleBean(OrganizeMemberPersistenceAdapter.class);
@@ -50,7 +51,7 @@ class OrganizePersistenceSelectorConfigurationTest {
     void explicitMybatisValueBindsTheSamePair() {
         runner.withPropertyValues(PROPERTY + "=mybatis").run(context -> {
             assertThat(context).hasNotFailed();
-            assertThat(context.getBean(PersistenceImplementation.class))
+            assertThat(context.getBean(OrganizePersistenceSelection.class).implementation())
                     .isEqualTo(PersistenceImplementation.MYBATIS);
         });
     }
