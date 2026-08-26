@@ -12,12 +12,10 @@ import io.jgitkins.server.collaboration.infrastructure.persistence.mapper.Organi
 import io.jgitkins.server.collaboration.infrastructure.persistence.model.OrganizeEntity;
 import io.jgitkins.server.collaboration.infrastructure.persistence.model.OrganizeEntityCondition;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
 
-@Component
 @RequiredArgsConstructor
 public class OrganizePersistenceAdapter implements OrganizeRepository, OrganizeQueryPort {
 

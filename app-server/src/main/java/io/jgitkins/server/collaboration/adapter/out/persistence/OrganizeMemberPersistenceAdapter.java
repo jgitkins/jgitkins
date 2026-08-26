@@ -13,9 +13,7 @@ import io.jgitkins.server.collaboration.infrastructure.persistence.model.Organiz
 import io.jgitkins.server.collaboration.infrastructure.persistence.model.OrganizeMemberEntityCondition;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
 
-@Component
 @RequiredArgsConstructor
 public class OrganizeMemberPersistenceAdapter implements OrganizeMemberPersistencePort, OrganizeMembershipQueryPort {
 
