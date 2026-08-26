@@ -119,7 +119,8 @@ public class InfrastructureOwnershipArchitectureTest {
             "common/infrastructure/config/security/SecurityConfig.java", Set.of(
                     "io.jgitkins.server.identity.access.application.port.in.OAuthLoginUseCase",
                     "io.jgitkins.server.identity.access.adapter.in.security.JwtAuthenticationFilter",
-                    "io.jgitkins.server.identity.access.application.service.JwtAuthService"),
+                    "io.jgitkins.server.identity.access.application.service.JwtAuthService",
+                    "io.jgitkins.server.repository.application.port.in.GitRepositoryAccessUseCase"),
             "common/infrastructure/config/filter/GitSmartHttpAuthFilter.java", Set.of(
                     "io.jgitkins.server.repository.application.port.in.GitRepositoryAccessUseCase"),
             "common/infrastructure/config/git/GitSmartHttpAuthorizer.java", Set.of(
