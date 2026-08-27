@@ -17,6 +17,8 @@ import io.jgitkins.server.repository.application.support.membership.RepositoryMe
 import io.jgitkins.server.repository.application.validate.RepositoryMemberValidator;
 import io.jgitkins.core.common.exception.JgitkinsException;
 import io.jgitkins.server.repository.domain.model.RepositoryMember;
+import io.jgitkins.server.repository.application.port.out.OrganizationMembershipPort;
+import io.jgitkins.server.repository.domain.vo.OrganizationMembershipRole;
 import io.jgitkins.server.repository.domain.vo.RepositoryId;
 import io.jgitkins.server.repository.domain.vo.RepositoryMemberRole;
 import io.jgitkins.server.repository.domain.vo.RepositoryMemberUserId;
@@ -35,12 +37,16 @@ class RepositoryMemberServiceTest {
 
     private static final long OWNER_ID = 7L;
     private static final long REPOSITORY_ID = 1L;
+    private static final long ORGANIZATION_ID = 500L;
 
     @Mock
     private RepositoryMemberPersistencePort repositoryMemberPort;
 
     @Mock
     private RepositoryQueryPort repositoryQueryPort;
+
+    @Mock
+    private OrganizationMembershipPort organizationMembershipPort;
 
     private RepositoryMemberService service;
 
@@ -51,7 +57,7 @@ class RepositoryMemberServiceTest {
         // The policy is real, not mocked: it is the authorization this task added, and a mock would
         // let every member test pass without exercising it.
         RepositoryMemberManagementPolicy policy =
-                new RepositoryMemberManagementPolicy(repositoryQueryPort);
+                new RepositoryMemberManagementPolicy(repositoryQueryPort, organizationMembershipPort);
         service = new RepositoryMemberService(
                 repositoryMemberPort, validator, repositoryMembershipFactory, policy);
     }
@@ -86,17 +92,93 @@ class RepositoryMemberServiceTest {
                 .existsByRepositoryIdAndUserId(any(RepositoryId.class), any(RepositoryMemberUserId.class));
     }
 
-    @Test
-    void addRepositoryMember_deniesAnOrganizationOwnedRepository() {
-        // An organization-owned repository's ownerId is an organization id. Comparing it to a user id
-        // would be comparing two different kinds of number, and would occasionally match by coincidence.
+    /**
+     * Stubs the repository as owned by organization {@code ORGANIZATION_ID}. The owner id is an
+     * organization id here, never a user id, which is why the policy resolves authority by looking the
+     * organization's members up instead of comparing the two.
+     */
+    private void repositoryIsOwnedByOrganization() {
         when(repositoryQueryPort.loadRepository(REPOSITORY_ID)).thenReturn(Optional.of(
                 new RepositoryResult(REPOSITORY_ID, "ORGANIZATION", "repo", "org/repo", "main", "PRIVATE",
-                        null, OWNER_ID, null, "/org/repo.git", null, false, null, null, null)));
+                        null, ORGANIZATION_ID, null, "/org/repo.git", null, false, null, null, null)));
+    }
+
+    private void requesterHasOrganizationRole(OrganizationMembershipRole role) {
+        when(organizationMembershipPort.findRoleByOrganizationIdAndUserId(ORGANIZATION_ID, OWNER_ID))
+                .thenReturn(Optional.ofNullable(role));
+    }
+
+    @Test
+    void addRepositoryMember_allowsTheOrganizationOwner() {
+        // Task 2.78. 2.64 denied this, and said in its own javadoc that the membership lookup was out of
+        // its scope -- a deferral, not a design. The effect was that nobody could manage members of an
+        // organization-owned repository, the organization's OWNER included.
+        repositoryIsOwnedByOrganization();
+        requesterHasOrganizationRole(OrganizationMembershipRole.OWNER);
+        when(repositoryMemberPort.existsByRepositoryIdAndUserId(
+                any(RepositoryId.class), any(RepositoryMemberUserId.class))).thenReturn(false);
+
+        service.addRepositoryMember(new RepositoryMemberAddCommand(
+                OWNER_ID, REPOSITORY_ID, 2L, RepositoryMemberRole.MAINTAINER));
+
+        verify(repositoryMemberPort).save(any(RepositoryMember.class));
+    }
+
+    @Test
+    void addRepositoryMember_deniesAnOrganizationMaintainer() {
+        // Deliberate, and deliberately narrower than GitRepositoryAccessService, which grants git write
+        // to every organization role except MEMBER. Pushing content and administering who else may push
+        // are not the same authority.
+        repositoryIsOwnedByOrganization();
+        requesterHasOrganizationRole(OrganizationMembershipRole.MAINTAINER);
 
         assertThrows(JgitkinsException.class, () -> service.addRepositoryMember(
                 new RepositoryMemberAddCommand(OWNER_ID, REPOSITORY_ID, 2L, RepositoryMemberRole.MAINTAINER)));
         verify(repositoryMemberPort, never()).save(any(RepositoryMember.class));
+    }
+
+    @Test
+    void addRepositoryMember_deniesAnOrganizationMember() {
+        repositoryIsOwnedByOrganization();
+        requesterHasOrganizationRole(OrganizationMembershipRole.MEMBER);
+
+        assertThrows(JgitkinsException.class, () -> service.addRepositoryMember(
+                new RepositoryMemberAddCommand(OWNER_ID, REPOSITORY_ID, 2L, RepositoryMemberRole.MAINTAINER)));
+        verify(repositoryMemberPort, never()).save(any(RepositoryMember.class));
+    }
+
+    @Test
+    void addRepositoryMember_deniesANonMemberOfTheOwningOrganization() {
+        // The security property 2.64 established, preserved: an outsider who knows a repository id still
+        // cannot grant themselves membership, and membership is what the read and commit paths check.
+        repositoryIsOwnedByOrganization();
+        requesterHasOrganizationRole(null);
+
+        assertThrows(JgitkinsException.class, () -> service.addRepositoryMember(
+                new RepositoryMemberAddCommand(OWNER_ID, REPOSITORY_ID, 2L, RepositoryMemberRole.MAINTAINER)));
+        verify(repositoryMemberPort, never()).save(any(RepositoryMember.class));
+    }
+
+    @Test
+    void removeRepositoryMember_allowsTheOrganizationOwner() {
+        repositoryIsOwnedByOrganization();
+        requesterHasOrganizationRole(OrganizationMembershipRole.OWNER);
+
+        service.removeRepositoryMember(OWNER_ID, REPOSITORY_ID, 2L);
+
+        verify(repositoryMemberPort).deleteByRepositoryIdAndUserId(
+                any(RepositoryId.class), any(RepositoryMemberUserId.class));
+    }
+
+    @Test
+    void getRepositoryMembers_allowsTheOrganizationOwner() {
+        // Listing was denied for organization-owned repositories too, so an organization could not even
+        // see who had access to its own repository.
+        repositoryIsOwnedByOrganization();
+        requesterHasOrganizationRole(OrganizationMembershipRole.OWNER);
+        when(repositoryMemberPort.findAllByRepositoryId(any(RepositoryId.class))).thenReturn(List.of());
+
+        assertEquals(0, service.getRepositoryMembers(OWNER_ID, REPOSITORY_ID).size());
     }
 
     @Test

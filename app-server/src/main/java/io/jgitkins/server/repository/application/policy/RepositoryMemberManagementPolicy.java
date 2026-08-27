@@ -2,13 +2,15 @@ package io.jgitkins.server.repository.application.policy;
 
 import io.jgitkins.server.repository.application.exception.RepositoryAccessDeniedException;
 import io.jgitkins.server.repository.application.exception.RepositoryNotFoundException;
+import io.jgitkins.server.repository.application.port.out.OrganizationMembershipPort;
 import io.jgitkins.server.repository.application.port.out.RepositoryQueryPort;
+import io.jgitkins.server.repository.domain.vo.OrganizationMembershipRole;
 import io.jgitkins.server.shared.domain.model.vo.OwnerType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 /**
- * Who may add or remove repository members.
+ * Who may add, remove, or list repository members.
  *
  * <p>Task 2.64. Before this, member mutation had no authorization at all: {@code RepositoryMemberService}
  * validated the identifiers in the command and wrote. Any authenticated caller who knew a repository id
@@ -16,11 +18,27 @@ import org.springframework.stereotype.Component;
  * is the security fix inside an otherwise mechanical actor-injection task, which is why it is a mandatory
  * deliverable of the plan rather than an optional policy object.
  *
- * <p>Only the repository owner may manage members, and only for a user-owned repository is "owner" a
- * user id at all. An organization-owned repository's {@code ownerId} is an organization id, so comparing
- * it to a requester's user id would be comparing two different kinds of number — and would occasionally
- * match by coincidence. Those are denied here rather than silently allowed; organization-scoped member
- * management needs an organization membership lookup, which is a wider contract than this task owns.
+ * <p>Only the repository owner may manage members. For a user-owned repository the owner is a user id and
+ * the comparison is direct. For an organization-owned repository the {@code ownerId} is an organization
+ * id, so it is never compared to a user id — comparing two different kinds of number would occasionally
+ * match by coincidence. The organization's members are looked up instead, and only role {@code OWNER}
+ * acts for the organization.
+ *
+ * <p>Task 2.78 decided that. 2.64 denied every organization-owned repository and said so in this javadoc,
+ * calling the membership lookup "a wider contract than this task owns" — a deferral, not a design. The
+ * effect was that nobody could manage members of an organization-owned repository, the organization's own
+ * OWNER included, which is a fail-closed outage of the feature organizations exist for. It is a gap.
+ *
+ * <p>OWNER only, rather than OWNER and MAINTAINER, for two reasons in this codebase. The collaboration
+ * context already answers the same question for organization membership itself and answers it OWNER-only
+ * ({@code OrganizeMemberService}, add and remove). And 2.64's rule is that administration belongs to the
+ * owner: a repository MAINTAINER cannot manage members of a user-owned repository either. Granting
+ * organization MAINTAINER would widen the rule rather than resolve who acts for an organization. Widening
+ * later is a one-line change; narrowing after release is a breaking one.
+ *
+ * <p>This deliberately differs from {@code GitRepositoryAccessService}, which grants git write to every
+ * organization role except MEMBER. Writing content and administering the member list are not the same
+ * authority, and a MAINTAINER who can push but cannot change who else may push is the intended shape.
  *
  * <p>Takes {@link RepositoryQueryPort} rather than {@code RepositoryRepository}: this is a read to make a
  * decision, not an aggregate load to mutate, and the port it uses says which.
@@ -30,29 +48,63 @@ import org.springframework.stereotype.Component;
 public class RepositoryMemberManagementPolicy {
 
     private final RepositoryQueryPort repositoryQueryPort;
+    private final OrganizationMembershipPort organizationMembershipPort;
 
     /**
      * @throws RepositoryNotFoundException when the repository does not exist, preserving the existing 404
-     * @throws RepositoryAccessDeniedException when the requester is not the owner, preserving 403
+     * @throws RepositoryAccessDeniedException when the requester may not manage members, preserving 403
      */
     public void validateCanManageMembers(Long requesterUserId, Long repositoryId) {
         if (repositoryId == null) {
             throw new RepositoryNotFoundException(repositoryId);
         }
-        // Exactly one query, and it happens before anything else reads or writes membership. Loading the
-        // repository after a membership read would let a caller learn that a repository exists by timing
-        // or by error shape.
+        // The repository query happens before anything else, and before the membership query below.
+        // Reading membership first would let a caller learn that a repository exists by timing or by
+        // error shape. The organization lookup is reached only on the organization-owned branch, and
+        // still precedes every repository-member read and write.
         var repository = repositoryQueryPort.loadRepository(repositoryId)
                 .orElseThrow(() -> new RepositoryNotFoundException(repositoryId));
 
-        boolean userOwned = OwnerType.USER.name().equals(repository.ownerType());
-        boolean isOwner = userOwned
-                && repository.ownerId() != null
-                && requesterUserId != null
-                && repository.ownerId().equals(requesterUserId);
-
-        if (!isOwner) {
-            throw new RepositoryAccessDeniedException("Repository member management is not allowed");
+        if (requesterUserId == null || repository.ownerId() == null) {
+            throw denied();
         }
+
+        OwnerType ownerType = ownerTypeOf(repository.ownerType());
+        boolean allowed = switch (ownerType) {
+            case USER -> repository.ownerId().equals(requesterUserId);
+            case ORGANIZATION -> organizationMembershipPort
+                    .findRoleByOrganizationIdAndUserId(repository.ownerId(), requesterUserId)
+                    .filter(role -> role == OrganizationMembershipRole.OWNER)
+                    .isPresent();
+        };
+
+        if (!allowed) {
+            throw denied();
+        }
+    }
+
+    /**
+     * Normalizes through the shared value object rather than comparing the stored string, because
+     * {@link OwnerType#from} accepts the {@code ORGANIZE} and {@code ORG} spellings that a row written
+     * outside this application may carry. An owner type this application cannot name is a data problem,
+     * and a member-management decision is the wrong place to surface it as a 500: it denies instead.
+     */
+    private OwnerType ownerTypeOf(String stored) {
+        OwnerType ownerType;
+        try {
+            ownerType = OwnerType.from(stored);
+        } catch (IllegalArgumentException unknownOwnerType) {
+            throw denied();
+        }
+        if (ownerType == null) {
+            throw denied();
+        }
+        return ownerType;
+    }
+
+    private RepositoryAccessDeniedException denied() {
+        // One message for every denial. A caller must not be able to tell "not the owner" from "not an
+        // organization OWNER" from "the owner type is unreadable".
+        return new RepositoryAccessDeniedException("Repository member management is not allowed");
     }
 }
