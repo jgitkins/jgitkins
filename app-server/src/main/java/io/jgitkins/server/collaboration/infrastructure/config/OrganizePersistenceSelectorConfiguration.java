@@ -8,10 +8,10 @@ import io.jgitkins.server.collaboration.adapter.out.persistence.jpa.OrganizeJpaP
 import io.jgitkins.server.collaboration.adapter.out.persistence.jpa.OrganizeJpaRepository;
 import io.jgitkins.server.collaboration.adapter.out.persistence.jpa.OrganizeMemberJpaPersistenceAdapter;
 import io.jgitkins.server.collaboration.adapter.out.persistence.jpa.OrganizeMemberJpaRepository;
-import io.jgitkins.server.collaboration.infrastructure.mapper.OrganizeDomainMapper;
-import io.jgitkins.server.collaboration.infrastructure.mapper.OrganizeMemberDomainMapper;
-import io.jgitkins.server.collaboration.infrastructure.persistence.mapper.OrganizeEntityMbgMapper;
-import io.jgitkins.server.collaboration.infrastructure.persistence.mapper.OrganizeMemberEntityMbgMapper;
+import io.jgitkins.server.collaboration.adapter.out.persistence.support.OrganizeDomainMapper;
+import io.jgitkins.server.collaboration.adapter.out.persistence.support.OrganizeMemberDomainMapper;
+import io.jgitkins.server.collaboration.adapter.out.persistence.mapper.OrganizeEntityMbgMapper;
+import io.jgitkins.server.collaboration.adapter.out.persistence.mapper.OrganizeMemberEntityMbgMapper;
 import io.jgitkins.server.common.infrastructure.config.PersistenceImplementation;
 import io.jgitkins.server.common.infrastructure.config.PersistenceImplementationSelector;
 import io.jgitkins.server.common.infrastructure.error.InfrastructureErrorCode;

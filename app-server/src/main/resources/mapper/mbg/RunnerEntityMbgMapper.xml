@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="io.jgitkins.server.execution.infrastructure.persistence.mapper.RunnerEntityMbgMapper">
-  <resultMap id="BaseResultMap" type="io.jgitkins.server.execution.infrastructure.persistence.model.RunnerEntity">
+<mapper namespace="io.jgitkins.server.execution.adapter.out.persistence.mapper.RunnerEntityMbgMapper">
+  <resultMap id="BaseResultMap" type="io.jgitkins.server.execution.adapter.out.persistence.model.RunnerEntity">
     <id column="ID" jdbcType="BIGINT" property="id" />
     <result column="TOKEN" jdbcType="VARCHAR" property="token" />
     <result column="DESCRIPTION" jdbcType="VARCHAR" property="description" />
@@ -71,7 +71,7 @@
   <sql id="Base_Column_List">
     ID, TOKEN, DESCRIPTION, STATUS, IP_ADDRESS, LAST_HEARTBEAT_AT, CREATED_AT
   </sql>
-  <select id="selectByCondition" parameterType="io.jgitkins.server.execution.infrastructure.persistence.model.RunnerEntityCondition" resultMap="BaseResultMap">
+  <select id="selectByCondition" parameterType="io.jgitkins.server.execution.adapter.out.persistence.model.RunnerEntityCondition" resultMap="BaseResultMap">
     select
     <if test="distinct">
       distinct
@@ -95,13 +95,13 @@
     delete from RUNNER
     where ID = #{id,jdbcType=BIGINT}
   </delete>
-  <delete id="deleteByCondition" parameterType="io.jgitkins.server.execution.infrastructure.persistence.model.RunnerEntityCondition">
+  <delete id="deleteByCondition" parameterType="io.jgitkins.server.execution.adapter.out.persistence.model.RunnerEntityCondition">
     delete from RUNNER
     <if test="_parameter != null">
       <include refid="Condition_Where_Clause" />
     </if>
   </delete>
-  <insert id="insert" keyColumn="ID" keyProperty="id" parameterType="io.jgitkins.server.execution.infrastructure.persistence.model.RunnerEntity" useGeneratedKeys="true">
+  <insert id="insert" keyColumn="ID" keyProperty="id" parameterType="io.jgitkins.server.execution.adapter.out.persistence.model.RunnerEntity" useGeneratedKeys="true">
     insert into RUNNER (TOKEN, DESCRIPTION, STATUS, 
       IP_ADDRESS, LAST_HEARTBEAT_AT, CREATED_AT
       )
@@ -109,7 +109,7 @@
       #{ipAddress,jdbcType=VARCHAR}, #{lastHeartbeatAt,jdbcType=TIMESTAMP}, #{createdAt,jdbcType=TIMESTAMP}
       )
   </insert>
-  <insert id="insertSelective" keyColumn="ID" keyProperty="id" parameterType="io.jgitkins.server.execution.infrastructure.persistence.model.RunnerEntity" useGeneratedKeys="true">
+  <insert id="insertSelective" keyColumn="ID" keyProperty="id" parameterType="io.jgitkins.server.execution.adapter.out.persistence.model.RunnerEntity" useGeneratedKeys="true">
     insert into RUNNER
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="token != null">
@@ -152,7 +152,7 @@
       </if>
     </trim>
   </insert>
-  <select id="countByCondition" parameterType="io.jgitkins.server.execution.infrastructure.persistence.model.RunnerEntityCondition" resultType="java.lang.Long">
+  <select id="countByCondition" parameterType="io.jgitkins.server.execution.adapter.out.persistence.model.RunnerEntityCondition" resultType="java.lang.Long">
     select count(*) from RUNNER
     <if test="_parameter != null">
       <include refid="Condition_Where_Clause" />
@@ -200,7 +200,7 @@
       <include refid="Update_By_Condition_Where_Clause" />
     </if>
   </update>
-  <update id="updateByPrimaryKeySelective" parameterType="io.jgitkins.server.execution.infrastructure.persistence.model.RunnerEntity">
+  <update id="updateByPrimaryKeySelective" parameterType="io.jgitkins.server.execution.adapter.out.persistence.model.RunnerEntity">
     update RUNNER
     <set>
       <if test="token != null">
@@ -224,7 +224,7 @@
     </set>
     where ID = #{id,jdbcType=BIGINT}
   </update>
-  <update id="updateByPrimaryKey" parameterType="io.jgitkins.server.execution.infrastructure.persistence.model.RunnerEntity">
+  <update id="updateByPrimaryKey" parameterType="io.jgitkins.server.execution.adapter.out.persistence.model.RunnerEntity">
     update RUNNER
     set TOKEN = #{token,jdbcType=VARCHAR},
       DESCRIPTION = #{description,jdbcType=VARCHAR},

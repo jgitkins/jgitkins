@@ -35,63 +35,63 @@ public class InfrastructureOwnershipArchitectureTest {
             "common/infrastructure/adapter/PushEventRequestAdapter.java");
 
     private static final Set<String> EXPECTED_MODELS = Set.of(
-            "io/jgitkins/server/change/review/infrastructure/persistence/model/PullRequestEntity.java",
-            "io/jgitkins/server/change/review/infrastructure/persistence/model/PullRequestEntityCondition.java",
-            "io/jgitkins/server/collaboration/infrastructure/persistence/model/OrganizeEntity.java",
-            "io/jgitkins/server/collaboration/infrastructure/persistence/model/OrganizeEntityCondition.java",
-            "io/jgitkins/server/collaboration/infrastructure/persistence/model/OrganizeMemberEntity.java",
-            "io/jgitkins/server/collaboration/infrastructure/persistence/model/OrganizeMemberEntityCondition.java",
-            "io/jgitkins/server/execution/infrastructure/persistence/model/DispatchableJobRow.java",
-            "io/jgitkins/server/execution/infrastructure/persistence/model/JobEntity.java",
-            "io/jgitkins/server/execution/infrastructure/persistence/model/JobEntityCondition.java",
-            "io/jgitkins/server/execution/infrastructure/persistence/model/JobHistoryEntity.java",
-            "io/jgitkins/server/execution/infrastructure/persistence/model/JobHistoryEntityCondition.java",
-            "io/jgitkins/server/execution/infrastructure/persistence/model/RunnerAssignmentEntity.java",
-            "io/jgitkins/server/execution/infrastructure/persistence/model/RunnerAssignmentEntityCondition.java",
-            "io/jgitkins/server/execution/infrastructure/persistence/model/RunnerEntity.java",
-            "io/jgitkins/server/execution/infrastructure/persistence/model/RunnerEntityCondition.java",
-            "io/jgitkins/server/identity/access/infrastructure/persistence/model/UserCredentialsEntity.java",
-            "io/jgitkins/server/identity/access/infrastructure/persistence/model/UserCredentialsEntityCondition.java",
-            "io/jgitkins/server/identity/access/infrastructure/persistence/model/UserEntity.java",
-            "io/jgitkins/server/identity/access/infrastructure/persistence/model/UserEntityCondition.java",
-            "io/jgitkins/server/identity/access/infrastructure/persistence/model/UserIdentitiesEntity.java",
-            "io/jgitkins/server/identity/access/infrastructure/persistence/model/UserIdentitiesEntityCondition.java",
-            "io/jgitkins/server/repository/infrastructure/persistence/model/BranchEntity.java",
-            "io/jgitkins/server/repository/infrastructure/persistence/model/BranchEntityCondition.java",
-            "io/jgitkins/server/repository/infrastructure/persistence/model/RepositoryEntity.java",
-            "io/jgitkins/server/repository/infrastructure/persistence/model/RepositoryEntityCondition.java",
-            "io/jgitkins/server/repository/infrastructure/persistence/model/RepositoryMemberEntity.java",
-            "io/jgitkins/server/repository/infrastructure/persistence/model/RepositoryMemberEntityCondition.java"
+            "io/jgitkins/server/change/review/adapter/out/persistence/model/PullRequestEntity.java",
+            "io/jgitkins/server/change/review/adapter/out/persistence/model/PullRequestEntityCondition.java",
+            "io/jgitkins/server/collaboration/adapter/out/persistence/model/OrganizeEntity.java",
+            "io/jgitkins/server/collaboration/adapter/out/persistence/model/OrganizeEntityCondition.java",
+            "io/jgitkins/server/collaboration/adapter/out/persistence/model/OrganizeMemberEntity.java",
+            "io/jgitkins/server/collaboration/adapter/out/persistence/model/OrganizeMemberEntityCondition.java",
+            "io/jgitkins/server/execution/adapter/out/persistence/model/DispatchableJobRow.java",
+            "io/jgitkins/server/execution/adapter/out/persistence/model/JobEntity.java",
+            "io/jgitkins/server/execution/adapter/out/persistence/model/JobEntityCondition.java",
+            "io/jgitkins/server/execution/adapter/out/persistence/model/JobHistoryEntity.java",
+            "io/jgitkins/server/execution/adapter/out/persistence/model/JobHistoryEntityCondition.java",
+            "io/jgitkins/server/execution/adapter/out/persistence/model/RunnerAssignmentEntity.java",
+            "io/jgitkins/server/execution/adapter/out/persistence/model/RunnerAssignmentEntityCondition.java",
+            "io/jgitkins/server/execution/adapter/out/persistence/model/RunnerEntity.java",
+            "io/jgitkins/server/execution/adapter/out/persistence/model/RunnerEntityCondition.java",
+            "io/jgitkins/server/identity/access/adapter/out/persistence/model/UserCredentialsEntity.java",
+            "io/jgitkins/server/identity/access/adapter/out/persistence/model/UserCredentialsEntityCondition.java",
+            "io/jgitkins/server/identity/access/adapter/out/persistence/model/UserEntity.java",
+            "io/jgitkins/server/identity/access/adapter/out/persistence/model/UserEntityCondition.java",
+            "io/jgitkins/server/identity/access/adapter/out/persistence/model/UserIdentitiesEntity.java",
+            "io/jgitkins/server/identity/access/adapter/out/persistence/model/UserIdentitiesEntityCondition.java",
+            "io/jgitkins/server/repository/adapter/out/persistence/model/BranchEntity.java",
+            "io/jgitkins/server/repository/adapter/out/persistence/model/BranchEntityCondition.java",
+            "io/jgitkins/server/repository/adapter/out/persistence/model/RepositoryEntity.java",
+            "io/jgitkins/server/repository/adapter/out/persistence/model/RepositoryEntityCondition.java",
+            "io/jgitkins/server/repository/adapter/out/persistence/model/RepositoryMemberEntity.java",
+            "io/jgitkins/server/repository/adapter/out/persistence/model/RepositoryMemberEntityCondition.java"
     );
-    private static final Set<String> EXPECTED_PERSISTENCE_MAPPERS = Set.of(
-            "io/jgitkins/server/change/review/infrastructure/persistence/mapper/PullRequestEntityMbgMapper.java",
-            "io/jgitkins/server/collaboration/infrastructure/persistence/mapper/OrganizeEntityMbgMapper.java",
-            "io/jgitkins/server/collaboration/infrastructure/persistence/mapper/OrganizeMemberEntityMbgMapper.java",
-            "io/jgitkins/server/execution/infrastructure/persistence/mapper/JobDispatchQueryMapper.java",
-            "io/jgitkins/server/execution/infrastructure/persistence/mapper/JobEntityMbgMapper.java",
-            "io/jgitkins/server/execution/infrastructure/persistence/mapper/JobHistoryEntityMbgMapper.java",
-            "io/jgitkins/server/execution/infrastructure/persistence/mapper/RunnerAssignmentEntityMbgMapper.java",
-            "io/jgitkins/server/execution/infrastructure/persistence/mapper/RunnerEntityMbgMapper.java",
-            "io/jgitkins/server/identity/access/infrastructure/persistence/mapper/UserCredentialsEntityMbgMapper.java",
-            "io/jgitkins/server/identity/access/infrastructure/persistence/mapper/UserEntityMbgMapper.java",
-            "io/jgitkins/server/identity/access/infrastructure/persistence/mapper/UserIdentitiesEntityMbgMapper.java",
-            "io/jgitkins/server/repository/infrastructure/persistence/mapper/BranchEntityMbgMapper.java",
-            "io/jgitkins/server/repository/infrastructure/persistence/mapper/RepositoryEntityMbgMapper.java",
-            "io/jgitkins/server/repository/infrastructure/persistence/mapper/RepositoryMemberEntityMbgMapper.java"
+    private static final Set<String> EXPECTED_PERSISTENCE_MAPPER_INTERFACES = Set.of(
+            "io/jgitkins/server/change/review/adapter/out/persistence/mapper/PullRequestEntityMbgMapper.java",
+            "io/jgitkins/server/collaboration/adapter/out/persistence/mapper/OrganizeEntityMbgMapper.java",
+            "io/jgitkins/server/collaboration/adapter/out/persistence/mapper/OrganizeMemberEntityMbgMapper.java",
+            "io/jgitkins/server/execution/adapter/out/persistence/mapper/JobDispatchQueryMapper.java",
+            "io/jgitkins/server/execution/adapter/out/persistence/mapper/JobEntityMbgMapper.java",
+            "io/jgitkins/server/execution/adapter/out/persistence/mapper/JobHistoryEntityMbgMapper.java",
+            "io/jgitkins/server/execution/adapter/out/persistence/mapper/RunnerAssignmentEntityMbgMapper.java",
+            "io/jgitkins/server/execution/adapter/out/persistence/mapper/RunnerEntityMbgMapper.java",
+            "io/jgitkins/server/identity/access/adapter/out/persistence/mapper/UserCredentialsEntityMbgMapper.java",
+            "io/jgitkins/server/identity/access/adapter/out/persistence/mapper/UserEntityMbgMapper.java",
+            "io/jgitkins/server/identity/access/adapter/out/persistence/mapper/UserIdentitiesEntityMbgMapper.java",
+            "io/jgitkins/server/repository/adapter/out/persistence/mapper/BranchEntityMbgMapper.java",
+            "io/jgitkins/server/repository/adapter/out/persistence/mapper/RepositoryEntityMbgMapper.java",
+            "io/jgitkins/server/repository/adapter/out/persistence/mapper/RepositoryMemberEntityMbgMapper.java"
     );
-    private static final Set<String> EXPECTED_MAPPERS = Set.of(
-            "io/jgitkins/server/change/review/infrastructure/mapper/PullRequestDomainMapper.java",
-            "io/jgitkins/server/collaboration/infrastructure/mapper/OrganizeDomainMapper.java",
-            "io/jgitkins/server/collaboration/infrastructure/mapper/OrganizeMemberDomainMapper.java",
-            "io/jgitkins/server/execution/infrastructure/mapper/JobDomainMapper.java",
-            "io/jgitkins/server/execution/infrastructure/mapper/RunnerAssignmentDomainMapper.java",
-            "io/jgitkins/server/execution/infrastructure/mapper/RunnerDomainMapper.java",
-            "io/jgitkins/server/identity/access/infrastructure/mapper/UserCredentialDomainMapper.java",
-            "io/jgitkins/server/identity/access/infrastructure/mapper/UserDomainMapper.java",
-            "io/jgitkins/server/identity/access/infrastructure/mapper/UserIdentityDomainMapper.java",
-            "io/jgitkins/server/repository/infrastructure/mapper/BranchDomainMapper.java",
-            "io/jgitkins/server/repository/infrastructure/mapper/RepositoryDomainMapper.java",
-            "io/jgitkins/server/repository/infrastructure/mapper/RepositoryMemberDomainMapper.java"
+    private static final Set<String> EXPECTED_DOMAIN_MAPPER_SUPPORT = Set.of(
+            "io/jgitkins/server/change/review/adapter/out/persistence/support/PullRequestDomainMapper.java",
+            "io/jgitkins/server/collaboration/adapter/out/persistence/support/OrganizeDomainMapper.java",
+            "io/jgitkins/server/collaboration/adapter/out/persistence/support/OrganizeMemberDomainMapper.java",
+            "io/jgitkins/server/execution/adapter/out/persistence/support/JobDomainMapper.java",
+            "io/jgitkins/server/execution/adapter/out/persistence/support/RunnerAssignmentDomainMapper.java",
+            "io/jgitkins/server/execution/adapter/out/persistence/support/RunnerDomainMapper.java",
+            "io/jgitkins/server/identity/access/adapter/out/persistence/support/UserCredentialDomainMapper.java",
+            "io/jgitkins/server/identity/access/adapter/out/persistence/support/UserDomainMapper.java",
+            "io/jgitkins/server/identity/access/adapter/out/persistence/support/UserIdentityDomainMapper.java",
+            "io/jgitkins/server/repository/adapter/out/persistence/support/BranchDomainMapper.java",
+            "io/jgitkins/server/repository/adapter/out/persistence/support/RepositoryDomainMapper.java",
+            "io/jgitkins/server/repository/adapter/out/persistence/support/RepositoryMemberDomainMapper.java"
     );
     private static final Set<String> EXPECTED_MBG = Set.of(
             "mapper/mbg/BranchEntityMbgMapper.xml",
@@ -130,11 +130,16 @@ public class InfrastructureOwnershipArchitectureTest {
                     "io.jgitkins.server.repository.application.exception.RepositoryNotFoundException")
     );
 
+    // Task 2.67 relocated all three sets from <context>/infrastructure/** into the owning context's
+    // outbound persistence adapter. This test is the gate the plan called "the landmine": it pins the
+    // exact inventory by path, so the move could not land without editing it, and editing it is how the
+    // new boundary becomes the asserted one rather than an aspiration. The old leaves are now asserted
+    // empty by PersistenceModelPlacementArchitectureTest.
     @Test
     void retainedTechnicalAssetsMatchExactCurrentAppServerInventory() throws IOException {
-        assertEquals(EXPECTED_MODELS, pathsUnder("io/jgitkins/server", "infrastructure/persistence/model", ".java"));
-        assertEquals(EXPECTED_PERSISTENCE_MAPPERS, pathsUnder("io/jgitkins/server", "infrastructure/persistence/mapper", ".java"));
-        assertEquals(EXPECTED_MAPPERS, pathsUnder("io/jgitkins/server", "infrastructure/mapper", ".java"));
+        assertEquals(EXPECTED_MODELS, pathsUnder("io/jgitkins/server", "adapter/out/persistence/model", ".java"));
+        assertEquals(EXPECTED_PERSISTENCE_MAPPER_INTERFACES, pathsUnder("io/jgitkins/server", "adapter/out/persistence/mapper", ".java"));
+        assertEquals(EXPECTED_DOMAIN_MAPPER_SUPPORT, pathsUnder("io/jgitkins/server", "adapter/out/persistence/support", ".java"));
         assertEquals(EXPECTED_MBG, pathsUnder("", "", ".xml", RESOURCE_ROOT.resolve("mapper/mbg")));
         assertEquals(EXPECTED_CUSTOM, pathsUnder("", "", ".xml", RESOURCE_ROOT.resolve("mapper/custom")));
     }

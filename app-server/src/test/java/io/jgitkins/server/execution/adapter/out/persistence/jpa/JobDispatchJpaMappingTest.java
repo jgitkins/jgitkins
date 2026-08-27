@@ -2,7 +2,7 @@ package io.jgitkins.server.execution.adapter.out.persistence.jpa;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.jgitkins.server.execution.infrastructure.persistence.model.DispatchableJobRow;
+import io.jgitkins.server.execution.adapter.out.persistence.model.DispatchableJobRow;
 import java.lang.reflect.Method;
 import java.lang.reflect.RecordComponent;
 import java.util.Arrays;

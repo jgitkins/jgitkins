@@ -10,9 +10,9 @@ import io.jgitkins.server.execution.adapter.out.persistence.JobDispatchQueryAdap
 import io.jgitkins.server.execution.application.port.out.JobDispatchQueryPort;
 import io.jgitkins.server.execution.infrastructure.config.ExecutionJobDispatchQuerySelectorConfiguration;
 import io.jgitkins.server.execution.infrastructure.config.ExecutionJobDispatchQuerySelectorConfiguration.ExecutionJobDispatchQuerySelection;
-import io.jgitkins.server.execution.infrastructure.mapper.JobDomainMapper;
-import io.jgitkins.server.execution.infrastructure.persistence.mapper.JobDispatchQueryMapper;
-import io.jgitkins.server.execution.infrastructure.persistence.mapper.JobHistoryEntityMbgMapper;
+import io.jgitkins.server.execution.adapter.out.persistence.support.JobDomainMapper;
+import io.jgitkins.server.execution.adapter.out.persistence.mapper.JobDispatchQueryMapper;
+import io.jgitkins.server.execution.adapter.out.persistence.mapper.JobHistoryEntityMbgMapper;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;

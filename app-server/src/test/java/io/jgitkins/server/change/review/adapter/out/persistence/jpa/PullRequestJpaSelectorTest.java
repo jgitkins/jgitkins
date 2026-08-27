@@ -7,8 +7,8 @@ import io.jgitkins.server.change.review.adapter.out.persistence.PullRequestPersi
 import io.jgitkins.server.change.review.domain.repository.PullRequestRepository;
 import io.jgitkins.server.change.review.infrastructure.config.ChangeReviewPersistenceSelectorConfiguration;
 import io.jgitkins.server.change.review.infrastructure.config.ChangeReviewPersistenceSelectorConfiguration.ChangeReviewPersistenceSelection;
-import io.jgitkins.server.change.review.infrastructure.mapper.PullRequestDomainMapper;
-import io.jgitkins.server.change.review.infrastructure.persistence.mapper.PullRequestEntityMbgMapper;
+import io.jgitkins.server.change.review.adapter.out.persistence.support.PullRequestDomainMapper;
+import io.jgitkins.server.change.review.adapter.out.persistence.mapper.PullRequestEntityMbgMapper;
 import io.jgitkins.server.common.infrastructure.config.PersistenceImplementation;
 import io.jgitkins.server.common.infrastructure.config.PersistenceImplementationSelector;
 import io.jgitkins.server.common.infrastructure.exception.InvalidPersistenceSelectorException;

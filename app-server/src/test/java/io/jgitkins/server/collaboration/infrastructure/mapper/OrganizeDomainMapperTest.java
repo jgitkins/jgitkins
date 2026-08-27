@@ -1,4 +1,4 @@
-package io.jgitkins.server.collaboration.infrastructure.mapper;
+package io.jgitkins.server.collaboration.adapter.out.persistence.support;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -6,7 +6,7 @@ import io.jgitkins.server.collaboration.domain.aggregate.Organize;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeId;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeName;
 import io.jgitkins.server.collaboration.domain.vo.OwnerId;
-import io.jgitkins.server.collaboration.infrastructure.persistence.model.OrganizeEntity;
+import io.jgitkins.server.collaboration.adapter.out.persistence.model.OrganizeEntity;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;

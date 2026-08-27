@@ -1,10 +1,10 @@
-package io.jgitkins.server.execution.infrastructure.mapper;
+package io.jgitkins.server.execution.adapter.out.persistence.support;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.jgitkins.server.execution.domain.entity.JobHistory;
 import io.jgitkins.server.execution.domain.vo.ExecutionSystemActor;
-import io.jgitkins.server.execution.infrastructure.persistence.model.JobHistoryEntity;
+import io.jgitkins.server.execution.adapter.out.persistence.model.JobHistoryEntity;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 class JobDomainMapperTest {
     private final JobDomainMapper mapper = new JobDomainMapper() {
         @Override
-        public io.jgitkins.server.execution.infrastructure.persistence.model.JobEntity toEntity(
+        public io.jgitkins.server.execution.adapter.out.persistence.model.JobEntity toEntity(
                 io.jgitkins.server.execution.domain.aggregate.Job job) {
             throw new UnsupportedOperationException();
         }

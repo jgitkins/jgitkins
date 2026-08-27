@@ -1,4 +1,4 @@
-package io.jgitkins.server.change.review.infrastructure.mapper;
+package io.jgitkins.server.change.review.adapter.out.persistence.support;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -7,7 +7,7 @@ import io.jgitkins.server.change.review.domain.aggregate.PullRequest;
 import io.jgitkins.server.change.review.domain.model.BranchHeadSnapshot;
 import io.jgitkins.server.change.review.domain.model.TargetDrift;
 import io.jgitkins.server.change.review.domain.model.vo.PullRequestId;
-import io.jgitkins.server.change.review.infrastructure.persistence.model.PullRequestEntity;
+import io.jgitkins.server.change.review.adapter.out.persistence.model.PullRequestEntity;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.Test;
 

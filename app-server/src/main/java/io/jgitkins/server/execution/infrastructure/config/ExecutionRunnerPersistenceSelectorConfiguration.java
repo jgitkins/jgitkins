@@ -7,10 +7,10 @@ import io.jgitkins.server.execution.adapter.out.persistence.jpa.RunnerAssignment
 import io.jgitkins.server.execution.adapter.out.persistence.jpa.RunnerJpaPersistenceAdapter;
 import io.jgitkins.server.execution.adapter.out.persistence.jpa.RunnerJpaRepository;
 import io.jgitkins.server.execution.domain.repository.RunnerRepository;
-import io.jgitkins.server.execution.infrastructure.mapper.RunnerAssignmentDomainMapper;
-import io.jgitkins.server.execution.infrastructure.mapper.RunnerDomainMapper;
-import io.jgitkins.server.execution.infrastructure.persistence.mapper.RunnerAssignmentEntityMbgMapper;
-import io.jgitkins.server.execution.infrastructure.persistence.mapper.RunnerEntityMbgMapper;
+import io.jgitkins.server.execution.adapter.out.persistence.support.RunnerAssignmentDomainMapper;
+import io.jgitkins.server.execution.adapter.out.persistence.support.RunnerDomainMapper;
+import io.jgitkins.server.execution.adapter.out.persistence.mapper.RunnerAssignmentEntityMbgMapper;
+import io.jgitkins.server.execution.adapter.out.persistence.mapper.RunnerEntityMbgMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;

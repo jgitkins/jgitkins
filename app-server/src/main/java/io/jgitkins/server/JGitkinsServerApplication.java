@@ -13,11 +13,11 @@ import org.springframework.context.annotation.Import;
 @ComponentScan("io.jgitkins.server")
 @Import({DataSourceConfig.class, MybatisConfig.class, JpaPersistenceConfiguration.class})
 @MapperScan(basePackages = {
-    "io.jgitkins.server.collaboration.infrastructure.persistence.mapper",
-    "io.jgitkins.server.repository.infrastructure.persistence.mapper",
-    "io.jgitkins.server.execution.infrastructure.persistence.mapper",
-    "io.jgitkins.server.change.review.infrastructure.persistence.mapper",
-    "io.jgitkins.server.identity.access.infrastructure.persistence.mapper"
+    "io.jgitkins.server.collaboration.adapter.out.persistence.mapper",
+    "io.jgitkins.server.repository.adapter.out.persistence.mapper",
+    "io.jgitkins.server.execution.adapter.out.persistence.mapper",
+    "io.jgitkins.server.change.review.adapter.out.persistence.mapper",
+    "io.jgitkins.server.identity.access.adapter.out.persistence.mapper"
 })
 public class JGitkinsServerApplication {
 	public static void main(String[] args) {

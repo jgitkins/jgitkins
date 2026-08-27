@@ -7,9 +7,9 @@ import static org.mockito.Mockito.when;
 
 import io.jgitkins.server.common.infrastructure.exception.InfrastructureException;
 import io.jgitkins.server.identity.access.domain.aggregate.User;
-import io.jgitkins.server.identity.access.infrastructure.mapper.UserDomainMapper;
-import io.jgitkins.server.identity.access.infrastructure.persistence.mapper.UserEntityMbgMapper;
-import io.jgitkins.server.identity.access.infrastructure.persistence.model.UserEntity;
+import io.jgitkins.server.identity.access.adapter.out.persistence.support.UserDomainMapper;
+import io.jgitkins.server.identity.access.adapter.out.persistence.mapper.UserEntityMbgMapper;
+import io.jgitkins.server.identity.access.adapter.out.persistence.model.UserEntity;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

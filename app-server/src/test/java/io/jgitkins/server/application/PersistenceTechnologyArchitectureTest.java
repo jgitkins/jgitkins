@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 
@@ -26,17 +27,46 @@ class PersistenceTechnologyArchitectureTest {
 
     private static final Path MAIN_ROOT = resolveRoot();
 
-    /** Package fragments where persistence technology is allowed to appear. */
+    /**
+     * Package fragments where persistence technology is allowed to appear.
+     *
+     * <p>{@code /infrastructure/persistence/} was removed in task 2.67: the 53 files that lived there
+     * moved into the outbound adapter, and leaving the allowance behind would have silently permitted a
+     * persistence type to reappear at the old address. A dead allowance is worse than no allowance,
+     * because it reads as a deliberate exception.
+     */
     private static final List<String> ALLOWED_FRAGMENTS = List.of(
             "/adapter/out/persistence/",
-            "/infrastructure/persistence/",
             "/common/infrastructure/config/");
 
+    /**
+     * Both provider families, not just JPA.
+     *
+     * <p>Task 2.67 added the MyBatis rows. A guard that forbids only {@code jakarta.persistence} leaves
+     * {@code org.apache.ibatis} free to reappear in {@code application} and {@code domain} — the same
+     * leak, through the other provider, and the one that was actually there before the migration
+     * started. Naming one technology is not a boundary.
+     */
     private static final List<String> FORBIDDEN_IMPORT_PREFIXES = List.of(
             "import jakarta.persistence.",
             "import org.hibernate.",
             "import org.springframework.data.jpa.",
-            "import org.springframework.orm.jpa.");
+            "import org.springframework.orm.jpa.",
+            "import org.apache.ibatis.",
+            "import org.mybatis.");
+
+    /**
+     * Files allowed to name a persistence technology despite being outside the adapter, each with why.
+     *
+     * <p>Kept as a file allowlist rather than a widened package fragment. A fragment would exempt
+     * everything at that path forever; a named file exempts one class and makes the next addition a
+     * visible decision.
+     */
+    private static final Map<String, String> ALLOWED_FILES = Map.of(
+            "JGitkinsServerApplication.java",
+            "the composition root declares @MapperScan, which is what registers the mapper beans the "
+                    + "adapters inject. The alternative is moving the scan into a configuration class "
+                    + "purely to satisfy this test, which would hide the application's own wiring.");
 
     private static Path resolveRoot() {
         Path local = Path.of("src/main/java/io/jgitkins/server");
@@ -50,6 +80,9 @@ class PersistenceTechnologyArchitectureTest {
             for (Path path : paths.filter(p -> p.toString().endsWith(".java")).toList()) {
                 String relative = MAIN_ROOT.relativize(path).toString().replace('\\', '/');
                 if (ALLOWED_FRAGMENTS.stream().anyMatch(("/" + relative)::contains)) {
+                    continue;
+                }
+                if (ALLOWED_FILES.containsKey(path.getFileName().toString())) {
                     continue;
                 }
                 for (String line : Files.readAllLines(path)) {

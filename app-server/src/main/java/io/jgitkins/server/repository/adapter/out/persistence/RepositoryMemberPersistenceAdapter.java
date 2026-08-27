@@ -6,10 +6,10 @@ import io.jgitkins.server.repository.domain.vo.RepositoryId;
 import io.jgitkins.server.repository.domain.vo.RepositoryMemberUserId;
 import io.jgitkins.server.common.infrastructure.error.InfrastructureErrorCode;
 import io.jgitkins.server.common.infrastructure.exception.InfrastructureException;
-import io.jgitkins.server.repository.infrastructure.mapper.RepositoryMemberDomainMapper;
-import io.jgitkins.server.repository.infrastructure.persistence.mapper.RepositoryMemberEntityMbgMapper;
-import io.jgitkins.server.repository.infrastructure.persistence.model.RepositoryMemberEntity;
-import io.jgitkins.server.repository.infrastructure.persistence.model.RepositoryMemberEntityCondition;
+import io.jgitkins.server.repository.adapter.out.persistence.support.RepositoryMemberDomainMapper;
+import io.jgitkins.server.repository.adapter.out.persistence.mapper.RepositoryMemberEntityMbgMapper;
+import io.jgitkins.server.repository.adapter.out.persistence.model.RepositoryMemberEntity;
+import io.jgitkins.server.repository.adapter.out.persistence.model.RepositoryMemberEntityCondition;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 

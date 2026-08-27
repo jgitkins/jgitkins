@@ -10,9 +10,9 @@ import io.jgitkins.server.execution.adapter.out.persistence.JobRepositoryAdapter
 import io.jgitkins.server.execution.domain.repository.JobRepository;
 import io.jgitkins.server.execution.infrastructure.config.ExecutionJobPersistenceSelectorConfiguration;
 import io.jgitkins.server.execution.infrastructure.config.ExecutionJobPersistenceSelectorConfiguration.ExecutionJobPersistenceSelection;
-import io.jgitkins.server.execution.infrastructure.mapper.JobDomainMapper;
-import io.jgitkins.server.execution.infrastructure.persistence.mapper.JobEntityMbgMapper;
-import io.jgitkins.server.execution.infrastructure.persistence.mapper.JobHistoryEntityMbgMapper;
+import io.jgitkins.server.execution.adapter.out.persistence.support.JobDomainMapper;
+import io.jgitkins.server.execution.adapter.out.persistence.mapper.JobEntityMbgMapper;
+import io.jgitkins.server.execution.adapter.out.persistence.mapper.JobHistoryEntityMbgMapper;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;

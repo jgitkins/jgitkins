@@ -4,10 +4,10 @@ import io.jgitkins.server.identity.access.application.port.out.UserIdentityPersi
 import io.jgitkins.server.identity.access.domain.entity.UserIdentity;
 import io.jgitkins.server.common.infrastructure.error.InfrastructureErrorCode;
 import io.jgitkins.server.common.infrastructure.exception.InfrastructureException;
-import io.jgitkins.server.identity.access.infrastructure.mapper.UserIdentityDomainMapper;
-import io.jgitkins.server.identity.access.infrastructure.persistence.mapper.UserIdentitiesEntityMbgMapper;
-import io.jgitkins.server.identity.access.infrastructure.persistence.model.UserIdentitiesEntity;
-import io.jgitkins.server.identity.access.infrastructure.persistence.model.UserIdentitiesEntityCondition;
+import io.jgitkins.server.identity.access.adapter.out.persistence.support.UserIdentityDomainMapper;
+import io.jgitkins.server.identity.access.adapter.out.persistence.mapper.UserIdentitiesEntityMbgMapper;
+import io.jgitkins.server.identity.access.adapter.out.persistence.model.UserIdentitiesEntity;
+import io.jgitkins.server.identity.access.adapter.out.persistence.model.UserIdentitiesEntityCondition;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 

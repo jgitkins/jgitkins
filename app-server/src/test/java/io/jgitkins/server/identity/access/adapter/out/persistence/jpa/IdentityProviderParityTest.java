@@ -6,10 +6,10 @@ import static org.mockito.Mockito.verifyNoInteractions;
 
 import io.jgitkins.server.identity.access.adapter.out.persistence.UserCredentialPersistenceAdapter;
 import io.jgitkins.server.identity.access.adapter.out.persistence.UserIdentityPersistenceAdapter;
-import io.jgitkins.server.identity.access.infrastructure.mapper.UserCredentialDomainMapper;
-import io.jgitkins.server.identity.access.infrastructure.mapper.UserIdentityDomainMapper;
-import io.jgitkins.server.identity.access.infrastructure.persistence.mapper.UserCredentialsEntityMbgMapper;
-import io.jgitkins.server.identity.access.infrastructure.persistence.mapper.UserIdentitiesEntityMbgMapper;
+import io.jgitkins.server.identity.access.adapter.out.persistence.support.UserCredentialDomainMapper;
+import io.jgitkins.server.identity.access.adapter.out.persistence.support.UserIdentityDomainMapper;
+import io.jgitkins.server.identity.access.adapter.out.persistence.mapper.UserCredentialsEntityMbgMapper;
+import io.jgitkins.server.identity.access.adapter.out.persistence.mapper.UserIdentitiesEntityMbgMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;

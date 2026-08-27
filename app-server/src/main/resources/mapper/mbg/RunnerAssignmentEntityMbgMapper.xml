@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="io.jgitkins.server.execution.infrastructure.persistence.mapper.RunnerAssignmentEntityMbgMapper">
-  <resultMap id="BaseResultMap" type="io.jgitkins.server.execution.infrastructure.persistence.model.RunnerAssignmentEntity">
+<mapper namespace="io.jgitkins.server.execution.adapter.out.persistence.mapper.RunnerAssignmentEntityMbgMapper">
+  <resultMap id="BaseResultMap" type="io.jgitkins.server.execution.adapter.out.persistence.model.RunnerAssignmentEntity">
     <id column="ID" jdbcType="BIGINT" property="id" />
     <result column="RUNNER_ID" jdbcType="BIGINT" property="runnerId" />
     <result column="TARGET_TYPE" jdbcType="VARCHAR" property="targetType" />
@@ -69,7 +69,7 @@
   <sql id="Base_Column_List">
     ID, RUNNER_ID, TARGET_TYPE, TARGET_ID, ASSIGNED_AT
   </sql>
-  <select id="selectByCondition" parameterType="io.jgitkins.server.execution.infrastructure.persistence.model.RunnerAssignmentEntityCondition" resultMap="BaseResultMap">
+  <select id="selectByCondition" parameterType="io.jgitkins.server.execution.adapter.out.persistence.model.RunnerAssignmentEntityCondition" resultMap="BaseResultMap">
     select
     <if test="distinct">
       distinct
@@ -93,19 +93,19 @@
     delete from RUNNER_ASSIGNMENT
     where ID = #{id,jdbcType=BIGINT}
   </delete>
-  <delete id="deleteByCondition" parameterType="io.jgitkins.server.execution.infrastructure.persistence.model.RunnerAssignmentEntityCondition">
+  <delete id="deleteByCondition" parameterType="io.jgitkins.server.execution.adapter.out.persistence.model.RunnerAssignmentEntityCondition">
     delete from RUNNER_ASSIGNMENT
     <if test="_parameter != null">
       <include refid="Condition_Where_Clause" />
     </if>
   </delete>
-  <insert id="insert" keyColumn="ID" keyProperty="id" parameterType="io.jgitkins.server.execution.infrastructure.persistence.model.RunnerAssignmentEntity" useGeneratedKeys="true">
+  <insert id="insert" keyColumn="ID" keyProperty="id" parameterType="io.jgitkins.server.execution.adapter.out.persistence.model.RunnerAssignmentEntity" useGeneratedKeys="true">
     insert into RUNNER_ASSIGNMENT (RUNNER_ID, TARGET_TYPE, TARGET_ID, 
       ASSIGNED_AT)
     values (#{runnerId,jdbcType=BIGINT}, #{targetType,jdbcType=VARCHAR}, #{targetId,jdbcType=BIGINT}, 
       #{assignedAt,jdbcType=TIMESTAMP})
   </insert>
-  <insert id="insertSelective" keyColumn="ID" keyProperty="id" parameterType="io.jgitkins.server.execution.infrastructure.persistence.model.RunnerAssignmentEntity" useGeneratedKeys="true">
+  <insert id="insertSelective" keyColumn="ID" keyProperty="id" parameterType="io.jgitkins.server.execution.adapter.out.persistence.model.RunnerAssignmentEntity" useGeneratedKeys="true">
     insert into RUNNER_ASSIGNMENT
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="runnerId != null">
@@ -136,7 +136,7 @@
       </if>
     </trim>
   </insert>
-  <select id="countByCondition" parameterType="io.jgitkins.server.execution.infrastructure.persistence.model.RunnerAssignmentEntityCondition" resultType="java.lang.Long">
+  <select id="countByCondition" parameterType="io.jgitkins.server.execution.adapter.out.persistence.model.RunnerAssignmentEntityCondition" resultType="java.lang.Long">
     select count(*) from RUNNER_ASSIGNMENT
     <if test="_parameter != null">
       <include refid="Condition_Where_Clause" />
@@ -176,7 +176,7 @@
       <include refid="Update_By_Condition_Where_Clause" />
     </if>
   </update>
-  <update id="updateByPrimaryKeySelective" parameterType="io.jgitkins.server.execution.infrastructure.persistence.model.RunnerAssignmentEntity">
+  <update id="updateByPrimaryKeySelective" parameterType="io.jgitkins.server.execution.adapter.out.persistence.model.RunnerAssignmentEntity">
     update RUNNER_ASSIGNMENT
     <set>
       <if test="runnerId != null">
@@ -194,7 +194,7 @@
     </set>
     where ID = #{id,jdbcType=BIGINT}
   </update>
-  <update id="updateByPrimaryKey" parameterType="io.jgitkins.server.execution.infrastructure.persistence.model.RunnerAssignmentEntity">
+  <update id="updateByPrimaryKey" parameterType="io.jgitkins.server.execution.adapter.out.persistence.model.RunnerAssignmentEntity">
     update RUNNER_ASSIGNMENT
     set RUNNER_ID = #{runnerId,jdbcType=BIGINT},
       TARGET_TYPE = #{targetType,jdbcType=VARCHAR},

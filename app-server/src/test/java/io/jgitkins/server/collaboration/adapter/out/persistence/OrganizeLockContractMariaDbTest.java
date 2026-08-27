@@ -5,8 +5,8 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import io.jgitkins.server.collaboration.domain.repository.OrganizeRepository;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeId;
-import io.jgitkins.server.collaboration.infrastructure.mapper.OrganizeDomainMapper;
-import io.jgitkins.server.collaboration.infrastructure.persistence.mapper.OrganizeEntityMbgMapper;
+import io.jgitkins.server.collaboration.adapter.out.persistence.support.OrganizeDomainMapper;
+import io.jgitkins.server.collaboration.adapter.out.persistence.mapper.OrganizeEntityMbgMapper;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;

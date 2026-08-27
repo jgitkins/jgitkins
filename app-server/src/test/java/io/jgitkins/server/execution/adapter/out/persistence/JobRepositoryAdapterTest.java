@@ -7,10 +7,10 @@ import static org.mockito.Mockito.when;
 
 import io.jgitkins.server.execution.domain.aggregate.Job;
 import io.jgitkins.server.execution.domain.entity.JobHistory;
-import io.jgitkins.server.execution.infrastructure.mapper.JobDomainMapper;
-import io.jgitkins.server.execution.infrastructure.persistence.mapper.JobEntityMbgMapper;
-import io.jgitkins.server.execution.infrastructure.persistence.mapper.JobHistoryEntityMbgMapper;
-import io.jgitkins.server.execution.infrastructure.persistence.model.JobHistoryEntity;
+import io.jgitkins.server.execution.adapter.out.persistence.support.JobDomainMapper;
+import io.jgitkins.server.execution.adapter.out.persistence.mapper.JobEntityMbgMapper;
+import io.jgitkins.server.execution.adapter.out.persistence.mapper.JobHistoryEntityMbgMapper;
+import io.jgitkins.server.execution.adapter.out.persistence.model.JobHistoryEntity;
 import io.jgitkins.server.execution.domain.vo.ExecutionActorId;
 import io.jgitkins.server.execution.domain.vo.ExecutionRepositoryId;
 import io.jgitkins.server.execution.domain.vo.JobId;

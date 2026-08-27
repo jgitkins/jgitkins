@@ -7,10 +7,10 @@ import io.jgitkins.server.collaboration.domain.vo.OrganizeName;
 import io.jgitkins.server.collaboration.domain.repository.OrganizeRepository;
 import io.jgitkins.server.common.infrastructure.error.InfrastructureErrorCode;
 import io.jgitkins.server.common.infrastructure.exception.InfrastructureException;
-import io.jgitkins.server.collaboration.infrastructure.mapper.OrganizeDomainMapper;
-import io.jgitkins.server.collaboration.infrastructure.persistence.mapper.OrganizeEntityMbgMapper;
-import io.jgitkins.server.collaboration.infrastructure.persistence.model.OrganizeEntity;
-import io.jgitkins.server.collaboration.infrastructure.persistence.model.OrganizeEntityCondition;
+import io.jgitkins.server.collaboration.adapter.out.persistence.support.OrganizeDomainMapper;
+import io.jgitkins.server.collaboration.adapter.out.persistence.mapper.OrganizeEntityMbgMapper;
+import io.jgitkins.server.collaboration.adapter.out.persistence.model.OrganizeEntity;
+import io.jgitkins.server.collaboration.adapter.out.persistence.model.OrganizeEntityCondition;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;

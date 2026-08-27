@@ -76,7 +76,7 @@ class RepositoryBoundedContextArchitectureTest {
                 "application/validate/RepositoryMemberValidator.java",
                 "application/support/membership/RepositoryMembershipFactory.java",
                 "adapter/out/persistence/RepositoryMemberPersistenceAdapter.java",
-                "infrastructure/mapper/RepositoryMemberDomainMapper.java");
+                "adapter/out/persistence/support/RepositoryMemberDomainMapper.java");
 
         for (String ownedPath : ownedPaths) {
             Path file = JAVA_ROOT.resolve(REPOSITORY_ROOT + ownedPath);

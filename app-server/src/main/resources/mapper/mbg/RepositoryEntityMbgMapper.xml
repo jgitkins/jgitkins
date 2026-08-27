@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="io.jgitkins.server.repository.infrastructure.persistence.mapper.RepositoryEntityMbgMapper">
-  <resultMap id="BaseResultMap" type="io.jgitkins.server.repository.infrastructure.persistence.model.RepositoryEntity">
+<mapper namespace="io.jgitkins.server.repository.adapter.out.persistence.mapper.RepositoryEntityMbgMapper">
+  <resultMap id="BaseResultMap" type="io.jgitkins.server.repository.adapter.out.persistence.model.RepositoryEntity">
     <id column="ID" jdbcType="BIGINT" property="id" />
     <result column="NAME" jdbcType="VARCHAR" property="name" />
     <result column="PATH" jdbcType="VARCHAR" property="path" />
@@ -17,7 +17,7 @@
     <result column="CREATED_AT" jdbcType="TIMESTAMP" property="createdAt" />
     <result column="UPDATED_AT" jdbcType="TIMESTAMP" property="updatedAt" />
   </resultMap>
-  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="io.jgitkins.server.repository.infrastructure.persistence.model.RepositoryEntity">
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="io.jgitkins.server.repository.adapter.out.persistence.model.RepositoryEntity">
     <result column="DESCRIPTION" jdbcType="LONGVARCHAR" property="description" />
   </resultMap>
   <sql id="Condition_Where_Clause">
@@ -85,7 +85,7 @@
   <sql id="Blob_Column_List">
     DESCRIPTION
   </sql>
-  <select id="selectByConditionWithBLOBs" parameterType="io.jgitkins.server.repository.infrastructure.persistence.model.RepositoryEntityCondition" resultMap="ResultMapWithBLOBs">
+  <select id="selectByConditionWithBLOBs" parameterType="io.jgitkins.server.repository.adapter.out.persistence.model.RepositoryEntityCondition" resultMap="ResultMapWithBLOBs">
     select
     <if test="distinct">
       distinct
@@ -101,7 +101,7 @@
       order by ${orderByClause}
     </if>
   </select>
-  <select id="selectByCondition" parameterType="io.jgitkins.server.repository.infrastructure.persistence.model.RepositoryEntityCondition" resultMap="BaseResultMap">
+  <select id="selectByCondition" parameterType="io.jgitkins.server.repository.adapter.out.persistence.model.RepositoryEntityCondition" resultMap="BaseResultMap">
     select
     <if test="distinct">
       distinct
@@ -127,13 +127,13 @@
     delete from REPOSITORY
     where ID = #{id,jdbcType=BIGINT}
   </delete>
-  <delete id="deleteByCondition" parameterType="io.jgitkins.server.repository.infrastructure.persistence.model.RepositoryEntityCondition">
+  <delete id="deleteByCondition" parameterType="io.jgitkins.server.repository.adapter.out.persistence.model.RepositoryEntityCondition">
     delete from REPOSITORY
     <if test="_parameter != null">
       <include refid="Condition_Where_Clause" />
     </if>
   </delete>
-  <insert id="insert" keyColumn="ID" keyProperty="id" parameterType="io.jgitkins.server.repository.infrastructure.persistence.model.RepositoryEntity" useGeneratedKeys="true">
+  <insert id="insert" keyColumn="ID" keyProperty="id" parameterType="io.jgitkins.server.repository.adapter.out.persistence.model.RepositoryEntity" useGeneratedKeys="true">
     insert into REPOSITORY (NAME, PATH, REPOSITORY_TYPE, 
       OWNER_TYPE, OWNER_ID, CREDENTIAL_ID, 
       CLONE_PATH, DEFAULT_BRANCH, VISIBILITY, 
@@ -145,7 +145,7 @@
       #{status,jdbcType=VARCHAR}, #{lastSyncedAt,jdbcType=TIMESTAMP}, #{createdAt,jdbcType=TIMESTAMP}, 
       #{updatedAt,jdbcType=TIMESTAMP}, #{description,jdbcType=LONGVARCHAR})
   </insert>
-  <insert id="insertSelective" keyColumn="ID" keyProperty="id" parameterType="io.jgitkins.server.repository.infrastructure.persistence.model.RepositoryEntity" useGeneratedKeys="true">
+  <insert id="insertSelective" keyColumn="ID" keyProperty="id" parameterType="io.jgitkins.server.repository.adapter.out.persistence.model.RepositoryEntity" useGeneratedKeys="true">
     insert into REPOSITORY
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="name != null">
@@ -236,7 +236,7 @@
       </if>
     </trim>
   </insert>
-  <select id="countByCondition" parameterType="io.jgitkins.server.repository.infrastructure.persistence.model.RepositoryEntityCondition" resultType="java.lang.Long">
+  <select id="countByCondition" parameterType="io.jgitkins.server.repository.adapter.out.persistence.model.RepositoryEntityCondition" resultType="java.lang.Long">
     select count(*) from REPOSITORY
     <if test="_parameter != null">
       <include refid="Condition_Where_Clause" />
@@ -336,7 +336,7 @@
       <include refid="Update_By_Condition_Where_Clause" />
     </if>
   </update>
-  <update id="updateByPrimaryKeySelective" parameterType="io.jgitkins.server.repository.infrastructure.persistence.model.RepositoryEntity">
+  <update id="updateByPrimaryKeySelective" parameterType="io.jgitkins.server.repository.adapter.out.persistence.model.RepositoryEntity">
     update REPOSITORY
     <set>
       <if test="name != null">
@@ -384,7 +384,7 @@
     </set>
     where ID = #{id,jdbcType=BIGINT}
   </update>
-  <update id="updateByPrimaryKeyWithBLOBs" parameterType="io.jgitkins.server.repository.infrastructure.persistence.model.RepositoryEntity">
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="io.jgitkins.server.repository.adapter.out.persistence.model.RepositoryEntity">
     update REPOSITORY
     set NAME = #{name,jdbcType=VARCHAR},
       PATH = #{path,jdbcType=VARCHAR},
@@ -402,7 +402,7 @@
       DESCRIPTION = #{description,jdbcType=LONGVARCHAR}
     where ID = #{id,jdbcType=BIGINT}
   </update>
-  <update id="updateByPrimaryKey" parameterType="io.jgitkins.server.repository.infrastructure.persistence.model.RepositoryEntity">
+  <update id="updateByPrimaryKey" parameterType="io.jgitkins.server.repository.adapter.out.persistence.model.RepositoryEntity">
     update REPOSITORY
     set NAME = #{name,jdbcType=VARCHAR},
       PATH = #{path,jdbcType=VARCHAR},

@@ -4,10 +4,10 @@ import io.jgitkins.server.repository.domain.entity.Branch;
 import io.jgitkins.server.repository.domain.repository.BranchRepository;
 import io.jgitkins.server.common.infrastructure.error.InfrastructureErrorCode;
 import io.jgitkins.server.common.infrastructure.exception.InfrastructureException;
-import io.jgitkins.server.repository.infrastructure.mapper.BranchDomainMapper;
-import io.jgitkins.server.repository.infrastructure.persistence.mapper.BranchEntityMbgMapper;
-import io.jgitkins.server.repository.infrastructure.persistence.model.BranchEntity;
-import io.jgitkins.server.repository.infrastructure.persistence.model.BranchEntityCondition;
+import io.jgitkins.server.repository.adapter.out.persistence.support.BranchDomainMapper;
+import io.jgitkins.server.repository.adapter.out.persistence.mapper.BranchEntityMbgMapper;
+import io.jgitkins.server.repository.adapter.out.persistence.model.BranchEntity;
+import io.jgitkins.server.repository.adapter.out.persistence.model.BranchEntityCondition;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 

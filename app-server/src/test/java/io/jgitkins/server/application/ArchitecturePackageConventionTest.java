@@ -30,14 +30,14 @@ import io.jgitkins.server.collaboration.application.service.OrganizeMemberServic
 import io.jgitkins.server.collaboration.application.service.OrganizeService;
 import io.jgitkins.server.collaboration.adapter.out.persistence.OrganizeMemberPersistenceAdapter;
 import io.jgitkins.server.collaboration.adapter.out.persistence.OrganizePersistenceAdapter;
-import io.jgitkins.server.collaboration.infrastructure.mapper.OrganizeDomainMapper;
-import io.jgitkins.server.collaboration.infrastructure.mapper.OrganizeMemberDomainMapper;
-import io.jgitkins.server.collaboration.infrastructure.persistence.mapper.OrganizeEntityMbgMapper;
-import io.jgitkins.server.collaboration.infrastructure.persistence.mapper.OrganizeMemberEntityMbgMapper;
-import io.jgitkins.server.collaboration.infrastructure.persistence.model.OrganizeEntity;
-import io.jgitkins.server.collaboration.infrastructure.persistence.model.OrganizeEntityCondition;
-import io.jgitkins.server.collaboration.infrastructure.persistence.model.OrganizeMemberEntity;
-import io.jgitkins.server.collaboration.infrastructure.persistence.model.OrganizeMemberEntityCondition;
+import io.jgitkins.server.collaboration.adapter.out.persistence.support.OrganizeDomainMapper;
+import io.jgitkins.server.collaboration.adapter.out.persistence.support.OrganizeMemberDomainMapper;
+import io.jgitkins.server.collaboration.adapter.out.persistence.mapper.OrganizeEntityMbgMapper;
+import io.jgitkins.server.collaboration.adapter.out.persistence.mapper.OrganizeMemberEntityMbgMapper;
+import io.jgitkins.server.collaboration.adapter.out.persistence.model.OrganizeEntity;
+import io.jgitkins.server.collaboration.adapter.out.persistence.model.OrganizeEntityCondition;
+import io.jgitkins.server.collaboration.adapter.out.persistence.model.OrganizeMemberEntity;
+import io.jgitkins.server.collaboration.adapter.out.persistence.model.OrganizeMemberEntityCondition;
 import io.jgitkins.server.collaboration.application.port.out.OrganizeQueryPort;
 import io.jgitkins.server.collaboration.domain.repository.OrganizeRepository;
 import io.jgitkins.server.identity.access.application.service.PublicUserQueryService;
@@ -108,9 +108,9 @@ class ArchitecturePackageConventionTest {
     private static final String EXECUTION_SERVICE_PACKAGE = "io.jgitkins.server.execution.application.service";
     private static final String COLLABORATION_APPLICATION_SERVICE_PACKAGE = "io.jgitkins.server.collaboration.application.service";
     private static final String COLLABORATION_INFRASTRUCTURE_ADAPTER_PACKAGE = "io.jgitkins.server.collaboration.adapter.out.persistence";
-    private static final String COLLABORATION_INFRASTRUCTURE_MAPPER_PACKAGE = "io.jgitkins.server.collaboration.infrastructure.mapper";
-    private static final String COLLABORATION_INFRASTRUCTURE_PERSISTENCE_MODEL_PACKAGE = "io.jgitkins.server.collaboration.infrastructure.persistence.model";
-    private static final String COLLABORATION_INFRASTRUCTURE_PERSISTENCE_MAPPER_PACKAGE = "io.jgitkins.server.collaboration.infrastructure.persistence.mapper";
+    private static final String COLLABORATION_INFRASTRUCTURE_MAPPER_PACKAGE = "io.jgitkins.server.collaboration.adapter.out.persistence.support";
+    private static final String COLLABORATION_INFRASTRUCTURE_PERSISTENCE_MODEL_PACKAGE = "io.jgitkins.server.collaboration.adapter.out.persistence.model";
+    private static final String COLLABORATION_INFRASTRUCTURE_PERSISTENCE_MAPPER_PACKAGE = "io.jgitkins.server.collaboration.adapter.out.persistence.mapper";
     private static final String IDENTITY_ACCESS_SERVICE_PACKAGE = "io.jgitkins.server.identity.access.application.service";
     private static final String IDENTITY_ACCESS_PORT_OUT_PACKAGE = "io.jgitkins.server.identity.access.application.port.out";
     @Test

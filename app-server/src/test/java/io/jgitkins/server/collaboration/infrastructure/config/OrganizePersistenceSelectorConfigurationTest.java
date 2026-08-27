@@ -13,10 +13,10 @@ import io.jgitkins.server.collaboration.application.port.out.OrganizeMemberPersi
 import io.jgitkins.server.collaboration.application.port.out.OrganizeMembershipQueryPort;
 import io.jgitkins.server.collaboration.application.port.out.OrganizeQueryPort;
 import io.jgitkins.server.collaboration.domain.repository.OrganizeRepository;
-import io.jgitkins.server.collaboration.infrastructure.mapper.OrganizeDomainMapper;
-import io.jgitkins.server.collaboration.infrastructure.mapper.OrganizeMemberDomainMapper;
-import io.jgitkins.server.collaboration.infrastructure.persistence.mapper.OrganizeEntityMbgMapper;
-import io.jgitkins.server.collaboration.infrastructure.persistence.mapper.OrganizeMemberEntityMbgMapper;
+import io.jgitkins.server.collaboration.adapter.out.persistence.support.OrganizeDomainMapper;
+import io.jgitkins.server.collaboration.adapter.out.persistence.support.OrganizeMemberDomainMapper;
+import io.jgitkins.server.collaboration.adapter.out.persistence.mapper.OrganizeEntityMbgMapper;
+import io.jgitkins.server.collaboration.adapter.out.persistence.mapper.OrganizeMemberEntityMbgMapper;
 import io.jgitkins.server.collaboration.infrastructure.config.OrganizePersistenceSelectorConfiguration.OrganizePersistenceSelection;
 import io.jgitkins.server.common.infrastructure.config.PersistenceImplementation;
 import io.jgitkins.server.common.infrastructure.exception.InvalidPersistenceSelectorException;
