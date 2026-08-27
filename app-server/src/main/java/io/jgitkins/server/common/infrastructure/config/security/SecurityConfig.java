@@ -52,6 +52,13 @@ public class SecurityConfig {
                 .requestMatchers("/oauth2/**", "/login/**", "/swagger-ui/**", "/actuator/prometheus", "/v3/api-docs/**")
                 .permitAll()
                 .anyRequest().permitAll());
+        // Anonymous is disabled deliberately. AnonymousAuthenticationFilter sets the principal to the
+        // String "anonymousUser", and @AuthenticationPrincipal(expression = "username") evaluates that
+        // expression against the principal unguarded, so every anonymous-allowed read returned 500 with
+        // SpelEvaluationException EL1008E. Nothing on this chain needs the anonymous token: every rule
+        // here is permitAll and authorization is decided in the controllers, while the two consumers of
+        // Authentication#getName already treat a null authentication as absent.
+        http.anonymous(anonymous -> anonymous.disable());
         http.oauth2Login(oauth2 -> oauth2.successHandler(successHandler));
         http.oauth2Client(Customizer.withDefaults());
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
