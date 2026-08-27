@@ -25,6 +25,12 @@ public class UserIdentityPersistenceAdapter implements UserIdentityPersistencePo
     @Override
     public Optional<UserIdentity> findByProvider(String providerName, String providerSub) {
         try {
+            // Guarded rather than dereferenced: this used to throw NPE and report it as
+            // PERSISTENCE_OPERATION_FAILED, which blames the database for a caller's null.
+            // The JPA adapter returns empty here, and the two providers must not disagree.
+            if (providerName == null || providerName.isBlank() || providerSub == null || providerSub.isBlank()) {
+                return Optional.empty();
+            }
             UserIdentitiesEntityCondition condition = new UserIdentitiesEntityCondition();
             condition.createCriteria()
                     .andProviderNameEqualTo(providerName.trim())

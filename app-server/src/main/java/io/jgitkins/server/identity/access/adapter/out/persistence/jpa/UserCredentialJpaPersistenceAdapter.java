@@ -44,7 +44,7 @@ public class UserCredentialJpaPersistenceAdapter implements UserCredentialPersis
     @Override
     public Optional<UserCredential> findByUserIdAndProvider(Long userId, String provider) {
         try {
-            if (userId == null || provider == null) {
+            if (userId == null || provider == null || provider.isBlank()) {
                 return Optional.empty();
             }
             return userCredentialJpaRepository
@@ -58,7 +58,7 @@ public class UserCredentialJpaPersistenceAdapter implements UserCredentialPersis
     @Override
     public List<UserCredential> findAllByUserIdAndProvider(Long userId, String provider) {
         try {
-            if (userId == null || provider == null) {
+            if (userId == null || provider == null || provider.isBlank()) {
                 return List.of();
             }
             return userCredentialJpaRepository
