@@ -7,17 +7,13 @@ import io.jgitkins.server.execution.domain.entity.JobHistory;
 import io.jgitkins.server.execution.domain.repository.JobRepository;
 import io.jgitkins.server.execution.domain.vo.ExecutionActorId;
 import io.jgitkins.server.execution.domain.vo.ExecutionRepositoryId;
-import io.jgitkins.server.execution.domain.vo.ExecutionSystemActor;
-import io.jgitkins.server.execution.domain.vo.JobHistoryId;
 import io.jgitkins.server.execution.domain.vo.JobId;
 import io.jgitkins.server.execution.domain.vo.JobStatus;
 import io.jgitkins.server.execution.domain.vo.RunnerId;
 import io.jgitkins.server.shared.domain.model.vo.BranchName;
 import io.jgitkins.server.shared.domain.model.vo.CommitHash;
-import io.jgitkins.server.shared.domain.model.vo.SequenceNumber;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -94,14 +90,11 @@ public class JobJpaRepositoryAdapter implements JobRepository {
     }
 
     private List<JobHistory> histories(Long jobId) {
-        List<JobHistoryJpaEntity> entities =
-                jobHistoryJpaRepository.findAllByJobIdOrderByCreatedAtAscIdAsc(jobId);
-        // The sequence number is positional, not stored: it comes from the row's place in the ordered
-        // history, exactly as the MyBatis mapper derived it. Reading it from a column would be wrong
-        // because there is no such column.
-        return IntStream.range(0, entities.size())
-                .mapToObj(index -> toHistoryDomain(entities.get(index), index + 1))
-                .toList();
+        // The sequence number is positional, not stored. The rule lives in ExecutionJpaHistoryMapping
+        // so the dispatch query adapter cannot derive it differently -- both paths compare history
+        // identity to decide who wins a dispatch.
+        return ExecutionJpaHistoryMapping.toDomain(
+                jobHistoryJpaRepository.findAllByJobIdOrderByCreatedAtAscIdAsc(jobId));
     }
 
     private boolean isSameHistory(JobHistoryJpaEntity latestPersisted, JobHistory expectedPrevious) {
@@ -158,17 +151,6 @@ public class JobJpaRepositoryAdapter implements JobRepository {
                 ExecutionActorId.of(entity.getTriggeredBy()),
                 entity.getCreatedAt(),
                 histories);
-    }
-
-    private JobHistory toHistoryDomain(JobHistoryJpaEntity entity, int sequence) {
-        return JobHistory.reconstruct(
-                JobHistoryId.of(String.valueOf(entity.getId())),
-                JobId.of(String.valueOf(entity.getJobId())),
-                SequenceNumber.of(sequence),
-                entity.getRunnerId() != null ? RunnerId.of(String.valueOf(entity.getRunnerId())) : null,
-                JobStatus.valueOf(entity.getStatus()),
-                ExecutionSystemActor.SYSTEM,
-                entity.getCreatedAt());
     }
 
     private InfrastructureException persistence(String message, Exception cause) {
