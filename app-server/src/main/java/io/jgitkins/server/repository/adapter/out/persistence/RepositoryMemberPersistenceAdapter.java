@@ -12,9 +12,14 @@ import io.jgitkins.server.repository.infrastructure.persistence.model.Repository
 import io.jgitkins.server.repository.infrastructure.persistence.model.RepositoryMemberEntityCondition;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
 
-@Component
+/**
+ * Registered by {@code RepositoryPersistenceSelectorConfiguration}, not by component scanning.
+ *
+ * <p>The {@code @Component} annotation was removed in task 2.72: with a JPA implementation of the
+ * same port on the classpath, scanning would register two candidates and the injection point would
+ * be ambiguous. The composition root now names exactly one.
+ */
 @RequiredArgsConstructor
 public class RepositoryMemberPersistenceAdapter implements RepositoryMemberPersistencePort {
 

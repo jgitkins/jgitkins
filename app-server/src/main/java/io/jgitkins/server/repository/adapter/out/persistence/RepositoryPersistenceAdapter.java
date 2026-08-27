@@ -6,7 +6,6 @@ import io.jgitkins.server.shared.domain.model.vo.OwnerType;
 import io.jgitkins.server.repository.domain.vo.RepositoryId;
 import io.jgitkins.server.repository.domain.vo.RepositoryName;
 import io.jgitkins.server.repository.domain.vo.RepositoryPath;
-import io.jgitkins.server.repository.domain.repository.RepositoryRepository;
 import io.jgitkins.server.collaboration.infrastructure.persistence.mapper.OrganizeMemberEntityMbgMapper;
 import io.jgitkins.server.common.infrastructure.error.InfrastructureErrorCode;
 import io.jgitkins.server.common.infrastructure.exception.InfrastructureException;
@@ -22,21 +21,25 @@ import io.jgitkins.server.repository.infrastructure.persistence.model.Repository
 import io.jgitkins.server.identity.access.infrastructure.persistence.model.UserEntity;
 import io.jgitkins.server.identity.access.infrastructure.persistence.model.UserEntityCondition;
 import io.jgitkins.server.repository.application.contract.result.RepositoryResult;
-import io.jgitkins.server.repository.application.port.out.RepositoryQueryPort;
 import io.jgitkins.server.repository.application.support.CloneUrlBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@Component
+/**
+ * Registered by {@code RepositoryPersistenceSelectorConfiguration}, not by component scanning.
+ *
+ * <p>The {@code @Component} annotation was removed in task 2.72: with a JPA implementation of the
+ * same port on the classpath, scanning would register two candidates and the injection point would
+ * be ambiguous. The composition root now names exactly one.
+ */
 @RequiredArgsConstructor
 @Slf4j
-public class RepositoryPersistenceAdapter implements RepositoryRepository, RepositoryQueryPort {
+public class RepositoryPersistenceAdapter implements RepositoryPersistence {
 
     private final OrganizeEntityMbgMapper organizeEntityMbgMapper;
     private final OrganizeMemberEntityMbgMapper organizeMemberEntityMbgMapper;

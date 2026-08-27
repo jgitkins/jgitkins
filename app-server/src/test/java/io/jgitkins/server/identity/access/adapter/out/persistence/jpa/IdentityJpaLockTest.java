@@ -1,5 +1,6 @@
 package io.jgitkins.server.identity.access.adapter.out.persistence.jpa;
 
+import io.jgitkins.server.persistence.jpa.JpaMariaDbTestSupport;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
@@ -47,16 +48,16 @@ class IdentityJpaLockTest {
 
     @BeforeEach
     void setUp() {
-        assumeTrue(IdentityJpaTestSupport.mariaDbReachable(),
-                "MariaDB is not reachable at " + IdentityJpaTestSupport.URL
+        assumeTrue(JpaMariaDbTestSupport.mariaDbReachable(),
+                "MariaDB is not reachable at " + JpaMariaDbTestSupport.URL
                         + " -- the identity row-lock contract is UNVERIFIED, not satisfied.");
 
-        DriverManagerDataSource dataSource = IdentityJpaTestSupport.dataSource();
-        factoryBean = IdentityJpaTestSupport.entityManagerFactory(dataSource, "identity-lock");
+        DriverManagerDataSource dataSource = JpaMariaDbTestSupport.dataSource();
+        factoryBean = JpaMariaDbTestSupport.entityManagerFactory(dataSource, "identity-lock", "io.jgitkins.server.identity.access.adapter.out.persistence.jpa");
         EntityManagerFactory emf = factoryBean.getObject();
         transactions = new TransactionTemplate(new JpaTransactionManager(emf));
         userAdapter = new UserJpaPersistenceAdapter(
-                IdentityJpaTestSupport.repository(emf, UserJpaRepository.class));
+                JpaMariaDbTestSupport.repository(emf, UserJpaRepository.class));
 
         jdbc = new JdbcTemplate(dataSource);
         username = "jpa-identity-lock-" + System.nanoTime();

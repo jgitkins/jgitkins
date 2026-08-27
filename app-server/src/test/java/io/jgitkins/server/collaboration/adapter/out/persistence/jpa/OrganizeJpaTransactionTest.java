@@ -1,5 +1,6 @@
 package io.jgitkins.server.collaboration.adapter.out.persistence.jpa;
 
+import io.jgitkins.server.persistence.jpa.JpaMariaDbTestSupport;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
@@ -54,19 +55,19 @@ class OrganizeJpaTransactionTest {
 
     @BeforeEach
     void setUp() {
-        assumeTrue(OrganizeJpaTestSupport.mariaDbReachable(),
-                "MariaDB is not reachable at " + OrganizeJpaTestSupport.URL
+        assumeTrue(JpaMariaDbTestSupport.mariaDbReachable(),
+                "MariaDB is not reachable at " + JpaMariaDbTestSupport.URL
                         + " -- owner-bootstrap atomicity is UNVERIFIED, not satisfied.");
 
-        DriverManagerDataSource dataSource = OrganizeJpaTestSupport.dataSource();
-        factoryBean = OrganizeJpaTestSupport.entityManagerFactory(dataSource, "organize-jpa-transaction");
+        DriverManagerDataSource dataSource = JpaMariaDbTestSupport.dataSource();
+        factoryBean = JpaMariaDbTestSupport.entityManagerFactory(dataSource, "organize-jpa-transaction", "io.jgitkins.server.collaboration.adapter.out.persistence.jpa");
         EntityManagerFactory emf = factoryBean.getObject();
 
         transactions = new TransactionTemplate(new JpaTransactionManager(emf));
         organizeAdapter = new OrganizeJpaPersistenceAdapter(
-                OrganizeJpaTestSupport.repository(emf, OrganizeJpaRepository.class));
+                JpaMariaDbTestSupport.repository(emf, OrganizeJpaRepository.class));
         memberAdapter = new OrganizeMemberJpaPersistenceAdapter(
-                OrganizeJpaTestSupport.repository(emf, OrganizeMemberJpaRepository.class));
+                JpaMariaDbTestSupport.repository(emf, OrganizeMemberJpaRepository.class));
 
         jdbc = new JdbcTemplate(dataSource);
         path = "jpa-tx-" + System.nanoTime();
