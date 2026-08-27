@@ -14,11 +14,14 @@ import io.jgitkins.server.identity.access.infrastructure.persistence.model.UserE
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
 
-@Component
+/**
+ * Not a {@code @Component}. {@code IdentityPersistenceSelectorConfiguration} constructs exactly one
+ * implementation of this port based on the identity capability selector; a component-annotated
+ * adapter would be registered unconditionally and the selector would have nothing to displace.
+ */
 @RequiredArgsConstructor
-public class UserPersistenceAdapter implements UserRepository, UserQueryPort {
+public class UserPersistenceAdapter implements UserPersistence {
     private final UserEntityMbgMapper userEntityMbgMapper;
     private final UserDomainMapper userDomainMapper;
 
