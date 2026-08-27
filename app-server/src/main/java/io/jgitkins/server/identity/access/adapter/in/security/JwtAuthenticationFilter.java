@@ -38,6 +38,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
         String header = request.getHeader(HttpHeaders.AUTHORIZATION);
         if (header == null || !header.startsWith("Bearer ")) {
+            // This chain authenticates with a Bearer JWT and nothing else, so a request without one
+            // must reach the controllers unauthenticated rather than carrying whatever the session
+            // repository happened to load. A browser that completed the OAuth handshake still has an
+            // OAuth2AuthenticationToken in its session, and @AuthenticationPrincipal(expression =
+            // "username") evaluates that expression against the principal without guarding the call:
+            // a DefaultOidcUser has no such property, so every route that reads the requester answered
+            // 500. The JWT is the credential for these routes -- OAuth2LoginSuccessHandler hands it to
+            // the client as OAuthLoginResult#appToken -- which is why dropping the session principal
+            // here loses no authentication that this chain would have honored.
+            SecurityContextHolder.clearContext();
             filterChain.doFilter(request, response);
             return;
         }

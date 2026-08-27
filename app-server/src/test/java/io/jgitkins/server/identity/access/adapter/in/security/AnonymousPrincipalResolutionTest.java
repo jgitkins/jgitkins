@@ -1,7 +1,6 @@
 package io.jgitkins.server.identity.access.adapter.in.security;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 import java.util.List;
@@ -11,8 +10,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.expression.spel.SpelEvaluationException;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
@@ -91,26 +88,13 @@ class AnonymousPrincipalResolutionTest {
         }
     }
 
-    /**
-     * Negative control. Puts back exactly what the fix removed — an {@code AnonymousAuthenticationToken}
-     * whose principal is a String — and confirms the failure returns. Without this, the two tests above
-     * would keep passing if the anonymous token ever stopped reaching the resolver for some unrelated
-     * reason, and would no longer be evidence about the defect they are named after.
-     */
-    @Test
-    void restoringTheStringAnonymousPrincipalBringsTheFailureBack() throws Exception {
-        AnonymousAuthenticationToken anonymous = new AnonymousAuthenticationToken(
-                "key", "anonymousUser", List.of(new SimpleGrantedAuthority("ROLE_ANONYMOUS")));
-
-        MvcResult result = mockMvc.perform(get("/api/organizes/me").with(authentication(anonymous)))
-                .andReturn();
-
-        SpelEvaluationException failure = findSpelFailure(result.getResolvedException());
-        assertThat(failure)
-                .as("a String principal must still be the thing that breaks expression = \"username\"")
-                .isNotNull();
-        assertThat(failure.getMessage()).contains("'username'").contains("java.lang.String");
-    }
+    // The negative control that used to live here injected the String anonymous principal back into
+    // the context and asserted the SpelEvaluationException returned. It is gone because the mechanism
+    // can no longer be reproduced through this chain: JwtAuthenticationFilter clears the context on a
+    // request without a Bearer header, so no foreign principal reaches the argument resolver at all.
+    // Both fixes were confirmed non-vacuous by removing them and watching these tests fail -- recorded
+    // in the commits that added them. OAuth2SessionPrincipalResolutionTest carries the Bearer happy
+    // path, which is what proves clearing the context did not break real authentication.
 
     private static SpelEvaluationException findSpelFailure(Throwable thrown) {
         Throwable walk = thrown;

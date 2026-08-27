@@ -10,8 +10,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.securityContext;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jgitkins.server.collaboration.application.dto.command.OrganizeCreationCommand;
@@ -38,7 +36,11 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(OrganizeController.class)
-@AutoConfigureMockMvc
+// addFilters = false because this is a controller slice test: it authenticates by seeding
+// SecurityContextHolder, which JwtAuthenticationFilter now clears on a request without a Bearer
+// header. The real chain is covered by AnonymousPrincipalResolutionTest and
+// OAuth2SessionPrincipalResolutionTest; the other eight controller slice tests already do this.
+@AutoConfigureMockMvc(addFilters = false)
 @WithMockUser(username = "7")
 @Import(GlobalExceptionHandler.class)
 class OrganizeControllerTest {
@@ -85,7 +87,7 @@ class OrganizeControllerTest {
                 .thenReturn(command);
         when(organizeCreationUseCase.createOrganize(command)).thenReturn(result);
 
-        mockMvc.perform(post("/api/organizes").with(user("7"))
+        mockMvc.perform(post("/api/organizes")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(java.util.Map.of(
                                 "name", "core-team",
@@ -109,7 +111,7 @@ class OrganizeControllerTest {
                 .thenReturn(command);
         when(organizeCreationUseCase.createOrganize(command)).thenReturn(result);
 
-        mockMvc.perform(post("/api/organizes").with(user("7"))
+        mockMvc.perform(post("/api/organizes")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {"name":"core-team","description":"Core Team","ownerId":999}
@@ -131,25 +133,32 @@ class OrganizeControllerTest {
     void createOrganize_nullRequesterReturnsOrg403ApplicationError() throws Exception {
         when(requesterUserIdResolver.resolve(null)).thenReturn(java.util.Optional.empty());
         when(statusMapper.map(org.mockito.ArgumentMatchers.any())).thenReturn(org.springframework.http.HttpStatus.FORBIDDEN);
-        assertCreateDenied(authentication(new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(
-                new NullUsernamePrincipal(), null, java.util.List.of())), null);
+        assertCreateDenied(new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(
+                new NullUsernamePrincipal(), null, java.util.List.of()), null);
     }
 
     @Test
     void createOrganize_blankRequesterReturnsOrg403ApplicationError() throws Exception {
         when(requesterUserIdResolver.resolve(" ")).thenReturn(java.util.Optional.empty());
-        assertCreateDenied(user(" "), " ");
+        assertCreateDenied(tokenFor(" "), " ");
     }
 
     @Test
     void createOrganize_nonnumericRequesterReturnsOrg403ApplicationError() throws Exception {
         when(requesterUserIdResolver.resolve("not-numeric")).thenReturn(java.util.Optional.empty());
-        assertCreateDenied(user("not-numeric"), "not-numeric");
+        assertCreateDenied(tokenFor("not-numeric"), "not-numeric");
     }
 
-    private void assertCreateDenied(org.springframework.test.web.servlet.request.RequestPostProcessor auth,
+    /**
+     * Seeds the context directly rather than through a {@code SecurityMockMvcRequestPostProcessors}
+     * post-processor. Those install the context via the security filter chain, which this slice test
+     * no longer runs, so a post-processor would silently leave the {@code @BeforeEach} subject in place
+     * and the assertion below would pass for the wrong reason.
+     */
+    private void assertCreateDenied(org.springframework.security.core.Authentication auth,
                                     String subject) throws Exception {
-        mockMvc.perform(post("/api/organizes").with(auth)
+        org.springframework.security.core.context.SecurityContextHolder.getContext().setAuthentication(auth);
+        mockMvc.perform(post("/api/organizes")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"name\":\"core-team\",\"description\":\"Core Team\"}"))
                 .andExpect(status().isForbidden())
@@ -182,7 +191,7 @@ class OrganizeControllerTest {
                 new OrganizeCreationResult(3L, "org-c", null, null, null, null)
         ));
 
-        mockMvc.perform(get("/api/organizes/me").with(user("7")))
+        mockMvc.perform(get("/api/organizes/me"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data[0].id").value(3L));
 
@@ -194,7 +203,7 @@ class OrganizeControllerTest {
         when(requesterUserIdResolver.resolve("7")).thenReturn(java.util.Optional.empty());
         when(organizeLoadUseCase.getAccessibleOrganizes(null)).thenReturn(List.of());
 
-        mockMvc.perform(get("/api/organizes/me").with(user("7")))
+        mockMvc.perform(get("/api/organizes/me"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data").isEmpty());
 
@@ -221,6 +230,12 @@ class OrganizeControllerTest {
                 .andExpect(status().isNoContent());
 
         verify(organizeDeletionUseCase).deleteOrganize(9L);
+    }
+
+    private static org.springframework.security.core.Authentication tokenFor(String subject) {
+        return new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(
+                new org.springframework.security.core.userdetails.User(subject, "", java.util.List.of()),
+                "", java.util.List.of());
     }
 
     private static final class NullUsernamePrincipal {

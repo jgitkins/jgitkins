@@ -33,7 +33,11 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(OrganizeMemberController.class)
-@AutoConfigureMockMvc
+// addFilters = false because this is a controller slice test: it authenticates by seeding
+// SecurityContextHolder, which JwtAuthenticationFilter now clears on a request without a Bearer
+// header. The real chain is covered by AnonymousPrincipalResolutionTest and
+// OAuth2SessionPrincipalResolutionTest; the other eight controller slice tests already do this.
+@AutoConfigureMockMvc(addFilters = false)
 class OrganizeMemberControllerTest {
 
     @BeforeEach
