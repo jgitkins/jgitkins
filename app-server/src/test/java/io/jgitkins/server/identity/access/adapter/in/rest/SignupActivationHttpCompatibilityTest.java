@@ -12,6 +12,7 @@ import io.jgitkins.server.common.presentation.advice.mapper.CompositeErrorHttpSt
 import io.jgitkins.server.common.presentation.advice.mapper.DomainErrorHttpStatusMapper;
 import io.jgitkins.server.common.presentation.advice.mapper.InfrastructureErrorHttpStatusMapper;
 import io.jgitkins.server.common.presentation.advice.mapper.PresentationErrorHttpStatusMapper;
+import io.jgitkins.server.identity.access.adapter.in.support.RequesterUserIdResolver;
 import io.jgitkins.server.identity.access.application.exception.OrganizeAlreadyExistsException;
 import io.jgitkins.server.identity.access.application.exception.UserNotFoundException;
 import io.jgitkins.server.identity.access.application.exception.UsernameAlreadyExistsException;
@@ -38,7 +39,8 @@ import org.springframework.test.web.servlet.MockMvc;
 @Import({GlobalExceptionHandler.class, CompositeErrorHttpStatusMapper.class,
         ApplicationErrorHttpStatusMapper.class, DomainErrorHttpStatusMapper.class,
         InfrastructureErrorHttpStatusMapper.class, PresentationErrorHttpStatusMapper.class,
-        SignupActivationHttpCompatibilityTest.StatusMapperConfiguration.class})
+        SignupActivationHttpCompatibilityTest.StatusMapperConfiguration.class,
+        RequesterUserIdResolver.class})
 class SignupActivationHttpCompatibilityTest {
 
     @Autowired private MockMvc mockMvc;
@@ -70,7 +72,7 @@ class SignupActivationHttpCompatibilityTest {
     @Test
     void unauthenticatedReturnsApplicationContract() throws Exception {
         doThrow(new ApplicationException(ApplicationProblemSpec.UNAUTHENTICATED))
-                .when(signupUseCase).activate("new_name");
+                .when(signupUseCase).activate(42L, "new_name");
         perform("new_name").andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.error.code").value("AUTH-001"))
                 .andExpect(jsonPath("$.error.message").value("Authentication required"))
@@ -79,7 +81,7 @@ class SignupActivationHttpCompatibilityTest {
 
     @Test
     void missingUserReturnsApplicationContract() throws Exception {
-        doThrow(new UserNotFoundException()).when(signupUseCase).activate("new_name");
+        doThrow(new UserNotFoundException()).when(signupUseCase).activate(42L, "new_name");
         perform("new_name").andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.error.code").value("USER-404"))
                 .andExpect(jsonPath("$.error.message").value("User not found"))
@@ -89,7 +91,7 @@ class SignupActivationHttpCompatibilityTest {
     @Test
     void duplicateUsernameReturnsApplicationContract() throws Exception {
         doThrow(new UsernameAlreadyExistsException("Username already exists"))
-                .when(signupUseCase).activate("new_name");
+                .when(signupUseCase).activate(42L, "new_name");
         perform("new_name").andExpect(status().isConflict())
                 .andExpect(jsonPath("$.error.code").value("USER-409-USERNAME"))
                 .andExpect(jsonPath("$.error.message").value("Username already exists"))
@@ -98,7 +100,7 @@ class SignupActivationHttpCompatibilityTest {
 
     @Test
     void namespaceCollisionReturnsApplicationContract() throws Exception {
-        doThrow(new OrganizeAlreadyExistsException()).when(signupUseCase).activate("new_name");
+        doThrow(new OrganizeAlreadyExistsException()).when(signupUseCase).activate(42L, "new_name");
         perform("new_name").andExpect(status().isConflict())
                 .andExpect(jsonPath("$.error.code").value("ORG-409"))
                 .andExpect(jsonPath("$.error.message").value("Namespace already exists"))
@@ -109,7 +111,7 @@ class SignupActivationHttpCompatibilityTest {
     void ownedRepositoryPreventsRenameWithApplicationContract() throws Exception {
         doThrow(new ApplicationException(ApplicationErrorCode.UNPROCESSABLE,
                 "Cannot rename user with existing repositories"))
-                .when(signupUseCase).activate("new_name");
+                .when(signupUseCase).activate(42L, "new_name");
         perform("new_name").andExpect(status().isUnprocessableEntity())
                 .andExpect(jsonPath("$.error.code").value("UNPROCESSABLE"))
                 .andExpect(jsonPath("$.error.message").value("Cannot rename user with existing repositories"))
@@ -118,7 +120,7 @@ class SignupActivationHttpCompatibilityTest {
 
     @Test
     void alreadyActivatedReturnsDomainContract() throws Exception {
-        doThrow(new UserAlreadyActivatedException()).when(signupUseCase).activate("new_name");
+        doThrow(new UserAlreadyActivatedException()).when(signupUseCase).activate(42L, "new_name");
         perform("new_name").andExpect(status().isConflict())
                 .andExpect(jsonPath("$.error.code").value("USER-409-ACTIVATED"))
                 .andExpect(jsonPath("$.error.message").value("User is already activated"))
@@ -130,8 +132,24 @@ class SignupActivationHttpCompatibilityTest {
     }
 
     private org.springframework.test.web.servlet.ResultActions performBody(String body) throws Exception {
+        // Every compatibility case carries a valid principal, so the responses being compared are the
+        // ones a real authenticated caller gets. The unauthenticated path is asserted separately below;
+        // folding it in here would have every case exercising the 401 instead.
         return mockMvc.perform(post("/api/signup/activate")
+                .principal(() -> "42")
                 .contentType(MediaType.APPLICATION_JSON).content(body));
+    }
+
+    @Test
+    void anonymousRequestKeepsTheUnauthenticatedEnvelope() throws Exception {
+        // Task 2.63 moved this rejection from the service to the adapter. The status and envelope must
+        // not have moved with it -- that is the entire compatibility claim of this task.
+        mockMvc.perform(post("/api/signup/activate")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"username\":\"new_name\"}"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.error.code").value("AUTH-001"))
+                .andExpect(jsonPath("$.error.source").value("application"));
     }
 
     @TestConfiguration

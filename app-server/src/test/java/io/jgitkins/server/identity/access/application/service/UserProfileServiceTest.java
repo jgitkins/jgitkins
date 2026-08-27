@@ -3,7 +3,6 @@ package io.jgitkins.server.identity.access.application.service;
 import io.jgitkins.core.common.exception.JgitkinsException;
 import io.jgitkins.server.shared.domain.error.DomainErrorCode;
 import io.jgitkins.server.shared.domain.error.DomainProblemSpec;
-import io.jgitkins.server.identity.access.application.port.out.CurrentUserPort;
 import io.jgitkins.server.identity.access.domain.repository.UserRepository;
 import io.jgitkins.server.identity.access.application.validate.ActivationValidator;
 import io.jgitkins.server.identity.access.domain.aggregate.User;
@@ -28,8 +27,6 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class UserProfileServiceTest {
 
-    @Mock
-    private CurrentUserPort currentUserPersistencePort;
 
     @Mock
     private UserRepository userRepository;
@@ -44,12 +41,11 @@ class UserProfileServiceTest {
     void activate_activatesAndSavesUser() {
         Username requested = Username.from("new_name");
         when(validator.validateUsername("new_name")).thenReturn(requested);
-        when(currentUserPersistencePort.resolveCurrentUserId()).thenReturn(Optional.of(1L));
         User pending = User.createWithStatus("temp", "a@b.com", "User", null, UserStatus.PENDING).withId(1L);
         when(userRepository.findById(1L)).thenReturn(Optional.of(pending));
         when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        service.activate("new_name");
+        service.activate(1L, "new_name");
 
         verify(validator).validateUsernameNotTaken(requested, 1L);
         verify(validator).validateOrganizeNameNotTakenIfCompatible(requested);
@@ -67,11 +63,10 @@ class UserProfileServiceTest {
     void activate_translatesAlreadyActivatedDomainException() {
         Username requested = Username.from("new_name");
         when(validator.validateUsername("new_name")).thenReturn(requested);
-        when(currentUserPersistencePort.resolveCurrentUserId()).thenReturn(Optional.of(1L));
         User activeUser = User.createWithStatus("active_user", "a@b.com", "User", null, UserStatus.ACTIVE).withId(1L);
         when(userRepository.findById(1L)).thenReturn(Optional.of(activeUser));
 
-        JgitkinsException exception = assertThrows(JgitkinsException.class, () -> service.activate("new_name"));
+        JgitkinsException exception = assertThrows(JgitkinsException.class, () -> service.activate(1L, "new_name"));
 
         assertSame(DomainErrorCode.INVALID_STATE, exception.getErrorCode());
         assertSame(DomainProblemSpec.USER_ALREADY_ACTIVATED, exception.getProblemSpec());
