@@ -14,14 +14,19 @@ import io.jgitkins.server.execution.infrastructure.persistence.model.RunnerAssig
 import io.jgitkins.server.execution.infrastructure.persistence.model.RunnerEntity;
 import io.jgitkins.server.execution.infrastructure.persistence.model.RunnerEntityCondition;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Component
+/**
+ * Registered by {@code ExecutionRunnerPersistenceSelectorConfiguration}, not by component scanning.
+ *
+ * <p>The {@code @Component} annotation was removed in task 2.74: with a JPA implementation of
+ * {@code RunnerRepository} on the classpath, scanning would register two candidates and the injection
+ * point would be ambiguous.
+ */
 @RequiredArgsConstructor
 public class RunnerPersistenceAdapter implements RunnerRepository {
 
@@ -112,11 +117,6 @@ public class RunnerPersistenceAdapter implements RunnerRepository {
             throw new InfrastructureException(InfrastructureErrorCode.PERSISTENCE_OPERATION_FAILED,
                     "Database operation failed during find all runners", e);
         }
-    }
-
-    private void persistAssignment(Runner runner) {
-        RunnerAssignmentEntity assignment = runnerAssignmentDomainMapper.toEntity(runner);
-        runnerAssignmentEntityMbgMapper.insertSelective(assignment);
     }
 
     private void deleteAssignment(Long runnerId) {
