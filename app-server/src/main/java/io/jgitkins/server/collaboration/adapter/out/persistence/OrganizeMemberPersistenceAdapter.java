@@ -15,7 +15,7 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class OrganizeMemberPersistenceAdapter implements OrganizeMemberPersistencePort, OrganizeMembershipQueryPort {
+public class OrganizeMemberPersistenceAdapter implements OrganizeMemberPersistence {
 
     private final OrganizeMemberEntityMbgMapper organizeMemberMapper;
 

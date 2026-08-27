@@ -1,7 +1,13 @@
 package io.jgitkins.server.collaboration.infrastructure.config;
 
+import io.jgitkins.server.collaboration.adapter.out.persistence.OrganizeMemberPersistence;
 import io.jgitkins.server.collaboration.adapter.out.persistence.OrganizeMemberPersistenceAdapter;
+import io.jgitkins.server.collaboration.adapter.out.persistence.OrganizePersistence;
 import io.jgitkins.server.collaboration.adapter.out.persistence.OrganizePersistenceAdapter;
+import io.jgitkins.server.collaboration.adapter.out.persistence.jpa.OrganizeJpaPersistenceAdapter;
+import io.jgitkins.server.collaboration.adapter.out.persistence.jpa.OrganizeJpaRepository;
+import io.jgitkins.server.collaboration.adapter.out.persistence.jpa.OrganizeMemberJpaPersistenceAdapter;
+import io.jgitkins.server.collaboration.adapter.out.persistence.jpa.OrganizeMemberJpaRepository;
 import io.jgitkins.server.collaboration.infrastructure.mapper.OrganizeDomainMapper;
 import io.jgitkins.server.collaboration.infrastructure.mapper.OrganizeMemberDomainMapper;
 import io.jgitkins.server.collaboration.infrastructure.persistence.mapper.OrganizeEntityMbgMapper;
@@ -23,7 +29,8 @@ import org.springframework.core.env.Environment;
  *            +-- absent or "mybatis" --> OrganizePersistenceAdapter
  *            |                           OrganizeMemberPersistenceAdapter        (wired here)
  *            |
- *            +-- "jpa" ---------------> not wired yet, fails startup             (Task 2.69 slice)
+ *            +-- "jpa" ---------------> OrganizeJpaPersistenceAdapter
+ *            |                           OrganizeMemberJpaPersistenceAdapter    (wired here)
  *            |
  *            +-- anything else -------> InvalidPersistenceSelectorException      (fails startup)
  * </pre>
@@ -34,6 +41,9 @@ import org.springframework.core.env.Environment;
  * component-annotated implementation of {@code OrganizeRepository} would not produce a choice, it
  * would produce {@code NoUniqueBeanDefinitionException} at startup. Constructing them here is what
  * makes the selection actually possible.
+ *
+ * <p>The switch is exhaustive over the enum, so adding a third implementation is a compile error
+ * here rather than a silent fallthrough to one of the existing two.
  *
  * <p>Both adapters resolve from one property on purpose. Organize and OrganizeMember share
  * membership invariants and a row lock, so a half-cutover slice could hold the owner invariant in
@@ -69,37 +79,27 @@ public class OrganizePersistenceSelectorConfiguration {
     }
 
     @Bean
-    OrganizePersistenceAdapter organizePersistenceAdapter(
+    OrganizePersistence organizePersistence(
             OrganizePersistenceSelection organizePersistenceSelection,
             OrganizeEntityMbgMapper organizeEntityMbgMapper,
-            OrganizeDomainMapper organizeDomainMapper) {
-        requireWiredImplementation(organizePersistenceSelection.implementation());
-        return new OrganizePersistenceAdapter(organizeEntityMbgMapper, organizeDomainMapper);
+            OrganizeDomainMapper organizeDomainMapper,
+            OrganizeJpaRepository organizeJpaRepository) {
+        return switch (organizePersistenceSelection.implementation()) {
+            case MYBATIS -> new OrganizePersistenceAdapter(organizeEntityMbgMapper, organizeDomainMapper);
+            case JPA -> new OrganizeJpaPersistenceAdapter(organizeJpaRepository);
+        };
     }
 
     @Bean
-    OrganizeMemberPersistenceAdapter organizeMemberPersistenceAdapter(
+    OrganizeMemberPersistence organizeMemberPersistence(
             OrganizePersistenceSelection organizePersistenceSelection,
             OrganizeMemberEntityMbgMapper organizeMemberEntityMbgMapper,
-            OrganizeMemberDomainMapper organizeMemberDomainMapper) {
-        requireWiredImplementation(organizePersistenceSelection.implementation());
-        return new OrganizeMemberPersistenceAdapter(organizeMemberEntityMbgMapper, organizeMemberDomainMapper);
-    }
-
-    /**
-     * {@code jpa} is a valid selector value but has no adapter pair yet, so it fails loudly here
-     * rather than silently serving MyBatis. Serving MyBatis under a {@code jpa} selector would make
-     * cutover evidence and rollback evidence identical, which is the exact failure this mechanism
-     * exists to prevent.
-     */
-    private static void requireWiredImplementation(PersistenceImplementation implementation) {
-        if (implementation != PersistenceImplementation.MYBATIS) {
-            throw new InfrastructureException(InfrastructureErrorCode.INTERNAL_ERROR,
-                    "Persistence selector " + PROPERTY_NAME + " requests '" + implementation.wireValue()
-                            + "' but no " + implementation.wireValue()
-                            + " adapter pair is wired for the Organize/OrganizeMember slice yet; "
-                            + "set it to '" + PersistenceImplementation.MYBATIS.wireValue()
-                            + "' or omit it until that slice is migrated");
-        }
+            OrganizeMemberDomainMapper organizeMemberDomainMapper,
+            OrganizeMemberJpaRepository organizeMemberJpaRepository) {
+        return switch (organizePersistenceSelection.implementation()) {
+            case MYBATIS -> new OrganizeMemberPersistenceAdapter(
+                    organizeMemberEntityMbgMapper, organizeMemberDomainMapper);
+            case JPA -> new OrganizeMemberJpaPersistenceAdapter(organizeMemberJpaRepository);
+        };
     }
 }

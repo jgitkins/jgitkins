@@ -20,6 +20,12 @@ mybatis:
 spring:
   main:
     allow-bean-definition-overriding: true
+  jpa:
+    # The migration swaps the persistence provider, never the schema. Tables are owned by
+    # app-server/data/ddl.sql, so Hibernate must not create, update or validate them.
+    hibernate:
+      ddl-auto: none
+    open-in-view: false
   datasource:
     hikari:
       driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy

@@ -5,6 +5,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.jgitkins.server.collaboration.adapter.out.persistence.OrganizeMemberPersistenceAdapter;
 import io.jgitkins.server.collaboration.adapter.out.persistence.OrganizePersistenceAdapter;
+import io.jgitkins.server.collaboration.adapter.out.persistence.jpa.OrganizeJpaPersistenceAdapter;
+import io.jgitkins.server.collaboration.adapter.out.persistence.jpa.OrganizeJpaRepository;
+import io.jgitkins.server.collaboration.adapter.out.persistence.jpa.OrganizeMemberJpaPersistenceAdapter;
+import io.jgitkins.server.collaboration.adapter.out.persistence.jpa.OrganizeMemberJpaRepository;
 import io.jgitkins.server.collaboration.application.port.out.OrganizeMemberPersistencePort;
 import io.jgitkins.server.collaboration.application.port.out.OrganizeMembershipQueryPort;
 import io.jgitkins.server.collaboration.application.port.out.OrganizeQueryPort;
@@ -57,16 +61,20 @@ class OrganizePersistenceSelectorConfigurationTest {
     }
 
     /**
-     * {@code jpa} is a recognised value with no adapter pair yet. It must stop the context rather
-     * than fall through to MyBatis, otherwise a deployment that believes it cut over would keep
-     * writing through MyBatis and report success.
+     * The cutover path. Setting the selector to {@code jpa} must swap both adapters together, and
+     * must leave no MyBatis adapter reachable behind it.
      */
     @Test
-    void jpaValueFailsStartupUntilTheJpaAdapterPairExists() {
+    void jpaValueBindsJpaAdapterPair() {
         runner.withPropertyValues(PROPERTY + "=jpa").run(context -> {
-            assertThat(context).hasFailed();
-            assertThat(context.getStartupFailure())
-                    .hasMessageContaining("no jpa adapter pair is wired");
+            assertThat(context).hasNotFailed();
+            assertThat(context.getBean(OrganizePersistenceSelection.class).implementation())
+                    .isEqualTo(PersistenceImplementation.JPA);
+            assertThat(context.getBean(OrganizeRepository.class))
+                    .isInstanceOf(OrganizeJpaPersistenceAdapter.class);
+            assertThat(context.getBean(OrganizeMemberPersistencePort.class))
+                    .isInstanceOf(OrganizeMemberJpaPersistenceAdapter.class);
+            assertThat(context).doesNotHaveBean(OrganizePersistenceAdapter.class);
         });
     }
 
@@ -103,6 +111,12 @@ class OrganizePersistenceSelectorConfigurationTest {
             assertThat(context.getBeansOfType(OrganizeMemberPersistencePort.class).values())
                     .allMatch(OrganizeMemberPersistenceAdapter.class::isInstance);
         });
+        runner.withPropertyValues(PROPERTY + "=jpa").run(context -> {
+            assertThat(context.getBeansOfType(OrganizeRepository.class).values())
+                    .allMatch(OrganizeJpaPersistenceAdapter.class::isInstance);
+            assertThat(context.getBeansOfType(OrganizeMemberPersistencePort.class).values())
+                    .allMatch(OrganizeMemberJpaPersistenceAdapter.class::isInstance);
+        });
     }
 
     /**
@@ -138,6 +152,16 @@ class OrganizePersistenceSelectorConfigurationTest {
         @Bean
         OrganizeMemberDomainMapper organizeMemberDomainMapper() {
             return Mockito.mock(OrganizeMemberDomainMapper.class);
+        }
+
+        @Bean
+        OrganizeJpaRepository organizeJpaRepository() {
+            return Mockito.mock(OrganizeJpaRepository.class);
+        }
+
+        @Bean
+        OrganizeMemberJpaRepository organizeMemberJpaRepository() {
+            return Mockito.mock(OrganizeMemberJpaRepository.class);
         }
     }
 }

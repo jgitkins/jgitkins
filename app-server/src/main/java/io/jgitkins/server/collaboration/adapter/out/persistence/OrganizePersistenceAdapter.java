@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
-public class OrganizePersistenceAdapter implements OrganizeRepository, OrganizeQueryPort {
+public class OrganizePersistenceAdapter implements OrganizePersistence {
 
     private final OrganizeEntityMbgMapper organizeEntityMbgMapper;
 
