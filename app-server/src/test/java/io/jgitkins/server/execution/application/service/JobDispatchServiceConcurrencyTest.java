@@ -24,7 +24,7 @@ import io.jgitkins.server.execution.domain.vo.JobHistoryId;
 import io.jgitkins.server.execution.domain.vo.JobId;
 import io.jgitkins.server.execution.domain.vo.JobStatus;
 import io.jgitkins.server.execution.infrastructure.persistence.mapper.JobHistoryEntityMbgMapper;
-import io.jgitkins.server.execution.adapter.out.persistence.JobRepositoryAdapter;
+import io.jgitkins.server.execution.domain.repository.JobRepository;
 
 import io.jgitkins.server.shared.domain.model.vo.BranchName;
 import io.jgitkins.server.shared.domain.model.vo.CommitHash;
@@ -70,7 +70,16 @@ class JobDispatchServiceConcurrencyTest {
     @MockBean io.jgitkins.server.execution.application.support.JobDispatchResultAssembler assembler;
     @MockBean io.jgitkins.server.execution.application.port.out.CloneUrlPort cloneUrlPort;
     @SpyBean JobHistoryEntityMbgMapper historyMapper;
-    @SpyBean JobRepositoryAdapter repositoryAdapter;
+    // Spied through the port, not the concrete adapter. Task 2.73 put JobRepository behind the
+    // persistence selector, so the container's bean is declared as JobRepository and there is no
+    // longer a bean whose type is JobRepositoryAdapter. Spying the concrete class silently produced a
+    // different object from the one the service injects: the doAnswer below never fired and the test
+    // failed on a latch timeout that pointed nowhere near the cause.
+    //
+    // The verify on historyMapper.selectLatestHistoryForUpdate keeps this test specific to the MyBatis
+    // provider, which is the default the selector resolves to. The JPA path's equivalent guarantee is
+    // ExecutionJpaTransactionTest#preservesCompareBeforeAppend.
+    @SpyBean JobRepository repositoryAdapter;
     ExecutorService executor;
 
     @BeforeEach void schemaAndSnapshot() {

@@ -14,10 +14,15 @@ import io.jgitkins.server.execution.infrastructure.persistence.model.JobHistoryE
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-@Component
+/**
+ * Registered by {@code ExecutionJobPersistenceSelectorConfiguration}, not by component scanning.
+ *
+ * <p>The {@code @Component} annotation was removed in task 2.73: with a JPA implementation of
+ * {@code JobRepository} on the classpath, scanning would register two candidates and the injection
+ * point would be ambiguous.
+ */
 @RequiredArgsConstructor
 public class JobRepositoryAdapter implements JobRepository {
 
