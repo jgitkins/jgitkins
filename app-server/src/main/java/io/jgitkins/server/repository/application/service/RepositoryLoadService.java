@@ -1,5 +1,7 @@
 package io.jgitkins.server.repository.application.service;
 
+import java.util.Optional;
+import io.jgitkins.server.repository.application.contract.internal.RepositoryKey;
 import io.jgitkins.server.repository.application.contract.result.RepositoryResult;
 import io.jgitkins.server.repository.application.exception.RepositoryNotFoundException;
 import io.jgitkins.server.repository.application.port.in.RepositoryLoadUseCase;
@@ -25,6 +27,19 @@ public class RepositoryLoadService implements RepositoryLoadUseCase {
     public RepositoryResult loadRepository(Long repositoryId) {
         return repositoryQueryPort.loadRepository(repositoryId)
                 .orElseThrow(() -> new RepositoryNotFoundException(repositoryId));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<RepositoryKey> resolveRepositoryKey(Long repositoryId) {
+        // clonePath first, then path -- the same precedence the controller used, kept because the two
+        // can differ for an organization-owned repository and clonePath is the one git actually serves.
+        return repositoryQueryPort.loadRepository(repositoryId)
+                .map(result -> {
+                    RepositoryKey key = RepositoryKey.fromPath(result.clonePath());
+                    return key != null ? key : RepositoryKey.fromPath(result.path());
+                })
+                .filter(java.util.Objects::nonNull);
     }
 
     @Override

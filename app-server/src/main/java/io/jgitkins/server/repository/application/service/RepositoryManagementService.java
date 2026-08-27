@@ -35,12 +35,15 @@ public class RepositoryManagementService implements RepositoryManagementUseCase 
 
     @Override
     @Transactional
-    public void deleteRepository(Long repositoryId) {
+    public void deleteRepository(Long requesterUserId, Long repositoryId) {
         RepositoryId id = RepositoryId.of(repositoryId);
         Repository repository = repositoryRepository.findById(id)
                 .orElseThrow(() -> new RepositoryNotFoundException(repositoryId));
 
-        repositoryOwnershipPolicy.validateDeletion(repository);
+        // Not-found is decided before ownership, preserving the existing order. Checking ownership
+        // first would let a caller distinguish "exists but not yours" from "does not exist", turning
+        // the 404 into an existence oracle for private repositories.
+        repositoryOwnershipPolicy.validateDeletion(requesterUserId, repository);
         repositoryProvisioner.delete(repository);
         repositoryRepository.deleteById(id);
     }

@@ -1,6 +1,17 @@
 package io.jgitkins.server.repository.adapter.in.rest;
 
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.doThrow;
+import io.jgitkins.server.shared.application.exception.ApplicationException;
+import io.jgitkins.server.shared.application.error.ApplicationErrorCode;
+import io.jgitkins.server.repository.application.exception.RepositoryNotFoundException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
+import io.jgitkins.server.support.TestAuthentication;
+import org.springframework.context.annotation.Import;
+import io.jgitkins.server.identity.access.adapter.in.support.RequesterUserIdResolver;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -27,8 +38,19 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(BranchController.class)
+@Import(RequesterUserIdResolver.class)
 @AutoConfigureMockMvc(addFilters = false)
 class BranchControllerTest {
+
+    @BeforeEach
+    void authenticateRequester() {
+        TestAuthentication.authenticateAs("7");
+    }
+
+    @AfterEach
+    void clearAuthentication() {
+        TestAuthentication.clear();
+    }
 
     @Autowired
     private MockMvc mockMvc;
@@ -47,8 +69,8 @@ class BranchControllerTest {
 
     @Test
     void create_returnsCreated() throws Exception {
-        BranchCreateCommand command = new BranchCreateCommand(1L, "feature", "main", false);
-        when(branchRequestMapper.toCommand(any(Long.class), any(BranchCreateRequest.class))).thenReturn(command);
+        BranchCreateCommand command = new BranchCreateCommand(7L, 1L, "feature", "main", false);
+        when(branchRequestMapper.toCommand(anyLong(), anyLong(), any(BranchCreateRequest.class))).thenReturn(command);
 
         mockMvc.perform(post("/api/repositories/1/branches")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -66,8 +88,8 @@ class BranchControllerTest {
 
     @Test
     void create_acceptsLegacyNameAlias() throws Exception {
-        BranchCreateCommand command = new BranchCreateCommand(1L, "feature-alias", "main", false);
-        when(branchRequestMapper.toCommand(any(Long.class), any(BranchCreateRequest.class))).thenReturn(command);
+        BranchCreateCommand command = new BranchCreateCommand(7L, 1L, "feature-alias", "main", false);
+        when(branchRequestMapper.toCommand(anyLong(), anyLong(), any(BranchCreateRequest.class))).thenReturn(command);
 
         mockMvc.perform(post("/api/repositories/1/branches")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -117,6 +139,104 @@ class BranchControllerTest {
         mockMvc.perform(delete("/api/repositories/1/branches/feature"))
                 .andExpect(status().isNoContent());
 
-        verify(branchManagementUseCase).deleteBranch(1L, "feature");
+        verify(branchManagementUseCase).deleteBranch(7L, 1L, "feature");
+    }
+
+    /** The malformed subjects the identity resolver must refuse. Zero is malformed, not absent. */
+    private static final java.util.List<String> MALFORMED_SUBJECTS =
+            java.util.List.of("0", "00", "-1", "+1", " 7", "7 ", "abc", "9999999999999999999999");
+
+    private void assertRejectedWithAuth001(
+            java.util.function.Supplier<org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder> request)
+            throws Exception {
+        for (String malformed : MALFORMED_SUBJECTS) {
+            TestAuthentication.authenticateAs(malformed);
+            mockMvc.perform(request.get())
+                    .andExpect(status().isUnauthorized())
+                    .andExpect(jsonPath("$.error.code").value("AUTH-001"));
+        }
+        TestAuthentication.clear();
+        mockMvc.perform(request.get())
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.error.code").value("AUTH-001"));
+    }
+
+    @Test
+    void create_rejectsMalformedPrincipalWithAuth001AndNoWrite() throws Exception {
+        String body = "{\"branchName\":\"feature\",\"sourceBranch\":\"main\"}";
+        assertRejectedWithAuth001(() -> post("/api/repositories/1/branches")
+                .contentType(MediaType.APPLICATION_JSON).content(body));
+        verifyNoInteractions(branchManagementUseCase);
+    }
+
+    @Test
+    void create_rejectsAnonymousWithAuth001AndNoWrite() throws Exception {
+        TestAuthentication.clear();
+        mockMvc.perform(post("/api/repositories/1/branches")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"branchName\":\"feature\",\"sourceBranch\":\"main\"}"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.error.code").value("AUTH-001"));
+        verifyNoInteractions(branchManagementUseCase);
+    }
+
+    @Test
+    void create_rejectsNonMemberWithoutWrite() throws Exception {
+        when(branchRequestMapper.toCommand(anyLong(), anyLong(), any(BranchCreateRequest.class)))
+                .thenReturn(new BranchCreateCommand(7L, 1L, "feature", "main", false));
+        doThrow(new ApplicationException(ApplicationErrorCode.ACCESS_DENIED,
+                "Insufficient permission to commit to repository: team/repo"))
+                .when(branchManagementUseCase).createBranch(any());
+
+        mockMvc.perform(post("/api/repositories/1/branches")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"branchName\":\"feature\",\"sourceBranch\":\"main\"}"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void create_returnsNotFound() throws Exception {
+        when(branchRequestMapper.toCommand(anyLong(), anyLong(), any(BranchCreateRequest.class)))
+                .thenReturn(new BranchCreateCommand(7L, 1L, "feature", "main", false));
+        doThrow(new RepositoryNotFoundException(1L)).when(branchManagementUseCase).createBranch(any());
+
+        mockMvc.perform(post("/api/repositories/1/branches")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"branchName\":\"feature\",\"sourceBranch\":\"main\"}"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void deleteBranch_rejectsMalformedPrincipalWithAuth001AndNoWrite() throws Exception {
+        assertRejectedWithAuth001(() -> delete("/api/repositories/1/branches/feature"));
+        verifyNoInteractions(branchManagementUseCase);
+    }
+
+    @Test
+    void deleteBranch_rejectsAnonymousWithAuth001AndNoWrite() throws Exception {
+        TestAuthentication.clear();
+        mockMvc.perform(delete("/api/repositories/1/branches/feature"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.error.code").value("AUTH-001"));
+        verifyNoInteractions(branchManagementUseCase);
+    }
+
+    @Test
+    void deleteBranch_rejectsNonMemberWithoutWrite() throws Exception {
+        doThrow(new ApplicationException(ApplicationErrorCode.ACCESS_DENIED,
+                "Insufficient permission to commit to repository: team/repo"))
+                .when(branchManagementUseCase).deleteBranch(7L, 1L, "feature");
+
+        mockMvc.perform(delete("/api/repositories/1/branches/feature"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void deleteBranch_returnsNotFound() throws Exception {
+        doThrow(new RepositoryNotFoundException(1L))
+                .when(branchManagementUseCase).deleteBranch(7L, 1L, "feature");
+
+        mockMvc.perform(delete("/api/repositories/1/branches/feature"))
+                .andExpect(status().isNotFound());
     }
 }

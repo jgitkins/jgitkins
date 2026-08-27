@@ -59,31 +59,30 @@ class RepositoryAccessValidatorTest {
     }
 
     @Test
-    void validateCanCommit_throwsUnauthorized_whenCurrentUserMissing() {
-        when(currentUserPersistencePort.resolveCurrentUserId()).thenReturn(Optional.empty());
-
+    void validateCanCommit_throwsUnauthorized_whenRequesterMissing() {
+        // Task 2.64: the requester is an argument, so "missing" is a null argument rather than an empty
+        // Optional from a port. The error code must not have changed with it -- that is what keeps the
+        // existing 401 envelope.
         JgitkinsException ex = assertThrows(JgitkinsException.class,
-                () -> validator.validateCanCommit("team", "repo"));
+                () -> validator.validateCanCommit("team", "repo", null));
 
         assertEquals(ApplicationErrorCode.UNAUTHENTICATED, ex.getErrorCode());
     }
 
     @Test
     void validateCanCommit_throwsForbidden_whenWritePermissionDenied() {
-        when(currentUserPersistencePort.resolveCurrentUserId()).thenReturn(Optional.of(7L));
         when(gitRepositoryAccessUseCase.canWrite(null, "team", "repo", 7L)).thenReturn(false);
 
         JgitkinsException ex = assertThrows(JgitkinsException.class,
-                () -> validator.validateCanCommit("team", "repo"));
+                () -> validator.validateCanCommit("team", "repo", 7L));
 
         assertEquals(ApplicationErrorCode.ACCESS_DENIED, ex.getErrorCode());
     }
 
     @Test
     void validateCanCommit_allows_whenWritePermissionGranted() {
-        when(currentUserPersistencePort.resolveCurrentUserId()).thenReturn(Optional.of(7L));
         when(gitRepositoryAccessUseCase.canWrite(null, "team", "repo", 7L)).thenReturn(true);
 
-        assertDoesNotThrow(() -> validator.validateCanCommit("team", "repo"));
+        assertDoesNotThrow(() -> validator.validateCanCommit("team", "repo", 7L));
     }
 }

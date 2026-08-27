@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 import io.jgitkins.server.repository.application.port.out.OrganizationMembershipPort;
-import io.jgitkins.server.repository.application.port.out.RepositoryActorPort;
 import io.jgitkins.server.repository.domain.repository.RepositoryRepository;
 import io.jgitkins.server.repository.domain.vo.OrganizationMembershipRole;
 import io.jgitkins.server.repository.domain.vo.RepositoryName;
@@ -20,36 +19,42 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class RepositoryValidatorTest {
     @Mock RepositoryRepository repositoryRepository;
     @Mock OrganizationMembershipPort organizationMembershipPort;
-    @Mock RepositoryActorPort repositoryActorPort;
 
     private RepositoryValidator validator() {
-        return new RepositoryValidator(repositoryRepository, organizationMembershipPort, repositoryActorPort);
+        return new RepositoryValidator(repositoryRepository, organizationMembershipPort);
     }
 
     @Test
     void organizationOwnerRequiresMembershipRolePresence() {
-        when(repositoryActorPort.resolveCurrentUserId()).thenReturn(Optional.of(7L));
         when(organizationMembershipPort.findRoleByOrganizationIdAndUserId(10L, 7L))
                 .thenReturn(Optional.of(OrganizationMembershipRole.MEMBER));
 
-        assertDoesNotThrow(() -> validator().validateOwnership(OwnerType.ORGANIZATION, 10L));
+        assertDoesNotThrow(() -> validator().validateOwnership(7L, OwnerType.ORGANIZATION, 10L));
     }
 
     @Test
     void organizationOwnerWithoutRoleIsDenied() {
-        when(repositoryActorPort.resolveCurrentUserId()).thenReturn(Optional.of(7L));
         when(organizationMembershipPort.findRoleByOrganizationIdAndUserId(10L, 7L))
                 .thenReturn(Optional.empty());
 
         assertThrows(RuntimeException.class,
-                () -> validator().validateOwnership(OwnerType.ORGANIZATION, 10L));
+                () -> validator().validateOwnership(7L, OwnerType.ORGANIZATION, 10L));
     }
 
     @Test
-    void userOwnerUsesRepositoryActorPort() {
-        when(repositoryActorPort.resolveCurrentUserId()).thenReturn(Optional.of(7L));
+    void requireUserOwner_usesExplicitRequesterId() {
 
-        assertDoesNotThrow(() -> validator().validateCreation(
+        assertDoesNotThrow(() -> validator().validateCreation(7L,
                 OwnerType.USER, null, RepositoryName.from("repo")));
+    }
+
+    @Test
+    void requireUserOwner_rejectsANullRequesterId() {
+        // Task 2.64 replaced an ambient lookup with an argument. The rejection has to survive that: a
+        // validator that accepted null would authorize a user-owned create for nobody in particular.
+        assertThrows(RuntimeException.class, () -> validator().validateCreation(null,
+                OwnerType.USER, null, RepositoryName.from("repo")));
+        assertThrows(RuntimeException.class,
+                () -> validator().validateOwnership(null, OwnerType.ORGANIZATION, 10L));
     }
 }

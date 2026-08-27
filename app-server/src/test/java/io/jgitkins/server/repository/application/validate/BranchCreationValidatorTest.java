@@ -49,7 +49,7 @@ class BranchCreationValidatorTest {
         when(repository.getDefaultBranch()).thenReturn(BranchName.of("main"));
         when(branchPort.findByRepositoryIdAndName(1L, "main")).thenReturn(Optional.of(Branch.create(1L, "main")));
 
-        BranchCreateCommand command = new BranchCreateCommand(1L, "feature", null, false);
+        BranchCreateCommand command = new BranchCreateCommand(7L, 1L, "feature", null, false);
 
         String sourceBranch = validator.resolveAndValidateSourceBranch(command, repository);
 
@@ -62,7 +62,7 @@ class BranchCreationValidatorTest {
         when(repository.getId()).thenReturn(RepositoryId.of(1L));
         when(branchPort.findByRepositoryIdAndName(1L, "dev")).thenReturn(Optional.empty());
 
-        BranchCreateCommand command = new BranchCreateCommand(1L, "feature", "dev", false);
+        BranchCreateCommand command = new BranchCreateCommand(7L, 1L, "feature", "dev", false);
 
         assertThrows(JgitkinsException.class, () -> validator.resolveAndValidateSourceBranch(command, repository));
     }

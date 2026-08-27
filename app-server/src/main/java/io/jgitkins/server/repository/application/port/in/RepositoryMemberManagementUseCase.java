@@ -4,5 +4,10 @@ import io.jgitkins.server.repository.application.contract.command.RepositoryMemb
 
 public interface RepositoryMemberManagementUseCase {
     void addRepositoryMember(RepositoryMemberAddCommand command);
-    void removeRepositoryMember(Long repositoryId, Long userId);
+    /**
+     * @param requesterUserId the authenticated caller, resolved once by the inbound adapter. First
+     *     parameter by convention across every mutation in this context, so a caller cannot pass the
+     *     repository id where the actor belongs and have it compile.
+     */
+    void removeRepositoryMember(Long requesterUserId, Long repositoryId, Long userId);
 }

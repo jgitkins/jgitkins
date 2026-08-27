@@ -26,11 +26,21 @@ public class RepositoryAccessValidator {
         }
     }
 
-    public void validateCanCommit(String namespace, String repoName) {
-        Long userId = currentUserPersistencePort.resolveCurrentUserId()
-                .orElseThrow(() -> new ApplicationException(ApplicationErrorCode.UNAUTHENTICATED, "Unauthenticated"));
+    /**
+     * @param requesterUserId supplied by the inbound adapter, task 2.64. It used to come from
+     *     {@code RepositoryActorPort} inside this method, which made a write authorization decision
+     *     depend on ambient security state and impossible to exercise for a chosen actor.
+     */
+    public void validateCanCommit(String namespace, String repoName, Long requesterUserId) {
+        if (requesterUserId == null) {
+            // Same code and message as when the port returned empty. The adapter rejects an
+            // anonymous request earlier; this is the second line of defence and must not report a
+            // different error than it did before.
+            throw new ApplicationException(ApplicationErrorCode.UNAUTHENTICATED, "Unauthenticated");
+        }
 
-        boolean allowed = gitRepositoryAccessUseCase.canWrite(null, namespace.trim(), repoName.trim(), userId);
+        boolean allowed = gitRepositoryAccessUseCase.canWrite(
+                null, namespace.trim(), repoName.trim(), requesterUserId);
         if (!allowed) {
             throw new ApplicationException(
                     ApplicationErrorCode.ACCESS_DENIED,

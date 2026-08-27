@@ -5,5 +5,10 @@ import io.jgitkins.server.repository.application.contract.result.RepositoryResul
 
 public interface RepositoryManagementUseCase {
     RepositoryResult create(RepositoryCreateCommand command);
-    void deleteRepository(Long repositoryId);
+    /**
+     * @param requesterUserId the authenticated caller, resolved once by the inbound adapter. First
+     *     parameter by convention across every mutation in this context, so a caller cannot pass the
+     *     repository id where the actor belongs and have it compile.
+     */
+    void deleteRepository(Long requesterUserId, Long repositoryId);
 }

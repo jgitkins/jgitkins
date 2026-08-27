@@ -1,5 +1,9 @@
 package io.jgitkins.server.repository.adapter.in.rest;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.beans.factory.annotation.Qualifier;
+import io.jgitkins.server.shared.application.exception.UnauthenticatedException;
+import io.jgitkins.server.identity.access.adapter.in.support.RequesterUserIdResolver;
 import io.jgitkins.server.repository.application.contract.command.RepositoryMemberAddCommand;
 import io.jgitkins.server.repository.application.contract.result.RepositoryMemberSummary;
 import io.jgitkins.server.repository.application.port.in.RepositoryMemberLoadUseCase;
@@ -19,19 +23,43 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequiredArgsConstructor
 @Tag(name = "Repository Members")
 @RequestMapping("/api/repositories/{repositoryId}/members")
 public class RepositoryMemberController {
 
     private final RepositoryMemberManagementUseCase repositoryMemberManagementUseCase;
     private final RepositoryMemberLoadUseCase repositoryMemberLoadUseCase;
+    private final RequesterUserIdResolver requesterUserIdResolver;
+
+    RepositoryMemberController(RepositoryMemberManagementUseCase repositoryMemberManagementUseCase,
+                              RepositoryMemberLoadUseCase repositoryMemberLoadUseCase,
+                              @Qualifier("identityRequesterUserIdResolver")
+                              RequesterUserIdResolver requesterUserIdResolver) {
+        this.repositoryMemberManagementUseCase = repositoryMemberManagementUseCase;
+        this.repositoryMemberLoadUseCase = repositoryMemberLoadUseCase;
+        this.requesterUserIdResolver = requesterUserIdResolver;
+    }
+
+    /**
+     * Resolves the caller once, before any use case is touched.
+     *
+     * <p>A malformed principal must not reach the application layer: if it did, the first observable
+     * effect of a broken credential would be a database read for whatever id was salvaged from it.
+     */
+    private Long requireRequester(String subject) {
+        return requesterUserIdResolver.resolve(subject)
+                .orElseThrow(() -> new UnauthenticatedException("Authentication required"));
+    }
+
 
     @Operation(summary = "Add repository member")
     @PostMapping
     public ResponseEntity<ApiResponse<Void>> addMember(@PathVariable Long repositoryId,
-                                                       @RequestBody RepositoryMemberAddRequest request) {
-        RepositoryMemberAddCommand command = new RepositoryMemberAddCommand(repositoryId, request.userId(), request.role());
+                                                       @RequestBody RepositoryMemberAddRequest request,
+                                                       @AuthenticationPrincipal(expression = "username")
+                                                       String subject) {
+        RepositoryMemberAddCommand command = new RepositoryMemberAddCommand(
+                requireRequester(subject), repositoryId, request.userId(), request.role());
         repositoryMemberManagementUseCase.addRepositoryMember(command);
         return ApiResponse.ok();
     }
@@ -39,8 +67,11 @@ public class RepositoryMemberController {
     @Operation(summary = "Remove repository member")
     @DeleteMapping("/{userId}")
     public ResponseEntity<ApiResponse<Void>> removeMember(@PathVariable Long repositoryId,
-                                                          @PathVariable Long userId) {
-        repositoryMemberManagementUseCase.removeRepositoryMember(repositoryId, userId);
+                                                          @PathVariable Long userId,
+                                                          @AuthenticationPrincipal(expression = "username")
+                                                          String subject) {
+        repositoryMemberManagementUseCase.removeRepositoryMember(
+                requireRequester(subject), repositoryId, userId);
         return ApiResponse.noContent();
     }
 

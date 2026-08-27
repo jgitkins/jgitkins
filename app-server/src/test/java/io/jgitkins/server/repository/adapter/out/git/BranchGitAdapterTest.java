@@ -78,7 +78,7 @@ class BranchGitAdapterTest {
 
     private BranchCreationContext context(String branchName, String sourceBranch) {
         return BranchCreationContext.of(
-                new BranchCreateCommand(1L, branchName, sourceBranch, true),
+                new BranchCreateCommand(7L, 1L, branchName, sourceBranch, true),
                 "team",
                 repository(),
                 sourceBranch);

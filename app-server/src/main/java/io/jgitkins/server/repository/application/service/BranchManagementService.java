@@ -32,14 +32,15 @@ public class BranchManagementService implements BranchManagementUseCase {
     @Override
     @Transactional
     public void createBranch(BranchCreateCommand command) {
-        BranchRepositoryContext context = loadWriteContext(command.repositoryId());
+        BranchRepositoryContext context =
+                loadWriteContext(command.requesterUserId(), command.repositoryId());
         branchFactory.create(command, context.namespace(), context.repository());
     }
 
     @Override
     @Transactional
-    public void deleteBranch(Long repositoryId, String branchName) {
-        BranchRepositoryContext context = loadWriteContext(repositoryId);
+    public void deleteBranch(Long requesterUserId, Long repositoryId, String branchName) {
+        BranchRepositoryContext context = loadWriteContext(requesterUserId, repositoryId);
         Branch branch = loadExistingBranch(repositoryId, branchName);
 
         branch.delete();
@@ -55,12 +56,13 @@ public class BranchManagementService implements BranchManagementUseCase {
         }
     }
 
-    private BranchRepositoryContext loadWriteContext(Long repositoryId) {
+    private BranchRepositoryContext loadWriteContext(Long requesterUserId, Long repositoryId) {
         Repository repository = repositoryRepository.findById(RepositoryId.of(repositoryId))
                 .orElseThrow(() -> new RepositoryNotFoundException(repositoryId));
 
         String namespace = repositoryNamespaceResolver.resolve(repository);
-        repositoryAccessValidator.validateCanCommit(namespace, repository.getName().getValue());
+        repositoryAccessValidator.validateCanCommit(namespace, repository.getName().getValue(),
+                requesterUserId);
         return new BranchRepositoryContext(repository, namespace);
     }
 

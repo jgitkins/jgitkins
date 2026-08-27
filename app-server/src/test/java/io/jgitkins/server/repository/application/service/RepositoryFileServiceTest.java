@@ -48,9 +48,9 @@ class RepositoryFileServiceTest {
         List<CommitFile> files = List.of(CommitFile.builder().path("README.md").build());
         when(commitFilePreparer.prepareUploadFile(file, request)).thenReturn(files);
 
-        service.uploadFileToRepository("task", "repo", "main", file, request);
+        service.uploadFileToRepository(7L, "task", "repo", "main", file, request);
 
-        verify(repositoryAccessValidator).validateCanCommit("task", "repo");
+        verify(repositoryAccessValidator).validateCanCommit("task", "repo", 7L);
         verify(commitGitPort).commit(eq("task"), eq("repo"), eq("main"),
                 eq("msg"), eq("author"), eq("a@b.com"), eq(files));
     }
@@ -63,9 +63,9 @@ class RepositoryFileServiceTest {
         List<CommitFile> files = List.of(CommitFile.builder().path("README.md").build());
         when(commitFilePreparer.prepareUploadFile(file, request)).thenReturn(files);
 
-        service.uploadFileToRepository("task", "repo", "main", file, request);
+        service.uploadFileToRepository(7L, "task", "repo", "main", file, request);
 
-        verify(repositoryAccessValidator).validateCanCommit("task", "repo");
+        verify(repositoryAccessValidator).validateCanCommit("task", "repo", 7L);
         verify(commitGitPort).commit(eq("task"), eq("repo"), eq("main"),
                 eq("msg"), eq("jgitkins"), eq("no-reply@jgitkins.local"), eq(files));
     }

@@ -12,11 +12,12 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface RepositoryRequestMapper {
 
-    @Mapping(source = "username", target = "authorName")
-    @Mapping(source = "email", target = "authorEmail")
+    @Mapping(source = "request.username", target = "authorName")
+    @Mapping(source = "request.email", target = "authorEmail")
     @Mapping(target = "ownerType", expression = "java(toOwnerType(request.ownerType()))")
     @Mapping(target = "visibility", expression = "java(toVisibility(request.visibility()))")
-    RepositoryCreateCommand toCommand(RepositoryCreateRequest request);
+    @Mapping(target = "requesterUserId", source = "requesterUserId")
+    RepositoryCreateCommand toCommand(Long requesterUserId, RepositoryCreateRequest request);
 
     UpdateRepositoryCommand toUpdateCommand(RepositoryUpdateRequest request);
 

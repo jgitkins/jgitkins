@@ -25,7 +25,7 @@ public class RepositoryOwnershipPolicy {
 
     public RepositoryCreationPlan prepareCreation(RepositoryCreateCommand command) {
         OwnerType ownerType = command.ownerType();
-        OwnerId ownerId = resolveOwnerId(ownerType, command.organizeId());
+        OwnerId ownerId = resolveOwnerId(command.requesterUserId(), ownerType, command.organizeId());
         RepositoryName repositoryName = RepositoryName.from(command.repoName());
 
         repositoryValidator.validateRepositoryNameUnique(ownerType, ownerId, repositoryName);
@@ -54,15 +54,15 @@ public class RepositoryOwnershipPolicy {
         return new RepositoryCreationPlan(repository, initialCommitOptions);
     }
 
-    public void validateDeletion(Repository repository) {
-        repositoryValidator.enforceDeletionPermission(repository);
+    public void validateDeletion(Long requesterUserId, Repository repository) {
+        repositoryValidator.enforceDeletionPermission(requesterUserId, repository);
     }
 
-    private OwnerId resolveOwnerId(OwnerType ownerType, Long organizeId) {
-        repositoryValidator.validateOwnership(ownerType, organizeId);
+    private OwnerId resolveOwnerId(Long requesterUserId, OwnerType ownerType, Long organizeId) {
+        repositoryValidator.validateOwnership(requesterUserId, ownerType, organizeId);
         if (ownerType == OwnerType.ORGANIZATION) {
             return OwnerId.of(organizeId);
         }
-        return OwnerId.of(repositoryValidator.requireCurrentUserId());
+        return OwnerId.of(repositoryValidator.requireRequesterId(requesterUserId));
     }
 }

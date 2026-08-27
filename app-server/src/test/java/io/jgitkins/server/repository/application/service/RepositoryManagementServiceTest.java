@@ -56,7 +56,7 @@ class RepositoryManagementServiceTest {
 
     @BeforeEach
     void setUp() {
-        repositoryValidator = new RepositoryValidator(repositoryRepository, organizationMembershipPort, repositoryActorPort);
+        repositoryValidator = new RepositoryValidator(repositoryRepository, organizationMembershipPort);
         RepositoryOwnershipPolicy repositoryOwnershipPolicy = new RepositoryOwnershipPolicy(
                 repositoryValidator,
                 repositoryNamespaceResolver
@@ -72,6 +72,7 @@ class RepositoryManagementServiceTest {
     @Test
     void create_throwsWhenUserOwnerHasOrganizeId() {
         RepositoryCreateCommand command = RepositoryCreateCommand.builder()
+                .requesterUserId(7L)
                 .repoName("sample-repo")
                 .ownerType(OwnerType.USER)
                 .organizeId(10L)
@@ -85,13 +86,13 @@ class RepositoryManagementServiceTest {
     @Test
     void create_throwsWhenOrganizationOwnerWithoutMembership() {
         RepositoryCreateCommand command = RepositoryCreateCommand.builder()
+                .requesterUserId(7L)
                 .repoName("sample-repo")
                 .ownerType(OwnerType.ORGANIZATION)
                 .organizeId(10L)
                 .mainBranch("main")
                 .build();
 
-        when(repositoryActorPort.resolveCurrentUserId()).thenReturn(Optional.of(7L));
         when(organizationMembershipPort.findRoleByOrganizationIdAndUserId(10L, 7L)).thenReturn(Optional.empty());
 
         assertThrows(JgitkinsException.class, () -> service.create(command));
@@ -101,6 +102,7 @@ class RepositoryManagementServiceTest {
     @Test
     void create_savesWhenUserOwnerAndInputIsValid() {
         RepositoryCreateCommand command = RepositoryCreateCommand.builder()
+                .requesterUserId(7L)
                 .repoName("sample-repo")
                 .ownerType(OwnerType.USER)
                 .mainBranch("main")
@@ -110,7 +112,6 @@ class RepositoryManagementServiceTest {
         Repository saved = org.mockito.Mockito.mock(Repository.class);
         RepositoryResult result = new RepositoryResult(100L, null, "sample-repo", null, null, null, null, null, null, null, null, false, null, null, null);
 
-        when(repositoryActorPort.resolveCurrentUserId()).thenReturn(Optional.of(7L));
         when(repositoryRepository.findByOwnerAndName(OwnerType.USER, OwnerId.of(7L), RepositoryName.from("sample-repo")))
                 .thenReturn(Optional.empty());
         when(repositoryNamespaceResolver.resolve(OwnerType.USER, OwnerId.of(7L))).thenReturn("alice");
@@ -130,9 +131,8 @@ class RepositoryManagementServiceTest {
         when(repositoryRepository.findById(RepositoryId.of(1L))).thenReturn(Optional.of(repository));
         when(repository.getOwnerType()).thenReturn(OwnerType.USER);
         when(repository.getOwnerId()).thenReturn(OwnerId.of(10L));
-        when(repositoryActorPort.resolveCurrentUserId()).thenReturn(Optional.of(20L));
 
-        assertThrows(JgitkinsException.class, () -> service.deleteRepository(1L));
+        assertThrows(JgitkinsException.class, () -> service.deleteRepository(7L, 1L));
 
         verify(repositoryProvisioner, never()).delete(any(Repository.class));
         verify(repositoryRepository, never()).deleteById(any(RepositoryId.class));
@@ -144,7 +144,7 @@ class RepositoryManagementServiceTest {
         when(repositoryRepository.findById(RepositoryId.of(1L))).thenReturn(Optional.of(repository));
         when(repository.getOwnerType()).thenReturn(OwnerType.ORGANIZATION);
 
-        service.deleteRepository(1L);
+        service.deleteRepository(7L, 1L);
 
         verify(repositoryProvisioner).delete(repository);
         verify(repositoryRepository).deleteById(RepositoryId.of(1L));

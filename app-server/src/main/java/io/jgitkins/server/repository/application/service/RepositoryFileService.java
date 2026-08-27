@@ -32,12 +32,15 @@ public class RepositoryFileService implements FileUploadUseCase,
 
     @Override
     @Transactional
-    public void uploadFileToRepository(String namespace,
+    public void uploadFileToRepository(Long requesterUserId,
+            String namespace,
             String repoName,
             String branch,
             MultipartFile file,
             FileUploadInfo request) {
-        repositoryAccessValidator.validateCanCommit(namespace, repoName);
+        // Before the multipart is read into commit files: a denied upload must not have spent memory
+        // or temp space on content it will never commit.
+        repositoryAccessValidator.validateCanCommit(namespace, repoName, requesterUserId);
 
         List<CommitFile> files = commitFilePreparer.prepareUploadFile(file, request);
 

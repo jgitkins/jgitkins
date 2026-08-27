@@ -7,7 +7,6 @@ import io.jgitkins.server.repository.application.exception.RepositoryAccessDenie
 import io.jgitkins.server.repository.application.exception.RepositoryAlreadyExistsException;
 import io.jgitkins.server.repository.application.exception.RepositoryNotInitializedException;
 import io.jgitkins.server.repository.application.port.out.OrganizationMembershipPort;
-import io.jgitkins.server.repository.application.port.out.RepositoryActorPort;
 import io.jgitkins.server.repository.domain.aggregate.Repository;
 import io.jgitkins.server.shared.domain.model.vo.*;
 import io.jgitkins.server.shared.application.exception.UnauthenticatedException;
@@ -22,11 +21,11 @@ public class RepositoryValidator {
 
     private final RepositoryRepository repositoryRepository;
     private final OrganizationMembershipPort organizationMembershipPort;
-    private final RepositoryActorPort repositoryActorPort;
 
-    public void validateCreation(OwnerType ownerType, Long organizeId, RepositoryName repositoryName) {
-        validateOwnership(ownerType, organizeId);
-        OwnerId ownerId = resolveOwnerId(ownerType, organizeId);
+    public void validateCreation(Long requesterUserId, OwnerType ownerType, Long organizeId,
+                                 RepositoryName repositoryName) {
+        validateOwnership(requesterUserId, ownerType, organizeId);
+        OwnerId ownerId = resolveOwnerId(requesterUserId, ownerType, organizeId);
         validateRepositoryNameUnique(ownerType, ownerId, repositoryName);
     }
 
@@ -38,13 +37,13 @@ public class RepositoryValidator {
                 });
     }
 
-    public void validateOwnership(OwnerType ownerType, Long organizeId) {
+    public void validateOwnership(Long requesterUserId, OwnerType ownerType, Long organizeId) {
         if (ownerType == OwnerType.USER) {
             if (organizeId != null) {
                 throw new InvalidOwnerContextException(
                         "organizeId must be null when ownerType is USER.");
             }
-            requireCurrentUserId();
+            requireRequesterId(requesterUserId);
             return;
         }
 
@@ -52,32 +51,41 @@ public class RepositoryValidator {
             throw new InvalidOwnerContextException(
                     "organizeId is required when ownerType is ORGANIZATION.");
         }
-        assertOrganizeMembership(organizeId);
+        assertOrganizeMembership(requesterUserId, organizeId);
     }
 
-    public void enforceDeletionPermission(Repository repository) {
+    public void enforceDeletionPermission(Long requesterUserId, Repository repository) {
         if (repository.getOwnerType() != OwnerType.USER
                 || repository.getOwnerId() == null
                 || repository.getOwnerId().getValue() == null) {
             return;
         }
-        Long requesterId = requireCurrentUserId();
+        Long requesterId = requireRequesterId(requesterUserId);
         if (!repository.getOwnerId().getValue().equals(requesterId)) {
             throw new RepositoryAccessDeniedException(
                     "Cannot delete another user's repository");
         }
     }
 
-    public Long requireCurrentUserId() {
+    /**
+     * Kept as a method rather than inlined so the failure has exactly one definition.
+     *
+     * <p>Task 2.64 replaced its body. It used to call {@code RepositoryActorPort} and throw when the port
+     * returned empty; it now validates the value it was handed. The exception type is unchanged, because
+     * it is what produces the existing 401 envelope.
+     */
+    public Long requireRequesterId(Long requesterUserId) {
         // 인증 실패는 ApplicationException으로 처리 - presentation 계층(Spring Security)에서 이미
         // 필터링하지만
         // 서비스 내부에서 currentUserId 조회 실패는 application 정책 위반으로 간주
-        return repositoryActorPort.resolveCurrentUserId()
-                .orElseThrow(UnauthenticatedException::new);
+        if (requesterUserId == null) {
+            throw new UnauthenticatedException();
+        }
+        return requesterUserId;
     }
 
-    private void assertOrganizeMembership(Long organizeId) {
-        Long requesterId = requireCurrentUserId();
+    private void assertOrganizeMembership(Long requesterUserId, Long organizeId) {
+        Long requesterId = requireRequesterId(requesterUserId);
         boolean isMember = organizationMembershipPort
                 .findRoleByOrganizationIdAndUserId(organizeId, requesterId)
                 .isPresent();
@@ -87,10 +95,10 @@ public class RepositoryValidator {
         }
     }
 
-    private OwnerId resolveOwnerId(OwnerType ownerType, Long organizeId) {
+    private OwnerId resolveOwnerId(Long requesterUserId, OwnerType ownerType, Long organizeId) {
         if (ownerType == OwnerType.ORGANIZATION) {
             return OwnerId.of(organizeId);
         }
-        return OwnerId.of(requireCurrentUserId());
+        return OwnerId.of(requireRequesterId(requesterUserId));
     }
 }

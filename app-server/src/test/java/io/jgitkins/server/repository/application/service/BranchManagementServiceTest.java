@@ -78,11 +78,11 @@ class BranchManagementServiceTest {
         when(branchPort.findByRepositoryIdAndName(1L, "main"))
                 .thenReturn(Optional.of(Branch.create(1L, "main", false, true, true)));
 
-        BranchCreateCommand command = new BranchCreateCommand(1L, "feature", "main", false);
+        BranchCreateCommand command = new BranchCreateCommand(7L, 1L, "feature", "main", false);
 
         service.createBranch(command);
 
-        verify(repositoryAccessValidator).validateCanCommit("org", "repo");
+        verify(repositoryAccessValidator).validateCanCommit("org", "repo", 7L);
         verify(branchGitPort).createBranch(any());
         ArgumentCaptor<Branch> captor = ArgumentCaptor.forClass(Branch.class);
         verify(branchPort).save(captor.capture());
@@ -105,7 +105,7 @@ class BranchManagementServiceTest {
         doThrow(new GitSourceBranchRefMissingException("main"))
                 .when(branchGitPort).createBranch(any());
 
-        BranchCreateCommand command = new BranchCreateCommand(1L, "feature", "main", false);
+        BranchCreateCommand command = new BranchCreateCommand(7L, 1L, "feature", "main", false);
 
         assertThrows(SourceBranchNotFoundException.class, () -> service.createBranch(command));
     }
@@ -124,7 +124,7 @@ class BranchManagementServiceTest {
         doThrow(new GitBranchRefAlreadyExistsException("feature"))
                 .when(branchGitPort).createBranch(any());
 
-        BranchCreateCommand command = new BranchCreateCommand(1L, "feature", "main", false);
+        BranchCreateCommand command = new BranchCreateCommand(7L, 1L, "feature", "main", false);
 
         assertThrows(BranchAlreadyExistsException.class, () -> service.createBranch(command));
     }
@@ -139,9 +139,9 @@ class BranchManagementServiceTest {
         when(repositoryNamespaceResolver.resolve(repository)).thenReturn("org");
         when(branchPort.findByRepositoryIdAndName(1L, "feature")).thenReturn(Optional.of(branch));
 
-        service.deleteBranch(1L, "feature");
+        service.deleteBranch(7L, 1L, "feature");
 
-        verify(repositoryAccessValidator).validateCanCommit("org", "repo");
+        verify(repositoryAccessValidator).validateCanCommit("org", "repo", 7L);
         InOrder inOrder = inOrder(branchPort, branchGitPort);
         inOrder.verify(branchPort).delete(branch);
         inOrder.verify(branchGitPort).deleteBranch("org", "repo", "feature");
@@ -159,7 +159,7 @@ class BranchManagementServiceTest {
         doThrow(new GitBranchRefMissingException("feature"))
                 .when(branchGitPort).deleteBranch("org", "repo", "feature");
 
-        assertThrows(BranchNotFoundException.class, () -> service.deleteBranch(1L, "feature"));
+        assertThrows(BranchNotFoundException.class, () -> service.deleteBranch(7L, 1L, "feature"));
     }
 
     @Test
@@ -170,7 +170,7 @@ class BranchManagementServiceTest {
         when(repositoryNamespaceResolver.resolve(repository)).thenReturn("org");
         when(branchPort.findByRepositoryIdAndName(1L, "missing")).thenReturn(Optional.empty());
 
-        assertThrows(JgitkinsException.class, () -> service.deleteBranch(1L, "missing"));
+        assertThrows(JgitkinsException.class, () -> service.deleteBranch(7L, 1L, "missing"));
     }
 
     @Test
@@ -183,6 +183,6 @@ class BranchManagementServiceTest {
         when(repositoryNamespaceResolver.resolve(repository)).thenReturn("org");
         when(branchPort.findByRepositoryIdAndName(1L, "main")).thenReturn(Optional.of(defaultBranch));
 
-        assertThrows(JgitkinsException.class, () -> service.deleteBranch(1L, "main"));
+        assertThrows(JgitkinsException.class, () -> service.deleteBranch(7L, 1L, "main"));
     }
 }

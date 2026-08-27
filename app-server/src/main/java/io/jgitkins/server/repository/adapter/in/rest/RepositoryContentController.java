@@ -1,5 +1,9 @@
 package io.jgitkins.server.repository.adapter.in.rest;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.beans.factory.annotation.Qualifier;
+import io.jgitkins.server.shared.application.exception.UnauthenticatedException;
+import io.jgitkins.server.identity.access.adapter.in.support.RequesterUserIdResolver;
 import io.jgitkins.server.repository.application.contract.result.FileEntry;
 import io.jgitkins.server.repository.application.contract.command.FileUploadInfo;
 import io.jgitkins.server.repository.adapter.in.rest.dto.request.FileUploadRequest;
@@ -27,7 +31,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @RestController
-@RequiredArgsConstructor
 @Tag(name = "Repository Content", description = "저장소 파일 업로드 및 트리 조회")
 @RequestMapping("/api/repositories")
 public class RepositoryContentController {
@@ -35,6 +38,30 @@ public class RepositoryContentController {
     private final FileUploadUseCase fileUploadUseCase;
     private final FileTreeLoadUseCase fileTreeLoadUseCase;
     private final RepositoryLoadUseCase repositoryLoadUseCase;
+    private final RequesterUserIdResolver requesterUserIdResolver;
+
+    RepositoryContentController(FileUploadUseCase fileUploadUseCase,
+                                FileTreeLoadUseCase fileTreeLoadUseCase,
+                                RepositoryLoadUseCase repositoryLoadUseCase,
+                                @Qualifier("identityRequesterUserIdResolver")
+                                RequesterUserIdResolver requesterUserIdResolver) {
+        this.fileUploadUseCase = fileUploadUseCase;
+        this.fileTreeLoadUseCase = fileTreeLoadUseCase;
+        this.repositoryLoadUseCase = repositoryLoadUseCase;
+        this.requesterUserIdResolver = requesterUserIdResolver;
+    }
+
+    /**
+     * Resolves the caller once, before any use case is touched.
+     *
+     * <p>A malformed principal must not reach the application layer: if it did, the first observable
+     * effect of a broken credential would be a database read for whatever id was salvaged from it.
+     */
+    private Long requireRequester(String subject) {
+        return requesterUserIdResolver.resolve(subject)
+                .orElseThrow(() -> new UnauthenticatedException("Authentication required"));
+    }
+
 
     @Operation(summary = "File Upload")
     @PostMapping(value = "/{namespace}/{repoName}/files/{branch}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -43,8 +70,10 @@ public class RepositoryContentController {
             @PathVariable @NotBlank String repoName,
             @PathVariable @NotBlank String branch,
             @Parameter(schema = @Schema(type = "string", format = "binary")) @RequestPart("file") MultipartFile file,
-            @Valid @RequestPart("request") FileUploadInfo request) {
-        fileUploadUseCase.uploadFileToRepository(namespace, repoName, branch, file, request);
+            @Valid @RequestPart("request") FileUploadInfo request,
+            @AuthenticationPrincipal(expression = "username") String subject) {
+        fileUploadUseCase.uploadFileToRepository(
+                requireRequester(subject), namespace, repoName, branch, file, request);
         return ApiResponse.ok("File uploaded and committed.");
     }
 
@@ -54,13 +83,19 @@ public class RepositoryContentController {
             @RequestParam("branch") @NotBlank String branch,
             @RequestParam("path") @NotBlank String path,
             @RequestParam("message") @NotBlank String message,
-            @Parameter(schema = @Schema(type = "string", format = "binary")) @RequestPart("file") MultipartFile file) {
-        RepositoryKey key = resolveRepositoryKey(repositoryId);
+            @Parameter(schema = @Schema(type = "string", format = "binary")) @RequestPart("file") MultipartFile file,
+            @AuthenticationPrincipal(expression = "username") String subject) {
+        // The requester is resolved before the repository lookup, so an unauthenticated caller
+        // cannot use this route to learn whether a repository id exists.
+        Long requesterUserId = requireRequester(subject);
+        RepositoryKey key = repositoryLoadUseCase.resolveRepositoryKey(repositoryId)
+                .orElseThrow(() -> new RepositoryNotFoundException(repositoryId));
         FileUploadInfo request = FileUploadInfo.builder()
                 .filePath(path)
                 .commitMessage(message)
                 .build();
-        fileUploadUseCase.uploadFileToRepository(key.namespace(), key.repoName(), branch, file, request);
+        fileUploadUseCase.uploadFileToRepository(
+                requesterUserId, key.namespace(), key.repoName(), branch, file, request);
         return ApiResponse.ok("File uploaded and committed.");
     }
 
@@ -75,15 +110,4 @@ public class RepositoryContentController {
     }
 
     // TODO: 수정 필요
-    private RepositoryKey resolveRepositoryKey(Long repositoryId) {
-        var repository = repositoryLoadUseCase.loadRepository(repositoryId);
-        RepositoryKey key = RepositoryKey.fromPath(repository.clonePath());
-        if (key == null) {
-            key = RepositoryKey.fromPath(repository.path());
-        }
-        if (key == null) {
-            throw new RepositoryNotFoundException("Repository path is invalid: " + repositoryId);
-        }
-        return key;
-    }
 }

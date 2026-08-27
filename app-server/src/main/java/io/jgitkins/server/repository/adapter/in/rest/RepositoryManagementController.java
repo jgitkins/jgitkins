@@ -1,5 +1,9 @@
 package io.jgitkins.server.repository.adapter.in.rest;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.beans.factory.annotation.Qualifier;
+import io.jgitkins.server.shared.application.exception.UnauthenticatedException;
+import io.jgitkins.server.identity.access.adapter.in.support.RequesterUserIdResolver;
 import io.jgitkins.server.repository.application.contract.command.RepositoryCreateCommand;
 import io.jgitkins.server.repository.application.contract.result.RepositoryOverviewResult;
 import io.jgitkins.server.repository.application.contract.result.RepositoryResult;
@@ -21,7 +25,6 @@ import org.springframework.validation.annotation.Validated;
 import java.util.List;
 
 @RestController
-@RequiredArgsConstructor
 @Tag(name = "Repository Management", description = "저장소 관리")
 @RequestMapping("/api/repositories")
 @Validated
@@ -32,11 +35,45 @@ public class RepositoryManagementController {
     private final RepositoryOverviewUseCase repositoryOverviewUseCase;
 
     private final RepositoryRequestMapper repositoryRequestMapper;
+    private final RequesterUserIdResolver requesterUserIdResolver;
+
+    /**
+     * Explicit constructor rather than {@code @RequiredArgsConstructor}: the qualifier must sit on the
+     * constructor parameter. Two beans of type {@code RequesterUserIdResolver} exist with deliberately
+     * different error semantics, and the wrong one turns a malformed principal into a silent empty.
+     */
+    RepositoryManagementController(RepositoryManagementUseCase repositoryManagementUseCase,
+                                   RepositoryLoadUseCase repositoryLoadUseCase,
+                                   RepositoryOverviewUseCase repositoryOverviewUseCase,
+                                   RepositoryRequestMapper repositoryRequestMapper,
+                                   @Qualifier("identityRequesterUserIdResolver")
+                                   RequesterUserIdResolver requesterUserIdResolver) {
+        this.repositoryManagementUseCase = repositoryManagementUseCase;
+        this.repositoryLoadUseCase = repositoryLoadUseCase;
+        this.repositoryOverviewUseCase = repositoryOverviewUseCase;
+        this.repositoryRequestMapper = repositoryRequestMapper;
+        this.requesterUserIdResolver = requesterUserIdResolver;
+    }
+
+    /**
+     * Resolves the caller once, before any use case is touched.
+     *
+     * <p>A malformed principal must not reach the application layer: if it did, the first observable
+     * effect of a broken credential would be a database read for whatever id was salvaged from it.
+     */
+    private Long requireRequester(String subject) {
+        return requesterUserIdResolver.resolve(subject)
+                .orElseThrow(() -> new UnauthenticatedException("Authentication required"));
+    }
+
 
     @Operation(summary = "Create Repository", description = "ownerType required.")
     @PostMapping
-    public ResponseEntity<ApiResponse<RepositoryResult>> create(@Valid @RequestBody RepositoryCreateRequest request) {
-        RepositoryCreateCommand createCommand = repositoryRequestMapper.toCommand(request);
+    public ResponseEntity<ApiResponse<RepositoryResult>> create(
+            @Valid @RequestBody RepositoryCreateRequest request,
+            @AuthenticationPrincipal(expression = "username") String subject) {
+        Long requesterUserId = requireRequester(subject);
+        RepositoryCreateCommand createCommand = repositoryRequestMapper.toCommand(requesterUserId, request);
         RepositoryResult result = repositoryManagementUseCase.create(createCommand);
         return ApiResponse.created(result.id(), result);
     }
@@ -61,8 +98,10 @@ public class RepositoryManagementController {
 
     @Operation(summary = "Delete Repository")
     @DeleteMapping("/{repositoryId}")
-    public ResponseEntity<ApiResponse<Void>> deleteRepository(@PathVariable Long repositoryId) {
-        repositoryManagementUseCase.deleteRepository(repositoryId);
+    public ResponseEntity<ApiResponse<Void>> deleteRepository(
+            @PathVariable Long repositoryId,
+            @AuthenticationPrincipal(expression = "username") String subject) {
+        repositoryManagementUseCase.deleteRepository(requireRequester(subject), repositoryId);
         return ApiResponse.noContent();
     }
 

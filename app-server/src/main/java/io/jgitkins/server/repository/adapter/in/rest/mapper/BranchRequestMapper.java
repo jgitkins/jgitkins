@@ -8,9 +8,11 @@ import io.jgitkins.server.repository.adapter.in.rest.dto.request.BranchCreateReq
 @Mapper(componentModel = "spring")
 public interface BranchRequestMapper {
 
+    @Mapping(target = "requesterUserId", source = "requesterUserId")
     @Mapping(target = "repositoryId", source = "repositoryId")
     @Mapping(target = "branchName", source = "request.branchName")
     @Mapping(target = "sourceBranch", source = "request.sourceBranch")
     @Mapping(target = "physicalCreationRequired", constant = "true")
-    BranchCreateCommand toCommand(Long repositoryId, BranchCreateRequest request);
+    BranchCreateCommand toCommand(Long requesterUserId, Long repositoryId,
+                                  BranchCreateRequest request);
 }

@@ -6,6 +6,7 @@ import lombok.Builder;
 
 @Builder
 public record RepositoryCreateCommand(
+        Long requesterUserId,
         String repoName,
         OwnerType ownerType,
         Long organizeId,
