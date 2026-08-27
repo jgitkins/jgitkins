@@ -4,5 +4,10 @@ import io.jgitkins.server.repository.application.contract.result.RepositoryMembe
 import java.util.List;
 
 public interface RepositoryMemberLoadUseCase {
-    List<RepositoryMemberSummary> getRepositoryMembers(Long repositoryId);
+    /**
+     * @param requesterUserId the authenticated caller. Unlike the repository reads, this one is not
+     *     nullable: a member list is never public, so an absent caller is a rejection rather than a
+     *     narrower result.
+     */
+    List<RepositoryMemberSummary> getRepositoryMembers(Long requesterUserId, Long repositoryId);
 }

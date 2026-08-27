@@ -1,5 +1,6 @@
 package io.jgitkins.server.repository.application.support;
 
+import io.jgitkins.server.repository.application.contract.result.RepositoryResult;
 import io.jgitkins.server.repository.application.port.in.GitRepositoryAccessUseCase;
 import io.jgitkins.server.repository.domain.aggregate.Repository;
 import io.jgitkins.server.shared.domain.model.vo.OwnerType;
@@ -31,6 +32,11 @@ public class GitRepositoryAccessUseCaseFacade implements GitRepositoryAccessUseC
 
     @Override
     public RepositoryPermission resolvePermission(Repository repo, Long userId) {
+        return gitRepositoryAccessService.resolvePermission(repo, userId);
+    }
+
+    @Override
+    public RepositoryPermission resolvePermission(RepositoryResult repo, Long userId) {
         return gitRepositoryAccessService.resolvePermission(repo, userId);
     }
 

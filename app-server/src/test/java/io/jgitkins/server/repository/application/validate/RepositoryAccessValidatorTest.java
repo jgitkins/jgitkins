@@ -1,5 +1,7 @@
 package io.jgitkins.server.repository.application.validate;
 
+import static org.mockito.Mockito.verify;
+import io.jgitkins.server.repository.application.contract.result.RepositoryResult;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -7,11 +9,9 @@ import static org.mockito.Mockito.when;
 
 import io.jgitkins.server.shared.application.error.ApplicationErrorCode;
 import io.jgitkins.server.repository.application.port.in.GitRepositoryAccessUseCase;
-import io.jgitkins.server.repository.application.port.out.RepositoryActorPort;
 import io.jgitkins.core.common.exception.JgitkinsException;
 import io.jgitkins.server.repository.domain.aggregate.Repository;
 import io.jgitkins.server.repository.application.contract.result.RepositoryPermission;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,41 +21,71 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class RepositoryAccessValidatorTest {
 
-    @Mock
-    private RepositoryActorPort currentUserPersistencePort;
 
     @Mock
     private GitRepositoryAccessUseCase gitRepositoryAccessUseCase;
 
-    @Mock
-    private Repository repository;
+    /**
+     * The read model, not the aggregate.
+     *
+     * <p>Task 2.65 changed validateReadAccess to take the {@code RepositoryResult} the route already
+     * loaded. A concrete record rather than a mock, because the point of the change is that the
+     * validator authorizes the exact object being returned.
+     */
+    private final RepositoryResult repository = new RepositoryResult(
+            1L, "USER", "repo", "org/repo", "main", "PRIVATE",
+            null, 1L, null, "/org/repo.git", null, false, null, null, null);
 
     private RepositoryAccessValidator validator;
 
     @BeforeEach
     void setUp() {
-        validator = new RepositoryAccessValidator(currentUserPersistencePort, gitRepositoryAccessUseCase);
+        validator = new RepositoryAccessValidator(gitRepositoryAccessUseCase);
+    }
+
+    @Test
+    void validateReadAccess_usesExplicitRequester() {
+        when(gitRepositoryAccessUseCase.resolvePermission(repository, 42L))
+                .thenReturn(new RepositoryPermission("REPOSITORY_READER", false, true));
+
+        validator.validateReadAccess(repository, 42L);
+
+        // The requester the caller supplied reaches the permission resolver unchanged. Before task 2.65
+        // this method read RepositoryActorPort, so it authorized against the security context regardless
+        // of which repository the route had loaded for whom.
+        verify(gitRepositoryAccessUseCase).resolvePermission(repository, 42L);
+    }
+
+    @Test
+    void validateReadAccess_allowsAnonymousReadOfAPublicRepository() {
+        RepositoryResult publicRepository = new RepositoryResult(
+                2L, "USER", "open", "org/open", "main", "PUBLIC",
+                null, 1L, null, "/org/open.git", null, false, null, null, null);
+        when(gitRepositoryAccessUseCase.resolvePermission(publicRepository, null))
+                .thenReturn(new RepositoryPermission("PUBLIC_READ_ONLY", false, true));
+
+        // Null is a value here, not a rejection. Anonymous public reads are existing behaviour, and a
+        // validator that demanded a requester would break every one of them.
+        assertDoesNotThrow(() -> validator.validateReadAccess(publicRepository, null));
     }
 
     @Test
     void validateReadAccess_throwsForbidden_whenReadPermissionDenied() {
-        when(currentUserPersistencePort.resolveCurrentUserId()).thenReturn(Optional.of(7L));
         when(gitRepositoryAccessUseCase.resolvePermission(repository, 7L))
                 .thenReturn(RepositoryPermission.none());
 
         JgitkinsException ex = assertThrows(JgitkinsException.class,
-                () -> validator.validateReadAccess(repository));
+                () -> validator.validateReadAccess(repository, 7L));
 
         assertEquals(ApplicationErrorCode.ACCESS_DENIED, ex.getErrorCode());
     }
 
     @Test
     void validateReadAccess_allows_whenReadPermissionGranted() {
-        when(currentUserPersistencePort.resolveCurrentUserId()).thenReturn(Optional.empty());
         when(gitRepositoryAccessUseCase.resolvePermission(repository, null))
                 .thenReturn(new RepositoryPermission("PUBLIC_READ_ONLY", false, true));
 
-        assertDoesNotThrow(() -> validator.validateReadAccess(repository));
+        assertDoesNotThrow(() -> validator.validateReadAccess(repository, null));
     }
 
     @Test

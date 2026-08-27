@@ -1,12 +1,12 @@
 package io.jgitkins.server.repository.application.service;
 
+import io.jgitkins.server.repository.application.validate.RepositoryAccessValidator;
 import java.util.Optional;
 import io.jgitkins.server.repository.application.contract.internal.RepositoryKey;
 import io.jgitkins.server.repository.application.contract.result.RepositoryResult;
 import io.jgitkins.server.repository.application.exception.RepositoryNotFoundException;
 import io.jgitkins.server.repository.application.port.in.RepositoryLoadUseCase;
 import io.jgitkins.server.repository.application.port.out.RepositoryQueryPort;
-import io.jgitkins.server.repository.application.port.out.RepositoryActorPort;
 import io.jgitkins.server.repository.application.port.out.UserNamespacePort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,14 +19,19 @@ import java.util.List;
 public class RepositoryLoadService implements RepositoryLoadUseCase {
 
     private final RepositoryQueryPort repositoryQueryPort;
-    private final RepositoryActorPort repositoryActorPort;
     private final UserNamespacePort userNamespacePort;
+    private final RepositoryAccessValidator repositoryAccessValidator;
 
     @Override
     @Transactional(readOnly = true)
-    public RepositoryResult loadRepository(Long repositoryId) {
-        return repositoryQueryPort.loadRepository(repositoryId)
+    public RepositoryResult loadRepository(Long requesterUserId, Long repositoryId) {
+        RepositoryResult repository = repositoryQueryPort.loadRepository(repositoryId)
                 .orElseThrow(() -> new RepositoryNotFoundException(repositoryId));
+        // Authorized against the very result being returned, not a re-read. A second lookup could
+        // observe a different row than the one about to leave this method, and would authorize state
+        // the caller never sees.
+        repositoryAccessValidator.validateReadAccess(repository, requesterUserId);
+        return repository;
     }
 
     @Override
@@ -51,20 +56,20 @@ public class RepositoryLoadService implements RepositoryLoadUseCase {
 
     @Override
     @Transactional(readOnly = true)
-    public List<RepositoryResult> loadRepositories() {
-        Long requesterId = repositoryActorPort.resolveCurrentUserId().orElse(null);
-        return repositoryQueryPort.loadVisibleRepositories(requesterId);
+    public List<RepositoryResult> loadRepositories(Long requesterUserId) {
+        // No validator call: the visibility filter is the authorization for a list, and running a
+        // per-row check afterwards would authorize rows the query already excluded.
+        return repositoryQueryPort.loadVisibleRepositories(requesterUserId);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<RepositoryResult> loadUserRepositories(String username) {
+    public List<RepositoryResult> loadUserRepositories(Long requesterUserId, String username) {
         String normalizedUsername = username != null ? username.trim() : "";
 
         userNamespacePort.findUserIdByUsername(normalizedUsername)
                 .orElseThrow(() -> new RepositoryNotFoundException("User not found: " + normalizedUsername));
 
-        Long requesterId = repositoryActorPort.resolveCurrentUserId().orElse(null);
-        return repositoryQueryPort.loadUserRepositories(normalizedUsername, requesterId);
+        return repositoryQueryPort.loadUserRepositories(normalizedUsername, requesterUserId);
     }
 }

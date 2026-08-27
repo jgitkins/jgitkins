@@ -186,6 +186,7 @@ class RepositoryMemberServiceTest {
 
     @Test
     void getRepositoryMembers_mapsDomainToSummary() {
+        repositoryIsOwnedByRequester();
         LocalDateTime addedAt = LocalDateTime.of(2026, 1, 1, 0, 0);
         RepositoryMember member = RepositoryMember.create(
                 RepositoryId.of(1L),
@@ -195,7 +196,7 @@ class RepositoryMemberServiceTest {
         );
         when(repositoryMemberPort.findAllByRepositoryId(RepositoryId.of(1L))).thenReturn(List.of(member));
 
-        List<RepositoryMemberSummary> result = service.getRepositoryMembers(1L);
+        List<RepositoryMemberSummary> result = service.getRepositoryMembers(7L, 1L);
 
         assertEquals(1, result.size());
         assertEquals(2L, result.get(0).userId());
@@ -204,7 +205,21 @@ class RepositoryMemberServiceTest {
     }
 
     @Test
+    void getRepositoryMembers_deniesANonMemberBeforeQuerying() {
+        // Task 2.65: a member list is never public. The denial has to happen before the member query, or
+        // an unauthorized caller could learn the membership size from timing or from an error shape.
+        when(repositoryQueryPort.loadRepository(REPOSITORY_ID)).thenReturn(Optional.of(
+                new RepositoryResult(REPOSITORY_ID, "USER", "repo", "owner/repo", "main", "PRIVATE",
+                        null, 999L, null, "/owner/repo.git", null, false, null, null, null)));
+
+        assertThrows(JgitkinsException.class,
+                () -> service.getRepositoryMembers(OWNER_ID, REPOSITORY_ID));
+
+        verify(repositoryMemberPort, never()).findAllByRepositoryId(any(RepositoryId.class));
+    }
+
+    @Test
     void getRepositoryMembers_throwsWhenRepositoryIdMissing() {
-        assertThrows(JgitkinsException.class, () -> service.getRepositoryMembers(null));
+        assertThrows(JgitkinsException.class, () -> service.getRepositoryMembers(7L, null));
     }
 }

@@ -77,7 +77,12 @@ public class RepositoryMemberController {
 
     @Operation(summary = "List repository members")
     @GetMapping
-    public ResponseEntity<ApiResponse<java.util.List<RepositoryMemberSummary>>> listMembers(@PathVariable Long repositoryId) {
-        return ApiResponse.ok(repositoryMemberLoadUseCase.getRepositoryMembers(repositoryId));
+    public ResponseEntity<ApiResponse<java.util.List<RepositoryMemberSummary>>> listMembers(
+            @PathVariable Long repositoryId,
+            @AuthenticationPrincipal(expression = "username") String subject) {
+        // requireRequester, not optionalRequester: a member list is never public, so an absent
+        // caller is a rejection rather than a narrower result.
+        return ApiResponse.ok(repositoryMemberLoadUseCase.getRepositoryMembers(
+                requireRequester(subject), repositoryId));
     }
 }

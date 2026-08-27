@@ -1,10 +1,10 @@
 package io.jgitkins.server.repository.application.service;
 
+import static org.mockito.Mockito.verify;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 import io.jgitkins.server.repository.application.contract.result.FileEntry;
-import io.jgitkins.server.repository.application.port.out.RepositoryActorPort;
 import io.jgitkins.server.repository.application.port.out.FileGitPort;
 import io.jgitkins.server.repository.application.contract.result.BranchSearchResult;
 import io.jgitkins.server.repository.application.contract.result.RepositoryOverviewResult;
@@ -33,14 +33,31 @@ class RepositoryOverviewServiceTest {
 	@Mock
 	private FileGitPort fileGitPort;
 
-	@Mock
-	private RepositoryActorPort currentUserPort;
 
 	@Mock
 	private GitRepositoryAccessService gitRepositoryAccessService;
 
 	@InjectMocks
 	private RepositoryOverviewService service;
+
+	@Test
+	void getOverview_passesRequesterWithoutAmbientActor() {
+		RepositoryResult repository = new RepositoryResult(
+				1L, "USER", "repo", "org/repo", "main", "PRIVATE",
+				null, 1L, null, "org/repo.git", null, false,
+				null, null, null);
+		when(repositoryQueryPort.loadRepository(1L)).thenReturn(Optional.of(repository));
+		when(branchQueryPort.findAllByRepositoryId(1L)).thenReturn(List.of());
+		when(gitRepositoryAccessService.resolvePermission(null, "org", "repo", 7L))
+				.thenReturn(new RepositoryPermission("OWNER", true, true));
+
+		service.getOverview(7L, 1L, "main");
+
+		// The requester reaches the permission resolver as an argument. There is no RepositoryActorPort
+		// on this service any more, so an overview cannot silently authorize against whoever the
+		// security context happens to hold.
+		verify(gitRepositoryAccessService).resolvePermission(null, "org", "repo", 7L);
+	}
 
 	@Test
 	void getOverview_usesDefaultBranchAndLoadsTree() {
@@ -56,11 +73,10 @@ class RepositoryOverviewServiceTest {
 
 		List<FileEntry> tree = List.of(FileEntry.builder().name("README.md").build());
 		when(fileGitPort.listTree("org", "repo", "main", "")).thenReturn(tree);
-		when(currentUserPort.resolveCurrentUserId()).thenReturn(Optional.of(1L));
-		when(gitRepositoryAccessService.resolvePermission(null, "org", "repo", 1L))
+				when(gitRepositoryAccessService.resolvePermission(null, "org", "repo", 7L))
 				.thenReturn(new RepositoryPermission("OWNER", true, true));
 
-		RepositoryOverviewResult result = service.getOverview(1L, null);
+		RepositoryOverviewResult result = service.getOverview(7L, 1L, null);
 
 		assertEquals("main", result.selectedBranch());
 		assertEquals(tree, result.tree());
@@ -82,11 +98,12 @@ class RepositoryOverviewServiceTest {
 
 		List<FileEntry> tree = List.of(FileEntry.builder().name("README.md").build());
 		when(fileGitPort.listTree("org", "repo", "main", "")).thenReturn(tree);
-		when(currentUserPort.resolveCurrentUserId()).thenReturn(Optional.empty());
-		when(gitRepositoryAccessService.resolvePermission(null, "org", "repo", null))
+				when(gitRepositoryAccessService.resolvePermission(null, "org", "repo", null))
 				.thenReturn(new RepositoryPermission("PUBLIC_READ_ONLY", false, true));
 
-		RepositoryOverviewResult result = service.getOverviewByPath("org", "repo", null);
+		// Anonymous, on purpose: this case covers the public-read path, which must survive the move to an
+		// explicit requester unchanged.
+		RepositoryOverviewResult result = service.getOverviewByPath(null, "org", "repo", null);
 
 		assertEquals("main", result.selectedBranch());
 		assertEquals(tree, result.tree());

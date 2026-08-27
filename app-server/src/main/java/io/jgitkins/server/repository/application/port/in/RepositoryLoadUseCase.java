@@ -7,7 +7,13 @@ import java.util.List;
 import java.util.Optional;
 
 public interface RepositoryLoadUseCase {
-    RepositoryResult loadRepository(Long repositoryId);
+    /**
+     * @param requesterUserId the authenticated caller, or {@code null} for an anonymous request.
+     *     Nullable on the read side and not on the write side, deliberately: a public repository is
+     *     readable without a caller, and forcing a value here would either reject anonymous reads or
+     *     invent a sentinel actor that the visibility filter would then have to recognise.
+     */
+    RepositoryResult loadRepository(Long requesterUserId, Long repositoryId);
 
     /**
      * Resolves a repository id to its {@code namespace/repoName} key, for the ID-based upload route.
@@ -21,7 +27,7 @@ public interface RepositoryLoadUseCase {
      */
     Optional<RepositoryKey> resolveRepositoryKey(Long repositoryId);
     RepositoryResult loadRepositoryByPath(String namespace, String repoName);
-    List<RepositoryResult> loadRepositories();
+    List<RepositoryResult> loadRepositories(Long requesterUserId);
 
-    List<RepositoryResult> loadUserRepositories(String username);
+    List<RepositoryResult> loadUserRepositories(Long requesterUserId, String username);
 }

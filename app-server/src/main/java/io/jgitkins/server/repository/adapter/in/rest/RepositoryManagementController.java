@@ -61,6 +61,19 @@ public class RepositoryManagementController {
      * <p>A malformed principal must not reach the application layer: if it did, the first observable
      * effect of a broken credential would be a database read for whatever id was salvaged from it.
      */
+
+    /**
+     * Resolves the caller for a read, where anonymous is allowed.
+     *
+     * <p>Distinct from {@code requireRequester}: a public repository is readable without a caller, so an
+     * absent principal returns null rather than a 401. A malformed one still throws — the resolver draws
+     * that line, and a broken credential must not be silently downgraded to "anonymous", which would let
+     * a corrupted token quietly read exactly the public subset instead of being reported.
+     */
+    private Long optionalRequester(String subject) {
+        return requesterUserIdResolver.resolve(subject).orElse(null);
+    }
+
     private Long requireRequester(String subject) {
         return requesterUserIdResolver.resolve(subject)
                 .orElseThrow(() -> new UnauthenticatedException("Authentication required"));
@@ -80,20 +93,26 @@ public class RepositoryManagementController {
 
     @Operation(summary = "Get Repository Metadata")
     @GetMapping("/{repositoryId}")
-    public ResponseEntity<ApiResponse<RepositoryResult>> getRepository(@PathVariable Long repositoryId) {
-        return ApiResponse.ok(repositoryLoadUseCase.loadRepository(repositoryId));
+    public ResponseEntity<ApiResponse<RepositoryResult>> getRepository(
+            @PathVariable Long repositoryId,
+            @AuthenticationPrincipal(expression = "username") String subject) {
+        return ApiResponse.ok(repositoryLoadUseCase.loadRepository(optionalRequester(subject), repositoryId));
     }
 
     @Operation(summary = "Get Repositories")
     @GetMapping
-    public ResponseEntity<ApiResponse<List<RepositoryResult>>> getRepositories() {
-        return ApiResponse.ok(repositoryLoadUseCase.loadRepositories());
+    public ResponseEntity<ApiResponse<List<RepositoryResult>>> getRepositories(
+            @AuthenticationPrincipal(expression = "username") String subject) {
+        return ApiResponse.ok(repositoryLoadUseCase.loadRepositories(optionalRequester(subject)));
     }
 
     @Operation(summary = "Get User Repositories by Username")
     @GetMapping("/users/{username}")
-    public ResponseEntity<ApiResponse<List<RepositoryResult>>> getUserRepositories(@PathVariable("username") @NotBlank String username) {
-        return ApiResponse.ok(repositoryLoadUseCase.loadUserRepositories(username));
+    public ResponseEntity<ApiResponse<List<RepositoryResult>>> getUserRepositories(
+            @PathVariable("username") @NotBlank String username,
+            @AuthenticationPrincipal(expression = "username") String subject) {
+        return ApiResponse.ok(
+                repositoryLoadUseCase.loadUserRepositories(optionalRequester(subject), username));
     }
 
     @Operation(summary = "Delete Repository")
@@ -111,8 +130,10 @@ public class RepositoryManagementController {
     @Operation(summary = "Get Repository Overview")
     @GetMapping("/{repositoryId}/overview")
     public ResponseEntity<ApiResponse<RepositoryOverviewResult>> getOverview(@PathVariable Long repositoryId,
-                                                                             @RequestParam(name = "branch", required = false) String branch) {
-        return ApiResponse.ok(repositoryOverviewUseCase.getOverview(repositoryId, branch));
+                                                                             @RequestParam(name = "branch", required = false) String branch,
+                                                                             @AuthenticationPrincipal(expression = "username") String subject) {
+        return ApiResponse.ok(repositoryOverviewUseCase.getOverview(
+                optionalRequester(subject), repositoryId, branch));
     }
 
 }

@@ -107,7 +107,7 @@ class RepositoryMemberControllerTest {
 
     @Test
     void listMembers_returnsMemberSummaries() throws Exception {
-        when(repositoryMemberLoadUseCase.getRepositoryMembers(1L)).thenReturn(List.of(
+        when(repositoryMemberLoadUseCase.getRepositoryMembers(7L, 1L)).thenReturn(List.of(
                 new RepositoryMemberSummary(2L, RepositoryMemberRole.MAINTAINER, LocalDateTime.of(2026, 1, 1, 0, 0))
         ));
 
@@ -116,7 +116,7 @@ class RepositoryMemberControllerTest {
                 .andExpect(jsonPath("$.data[0].userId").value(2L))
                 .andExpect(jsonPath("$.data[0].role").value("MAINTAINER"));
 
-        verify(repositoryMemberLoadUseCase).getRepositoryMembers(1L);
+        verify(repositoryMemberLoadUseCase).getRepositoryMembers(7L, 1L);
     }
 
     /** The malformed subjects the identity resolver must refuse. Zero is malformed, not absent. */
@@ -210,5 +210,38 @@ class RepositoryMemberControllerTest {
                 .when(repositoryMemberManagementUseCase).removeRepositoryMember(7L, 1L, 2L);
 
         mockMvc.perform(delete("/api/repositories/1/members/2")).andExpect(status().isNotFound());
+    }
+
+    @Test
+    void listMembers_returnsSummariesForAuthorizedMember() throws Exception {
+        when(repositoryMemberLoadUseCase.getRepositoryMembers(7L, 1L)).thenReturn(java.util.List.of());
+
+        mockMvc.perform(get("/api/repositories/1/members")).andExpect(status().isOk());
+
+        verify(repositoryMemberLoadUseCase).getRepositoryMembers(7L, 1L);
+    }
+
+    @Test
+    void listMembers_deniesBeforeMemberQuery() throws Exception {
+        when(repositoryMemberLoadUseCase.getRepositoryMembers(7L, 1L))
+                .thenThrow(new RepositoryAccessDeniedException("Repository member management is not allowed"));
+
+        mockMvc.perform(get("/api/repositories/1/members")).andExpect(status().isForbidden());
+    }
+
+    @Test
+    void listMembers_returns404ForMissingRepository() throws Exception {
+        when(repositoryMemberLoadUseCase.getRepositoryMembers(7L, 1L))
+                .thenThrow(new RepositoryNotFoundException(1L));
+
+        mockMvc.perform(get("/api/repositories/1/members")).andExpect(status().isNotFound());
+    }
+
+    @Test
+    void listMembers_rejectsMalformedPrincipal() throws Exception {
+        assertRejectedWithAuth001(() -> get("/api/repositories/1/members"));
+        // A member list is never public, so unlike the repository reads this route rejects rather than
+        // narrowing -- and the use case is never reached, so nothing can be inferred from a response time.
+        verifyNoInteractions(repositoryMemberLoadUseCase);
     }
 }

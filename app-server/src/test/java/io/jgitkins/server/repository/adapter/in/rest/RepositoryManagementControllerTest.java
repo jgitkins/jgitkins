@@ -1,5 +1,7 @@
 package io.jgitkins.server.repository.adapter.in.rest;
 
+import io.jgitkins.server.shared.application.exception.ApplicationException;
+import io.jgitkins.server.shared.application.error.ApplicationErrorCode;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.doThrow;
 import io.jgitkins.server.repository.application.exception.RepositoryNotFoundException;
@@ -100,7 +102,7 @@ class RepositoryManagementControllerTest {
 
     @Test
     void getRepository_returnsMetadata() throws Exception {
-        when(repositoryLoadUseCase.loadRepository(1L))
+        when(repositoryLoadUseCase.loadRepository(7L, 1L))
                 .thenReturn(new RepositoryResult(1L, null, "repo-1", null, null, null, null, null, null, null, null, false, null, null, null));
 
         mockMvc.perform(get("/api/repositories/1"))
@@ -108,12 +110,12 @@ class RepositoryManagementControllerTest {
                 .andExpect(jsonPath("$.data.id").value(1L))
                 .andExpect(jsonPath("$.data.name").value("repo-1"));
 
-        verify(repositoryLoadUseCase).loadRepository(1L);
+        verify(repositoryLoadUseCase).loadRepository(7L, 1L);
     }
 
     @Test
     void getRepositories_returnsList() throws Exception {
-        when(repositoryLoadUseCase.loadRepositories()).thenReturn(List.of(
+        when(repositoryLoadUseCase.loadRepositories(7L)).thenReturn(List.of(
                 new RepositoryResult(1L, null, "repo-1", null, null, null, null, null, null, null, null, false, null, null, null),
                 new RepositoryResult(2L, null, "repo-2", null, null, null, null, null, null, null, null, false, null, null, null)
         ));
@@ -123,12 +125,12 @@ class RepositoryManagementControllerTest {
                 .andExpect(jsonPath("$.data[0].name").value("repo-1"))
                 .andExpect(jsonPath("$.data[1].name").value("repo-2"));
 
-        verify(repositoryLoadUseCase).loadRepositories();
+        verify(repositoryLoadUseCase).loadRepositories(7L);
     }
 
     @Test
     void getUserRepositories_returnsList() throws Exception {
-        when(repositoryLoadUseCase.loadUserRepositories("alice"))
+        when(repositoryLoadUseCase.loadUserRepositories(7L, "alice"))
                 .thenReturn(List.of(new RepositoryResult(3L, null, "alice-repo", null, null, null, null, null, null, null, null, false, null, null, null)));
 
         mockMvc.perform(get("/api/repositories/users/alice"))
@@ -136,7 +138,7 @@ class RepositoryManagementControllerTest {
                 .andExpect(jsonPath("$.data[0].id").value(3L))
                 .andExpect(jsonPath("$.data[0].name").value("alice-repo"));
 
-        verify(repositoryLoadUseCase).loadUserRepositories("alice");
+        verify(repositoryLoadUseCase).loadUserRepositories(7L, "alice");
     }
 
     @Test
@@ -255,5 +257,92 @@ class RepositoryManagementControllerTest {
                 .when(repositoryManagementUseCase).deleteRepository(7L, 1L);
 
         mockMvc.perform(delete("/api/repositories/1")).andExpect(status().isNotFound());
+    }
+
+    @Test
+    void getRepository_returnsMetadataForPublicAnonymous() throws Exception {
+        TestAuthentication.clear();
+        when(repositoryLoadUseCase.loadRepository(null, 1L)).thenReturn(publicRepository());
+
+        mockMvc.perform(get("/api/repositories/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.id").value(1));
+
+        // Anonymous reaches the use case as null rather than being rejected at the adapter. A public
+        // repository is readable without a caller, and demanding one here would break every anonymous
+        // read while looking like a security improvement.
+        verify(repositoryLoadUseCase).loadRepository(null, 1L);
+    }
+
+    @Test
+    void getRepository_returnsMetadataForPrivateOwner() throws Exception {
+        when(repositoryLoadUseCase.loadRepository(7L, 1L)).thenReturn(privateRepository());
+
+        mockMvc.perform(get("/api/repositories/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.id").value(1));
+
+        verify(repositoryLoadUseCase).loadRepository(7L, 1L);
+    }
+
+    @Test
+    void getRepository_deniesPrivateNonMember() throws Exception {
+        when(repositoryLoadUseCase.loadRepository(7L, 1L)).thenThrow(new ApplicationException(
+                ApplicationErrorCode.ACCESS_DENIED, "Insufficient permission to access repository: repo"));
+
+        mockMvc.perform(get("/api/repositories/1")).andExpect(status().isForbidden());
+    }
+
+    @Test
+    void getRepository_returns404ForMissingRepository() throws Exception {
+        when(repositoryLoadUseCase.loadRepository(7L, 1L)).thenThrow(new RepositoryNotFoundException(1L));
+
+        mockMvc.perform(get("/api/repositories/1")).andExpect(status().isNotFound());
+    }
+
+    @Test
+    void getRepositories_preservesPublicAnonymousRead() throws Exception {
+        TestAuthentication.clear();
+        when(repositoryLoadUseCase.loadRepositories(null)).thenReturn(java.util.List.of(publicRepository()));
+
+        mockMvc.perform(get("/api/repositories"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data[0].id").value(1));
+
+        // The list narrows by visibility rather than failing. The requester is the filter's input, so a
+        // null one must reach the query instead of being turned into a rejection.
+        verify(repositoryLoadUseCase).loadRepositories(null);
+    }
+
+    @Test
+    void getUserRepositories_passesExplicitRequester() throws Exception {
+        when(repositoryLoadUseCase.loadUserRepositories(7L, "alice"))
+                .thenReturn(java.util.List.of(privateRepository()));
+
+        mockMvc.perform(get("/api/repositories/users/alice")).andExpect(status().isOk());
+
+        verify(repositoryLoadUseCase).loadUserRepositories(7L, "alice");
+    }
+
+    @Test
+    void getOverview_passesExplicitRequester() throws Exception {
+        when(repositoryOverviewUseCase.getOverview(7L, 1L, "main")).thenReturn(
+                new io.jgitkins.server.repository.application.contract.result.RepositoryOverviewResult(
+                        privateRepository(), java.util.List.of(), java.util.List.of(), "main", "OWNER", true));
+
+        mockMvc.perform(get("/api/repositories/1/overview").param("branch", "main"))
+                .andExpect(status().isOk());
+
+        verify(repositoryOverviewUseCase).getOverview(7L, 1L, "main");
+    }
+
+    private static RepositoryResult publicRepository() {
+        return new RepositoryResult(1L, "USER", "open", "org/open", "main", "PUBLIC",
+                null, 9L, null, "/org/open.git", null, false, null, null, null);
+    }
+
+    private static RepositoryResult privateRepository() {
+        return new RepositoryResult(1L, "USER", "repo", "org/repo", "main", "PRIVATE",
+                null, 7L, null, "/org/repo.git", null, false, null, null, null);
     }
 }

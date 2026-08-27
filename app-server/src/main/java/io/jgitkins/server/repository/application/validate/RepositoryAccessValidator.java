@@ -1,6 +1,6 @@
 package io.jgitkins.server.repository.application.validate;
 
-import io.jgitkins.server.repository.application.port.out.RepositoryActorPort;
+import io.jgitkins.server.repository.application.contract.result.RepositoryResult;
 import io.jgitkins.server.repository.application.port.in.GitRepositoryAccessUseCase;
 import io.jgitkins.server.shared.application.error.ApplicationErrorCode;
 import io.jgitkins.server.shared.application.exception.ApplicationException;
@@ -13,16 +13,28 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class RepositoryAccessValidator {
 
-    private final RepositoryActorPort currentUserPersistencePort;
     private final GitRepositoryAccessUseCase gitRepositoryAccessUseCase;
 
-    public void validateReadAccess(Repository repository) {
-        Long userId = currentUserPersistencePort.resolveCurrentUserId().orElse(null);
-        RepositoryPermission permission = gitRepositoryAccessUseCase.resolvePermission(repository, userId);
+    /**
+     * Authorizes a read of the result the route already loaded.
+     *
+     * <p>Task 2.65 changed both the argument type and the actor source. It used to take the
+     * {@code Repository} aggregate and read {@code RepositoryActorPort}; it now takes the
+     * {@code RepositoryResult} the caller already has and the requester it was given. Reusing the loaded
+     * result matters beyond tidiness: a second lookup could observe a different row than the one about
+     * to be returned, and would authorize against state the caller never sees.
+     */
+    public void validateReadAccess(RepositoryResult repository, Long requesterUserId) {
+        // Null is allowed here and is not a rejection: a public repository is readable anonymously,
+        // and the permission resolver is what decides that. Rejecting up front would break public
+        // reads; substituting a sentinel id would make the resolver treat an anonymous caller as a
+        // user who might coincidentally be a member.
+        RepositoryPermission permission = gitRepositoryAccessUseCase.resolvePermission(
+                repository, requesterUserId);
         if (!permission.member()) {
             throw new ApplicationException(
                     ApplicationErrorCode.ACCESS_DENIED,
-                    "Insufficient permission to access repository: " + repository.getName());
+                    "Insufficient permission to access repository: " + repository.name());
         }
     }
 

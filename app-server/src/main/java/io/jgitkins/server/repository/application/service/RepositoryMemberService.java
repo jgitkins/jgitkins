@@ -51,8 +51,12 @@ public class RepositoryMemberService implements RepositoryMemberManagementUseCas
 
     @Override
     @Transactional(readOnly = true)
-    public List<RepositoryMemberSummary> getRepositoryMembers(Long repositoryId) {
+    public List<RepositoryMemberSummary> getRepositoryMembers(Long requesterUserId, Long repositoryId) {
         repositoryMemberValidator.validateRepositoryId(repositoryId);
+        // Ordering is the contract: existence, then authentication, then authorization, then exactly one
+        // member query. A member list is never public, so an unauthorized caller must not be able to
+        // learn the membership size from a timing or an error shape.
+        repositoryMemberManagementPolicy.validateCanManageMembers(requesterUserId, repositoryId);
         return repositoryMemberPort.findAllByRepositoryId(RepositoryId.of(repositoryId)).stream()
                 .map(member -> new RepositoryMemberSummary(member.getUserId().getValue(), member.getRole(), member.getAddedAt()))
                 .toList();

@@ -2,7 +2,6 @@ package io.jgitkins.server.repository.application.service;
 
 import io.jgitkins.server.repository.application.contract.result.FileEntry;
 import io.jgitkins.server.repository.application.contract.internal.RepositoryKey;
-import io.jgitkins.server.repository.application.port.out.RepositoryActorPort;
 import io.jgitkins.server.repository.application.port.out.FileGitPort;
 import io.jgitkins.server.repository.application.contract.result.BranchSearchResult;
 import io.jgitkins.server.repository.application.contract.result.RepositoryOverviewResult;
@@ -27,34 +26,34 @@ public class RepositoryOverviewService implements RepositoryOverviewUseCase {
 	private final RepositoryQueryPort repositoryQueryPort;
 	private final BranchQueryPort branchQueryPort;
 	private final FileGitPort fileGitPort;
-	private final RepositoryActorPort currentUserPort;
 	private final GitRepositoryAccessService gitRepositoryAccessService;
 
 	@Override
-	public RepositoryOverviewResult getOverview(Long repositoryId, String branch) {
+	public RepositoryOverviewResult getOverview(Long requesterUserId, Long repositoryId, String branch) {
 		RepositoryResult repository = repositoryQueryPort.loadRepository(repositoryId)
 				.orElseThrow(() -> new RepositoryNotFoundException(repositoryId));
-		return buildOverview(repository, branch);
+		return buildOverview(repository, branch, requesterUserId);
 	}
 
 	@Override
-	public RepositoryOverviewResult getOverviewByPath(String namespace, String repoName, String branch) {
+	public RepositoryOverviewResult getOverviewByPath(Long requesterUserId, String namespace,
+			String repoName, String branch) {
 		RepositoryResult repository = repositoryQueryPort.loadRepositoryByPath(namespace, repoName)
 				.orElseThrow(() -> new RepositoryNotFoundException(namespace, repoName));
-		return buildOverview(repository, branch);
+		return buildOverview(repository, branch, requesterUserId);
 	}
 
-	private RepositoryOverviewResult buildOverview(RepositoryResult repository, String branch) {
+	private RepositoryOverviewResult buildOverview(RepositoryResult repository, String branch,
+			Long requesterUserId) {
 		RepositoryKey key = resolveRepositoryKey(repository);
 		List<BranchSearchResult> branches = branchQueryPort.findAllByRepositoryId(repository.id());
 		String selectedBranch = resolveBranch(branch, branches);
 		List<FileEntry> tree = fileGitPort.listTree(key.namespace(), key.repoName(), selectedBranch, ROOT_PATH);
-		Long userId = currentUserPort.resolveCurrentUserId().orElse(null);
 		RepositoryPermission permission = gitRepositoryAccessService.resolvePermission(
 				null,
 				key.namespace(),
 				key.repoName(),
-				userId);
+				requesterUserId);
 
 		return new RepositoryOverviewResult(
 				repository,
