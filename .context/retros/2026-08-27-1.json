@@ -1,0 +1,92 @@
+{
+  "date": "2026-08-27",
+  "window": "7d",
+  "scope_note": "Reported against HEAD (feat/jpa-reference-slice), not origin/main. All 22 session commits are on the branch; origin/main is 22 behind and its latest commit is 2026-08-24. A retro run against origin/main would show none of this work.",
+  "metrics": {
+    "commits": 22,
+    "commits_7d_window_all": 51,
+    "contributors": 1,
+    "prs_merged": 0,
+    "insertions": 14003,
+    "deletions": 977,
+    "net_loc": 13026,
+    "test_loc": 8738,
+    "prod_loc": 5053,
+    "test_ratio": 0.634,
+    "files_changed": 291,
+    "active_days": 2,
+    "sessions": 3,
+    "deep_sessions": 2,
+    "avg_session_minutes": 79,
+    "loc_per_session_hour": 3550,
+    "feat_pct": 0.36,
+    "test_pct": 0.27,
+    "refactor_pct": 0.23,
+    "fix_pct": 0.09,
+    "chore_pct": 0.05,
+    "peak_hour": 11,
+    "ai_assisted_commits": 22,
+    "avg_commit_message_lines": 48.3
+  },
+  "authors": {
+    "hrllk": {
+      "commits": 22,
+      "insertions": 14003,
+      "deletions": 977,
+      "test_ratio": 0.634,
+      "top_area": "app-server/src/test/"
+    }
+  },
+  "tasks": {
+    "closed": [
+      "2.63",
+      "2.64",
+      "2.65",
+      "2.66",
+      "2.67",
+      "2.68",
+      "2.69",
+      "2.70",
+      "2.71",
+      "2.72",
+      "2.73",
+      "2.74",
+      "2.75",
+      "2.76",
+      "2.77"
+    ],
+    "opened": [
+      "2.78"
+    ],
+    "deferred_registered": [
+      "D5"
+    ]
+  },
+  "streak_days": 2,
+  "test_health": {
+    "total_test_classes": 228,
+    "test_classes_touched": 94,
+    "test_classes_added": 59,
+    "suite_tests": 735,
+    "suite_failures": 0,
+    "suite_skipped": 1
+  },
+  "security_findings": [
+    {
+      "id": "member-authz-missing",
+      "severity": "high",
+      "status": "fixed",
+      "summary": "Repository member mutation had no authorization; any authenticated caller who knew a repository id could self-grant membership, which the read and commit paths check.",
+      "follow_up_task": "2.78"
+    },
+    {
+      "id": "runner-scope-noop",
+      "severity": "medium",
+      "status": "documented-not-fixed",
+      "summary": "Runner scope updates resolve to `where ID = null` and change nothing, so narrowing a dispatch scope fails open.",
+      "follow_up_task": "D5"
+    }
+  ],
+  "negative_controls_run": 18,
+  "tweetable": "2026-08-27: 15 tasks closed, 22 commits, +14.0k LOC (63% tests), 735 tests 0 failures, 2 security defects found | 0 PRs merged — all on a branch"
+}
