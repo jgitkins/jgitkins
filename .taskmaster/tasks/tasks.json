@@ -880,6 +880,50 @@
             "priority": "low",
             "details": "RepositoryMemberManagementPolicy 는 저장소가 없으면 RepositoryNotFoundException(404) 을, 있지만 권한이 없으면 RepositoryAccessDeniedException(403) 을 던진다. 인가되지 않은 호출자가 비공개 저장소의 존재를 상태 코드로 구별할 수 있다. 2.64 가 순서(존재→인증→인가)를 의도적으로 정했고 그 순서 자체는 타이밍 누출을 막지만, 상태 코드 차이는 남는다. 공개 저장소는 존재가 이미 공개이므로 비공개에만 해당한다. 404 로 통일하면 정당한 호출자의 진단성이 떨어지고 API 응답이 바뀌므로 별도 결정이 필요하다.",
             "testStrategy": "비회원 호출자에게 존재하는 비공개 저장소와 존재하지 않는 저장소가 같은 상태 코드를 반환하는지 테스트. 통일을 고르면 기존 404 단정 테스트를 의도적으로 갱신할 것."
+          },
+          {
+            "id": 93,
+            "title": "[architecture][error-handling][all-contexts] 도메인 불변식 위반이 HTTP 500 으로 나간다 — 4xx 로 매핑",
+            "description": "도메인 VO 37개 파일이 평범한 IllegalArgumentException 을 던진다(collaboration 5, repository 8, identity/access 7, execution 7, change 5, shared 5). GlobalExceptionHandler 에 IllegalArgumentException 전용 핸들러가 없어 @ExceptionHandler(Exception.class) catch-all 로 떨어지고 INTERNAL_ERROR / HTTP 500 이 된다. DomainException 을 쓰는 5개 파일만 statusMapper 를 타고 제대로 매핑된다. 결과: 클라이언트가 보낸 잘못된 값이 도메인에 닿으면 400 이 아니라 500 이다. 이것이 애플리케이션 계층이 값을 손으로 먼저 검사하는 이유다(2.95/2.96 의 21곳) — 도메인에 맡기면 500 이 되니까 서비스가 의미 있는 오류로 바꾸려고 앞에서 막는다. 즉 '애플리케이션이 지저분한 것'은 원인이 아니라 이 매핑 부재의 증상이다. 선택: (a) VO 들이 DomainException 하위 타입을 던지게 한다, (b) IllegalArgumentException 핸들러를 추가해 400 으로 매핑한다. (b) 가 37파일을 안 건드리지만 라이브러리가 던진 IllegalArgumentException 까지 400 으로 만들 위험이 있어 (a) 가 더 정확하다. 2.95/2.96 의 선행 조건이다 — 이걸 먼저 하지 않고 애플리케이션 검사를 지우면 4xx 가 500 으로 바뀐다.",
+            "status": "pending",
+            "dependencies": [],
+            "priority": "high",
+            "details": "도메인 VO 37개 파일이 평범한 IllegalArgumentException 을 던진다(collaboration 5, repository 8, identity/access 7, execution 7, change 5, shared 5). GlobalExceptionHandler 에 IllegalArgumentException 전용 핸들러가 없어 @ExceptionHandler(Exception.class) catch-all 로 떨어지고 INTERNAL_ERROR / HTTP 500 이 된다. DomainException 을 쓰는 5개 파일만 statusMapper 를 타고 제대로 매핑된다. 결과: 클라이언트가 보낸 잘못된 값이 도메인에 닿으면 400 이 아니라 500 이다. 이것이 애플리케이션 계층이 값을 손으로 먼저 검사하는 이유다(2.95/2.96 의 21곳) — 도메인에 맡기면 500 이 되니까 서비스가 의미 있는 오류로 바꾸려고 앞에서 막는다. 즉 '애플리케이션이 지저분한 것'은 원인이 아니라 이 매핑 부재의 증상이다. 선택: (a) VO 들이 DomainException 하위 타입을 던지게 한다, (b) IllegalArgumentException 핸들러를 추가해 400 으로 매핑한다. (b) 가 37파일을 안 건드리지만 라이브러리가 던진 IllegalArgumentException 까지 400 으로 만들 위험이 있어 (a) 가 더 정확하다. 2.95/2.96 의 선행 조건이다 — 이걸 먼저 하지 않고 애플리케이션 검사를 지우면 4xx 가 500 으로 바뀐다.",
+            "testStrategy": "각 컨텍스트에서 VO 불변식을 위반하는 요청이 4xx 를 받는지 테스트. 특히 POST /api/organizes 에 {\"name\":\"\"} 를 보내 현재 500 인 것을 먼저 기록(네거티브 컨트롤)하고 4xx 로 바뀌는지 확인. GlobalExceptionHandler 의 catch-all 이 도메인 불변식을 더는 삼키지 않는지도 확인."
+          },
+          {
+            "id": 94,
+            "title": "[api][validation][all-contexts] 요청 DTO 15개 중 10개에 제약 애노테이션이 없어 잘못된 입력이 도메인까지 간다",
+            "description": "제약이 하나도 없는 요청 DTO: OrganizeCreationRequest, OrganizeUpdateRequest, OrganizeMemberAddRequest, RepositoryUpdateRequest, RepositoryMemberAddRequest, BranchCreateRequest, FileUploadRequest, PullRequestCreateRequest, OAuthLoginRequest, UserStatusUpdateRequest. @NotBlank 하나 없으므로 POST /api/organizes 에 {\"name\":\"\"} 를 보내면 presentation 검증을 그냥 통과해 OrganizeName.from 까지 가고, 거기서 IllegalArgumentException → 500 이 된다(2.93). 경계에서 400 으로 거절하는 것이 가장 싸고 사용자에게 가장 잘 보이는 수정이며 2.93 과 독립적으로 진행 가능하다. GlobalExceptionHandler 는 이미 MethodArgumentNotValidException 을 BAD_REQUEST 로 매핑하고 있어 배관은 갖춰져 있다 — 애노테이션만 없다. 컨트롤러에 @Valid 가 붙어 있는지도 같이 확인할 것.",
+            "status": "pending",
+            "dependencies": [],
+            "priority": "high",
+            "details": "제약이 하나도 없는 요청 DTO: OrganizeCreationRequest, OrganizeUpdateRequest, OrganizeMemberAddRequest, RepositoryUpdateRequest, RepositoryMemberAddRequest, BranchCreateRequest, FileUploadRequest, PullRequestCreateRequest, OAuthLoginRequest, UserStatusUpdateRequest. @NotBlank 하나 없으므로 POST /api/organizes 에 {\"name\":\"\"} 를 보내면 presentation 검증을 그냥 통과해 OrganizeName.from 까지 가고, 거기서 IllegalArgumentException → 500 이 된다(2.93). 경계에서 400 으로 거절하는 것이 가장 싸고 사용자에게 가장 잘 보이는 수정이며 2.93 과 독립적으로 진행 가능하다. GlobalExceptionHandler 는 이미 MethodArgumentNotValidException 을 BAD_REQUEST 로 매핑하고 있어 배관은 갖춰져 있다 — 애노테이션만 없다. 컨트롤러에 @Valid 가 붙어 있는지도 같이 확인할 것.",
+            "testStrategy": "각 DTO 마다 빈 값/누락/형식오류 요청이 400 과 필드명이 담긴 메시지를 받는지 테스트. 제약을 추가해도 정상 요청이 깨지지 않는지 기존 컨트롤러 테스트로 확인."
+          },
+          {
+            "id": 95,
+            "title": "[refactor][collaboration] 애플리케이션 계층의 중복 검증 5곳 제거 (사용자 지적: OrganizeService 45~49행)",
+            "description": "OrganizeService.createOrganize:45-49 가 requesterUserId null 을 직접 검사하는데, 55행의 OwnerId.of(ownerId) 가 이미 'null 또는 <= 0' 을 거부한다. 사용자가 지적한 대로 애플리케이션만 지저분해진다. 다만 그냥 지우면 안 된다: 애플리케이션 검사는 OrganizeAccessDeniedException → ORG-403 → HTTP 403 을 던지고, OwnerId.of 는 IllegalArgumentException → HTTP 500 이다(2.93). 2.93 선행 없이 지우면 403 이 500 이 된다. 또한 이 특정 검사는 순수 중복이 아니다 — '인증된 사용자 필요'라는 인가 답변이고, OrganizeController:41 이 이미 같은 예외로 같은 답을 한다. 진짜 중복은 도메인 대 애플리케이션이 아니라 어댑터 대 애플리케이션이며, 2.91(그 403 은 401 이어야 한다)과 얽힌다. collaboration 의 나머지 지점: OrganizeMemberService:34, 38, 48, 67. 각 지점마다 (i) 도메인 VO 가 같은 것을 검증하는지, (ii) 지우면 상태 코드가 바뀌는지, (iii) 인가 답변인지 불변식 답변인지 판정해 기록한다.",
+            "status": "pending",
+            "dependencies": [
+              "93"
+            ],
+            "priority": "medium",
+            "details": "OrganizeService.createOrganize:45-49 가 requesterUserId null 을 직접 검사하는데, 55행의 OwnerId.of(ownerId) 가 이미 'null 또는 <= 0' 을 거부한다. 사용자가 지적한 대로 애플리케이션만 지저분해진다. 다만 그냥 지우면 안 된다: 애플리케이션 검사는 OrganizeAccessDeniedException → ORG-403 → HTTP 403 을 던지고, OwnerId.of 는 IllegalArgumentException → HTTP 500 이다(2.93). 2.93 선행 없이 지우면 403 이 500 이 된다. 또한 이 특정 검사는 순수 중복이 아니다 — '인증된 사용자 필요'라는 인가 답변이고, OrganizeController:41 이 이미 같은 예외로 같은 답을 한다. 진짜 중복은 도메인 대 애플리케이션이 아니라 어댑터 대 애플리케이션이며, 2.91(그 403 은 401 이어야 한다)과 얽힌다. collaboration 의 나머지 지점: OrganizeMemberService:34, 38, 48, 67. 각 지점마다 (i) 도메인 VO 가 같은 것을 검증하는지, (ii) 지우면 상태 코드가 바뀌는지, (iii) 인가 답변인지 불변식 답변인지 판정해 기록한다.",
+            "testStrategy": "지우기 전에 각 지점의 현재 상태 코드를 테스트로 고정하고, 지운 뒤 같은 상태 코드가 유지되는지 확인한다. 상태가 바뀌어야 마땅한 지점은 의도적 변경으로 커밋 메시지에 명시."
+          },
+          {
+            "id": 96,
+            "title": "[refactor][repository][execution][change][identity-access] 애플리케이션 계층의 중복 검증 16곳 제거",
+            "description": "2.95 와 같은 패턴이 다른 4개 컨텍스트에 16곳 있다: repository 11, execution 3, change 1, identity/access 1. 도메인 VO 가 같은 값을 이미 검증하는데 애플리케이션이 먼저 손으로 검사한다. 2.93 이 도메인 불변식을 4xx 로 매핑한 뒤에만 안전하게 지울 수 있다 — 그전에 지우면 각 제거가 4xx 를 500 으로 바꾼다. 2.95 와 분리한 이유는 컨텍스트마다 예외 타입과 상태 코드가 다르고 독립적으로 출시 가능하기 때문이다. repository 가 11곳으로 가장 많으므로 거기부터 하고, 각 지점을 인가 답변 / 불변식 답변 / 순수 중복 셋으로 분류해 기록한다.",
+            "status": "pending",
+            "dependencies": [
+              "93"
+            ],
+            "priority": "medium",
+            "details": "2.95 와 같은 패턴이 다른 4개 컨텍스트에 16곳 있다: repository 11, execution 3, change 1, identity/access 1. 도메인 VO 가 같은 값을 이미 검증하는데 애플리케이션이 먼저 손으로 검사한다. 2.93 이 도메인 불변식을 4xx 로 매핑한 뒤에만 안전하게 지울 수 있다 — 그전에 지우면 각 제거가 4xx 를 500 으로 바꾼다. 2.95 와 분리한 이유는 컨텍스트마다 예외 타입과 상태 코드가 다르고 독립적으로 출시 가능하기 때문이다. repository 가 11곳으로 가장 많으므로 거기부터 하고, 각 지점을 인가 답변 / 불변식 답변 / 순수 중복 셋으로 분류해 기록한다.",
+            "testStrategy": "2.95 와 동일: 제거 전 현재 상태 코드를 고정하고 제거 후 유지 확인. 컨텍스트별로 커밋을 분리해 회귀 시 범위를 좁힌다."
           }
         ]
       },
