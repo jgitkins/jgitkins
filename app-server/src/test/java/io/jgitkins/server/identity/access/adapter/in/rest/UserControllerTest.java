@@ -21,6 +21,8 @@ import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(UserController.class)
 @AutoConfigureMockMvc(addFilters = false)
+// Required, not decorative: the slice pulls in GlobalExceptionHandler as a @RestControllerAdvice
+// but excludes its CompositeErrorHttpStatusMapper dependency, so the context fails to start without this.
 @Import(ErrorStatusMappingTestConfig.class)
 class UserControllerTest {
 

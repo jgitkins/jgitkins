@@ -21,6 +21,7 @@ import io.jgitkins.server.identity.access.domain.exception.UserAlreadyActivatedE
 import io.jgitkins.server.shared.application.error.ApplicationErrorCode;
 import io.jgitkins.server.shared.application.error.ApplicationProblemSpec;
 import io.jgitkins.server.shared.application.exception.ApplicationException;
+import io.jgitkins.server.support.ErrorStatusMappingTestConfig;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,9 +37,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(SignupController.class)
 @AutoConfigureMockMvc(addFilters = false)
-@Import({GlobalExceptionHandler.class, CompositeErrorHttpStatusMapper.class,
-        ApplicationErrorHttpStatusMapper.class, DomainErrorHttpStatusMapper.class,
-        InfrastructureErrorHttpStatusMapper.class, PresentationErrorHttpStatusMapper.class,
+@Import({GlobalExceptionHandler.class, ErrorStatusMappingTestConfig.class,
         SignupActivationHttpCompatibilityTest.StatusMapperConfiguration.class,
         RequesterUserIdResolver.class})
 class SignupActivationHttpCompatibilityTest {

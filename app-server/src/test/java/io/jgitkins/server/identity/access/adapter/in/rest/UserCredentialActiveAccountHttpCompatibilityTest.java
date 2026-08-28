@@ -21,6 +21,7 @@ import io.jgitkins.server.identity.access.application.port.in.UserCredentialQuer
 import io.jgitkins.server.identity.access.application.port.in.UserCredentialRevokeUseCase;
 import io.jgitkins.server.shared.application.error.ApplicationProblemSpec;
 import io.jgitkins.server.shared.application.exception.ApplicationException;
+import io.jgitkins.server.support.ErrorStatusMappingTestConfig;
 import java.util.List;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.Test;
@@ -37,9 +38,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(UserCredentialController.class)
 @AutoConfigureMockMvc(addFilters = false)
-@Import({GlobalExceptionHandler.class, CompositeErrorHttpStatusMapper.class,
-        ApplicationErrorHttpStatusMapper.class, DomainErrorHttpStatusMapper.class,
-        InfrastructureErrorHttpStatusMapper.class, PresentationErrorHttpStatusMapper.class,
+@Import({GlobalExceptionHandler.class, ErrorStatusMappingTestConfig.class,
         UserCredentialActiveAccountHttpCompatibilityTest.StatusMapperConfiguration.class})
 class UserCredentialActiveAccountHttpCompatibilityTest {
     @Autowired MockMvc mockMvc;
