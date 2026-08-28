@@ -10,6 +10,7 @@ import io.jgitkins.core.web.api.response.ApiResponse;
 import io.jgitkins.server.identity.access.adapter.in.rest.dto.request.UserCredentialIssueRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -47,7 +48,7 @@ public class UserCredentialController {
 
     @Operation(summary = "Revoke personal access token")
     @DeleteMapping("/pats/{credentialId}")
-    public ResponseEntity<ApiResponse<Void>> revokePat(@PathVariable Long credentialId) {
+    public ResponseEntity<ApiResponse<Void>> revokePat(@PathVariable @Positive Long credentialId) {
         userCredentialRevokeUseCase.removeCredential(credentialId);
         return ApiResponse.noContent();
     }

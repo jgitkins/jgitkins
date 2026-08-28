@@ -2,12 +2,14 @@ package io.jgitkins.server.repository.domain.vo;
 
 import java.util.Objects;
 
+import io.jgitkins.server.shared.domain.exception.InvalidIdentifierException;
+
 public final class RepositoryMemberUserId {
     private final Long value;
 
     private RepositoryMemberUserId(Long value) {
         if (value == null || value <= 0) {
-            throw new IllegalArgumentException("RepositoryMemberUserId must be a positive value");
+            throw new InvalidIdentifierException("RepositoryMemberUserId must be a positive value");
         }
         this.value = value;
     }

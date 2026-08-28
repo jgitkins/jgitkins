@@ -16,6 +16,7 @@ import io.jgitkins.server.execution.adapter.in.rest.mapper.RunnerRequestMapper;
 import io.jgitkins.server.execution.adapter.in.rest.mapper.RunnerResponseMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.Positive;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -54,14 +55,14 @@ public class RunnerController {
 
     @Operation(summary = "Get Runner", description = "Retrieve a runner detail by id")
     @GetMapping("/{runnerId}")
-    public ResponseEntity<ApiResponse<RunnerResponse>> getRunner(@PathVariable Long runnerId) {
+    public ResponseEntity<ApiResponse<RunnerResponse>> getRunner(@PathVariable @Positive Long runnerId) {
         RunnerDetailResult result = runnerLoadUseCase.getRunner(runnerId);
         return ApiResponse.ok(runnerResponseMapper.toResponse(result));
     }
 
     @Operation(summary = "Delete Runner", description = "Delete a runner by id")
     @DeleteMapping("/{runnerId}")
-    public ResponseEntity<ApiResponse<Void>> deleteRunner(@PathVariable Long runnerId) {
+    public ResponseEntity<ApiResponse<Void>> deleteRunner(@PathVariable @Positive Long runnerId) {
         runnerDeleteUseCase.deleteRunner(runnerId);
         return ApiResponse.noContent();
     }

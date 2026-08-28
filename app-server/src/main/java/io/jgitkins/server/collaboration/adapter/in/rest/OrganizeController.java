@@ -1,5 +1,6 @@
 package io.jgitkins.server.collaboration.adapter.in.rest;
 
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.Valid;
 import io.jgitkins.server.collaboration.application.dto.command.OrganizeCreationCommand;
 import io.jgitkins.server.collaboration.application.dto.result.OrganizeCreationResult;
@@ -61,13 +62,13 @@ public class OrganizeController {
 
     @Operation(summary = "Get Organize")
     @GetMapping("/{organizeId}")
-    public ResponseEntity<ApiResponse<OrganizeCreationResult>> getOrganize(@PathVariable Long organizeId) {
+    public ResponseEntity<ApiResponse<OrganizeCreationResult>> getOrganize(@PathVariable @Positive Long organizeId) {
         return ApiResponse.ok(organizeLoadUseCase.getOrganize(organizeId));
     }
 
     @Operation(summary = "Delete Organize")
     @DeleteMapping("/{organizeId}")
-    public ResponseEntity<ApiResponse<Void>> deleteOrganize(@PathVariable Long organizeId) {
+    public ResponseEntity<ApiResponse<Void>> deleteOrganize(@PathVariable @Positive Long organizeId) {
         organizeDeletionUseCase.deleteOrganize(organizeId);
         return ApiResponse.noContent();
     }

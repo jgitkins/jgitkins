@@ -1,5 +1,6 @@
 package io.jgitkins.server.collaboration.adapter.in.rest;
 
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.Valid;
 import io.jgitkins.server.collaboration.application.dto.command.OrganizeMemberAddCommand;
 import io.jgitkins.server.collaboration.application.dto.result.OrganizeMemberSummary;
@@ -39,7 +40,7 @@ public class OrganizeMemberController {
 
     @Operation(summary = "Add organize member")
     @PostMapping
-    public ResponseEntity<ApiResponse<Void>> addMember(@PathVariable Long organizeId,
+    public ResponseEntity<ApiResponse<Void>> addMember(@PathVariable @Positive Long organizeId,
                                                        @Valid @RequestBody OrganizeMemberAddRequest request,
                                                        @AuthenticationPrincipal(expression = "username") String subject) {
         Long requesterUserId = requesterUserIdResolver.resolve(subject)
@@ -52,8 +53,8 @@ public class OrganizeMemberController {
 
     @Operation(summary = "Remove organize member")
     @DeleteMapping("/{userId}")
-    public ResponseEntity<ApiResponse<Void>> removeMember(@PathVariable Long organizeId,
-                                                          @PathVariable Long userId,
+    public ResponseEntity<ApiResponse<Void>> removeMember(@PathVariable @Positive Long organizeId,
+                                                          @PathVariable @Positive Long userId,
                                                           @AuthenticationPrincipal(expression = "username") String subject) {
         Long requesterUserId = requesterUserIdResolver.resolve(subject)
                 .orElseThrow(() -> new ApplicationException(ApplicationErrorCode.UNAUTHENTICATED,
@@ -64,7 +65,7 @@ public class OrganizeMemberController {
 
     @Operation(summary = "List organize members")
     @GetMapping
-    public ResponseEntity<ApiResponse<java.util.List<OrganizeMemberSummary>>> listMembers(@PathVariable Long organizeId) {
+    public ResponseEntity<ApiResponse<java.util.List<OrganizeMemberSummary>>> listMembers(@PathVariable @Positive Long organizeId) {
         return ApiResponse.ok(organizeMemberQueryUseCase.getOrganizeMembers(organizeId));
     }
 }

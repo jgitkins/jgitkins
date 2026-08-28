@@ -1,5 +1,6 @@
 package io.jgitkins.server.repository.adapter.in.rest;
 
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.Valid;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -61,7 +62,7 @@ public class BranchController {
 
     @Operation(summary = "Create branch")
     @PostMapping
-    public ResponseEntity<ApiResponse<Void>> create(@PathVariable Long repositoryId,
+    public ResponseEntity<ApiResponse<Void>> create(@PathVariable @Positive Long repositoryId,
                                                     @Valid @RequestBody BranchCreateRequest request,
                                                     @AuthenticationPrincipal(expression = "username")
                                                     String subject) {
@@ -77,19 +78,19 @@ public class BranchController {
 
     @Operation(summary = "Get Branches")
     @GetMapping
-    public ResponseEntity<ApiResponse<List<BranchSearchResult>>> getBranches(@PathVariable Long repositoryId) {
+    public ResponseEntity<ApiResponse<List<BranchSearchResult>>> getBranches(@PathVariable @Positive Long repositoryId) {
         return ApiResponse.ok(branchLoadUseCase.loadBranches(repositoryId));
     }
 
     @Operation(summary = "Get Branch")
     @GetMapping("/{branchName}")
-    public ResponseEntity<ApiResponse<BranchSearchResult>> getBranch(@PathVariable Long repositoryId, @PathVariable String branchName) {
+    public ResponseEntity<ApiResponse<BranchSearchResult>> getBranch(@PathVariable @Positive Long repositoryId, @PathVariable String branchName) {
         return ApiResponse.ok(branchLoadUseCase.loadBranch(repositoryId, branchName));
     }
 
     @Operation(summary = "Delete branch")
     @DeleteMapping("/{branchName}")
-    public ResponseEntity<ApiResponse<Void>> deleteBranch(@PathVariable Long repositoryId,
+    public ResponseEntity<ApiResponse<Void>> deleteBranch(@PathVariable @Positive Long repositoryId,
                                                           @PathVariable String branchName,
                                                           @AuthenticationPrincipal(expression = "username")
                                                           String subject) {

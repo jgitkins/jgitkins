@@ -1,5 +1,6 @@
 package io.jgitkins.server.identity.access.adapter.in.rest;
 
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.Valid;
 import io.jgitkins.server.identity.access.application.dto.result.UserAdminDetail;
 import io.jgitkins.server.identity.access.application.dto.result.UserAdminSummary;
@@ -36,13 +37,13 @@ public class AdminUserController {
 
     @Operation(summary = "Get user detail")
     @GetMapping("/{userId}")
-    public ResponseEntity<ApiResponse<UserAdminDetail>> getUser(@PathVariable Long userId) {
+    public ResponseEntity<ApiResponse<UserAdminDetail>> getUser(@PathVariable @Positive Long userId) {
         return ApiResponse.ok(adminUserQueryUseCase.getUser(userId));
     }
 
     @Operation(summary = "Update user status")
     @PatchMapping("/{userId}/status")
-    public ResponseEntity<ApiResponse<Void>> updateStatus(@PathVariable Long userId,
+    public ResponseEntity<ApiResponse<Void>> updateStatus(@PathVariable @Positive Long userId,
                                                           @Valid @RequestBody UserStatusUpdateRequest request) {
         adminUserUpdateUseCase.updateUserStatus(userId, request.status());
         return ApiResponse.ok();

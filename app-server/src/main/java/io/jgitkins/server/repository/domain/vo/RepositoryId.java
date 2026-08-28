@@ -6,6 +6,8 @@ import lombok.Getter;
 /**
  * Repository 식별자 Value Object
  */
+import io.jgitkins.server.shared.domain.exception.InvalidIdentifierException;
+
 @Getter
 @EqualsAndHashCode
 public class RepositoryId {
@@ -13,7 +15,7 @@ public class RepositoryId {
 
     private RepositoryId(Long value) {
         if (value == null || value <= 0) {
-            throw new IllegalArgumentException("RepositoryId must be a positive value");
+            throw new InvalidIdentifierException("RepositoryId must be a positive value");
         }
         this.value = value;
     }

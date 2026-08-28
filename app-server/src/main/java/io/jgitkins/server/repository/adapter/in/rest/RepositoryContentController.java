@@ -20,6 +20,7 @@ import io.swagger.v3.oas.annotations.media.Encoding;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
@@ -79,7 +80,7 @@ public class RepositoryContentController {
 
     @Operation(summary = "File Upload (Web Compat)")
     @PostMapping(value = "/{repositoryId}/files", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ApiResponse<String>> uploadFileByRepositoryId(@PathVariable Long repositoryId,
+    public ResponseEntity<ApiResponse<String>> uploadFileByRepositoryId(@PathVariable @Positive Long repositoryId,
             @RequestParam("branch") @NotBlank String branch,
             @RequestParam("path") @NotBlank String path,
             @RequestParam("message") @NotBlank String message,

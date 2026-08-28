@@ -1,5 +1,6 @@
 package io.jgitkins.server.change.review.adapter.in.rest;
 
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.Valid;
 import io.jgitkins.core.web.api.response.ApiResponse;
@@ -49,7 +50,7 @@ public class PullRequestController {
     @Operation(summary = "Get Pull Request Detail", description = "Pull Request의 저장 snapshot과 현재 상태를 조회")
     @GetMapping("/{pullRequestId}")
     public ResponseEntity<ApiResponse<PullRequestDetailResult>> getPullRequestDetail(
-            @PathVariable Long pullRequestId) throws IOException {
+            @PathVariable @Positive Long pullRequestId) throws IOException {
         return ApiResponse.ok(getPullRequestDetailUseCase.getPullRequestDetail(PullRequestId.of(pullRequestId)));
     }
 }

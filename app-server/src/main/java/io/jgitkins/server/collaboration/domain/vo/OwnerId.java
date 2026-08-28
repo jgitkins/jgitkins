@@ -8,6 +8,8 @@ import lombok.Getter;
  *
  * <p>This is intentionally distinct from identity.access.domain.vo.UserId.
  */
+import io.jgitkins.server.shared.domain.exception.InvalidIdentifierException;
+
 @Getter
 @EqualsAndHashCode
 public final class OwnerId {
@@ -16,7 +18,7 @@ public final class OwnerId {
 
     private OwnerId(Long value) {
         if (value == null || value <= 0) {
-            throw new IllegalArgumentException("OwnerId must be a positive value");
+            throw new InvalidIdentifierException("OwnerId must be a positive value");
         }
         this.value = value;
     }

@@ -1,5 +1,6 @@
 package io.jgitkins.server.repository.adapter.in.rest;
 
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.Valid;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -55,7 +56,7 @@ public class RepositoryMemberController {
 
     @Operation(summary = "Add repository member")
     @PostMapping
-    public ResponseEntity<ApiResponse<Void>> addMember(@PathVariable Long repositoryId,
+    public ResponseEntity<ApiResponse<Void>> addMember(@PathVariable @Positive Long repositoryId,
                                                        @Valid @RequestBody RepositoryMemberAddRequest request,
                                                        @AuthenticationPrincipal(expression = "username")
                                                        String subject) {
@@ -67,8 +68,8 @@ public class RepositoryMemberController {
 
     @Operation(summary = "Remove repository member")
     @DeleteMapping("/{userId}")
-    public ResponseEntity<ApiResponse<Void>> removeMember(@PathVariable Long repositoryId,
-                                                          @PathVariable Long userId,
+    public ResponseEntity<ApiResponse<Void>> removeMember(@PathVariable @Positive Long repositoryId,
+                                                          @PathVariable @Positive Long userId,
                                                           @AuthenticationPrincipal(expression = "username")
                                                           String subject) {
         repositoryMemberManagementUseCase.removeRepositoryMember(
@@ -79,7 +80,7 @@ public class RepositoryMemberController {
     @Operation(summary = "List repository members")
     @GetMapping
     public ResponseEntity<ApiResponse<java.util.List<RepositoryMemberSummary>>> listMembers(
-            @PathVariable Long repositoryId,
+            @PathVariable @Positive Long repositoryId,
             @AuthenticationPrincipal(expression = "username") String subject) {
         // requireRequester, not optionalRequester: a member list is never public, so an absent
         // caller is a rejection rather than a narrower result.

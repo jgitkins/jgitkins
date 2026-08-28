@@ -28,7 +28,9 @@ import org.springframework.test.web.servlet.MvcResult;
  * context runs on an empty H2, so a request that gets past validation fails on a missing table. The
  * distinction that matters is whether the request was refused at the boundary or reached the domain.
  */
-@SpringBootTest(properties = "spring.autoconfigure.exclude="
+@SpringBootTest(properties = {
+        "jgitkins.security.jwt.secret=boundary-validation-secret-well-over-256-bits-long",
+        "spring.autoconfigure.exclude="
         + "net.devh.boot.grpc.server.autoconfigure.GrpcHealthServiceAutoConfiguration,"
         + "net.devh.boot.grpc.server.autoconfigure.GrpcAdviceAutoConfiguration,"
         + "net.devh.boot.grpc.server.autoconfigure.GrpcServerSecurityAutoConfiguration,"
@@ -36,7 +38,7 @@ import org.springframework.test.web.servlet.MvcResult;
         + "net.devh.boot.grpc.server.autoconfigure.GrpcServerFactoryAutoConfiguration,"
         + "net.devh.boot.grpc.server.autoconfigure.GrpcServerTraceAutoConfiguration,"
         + "net.devh.boot.grpc.server.autoconfigure.GrpcServerAutoConfiguration,"
-        + "net.devh.boot.grpc.server.autoconfigure.GrpcReflectionServiceAutoConfiguration")
+        + "net.devh.boot.grpc.server.autoconfigure.GrpcReflectionServiceAutoConfiguration"})
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 class BoundaryValidationTest {
@@ -64,6 +66,9 @@ class BoundaryValidationTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private io.jgitkins.server.identity.access.application.port.out.TokenIssuerPort tokenIssuerPort;
 
     @Test
     void everyConstrainedFieldIsRefusedAtTheBoundary() throws Exception {
@@ -167,6 +172,32 @@ class BoundaryValidationTest {
         assertThat(result.getResponse().getContentAsString())
                 .as("and its code names the status rather than reusing REQ-400")
                 .contains("REQ-404");
+    }
+
+    /**
+     * A non-positive id in the path is the caller's, and must not answer 500.
+     *
+     * <p>The body constraints do not cover path variables, so before this an authenticated
+     * {@code POST /api/organizes/0/members} reached {@code OwnerId.of(0)} and threw
+     * {@code IllegalArgumentException}, which has no handler and fell to the catch-all. Measured, not
+     * assumed: the same probe unauthenticated answered 401, which is why the token is minted here.
+     */
+    @Test
+    void aNonPositiveIdInThePathIsRefused() throws Exception {
+        String token = tokenIssuerPort.issueToken(42L, List.of("ROLE_USER"));
+        for (String route : List.of("/api/organizes/0/members", "/api/repositories/0/branches",
+                "/api/repositories/-1/members")) {
+            MvcResult r = mockMvc.perform(post(route)
+                            .header("Authorization", "Bearer " + token)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content("{\"userId\":5,\"branchName\":\"x\"}"))
+                    .andReturn();
+
+            assertThat(r.getResponse().getStatus())
+                    .as("%s must be refused at the boundary rather than reaching an identifier value "
+                            + "object and answering 500", route)
+                    .isEqualTo(400);
+        }
     }
 
     /**

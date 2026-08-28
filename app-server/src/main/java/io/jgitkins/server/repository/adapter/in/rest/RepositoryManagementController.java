@@ -15,6 +15,7 @@ import io.jgitkins.server.repository.adapter.in.rest.dto.request.RepositoryCreat
 import io.jgitkins.server.repository.adapter.in.rest.mapper.RepositoryRequestMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
@@ -94,7 +95,7 @@ public class RepositoryManagementController {
     @Operation(summary = "Get Repository Metadata")
     @GetMapping("/{repositoryId}")
     public ResponseEntity<ApiResponse<RepositoryResult>> getRepository(
-            @PathVariable Long repositoryId,
+            @PathVariable @Positive Long repositoryId,
             @AuthenticationPrincipal(expression = "username") String subject) {
         return ApiResponse.ok(repositoryLoadUseCase.loadRepository(optionalRequester(subject), repositoryId));
     }
@@ -118,7 +119,7 @@ public class RepositoryManagementController {
     @Operation(summary = "Delete Repository")
     @DeleteMapping("/{repositoryId}")
     public ResponseEntity<ApiResponse<Void>> deleteRepository(
-            @PathVariable Long repositoryId,
+            @PathVariable @Positive Long repositoryId,
             @AuthenticationPrincipal(expression = "username") String subject) {
         repositoryManagementUseCase.deleteRepository(requireRequester(subject), repositoryId);
         return ApiResponse.noContent();
@@ -129,7 +130,7 @@ public class RepositoryManagementController {
      */
     @Operation(summary = "Get Repository Overview")
     @GetMapping("/{repositoryId}/overview")
-    public ResponseEntity<ApiResponse<RepositoryOverviewResult>> getOverview(@PathVariable Long repositoryId,
+    public ResponseEntity<ApiResponse<RepositoryOverviewResult>> getOverview(@PathVariable @Positive Long repositoryId,
                                                                              @RequestParam(name = "branch", required = false) String branch,
                                                                              @AuthenticationPrincipal(expression = "username") String subject) {
         return ApiResponse.ok(repositoryOverviewUseCase.getOverview(
