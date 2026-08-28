@@ -916,8 +916,8 @@
           {
             "id": 96,
             "title": "[refactor][repository][execution][change][identity-access] 애플리케이션 계층의 중복 검증 16곳 제거",
-            "description": "2.95 와 같은 패턴이 다른 4개 컨텍스트에 16곳 있다: repository 11, execution 3, change 1, identity/access 1. 도메인 VO 가 같은 값을 이미 검증하는데 애플리케이션이 먼저 손으로 검사한다. 2.93 이 도메인 불변식을 4xx 로 매핑한 뒤에만 안전하게 지울 수 있다 — 그전에 지우면 각 제거가 4xx 를 500 으로 바꾼다. 2.95 와 분리한 이유는 컨텍스트마다 예외 타입과 상태 코드가 다르고 독립적으로 출시 가능하기 때문이다. repository 가 11곳으로 가장 많으므로 거기부터 하고, 각 지점을 인가 답변 / 불변식 답변 / 순수 중복 셋으로 분류해 기록한다.",
-            "status": "pending",
+            "description": "2.95 와 같은 패턴이 다른 4개 컨텍스트에 16곳 있다: repository 11, execution 3, change 1, identity/access 1. 도메인 VO 가 같은 값을 이미 검증하는데 애플리케이션이 먼저 손으로 검사한다. 2.93 이 도메인 불변식을 4xx 로 매핑한 뒤에만 안전하게 지울 수 있다 — 그전에 지우면 각 제거가 4xx 를 500 으로 바꾼다. 2.95 와 분리한 이유는 컨텍스트마다 예외 타입과 상태 코드가 다르고 독립적으로 출시 가능하기 때문이다. repository 가 11곳으로 가장 많으므로 거기부터 하고, 각 지점을 인가 답변 / 불변식 답변 / 순수 중복 셋으로 분류해 기록한다. DONE (2026-08-28). 16곳 → 3곳(리뷰) → 실제로는 '메서드 3개 빼기 한 줄'. RepositoryMemberValidator 의 식별자 메서드 3개를 지웠으나 validateAddCommand 안의 command == null 은 **되살렸다** — VO 가 중복하지 않는 유일한 검사였고, 지우니 타입 예외(422)가 NPE(500)가 됐다. 테스트가 잡았다. 유지한 13곳은 인가 답변·존재 확인·2.78 의 fail-closed 분기·값 객체 자신의 불변식·대응 VO 없는 헬퍼다.",
+            "status": "done",
             "dependencies": [
               "93"
             ],
