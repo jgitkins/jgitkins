@@ -3,6 +3,7 @@ package io.jgitkins.server.change.review.adapter.in.rest;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -17,6 +18,9 @@ import io.jgitkins.server.change.review.application.port.in.MergeUseCase;
 import io.jgitkins.server.change.review.application.port.in.MergeabilityCheckUseCase;
 import io.jgitkins.server.common.presentation.advice.GlobalExceptionHandler;
 import io.jgitkins.server.support.ErrorStatusMappingTestConfig;
+import io.jgitkins.server.change.review.adapter.in.support.ReviewRequesterResolver;
+import java.util.Optional;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,16 +40,38 @@ class MergeControllerTest {
     @Mock
     private MergeUseCase mergeUseCase;
 
+    @Mock
+    private ReviewRequesterResolver reviewRequesterResolver;
+
 
     private MockMvc mockMvc;
     private ObjectMapper objectMapper;
 
     @BeforeEach
     void setUp() {
-        MergeController controller = new MergeController(mergeabilityCheckUseCase, mergeUseCase);
+        MergeController controller =
+                new MergeController(mergeabilityCheckUseCase, mergeUseCase, reviewRequesterResolver);
         this.mockMvc = MockMvcBuilders.standaloneSetup(controller)
+                // standaloneSetup wires no Spring Security, so @AuthenticationPrincipal would resolve
+                // to null without this and every request would look anonymous.
+                .setCustomArgumentResolvers(
+                        new org.springframework.security.web.method.annotation
+                                .AuthenticationPrincipalArgumentResolver())
                 .setControllerAdvice(new GlobalExceptionHandler(ErrorStatusMappingTestConfig.realMapper())).build();
+        signIn("7");
         this.objectMapper = new ObjectMapper();
+    }
+
+    private static void signIn(String subject) {
+        org.springframework.security.core.context.SecurityContextHolder.getContext().setAuthentication(
+                new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(
+                        new org.springframework.security.core.userdetails.User(subject, "", java.util.List.of()),
+                        "", java.util.List.of()));
+    }
+
+    @AfterEach
+    void signOut() {
+        org.springframework.security.core.context.SecurityContextHolder.clearContext();
     }
 
     @Test
@@ -75,7 +101,9 @@ class MergeControllerTest {
                 .status(MergeResult.Status.MERGED)
                 .newCommitId("abc123")
                 .build();
-        when(mergeUseCase.performMerge(eq("team"), eq("repo"), any(MergeRequest.class))).thenReturn(result);
+        when(reviewRequesterResolver.resolve("7")).thenReturn(Optional.of(7L));
+        when(mergeUseCase.performMerge(eq("team"), eq("repo"), any(MergeRequest.class), eq(7L)))
+                .thenReturn(result);
 
         mockMvc.perform(post("/repositories/team/repo/merge")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -84,12 +112,13 @@ class MergeControllerTest {
                 .andExpect(jsonPath("$.data.status").value("MERGED"))
                 .andExpect(jsonPath("$.data.newCommitId").value("abc123"));
 
-        verify(mergeUseCase).performMerge(eq("team"), eq("repo"), any(MergeRequest.class));
+        verify(mergeUseCase).performMerge(eq("team"), eq("repo"), any(MergeRequest.class), eq(7L));
     }
 
     @Test
     void performMerge_preservesBranchNotFoundWireContract() throws Exception {
-        when(mergeUseCase.performMerge(eq("team"), eq("repo"), any(MergeRequest.class)))
+        when(reviewRequesterResolver.resolve("7")).thenReturn(Optional.of(7L));
+        when(mergeUseCase.performMerge(eq("team"), eq("repo"), any(MergeRequest.class), eq(7L)))
                 .thenThrow(new BranchHeadNotFoundException("missing"));
 
         mockMvc.perform(post("/repositories/team/repo/merge")
@@ -99,5 +128,29 @@ class MergeControllerTest {
                 .andExpect(jsonPath("$.error.code").value("BRANCH-404"))
                 .andExpect(jsonPath("$.error.message").value("Branch not found: missing"))
                 .andExpect(jsonPath("$.error.source").value("application"));
+    }
+
+    @Test
+    void performMerge_rejectsAnAnonymousCallerWithoutReachingTheUseCase() throws Exception {
+        org.springframework.security.core.context.SecurityContextHolder.clearContext();
+        when(reviewRequesterResolver.resolve(null)).thenReturn(Optional.empty());
+
+        mockMvc.perform(post("/repositories/team/repo/merge")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsBytes(
+                                new MergeRequest("feature", "main", null, "alice", "a@test.com"))))
+                .andExpect(status().isUnauthorized());
+
+        // Task 2.123. Anyone could merge any branch of any repository, private ones included.
+        org.mockito.Mockito.verifyNoInteractions(mergeUseCase);
+    }
+
+    @Test
+    void mergeRequest_carriesNoActorField() {
+        // E3 guard. MergeRequest is bound from the HTTP body. An actor field on it would let the
+        // caller name themselves, turning the authorization added in 2.123 into a formality.
+        assertThat(java.util.Arrays.stream(MergeRequest.class.getDeclaredFields())
+                .map(java.lang.reflect.Field::getName))
+                .doesNotContain("requesterUserId", "userId", "actorId", "requester");
     }
 }
