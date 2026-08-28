@@ -21,11 +21,11 @@ import io.jgitkins.server.collaboration.adapter.in.rest.dto.request.OrganizeMemb
 import io.jgitkins.server.collaboration.adapter.in.rest.mapper.OrganizeMemberRequestMapper;
 import io.jgitkins.server.collaboration.application.dto.command.OrganizeMemberAddCommand;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeMemberRole;
-import io.jgitkins.server.common.presentation.advice.mapper.CompositeErrorHttpStatusMapper;
 import io.jgitkins.server.common.presentation.advice.GlobalExceptionHandler;
 import io.jgitkins.server.support.PermissiveSliceSecurityConfig;
 import java.time.LocalDateTime;
 import java.util.List;
+import io.jgitkins.server.support.ErrorStatusMappingTestConfig;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,13 +42,12 @@ import org.springframework.test.web.servlet.MockMvc;
 // header. The real chain is covered by AnonymousPrincipalResolutionTest and
 // OAuth2SessionPrincipalResolutionTest; the other eight controller slice tests already do this.
 @AutoConfigureMockMvc(addFilters = false)
-@Import({GlobalExceptionHandler.class, PermissiveSliceSecurityConfig.class})
+@Import({GlobalExceptionHandler.class, PermissiveSliceSecurityConfig.class,
+        ErrorStatusMappingTestConfig.class})
 class OrganizeMemberControllerTest {
 
     @BeforeEach
     void authenticate() {
-        when(compositeErrorHttpStatusMapper.map(org.mockito.ArgumentMatchers.any()))
-                .thenReturn(org.springframework.http.HttpStatus.UNAUTHORIZED);
         org.springframework.security.core.context.SecurityContextHolder.getContext().setAuthentication(
                 new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(
                         new org.springframework.security.core.userdetails.User("7", "", java.util.List.of()), "", java.util.List.of()));
@@ -63,8 +62,6 @@ class OrganizeMemberControllerTest {
     @MockBean
     private OrganizeMemberAddUseCase organizeMemberAddUseCase;
 
-    @MockBean
-    private CompositeErrorHttpStatusMapper compositeErrorHttpStatusMapper;
 
     @MockBean
     private OrganizeMemberQueryUseCase organizeMemberQueryUseCase;

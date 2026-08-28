@@ -8,10 +8,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import io.jgitkins.server.identity.access.application.dto.result.UserSummary;
 import io.jgitkins.server.identity.access.application.port.in.PublicUserQueryUseCase;
-import io.jgitkins.server.common.presentation.advice.mapper.CompositeErrorHttpStatusMapper;
 import java.time.LocalDateTime;
 import java.util.List;
+import io.jgitkins.server.support.ErrorStatusMappingTestConfig;
 import org.junit.jupiter.api.Test;
+import org.springframework.context.annotation.Import;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -20,6 +21,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(UserController.class)
 @AutoConfigureMockMvc(addFilters = false)
+@Import(ErrorStatusMappingTestConfig.class)
 class UserControllerTest {
 
     @Autowired
@@ -28,13 +30,6 @@ class UserControllerTest {
     @MockBean
     private PublicUserQueryUseCase publicUserQueryUseCase;
 
-    /**
-     * GlobalExceptionHandler is a @RestControllerAdvice, so the slice includes it, but its
-     * CompositeErrorHttpStatusMapper dependency is not a web component and is excluded. Mocked
-     * here so the slice can build the advice without pulling the whole error-mapping graph in.
-     */
-    @MockBean
-    private CompositeErrorHttpStatusMapper compositeErrorHttpStatusMapper;
 
     @Test
     void listUsers_returnsApiResponseWithUserSummaries() throws Exception {

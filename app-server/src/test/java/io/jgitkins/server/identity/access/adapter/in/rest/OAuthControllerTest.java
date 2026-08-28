@@ -15,9 +15,10 @@ import io.jgitkins.server.identity.access.domain.aggregate.User;
 import io.jgitkins.server.identity.access.domain.vo.UserStatus;
 import io.jgitkins.server.identity.access.adapter.in.rest.dto.request.OAuthLoginRequest;
 import io.jgitkins.server.identity.access.adapter.in.rest.mapper.OAuthRequestMapper;
-import io.jgitkins.server.common.presentation.advice.mapper.CompositeErrorHttpStatusMapper;
 import java.time.LocalDateTime;
+import io.jgitkins.server.support.ErrorStatusMappingTestConfig;
 import org.junit.jupiter.api.Test;
+import org.springframework.context.annotation.Import;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -27,6 +28,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(OAuthController.class)
 @AutoConfigureMockMvc(addFilters = false)
+@Import(ErrorStatusMappingTestConfig.class)
 class OAuthControllerTest {
 
     @Autowired
@@ -38,13 +40,6 @@ class OAuthControllerTest {
     @MockBean
     private OAuthLoginUseCase oauthLoginUseCase;
 
-    /**
-     * GlobalExceptionHandler is a @RestControllerAdvice, so the slice includes it, but its
-     * CompositeErrorHttpStatusMapper dependency is not a web component and is excluded. Mocked
-     * here so the slice can build the advice without pulling the whole error-mapping graph in.
-     */
-    @MockBean
-    private CompositeErrorHttpStatusMapper compositeErrorHttpStatusMapper;
 
     @MockBean
     private OAuthRequestMapper oauthRequestMapper;

@@ -23,8 +23,8 @@ import io.jgitkins.server.collaboration.adapter.in.rest.mapper.OrganizeRequestMa
 import io.jgitkins.server.collaboration.adapter.in.support.RequesterUserIdResolver;
 import io.jgitkins.server.common.presentation.advice.GlobalExceptionHandler;
 import io.jgitkins.server.support.PermissiveSliceSecurityConfig;
-import io.jgitkins.server.common.presentation.advice.mapper.CompositeErrorHttpStatusMapper;
 import java.util.List;
+import io.jgitkins.server.support.ErrorStatusMappingTestConfig;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +43,8 @@ import org.springframework.test.web.servlet.MockMvc;
 // OAuth2SessionPrincipalResolutionTest; the other eight controller slice tests already do this.
 @AutoConfigureMockMvc(addFilters = false)
 @WithMockUser(username = "7")
-@Import({GlobalExceptionHandler.class, PermissiveSliceSecurityConfig.class})
+@Import({GlobalExceptionHandler.class, PermissiveSliceSecurityConfig.class,
+        ErrorStatusMappingTestConfig.class})
 class OrganizeControllerTest {
 
     @BeforeEach
@@ -51,7 +52,6 @@ class OrganizeControllerTest {
         org.springframework.security.core.context.SecurityContextHolder.getContext().setAuthentication(
                 new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(
                         new org.springframework.security.core.userdetails.User("7", "", java.util.List.of()), "", java.util.List.of()));
-        when(statusMapper.map(org.mockito.ArgumentMatchers.any())).thenReturn(org.springframework.http.HttpStatus.FORBIDDEN);
     }
 
     @Autowired
@@ -75,8 +75,6 @@ class OrganizeControllerTest {
     @MockBean
     private RequesterUserIdResolver requesterUserIdResolver;
 
-    @MockBean
-    private CompositeErrorHttpStatusMapper statusMapper;
 
     @Test
     void createOrganize_returnsCreatedResponse() throws Exception {
@@ -133,7 +131,6 @@ class OrganizeControllerTest {
     @Test
     void createOrganize_nullRequesterReturnsOrg403ApplicationError() throws Exception {
         when(requesterUserIdResolver.resolve(null)).thenReturn(java.util.Optional.empty());
-        when(statusMapper.map(org.mockito.ArgumentMatchers.any())).thenReturn(org.springframework.http.HttpStatus.FORBIDDEN);
         assertCreateDenied(new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(
                 new NullUsernamePrincipal(), null, java.util.List.of()), null);
     }
