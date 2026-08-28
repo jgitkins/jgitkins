@@ -1,5 +1,6 @@
 package io.jgitkins.server.collaboration.adapter.in.rest;
 
+import jakarta.validation.Valid;
 import io.jgitkins.server.collaboration.application.dto.command.OrganizeMemberAddCommand;
 import io.jgitkins.server.collaboration.application.dto.result.OrganizeMemberSummary;
 import io.jgitkins.server.collaboration.application.port.in.OrganizeMemberAddUseCase;
@@ -39,7 +40,7 @@ public class OrganizeMemberController {
     @Operation(summary = "Add organize member")
     @PostMapping
     public ResponseEntity<ApiResponse<Void>> addMember(@PathVariable Long organizeId,
-                                                       @RequestBody OrganizeMemberAddRequest request,
+                                                       @Valid @RequestBody OrganizeMemberAddRequest request,
                                                        @AuthenticationPrincipal(expression = "username") String subject) {
         Long requesterUserId = requesterUserIdResolver.resolve(subject)
                 .orElseThrow(() -> new ApplicationException(ApplicationErrorCode.UNAUTHENTICATED,

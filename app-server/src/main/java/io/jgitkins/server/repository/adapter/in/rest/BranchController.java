@@ -1,5 +1,6 @@
 package io.jgitkins.server.repository.adapter.in.rest;
 
+import jakarta.validation.Valid;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.beans.factory.annotation.Qualifier;
 import io.jgitkins.server.shared.application.exception.UnauthenticatedException;
@@ -61,7 +62,7 @@ public class BranchController {
     @Operation(summary = "Create branch")
     @PostMapping
     public ResponseEntity<ApiResponse<Void>> create(@PathVariable Long repositoryId,
-                                                    @RequestBody BranchCreateRequest request,
+                                                    @Valid @RequestBody BranchCreateRequest request,
                                                     @AuthenticationPrincipal(expression = "username")
                                                     String subject) {
 

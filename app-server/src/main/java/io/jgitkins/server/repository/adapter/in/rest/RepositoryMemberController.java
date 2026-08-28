@@ -1,5 +1,6 @@
 package io.jgitkins.server.repository.adapter.in.rest;
 
+import jakarta.validation.Valid;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.beans.factory.annotation.Qualifier;
 import io.jgitkins.server.shared.application.exception.UnauthenticatedException;
@@ -55,7 +56,7 @@ public class RepositoryMemberController {
     @Operation(summary = "Add repository member")
     @PostMapping
     public ResponseEntity<ApiResponse<Void>> addMember(@PathVariable Long repositoryId,
-                                                       @RequestBody RepositoryMemberAddRequest request,
+                                                       @Valid @RequestBody RepositoryMemberAddRequest request,
                                                        @AuthenticationPrincipal(expression = "username")
                                                        String subject) {
         RepositoryMemberAddCommand command = new RepositoryMemberAddCommand(

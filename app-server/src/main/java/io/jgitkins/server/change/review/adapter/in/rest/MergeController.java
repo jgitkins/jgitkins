@@ -1,5 +1,6 @@
 package io.jgitkins.server.change.review.adapter.in.rest;
 
+import jakarta.validation.Valid;
 import io.jgitkins.core.web.api.response.ApiResponse;
 import io.jgitkins.server.change.review.application.dto.command.MergeRequest;
 import io.jgitkins.server.change.review.application.dto.result.MergeResult;
@@ -42,7 +43,7 @@ public class MergeController {
     public ResponseEntity<ApiResponse<MergeResult>> performMerge(
             @PathVariable String namespace,
             @PathVariable String repoName,
-            @RequestBody MergeRequest request
+            @Valid @RequestBody MergeRequest request
     ) throws IOException {
         MergeResult result = mergeUseCase.performMerge(namespace, repoName, request);
         return ApiResponse.ok(result);

@@ -1,5 +1,6 @@
 package io.jgitkins.server.collaboration.adapter.in.rest;
 
+import jakarta.validation.Valid;
 import io.jgitkins.server.collaboration.application.dto.command.OrganizeCreationCommand;
 import io.jgitkins.server.collaboration.application.dto.result.OrganizeCreationResult;
 import io.jgitkins.server.collaboration.application.port.in.OrganizeCreationUseCase;
@@ -35,7 +36,7 @@ public class OrganizeController {
     @Operation(summary = "Create Organize")
     @PostMapping
     public ResponseEntity<ApiResponse<OrganizeCreationResult>> createOrganize(
-            @RequestBody OrganizeCreationRequest request,
+            @Valid @RequestBody OrganizeCreationRequest request,
             @AuthenticationPrincipal(expression = "username") String subject) {
         Long requesterUserId = requesterUserIdResolver.resolve(subject)
                 .orElseThrow(() -> new OrganizeAccessDeniedException("An authenticated user is required"));

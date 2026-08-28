@@ -1,5 +1,6 @@
 package io.jgitkins.server.identity.access.adapter.in.rest;
 
+import jakarta.validation.Valid;
 import io.jgitkins.server.identity.access.application.dto.command.OAuthLoginCommand;
 import io.jgitkins.server.identity.access.application.dto.result.OAuthLoginResult;
 import io.jgitkins.server.identity.access.application.port.in.OAuthLoginUseCase;
@@ -26,7 +27,7 @@ public class OAuthController {
 
     @Operation(summary = "Issue JWT token from OAuth login data")
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<OAuthLoginResult>> login(@RequestBody OAuthLoginRequest request) {
+    public ResponseEntity<ApiResponse<OAuthLoginResult>> login(@Valid @RequestBody OAuthLoginRequest request) {
         OAuthLoginCommand command = oauthRequestMapper.toCommand(request);
         OAuthLoginResult result = oauthLoginUseCase.login(command);
         return ApiResponse.ok(result);

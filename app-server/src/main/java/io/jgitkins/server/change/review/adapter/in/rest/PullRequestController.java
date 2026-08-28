@@ -1,5 +1,6 @@
 package io.jgitkins.server.change.review.adapter.in.rest;
 
+import jakarta.validation.Valid;
 import io.jgitkins.core.web.api.response.ApiResponse;
 import io.jgitkins.server.change.review.application.dto.command.PullRequestCreateCommand;
 import io.jgitkins.server.change.review.application.dto.result.PullRequestDetailResult;
@@ -34,7 +35,7 @@ public class PullRequestController {
     public ResponseEntity<ApiResponse<PullRequestResult>> createPullRequest(
             @PathVariable String namespace,
             @PathVariable String repoName,
-            @RequestBody PullRequestCreateRequest request) {
+            @Valid @RequestBody PullRequestCreateRequest request) {
         PullRequestCreateCommand command = new PullRequestCreateCommand(
                 namespace,
                 repoName,
