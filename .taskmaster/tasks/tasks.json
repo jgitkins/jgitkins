@@ -936,6 +936,16 @@
             "priority": "medium",
             "details": "산출물: 시스템 컨텍스트·컨테이너·필요한 컴포넌트 수준의 C4 다이어그램, bounded context 경계와 context 간 ACL/port 및 persistence adapter 흐름, 주요 결정의 ADR 문서, arc42 목차에 맞춘 architecture overview/index 연결. 기존 API·DB·wire 계약은 변경하지 않는다. 각 그림에는 범위, 참여자, 의존 방향, 구현/목표 상태를 명시하고 문서 내 링크와 렌더링 가능 여부를 검증한다.",
             "testStrategy": "문서 링크·파일 경로·Mermaid/SVG 등 선택한 다이어그램 문법의 정적 검증, 실제 소스 패키지/구성 클래스와 다이어그램 노드의 대조, 문서 렌더링 확인. 코드 테스트나 API 변경은 이 task의 범위가 아니다."
+          },
+          {
+            "id": 98,
+            "title": "[test-infra][all-contexts] 상태 매퍼를 목킹하는 슬라이스 테스트 7개를 실제 매퍼로 교체",
+            "description": "슬라이스 테스트 7개가 CompositeErrorHttpStatusMapper 를 아직 @MockBean 으로 들고 있다: OrganizeControllerTest, OrganizeMemberControllerTest, UserControllerTest, OAuthControllerTest, AdminUserControllerTest, SignupActivationHttpCompatibilityTest, UserCredentialActiveAccountHttpCompatibilityTest. OrganizeControllerTest 는 map() 을 항상 FORBIDDEN 으로 스텁하므로 그 클래스의 403 단정이 무의미하다 — 프로덕션 매핑이 무엇이든 통과한다. 나머지 6개는 스텁이 없어 map() 이 null 을 반환하며, 지금 통과하는 이유는 예외 처리 경로를 타지 않기 때문이다. 그 클래스에 상태 코드를 단정하는 테스트가 새로 들어오면 ServletException 이 새어나와 엉뚱한 실패로 보인다. 특히 이름이 HttpCompatibility 인 두 개는 HTTP 계약을 단정하라고 있는 테스트인데 매퍼가 null 을 반환한다. 007a29d 에서 만든 support/ErrorStatusMappingTestConfig 로 교체하면 된다 (실제 매퍼 5개는 인프라 의존이 없는 평범한 컴포넌트라 비용이 없다).",
+            "status": "pending",
+            "dependencies": [],
+            "priority": "medium",
+            "details": "슬라이스 테스트 7개가 CompositeErrorHttpStatusMapper 를 아직 @MockBean 으로 들고 있다: OrganizeControllerTest, OrganizeMemberControllerTest, UserControllerTest, OAuthControllerTest, AdminUserControllerTest, SignupActivationHttpCompatibilityTest, UserCredentialActiveAccountHttpCompatibilityTest. OrganizeControllerTest 는 map() 을 항상 FORBIDDEN 으로 스텁하므로 그 클래스의 403 단정이 무의미하다 — 프로덕션 매핑이 무엇이든 통과한다. 나머지 6개는 스텁이 없어 map() 이 null 을 반환하며, 지금 통과하는 이유는 예외 처리 경로를 타지 않기 때문이다. 그 클래스에 상태 코드를 단정하는 테스트가 새로 들어오면 ServletException 이 새어나와 엉뚱한 실패로 보인다. 특히 이름이 HttpCompatibility 인 두 개는 HTTP 계약을 단정하라고 있는 테스트인데 매퍼가 null 을 반환한다. 007a29d 에서 만든 support/ErrorStatusMappingTestConfig 로 교체하면 된다 (실제 매퍼 5개는 인프라 의존이 없는 평범한 컴포넌트라 비용이 없다).",
+            "testStrategy": "교체 전에 각 클래스에서 상태 코드를 단정하는 테스트가 실제로 통과하는지 확인하고, OrganizeControllerTest 는 스텁 제거 후에도 403 단정이 유지되는지(즉 프로덕션 매핑이 정말 403 인지) 확인한다. 유지되지 않으면 그 단정이 무엇을 검증하고 있었는지 다시 판단."
           }
         ]
       },
