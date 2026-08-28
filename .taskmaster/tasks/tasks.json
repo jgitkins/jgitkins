@@ -980,6 +980,16 @@
             "priority": "low",
             "details": "업데이트 경로가 배선돼 있지 않다. OrganizeUpdateRequest / RepositoryUpdateRequest 두 DTO, OrganizeRequestMapper:16 의 toCommand(OrganizeUpdateRequest) 와 RepositoryRequestMapper:22 의 toUpdateCommand, 그리고 UpdateOrganizeCommand / UpdateRepositoryCommand 두 커맨드가 존재하지만 호출자가 0건이고 @PutMapping 도 없다. ArchitecturePackageConventionTest:56,320 이 OrganizeUpdateRequest 를 패키지 규약 검사에 쓰고 있어 삭제하면 그 테스트도 함께 고쳐야 한다. 판단할 것: 조직/저장소 수정 기능을 만들 계획이 있는가. 있다면 골격을 남기고 미완성임을 문서화한다. 없다면 6개를 지우고 아키텍처 테스트가 다른 DTO 를 참조하도록 바꾼다. 2.94 를 구현하다 발견했고, '미사용 DTO 정리'로 오인해 지웠으면 미완성 기능을 조용히 삭제할 뻔했다.",
             "testStrategy": "삭제를 고른 경우: ArchitecturePackageConventionTest 가 여전히 의미 있는 대상을 참조하는지 확인하고 747 기준선 유지. 유지를 고른 경우: 미완성이라는 사실을 코드 주석이나 문서에 남겨 다음 사람이 같은 것을 다시 발견하지 않게 한다."
+          },
+          {
+            "id": 102,
+            "title": "[architecture][change-review] 컨트롤러가 애플리케이션 계층 타입(MergeRequest)을 요청 본문으로 바인딩",
+            "description": "MergeController:45 가 @Valid @RequestBody MergeRequest 를 받는데, MergeRequest 는 change/review/adapter/in/rest/dto/request 가 아니라 **change/review/application/dto/command** 에 있다. 즉 컨트롤러가 애플리케이션 계층 타입을 HTTP 요청 본문으로 직접 바인딩하고, 그 타입이 이제 jakarta.validation 애노테이션까지 들고 있다. 다른 컨텍스트는 전부 adapter 쪽 request DTO 를 두고 매퍼로 커맨드를 만든다(OrganizeRequestMapper, BranchRequestMapper 등). ArchitectureScanner 는 application 계층에서 jakarta.validation 을 금지하지 않으므로 가드에 안 걸린다. 선택: (a) adapter 쪽에 MergeCreateRequest 를 만들고 매퍼를 두어 다른 컨텍스트와 맞춘다, (b) 현 상태를 의도로 인정하고 이유를 문서화한다. 2.94 를 구현하다 발견했다.",
+            "status": "pending",
+            "dependencies": [],
+            "priority": "low",
+            "details": "MergeController:45 가 @Valid @RequestBody MergeRequest 를 받는데, MergeRequest 는 change/review/adapter/in/rest/dto/request 가 아니라 **change/review/application/dto/command** 에 있다. 즉 컨트롤러가 애플리케이션 계층 타입을 HTTP 요청 본문으로 직접 바인딩하고, 그 타입이 이제 jakarta.validation 애노테이션까지 들고 있다. 다른 컨텍스트는 전부 adapter 쪽 request DTO 를 두고 매퍼로 커맨드를 만든다(OrganizeRequestMapper, BranchRequestMapper 등). ArchitectureScanner 는 application 계층에서 jakarta.validation 을 금지하지 않으므로 가드에 안 걸린다. 선택: (a) adapter 쪽에 MergeCreateRequest 를 만들고 매퍼를 두어 다른 컨텍스트와 맞춘다, (b) 현 상태를 의도로 인정하고 이유를 문서화한다. 2.94 를 구현하다 발견했다.",
+            "testStrategy": "(a) 를 고른 경우: 와이어 형식이 바뀌지 않는지 MergeControllerTest 로 확인하고 750 기준선 유지. (b) 를 고른 경우: ArchitecturePackageConventionTest 에 이 예외를 명시적으로 기록해 다음 사람이 다시 발견하지 않게 한다."
           }
         ]
       },
