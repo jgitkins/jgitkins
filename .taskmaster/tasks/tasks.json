@@ -864,8 +864,8 @@
           {
             "id": 91,
             "title": "[api][security][app-server] 자격증명 부재에 403 을 반환하는 OrganizeController 와 예외 2종 중복",
-            "description": "OrganizeController:41 이 인증되지 않은 호출자에게 OrganizeAccessDeniedException → ORG-403 → HTTP 403 을 반환한다. RFC 9110 상 자격증명 부재는 401 이고, 같은 코드베이스의 다른 5개 컨트롤러와 같은 체인에 붙은 apiAnauthorizeHandler 모두 401 이다. 또한 OrganizeMemberController:45,58 의 ApplicationException(ApplicationErrorCode.UNAUTHENTICATED) 와 나머지 4곳의 UnauthenticatedException 은 둘 다 ApplicationProblemSpec.UNAUTHENTICATED → AUTH-001 → 401 로 같은 상태이므로 통합해도 응답이 바뀌지 않는다(2.88 원안은 '상태가 바뀐다'는 거짓 근거로 이를 미뤘다).",
-            "status": "pending",
+            "description": "OrganizeController:41 이 인증되지 않은 호출자에게 OrganizeAccessDeniedException → ORG-403 → HTTP 403 을 반환한다. RFC 9110 상 자격증명 부재는 401 이고, 같은 코드베이스의 다른 5개 컨트롤러와 같은 체인에 붙은 apiAnauthorizeHandler 모두 401 이다. 또한 OrganizeMemberController:45,58 의 ApplicationException(ApplicationErrorCode.UNAUTHENTICATED) 와 나머지 4곳의 UnauthenticatedException 은 둘 다 ApplicationProblemSpec.UNAUTHENTICATED → AUTH-001 → 401 로 같은 상태이므로 통합해도 응답이 바뀌지 않는다(2.88 원안은 '상태가 바뀐다'는 거짓 근거로 이를 미뤘다). DONE (2026-08-28). **spec 의 '와이어 변화 없음' 주장이 틀렸다.** 예외 2종 통합은 상태(401)는 같지만 본문의 error.code 가 raw UNAUTHENTICATED → AUTH-001 로 바뀐다. 그 두 테스트 이름에 'Raw' 가 들어 있던 것이 작성자가 그 차이를 일부러 고정하고 있었다는 뜻이다. AUTH-001 은 UnauthenticatedException 을 쓰는 다른 15개 지점이 이미 반환하는 값이라 통합 방향 자체는 다수에 맞추는 것이다. 즉 와이어 변경은 하나가 아니라 둘: (1) OrganizeController 403 ORG-403 → 401 AUTH-001, (2) OrganizeMemberController 401 UNAUTHENTICATED → 401 AUTH-001.",
+            "status": "done",
             "dependencies": [],
             "priority": "medium",
             "details": "OrganizeController:41 이 인증되지 않은 호출자에게 OrganizeAccessDeniedException → ORG-403 → HTTP 403 을 반환한다. RFC 9110 상 자격증명 부재는 401 이고, 같은 코드베이스의 다른 5개 컨트롤러와 같은 체인에 붙은 apiAnauthorizeHandler 모두 401 이다. 또한 OrganizeMemberController:45,58 의 ApplicationException(ApplicationErrorCode.UNAUTHENTICATED) 와 나머지 4곳의 UnauthenticatedException 은 둘 다 ApplicationProblemSpec.UNAUTHENTICATED → AUTH-001 → 401 로 같은 상태이므로 통합해도 응답이 바뀌지 않는다(2.88 원안은 '상태가 바뀐다'는 거짓 근거로 이를 미뤘다).",
