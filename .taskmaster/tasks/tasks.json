@@ -884,17 +884,17 @@
           {
             "id": 93,
             "title": "[architecture][error-handling][all-contexts] 도메인 불변식 위반이 HTTP 500 으로 나간다 — 4xx 로 매핑",
-            "description": "도메인 VO 37개 파일이 평범한 IllegalArgumentException 을 던진다(collaboration 5, repository 8, identity/access 7, execution 7, change 5, shared 5). GlobalExceptionHandler 에 IllegalArgumentException 전용 핸들러가 없어 @ExceptionHandler(Exception.class) catch-all 로 떨어지고 INTERNAL_ERROR / HTTP 500 이 된다. DomainException 을 쓰는 5개 파일만 statusMapper 를 타고 제대로 매핑된다. 결과: 클라이언트가 보낸 잘못된 값이 도메인에 닿으면 400 이 아니라 500 이다. 이것이 애플리케이션 계층이 값을 손으로 먼저 검사하는 이유다(2.95/2.96 의 21곳) — 도메인에 맡기면 500 이 되니까 서비스가 의미 있는 오류로 바꾸려고 앞에서 막는다. 즉 '애플리케이션이 지저분한 것'은 원인이 아니라 이 매핑 부재의 증상이다. 선택: (a) VO 들이 DomainException 하위 타입을 던지게 한다, (b) IllegalArgumentException 핸들러를 추가해 400 으로 매핑한다. (b) 가 37파일을 안 건드리지만 라이브러리가 던진 IllegalArgumentException 까지 400 으로 만들 위험이 있어 (a) 가 더 정확하다. 2.95/2.96 의 선행 조건이다 — 이걸 먼저 하지 않고 애플리케이션 검사를 지우면 4xx 가 500 으로 바뀐다.",
+            "description": "CEO 리뷰(2026-08-28)로 범위 정정됨. 대상은 '도메인 37파일'이 아니라 **요청 값이 도달하는 VO 팩토리 12개 호출 지점**이다: OrganizeService:45, OrganizeMemberService:37,51, RepositoryOwnershipPolicy:29,45,46, RepositoryMembershipFactory:14,15, JobService:29,30,31,32. 나머지 도메인 파일의 불변식은 내부 코드만 깨뜨릴 수 있고 그때는 500 이 정답이다 — Spring 이 IllegalArgumentException 을 400 으로 매핑하지 않는 것은 의도된 설계이며(spring-boot#34696), 일괄 변환하면 서버 버그를 4xx 로 보고하게 된다. **2.94 를 먼저 하고 실제로 무엇이 500 으로 남는지 측정한 뒤 이 범위를 확정한다** — 12곳 대부분은 경계 제약으로 표현 가능해 보이므로(OrganizeName 의 정규식은 @Pattern 과 동치) 실제 범위는 예측보다 작을 수 있다. 예측하지 말고 재라. 접근 A 의 규칙(내부 전용 불변식은 500 유지)을 코드 주석이나 문서로 남긴다 — 남기지 않으면 다음 사람이 일관성 없다고 판단해 전부 변환한다.",
             "status": "pending",
             "dependencies": [],
             "priority": "high",
             "details": "도메인 VO 37개 파일이 평범한 IllegalArgumentException 을 던진다(collaboration 5, repository 8, identity/access 7, execution 7, change 5, shared 5). GlobalExceptionHandler 에 IllegalArgumentException 전용 핸들러가 없어 @ExceptionHandler(Exception.class) catch-all 로 떨어지고 INTERNAL_ERROR / HTTP 500 이 된다. DomainException 을 쓰는 5개 파일만 statusMapper 를 타고 제대로 매핑된다. 결과: 클라이언트가 보낸 잘못된 값이 도메인에 닿으면 400 이 아니라 500 이다. 이것이 애플리케이션 계층이 값을 손으로 먼저 검사하는 이유다(2.95/2.96 의 21곳) — 도메인에 맡기면 500 이 되니까 서비스가 의미 있는 오류로 바꾸려고 앞에서 막는다. 즉 '애플리케이션이 지저분한 것'은 원인이 아니라 이 매핑 부재의 증상이다. 선택: (a) VO 들이 DomainException 하위 타입을 던지게 한다, (b) IllegalArgumentException 핸들러를 추가해 400 으로 매핑한다. (b) 가 37파일을 안 건드리지만 라이브러리가 던진 IllegalArgumentException 까지 400 으로 만들 위험이 있어 (a) 가 더 정확하다. 2.95/2.96 의 선행 조건이다 — 이걸 먼저 하지 않고 애플리케이션 검사를 지우면 4xx 가 500 으로 바뀐다.",
-            "testStrategy": "각 컨텍스트에서 VO 불변식을 위반하는 요청이 4xx 를 받는지 테스트. 특히 POST /api/organizes 에 {\"name\":\"\"} 를 보내 현재 500 인 것을 먼저 기록(네거티브 컨트롤)하고 4xx 로 바뀌는지 확인. GlobalExceptionHandler 의 catch-all 이 도메인 불변식을 더는 삼키지 않는지도 확인."
+            "testStrategy": "T4 가 핵심이다: 내부 코드가 불변식을 깨뜨리면 500 을 유지한다는 것을 테스트로 고정한다. 이게 없으면 의도가 사라진다. 그 외 12개 지점 각각에 대해 클라이언트가 보낸 위반 값이 4xx 를 받는지 확인. 기준선 747 tests / 0 failures / 1 skipped 를 줄이지 않을 것."
           },
           {
             "id": 94,
             "title": "[api][validation][all-contexts] 요청 DTO 15개 중 10개에 제약 애노테이션이 없어 잘못된 입력이 도메인까지 간다",
-            "description": "제약이 하나도 없는 요청 DTO: OrganizeCreationRequest, OrganizeUpdateRequest, OrganizeMemberAddRequest, RepositoryUpdateRequest, RepositoryMemberAddRequest, BranchCreateRequest, FileUploadRequest, PullRequestCreateRequest, OAuthLoginRequest, UserStatusUpdateRequest. @NotBlank 하나 없으므로 POST /api/organizes 에 {\"name\":\"\"} 를 보내면 presentation 검증을 그냥 통과해 OrganizeName.from 까지 가고, 거기서 IllegalArgumentException → 500 이 된다(2.93). 경계에서 400 으로 거절하는 것이 가장 싸고 사용자에게 가장 잘 보이는 수정이며 2.93 과 독립적으로 진행 가능하다. GlobalExceptionHandler 는 이미 MethodArgumentNotValidException 을 BAD_REQUEST 로 매핑하고 있어 배관은 갖춰져 있다 — 애노테이션만 없다. 컨트롤러에 @Valid 가 붙어 있는지도 같이 확인할 것.",
+            "description": "제약이 하나도 없는 요청 DTO: OrganizeCreationRequest, OrganizeUpdateRequest, OrganizeMemberAddRequest, RepositoryUpdateRequest, RepositoryMemberAddRequest, BranchCreateRequest, FileUploadRequest, PullRequestCreateRequest, OAuthLoginRequest, UserStatusUpdateRequest. @NotBlank 하나 없으므로 POST /api/organizes 에 {\"name\":\"\"} 를 보내면 presentation 검증을 그냥 통과해 OrganizeName.from 까지 가고, 거기서 IllegalArgumentException → 500 이 된다(2.93). 경계에서 400 으로 거절하는 것이 가장 싸고 사용자에게 가장 잘 보이는 수정이며 2.93 과 독립적으로 진행 가능하다. GlobalExceptionHandler 는 이미 MethodArgumentNotValidException 을 BAD_REQUEST 로 매핑하고 있어 배관은 갖춰져 있다 — 애노테이션만 없다. 컨트롤러에 @Valid 가 붙어 있는지도 같이 확인할 것. CEO 리뷰(2026-08-28) 추가 사항 2건. (1) **경로 변수가 빠져 있었다**: @PathVariable String 21곳 중 일부가 VO 로 간다(RepositoryPath.from). @Valid @RequestBody 는 경로 변수를 검증하지 않으므로 클래스에 @Validated 를 붙이고 경로 변수에 제약을 단다 — ConstraintViolationException 경로는 GlobalExceptionHandler:40 이 이미 400 으로 매핑하므로 배관은 있다. @PathVariable Long 24곳은 바인딩 실패가 이미 400 이라 안전하다. (2) **죽은 DTO 2개**: OrganizeUpdateRequest, RepositoryUpdateRequest 를 어떤 컨트롤러도 쓰지 않는다. 제약을 붙일 게 아니라 확인 후 삭제한다 — 대상이 10개에서 8개로 준다. 완료 기준에 4xx/5xx 비율 측정을 넣는다(/actuator/prometheus 의 http.server.requests status 차원).",
             "status": "pending",
             "dependencies": [],
             "priority": "high",
@@ -946,6 +946,18 @@
             "priority": "medium",
             "details": "슬라이스 테스트 7개가 CompositeErrorHttpStatusMapper 를 아직 @MockBean 으로 들고 있다: OrganizeControllerTest, OrganizeMemberControllerTest, UserControllerTest, OAuthControllerTest, AdminUserControllerTest, SignupActivationHttpCompatibilityTest, UserCredentialActiveAccountHttpCompatibilityTest. OrganizeControllerTest 는 map() 을 항상 FORBIDDEN 으로 스텁하므로 그 클래스의 403 단정이 무의미하다 — 프로덕션 매핑이 무엇이든 통과한다. 나머지 6개는 스텁이 없어 map() 이 null 을 반환하며, 지금 통과하는 이유는 예외 처리 경로를 타지 않기 때문이다. 그 클래스에 상태 코드를 단정하는 테스트가 새로 들어오면 ServletException 이 새어나와 엉뚱한 실패로 보인다. 특히 이름이 HttpCompatibility 인 두 개는 HTTP 계약을 단정하라고 있는 테스트인데 매퍼가 null 을 반환한다. 007a29d 에서 만든 support/ErrorStatusMappingTestConfig 로 교체하면 된다 (실제 매퍼 5개는 인프라 의존이 없는 평범한 컴포넌트라 비용이 없다).",
             "testStrategy": "교체 전에 각 클래스에서 상태 코드를 단정하는 테스트가 실제로 통과하는지 확인하고, OrganizeControllerTest 는 스텁 제거 후에도 403 단정이 유지되는지(즉 프로덕션 매핑이 정말 403 인지) 확인한다. 유지되지 않으면 그 단정이 무엇을 검증하고 있었는지 다시 판단."
+          },
+          {
+            "id": 99,
+            "title": "[api][dx][app-server] 검증 오류가 첫 필드만 반환하고, 깨진 JSON 메시지가 Jackson 내부를 노출",
+            "description": "GlobalExceptionHandler:146 의 extractValidationMessage 가 getFieldError() 로 첫 번째 필드 오류만 반환한다. 지금은 제약이 5개 DTO 에만 있어 드러나지 않지만 2.94 가 제약을 넓히면 다중 필드 오류가 흔해지고 클라이언트가 한 번에 하나씩 고치게 된다. 모든 필드 오류를 반환하도록 바꾼다. 함께: :153 의 폴백 ex.getMessage() 가 HttpMessageNotReadableException 에서 Jackson 내부(클래스명, JSON 포인터)를 400 본문에 노출한다. 값 자체는 에코되지 않는 것을 확인했으므로(getDefaultMessage 는 제약 메시지) 자격증명 노출 위험은 없다.",
+            "status": "pending",
+            "dependencies": [
+              "94"
+            ],
+            "priority": "medium",
+            "details": "GlobalExceptionHandler:146 의 extractValidationMessage 가 getFieldError() 로 첫 번째 필드 오류만 반환한다. 지금은 제약이 5개 DTO 에만 있어 드러나지 않지만 2.94 가 제약을 넓히면 다중 필드 오류가 흔해지고 클라이언트가 한 번에 하나씩 고치게 된다. 모든 필드 오류를 반환하도록 바꾼다. 함께: :153 의 폴백 ex.getMessage() 가 HttpMessageNotReadableException 에서 Jackson 내부(클래스명, JSON 포인터)를 400 본문에 노출한다. 값 자체는 에코되지 않는 것을 확인했으므로(getDefaultMessage 는 제약 메시지) 자격증명 노출 위험은 없다.",
+            "testStrategy": "세 필드가 동시에 잘못된 요청이 세 오류를 모두 반환하는지, 깨진 JSON 이 내부 클래스명 없이 400 을 반환하는지 테스트."
           }
         ]
       },
