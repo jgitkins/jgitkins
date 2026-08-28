@@ -14,6 +14,8 @@ import io.jgitkins.server.common.presentation.exception.PresentationException;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -184,19 +186,42 @@ public class GlobalExceptionHandler {
         // branch Spring already answered 400 but with an empty body, leaving the caller a status and no
         // error code, message, or field name.
         if (ex instanceof HandlerMethodValidationException hmve) {
-            return hmve.getAllErrors().stream()
+            // Every error, for the same reason as the body path below: this one aggregates path
+            // variables and body together, so a request with two bad fields reported one and left the
+            // caller to discover the rest a round trip at a time.
+            String joined = hmve.getAllErrors().stream()
                     .map(MessageSourceResolvable::getDefaultMessage)
                     .filter(message -> message != null && !message.isBlank())
-                    .findFirst()
-                    .orElse(ex.getMessage());
+                    .collect(Collectors.joining("; "));
+            return joined.isBlank() ? ex.getMessage() : joined;
         }
+        // Every field error, not just the first. getFieldError() returns one, which nobody noticed
+        // while five DTOs carried constraints; task 2.94 put them on twelve more, so a request with
+        // three bad fields would have had the caller fixing them one round trip at a time.
         if (ex instanceof MethodArgumentNotValidException manve) {
-            FieldError fieldError = manve.getBindingResult().getFieldError();
-            if (fieldError != null
-                    && fieldError.getDefaultMessage() != null
-                    && !fieldError.getDefaultMessage().isBlank()) {
-                return fieldError.getDefaultMessage();
+            List<FieldError> fieldErrors = manve.getBindingResult().getFieldErrors();
+            // One error keeps the bare constraint message, which is what the HTTP compatibility tests
+            // pin and what a caller with one bad field wants to read. Prefixing it would produce
+            // "username: username is required". Several errors get their field names, because without
+            // them the caller cannot tell which message belongs to which field.
+            if (fieldErrors.size() == 1) {
+                String only = fieldErrors.get(0).getDefaultMessage();
+                if (only != null && !only.isBlank()) {
+                    return only;
+                }
             }
+            String joined = fieldErrors.stream()
+                    .map(error -> error.getField() + ": " + error.getDefaultMessage())
+                    .filter(message -> !message.isBlank())
+                    .collect(Collectors.joining("; "));
+            if (!joined.isBlank()) {
+                return joined;
+            }
+        }
+        // A fixed message for a body we could not parse. ex.getMessage() here is Jackson's, and it
+        // carries internal class names and JSON pointers into the response.
+        if (ex instanceof HttpMessageNotReadableException) {
+            return "Malformed request body";
         }
         return ex.getMessage();
     }

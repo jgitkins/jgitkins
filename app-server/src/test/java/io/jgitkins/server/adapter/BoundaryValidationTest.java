@@ -201,6 +201,61 @@ class BoundaryValidationTest {
     }
 
     /**
+     * A request with several bad fields is told about all of them.
+     *
+     * <p>Task 2.99. The handler returned {@code getFieldError()}, the first one, which nobody noticed
+     * while five DTOs carried constraints. Task 2.94 put them on twelve more, so a caller with three
+     * bad fields would have been fixing them one round trip at a time.
+     *
+     * <p>A single error still returns the bare constraint message. That is what the HTTP compatibility
+     * tests pin, and prefixing it would read "username: username is required".
+     */
+    @Test
+    void everyBadFieldIsNamed() throws Exception {
+        // Two bad fields at once: a blank name and a pattern violation cannot both be reported by a
+        // handler that returns only the first.
+        MvcResult result = mockMvc.perform(post("/repositories/ns/repo/pull-requests")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"sourceBranch\":\"\",\"targetBranch\":\"\"}"))
+                .andReturn();
+
+        assertThat(result.getResponse().getContentAsString())
+                .as("the built-in path aggregates path variables and body together, so both bad "
+                        + "branches are named")
+                .contains("sourceBranch").contains("targetBranch");
+
+        // The body path, which throws a different exception and has its own aggregation.
+        MvcResult sameFieldTwice = mockMvc.perform(post("/api/organizes")
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"name\":\"\"}"))
+                .andReturn();
+        assertThat(sameFieldTwice.getResponse().getContentAsString())
+                .as("a field that breaks two constraints reports both")
+                .contains("must not be blank")
+                .contains("alphanumeric");
+    }
+
+    /**
+     * A body we could not parse says so, without Jackson's internals.
+     *
+     * <p>The fallback returned {@code ex.getMessage()}, which for a parse failure carries class names
+     * and JSON pointers into the response body.
+     */
+    @Test
+    void aMalformedBodyDoesNotLeakParserInternals() throws Exception {
+        MvcResult result = mockMvc.perform(post("/api/organizes")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{not json"))
+                .andReturn();
+
+        String body = result.getResponse().getContentAsString();
+        assertThat(body).contains("Malformed request body");
+        assertThat(body)
+                .as("no parser internals in the response")
+                .doesNotContain("JSON parse error")
+                .doesNotContain("com.fasterxml");
+    }
+
+    /**
      * The complement: a field the codebase deliberately leaves optional must still get through. Without
      * this, "everything is rejected" would also pass the test above.
      */
