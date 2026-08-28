@@ -19,6 +19,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.context.MessageSourceResolvable;
+import org.springframework.web.bind.MissingServletRequestParameterException;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -45,7 +48,8 @@ public class GlobalExceptionHandler {
             MethodArgumentNotValidException.class,
             HttpMessageNotReadableException.class,
             MethodArgumentTypeMismatchException.class,
-            HandlerMethodValidationException.class
+            HandlerMethodValidationException.class,
+            MissingServletRequestParameterException.class
     })
     public ResponseEntity<ApiResponse<Void>> handlePresentationException(Exception ex) {
         String message = extractValidationMessage(ex);
@@ -97,9 +101,30 @@ public class GlobalExceptionHandler {
      * to the {@code Exception} catch-all and answered 500 INTERNAL_ERROR: the server reporting its own
      * failure for what is entirely the caller's typo.
      */
+    /**
+     * Client mistakes in method, content type, or route are answered with the status that names the
+     * mistake. All four used to fall to the {@code Exception} catch-all and answer 500 INTERNAL_ERROR:
+     * the server reporting its own failure for something entirely on the caller's side. Measured, not
+     * assumed -- a probe over the standard Spring MVC client errors found method, media type, and
+     * missing-parameter all answering 500.
+     */
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<ApiResponse<Void>> handleMethodNotAllowed(HttpRequestMethodNotSupportedException ex) {
+        log.warn("Method not allowed: {}", ex.getMessage());
+        return buildResponse(PresentationProblemSpec.METHOD_NOT_ALLOWED, HttpStatus.METHOD_NOT_ALLOWED,
+                ex.getMessage(), SOURCE_PRESENTATION);
+    }
+
+    @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
+    public ResponseEntity<ApiResponse<Void>> handleUnsupportedMediaType(HttpMediaTypeNotSupportedException ex) {
+        log.warn("Unsupported media type: {}", ex.getMessage());
+        return buildResponse(PresentationProblemSpec.UNSUPPORTED_MEDIA_TYPE,
+                HttpStatus.UNSUPPORTED_MEDIA_TYPE, ex.getMessage(), SOURCE_PRESENTATION);
+    }
+
     @ExceptionHandler({NoHandlerFoundException.class, NoResourceFoundException.class})
     public ResponseEntity<ApiResponse<Void>> handleNoHandler(Exception ex) {
-        return buildResponse(PresentationProblemSpec.BAD_REQUEST, HttpStatus.NOT_FOUND, ex.getMessage(),
+        return buildResponse(PresentationProblemSpec.NOT_FOUND, HttpStatus.NOT_FOUND, ex.getMessage(),
                 SOURCE_PRESENTATION);
     }
 

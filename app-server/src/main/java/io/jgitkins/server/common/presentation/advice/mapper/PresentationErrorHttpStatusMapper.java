@@ -20,6 +20,9 @@ public class PresentationErrorHttpStatusMapper implements ErrorHttpStatusMapper 
         PresentationErrorCode presentationErrorCode = (PresentationErrorCode) errorCode;
         return switch (presentationErrorCode) {
             case UNAUTHORIZED -> HttpStatus.UNAUTHORIZED;
+            case NOT_FOUND -> HttpStatus.NOT_FOUND;
+            case METHOD_NOT_ALLOWED -> HttpStatus.METHOD_NOT_ALLOWED;
+            case UNSUPPORTED_MEDIA_TYPE -> HttpStatus.UNSUPPORTED_MEDIA_TYPE;
             case BAD_REQUEST -> HttpStatus.BAD_REQUEST;
         };
     }

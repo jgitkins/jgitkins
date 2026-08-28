@@ -114,6 +114,42 @@ class BoundaryValidationTest {
     }
 
     /**
+     * Every standard Spring MVC client error answers with the status that names it.
+     *
+     * <p>Found by measuring rather than predicting. The task's measurement step, meant to size how much
+     * still reached a domain invariant after the boundary constraints went in, answered that: nothing
+     * did, nine of nine refused at 400. But one probe used the wrong HTTP method by accident and came
+     * back 500, which turned into a sweep of the standard client errors. Three of six answered 500:
+     * wrong method, unsupported content type, and a missing required query parameter. All three are
+     * entirely the caller's mistake, and all three were waking whoever watches the 5xx rate.
+     */
+    @Test
+    void everyStandardClientMistakeAnswersItsOwnStatus() throws Exception {
+        assertThat(mockMvc.perform(post("/api/admin/users/1/status")
+                        .contentType(MediaType.APPLICATION_JSON).content("{}"))
+                .andReturn().getResponse().getStatus())
+                .as("wrong HTTP method").isEqualTo(405);
+
+        assertThat(mockMvc.perform(post("/api/organizes")
+                        .contentType(MediaType.TEXT_PLAIN).content("x"))
+                .andReturn().getResponse().getStatus())
+                .as("unsupported content type").isEqualTo(415);
+
+        assertThat(mockMvc.perform(get("/repositories/ns/repo/merge/check"))
+                .andReturn().getResponse().getStatus())
+                .as("missing required query parameter").isEqualTo(400);
+
+        assertThat(mockMvc.perform(post("/api/organizes")
+                        .contentType(MediaType.APPLICATION_JSON).content("{not json"))
+                .andReturn().getResponse().getStatus())
+                .as("malformed json").isEqualTo(400);
+
+        assertThat(mockMvc.perform(get("/api/repositories/not-a-number"))
+                .andReturn().getResponse().getStatus())
+                .as("path variable type mismatch").isEqualTo(400);
+    }
+
+    /**
      * An unmatched path is the caller's typo, not a server failure.
      *
      * <p>{@code GlobalExceptionHandler} listed {@code NoHandlerFoundException}, but Spring 6 throws
@@ -127,7 +163,10 @@ class BoundaryValidationTest {
 
         assertThat(result.getResponse().getStatus())
                 .as("a mistyped URL is a client error")
-                .isNotEqualTo(500);
+                .isEqualTo(404);
+        assertThat(result.getResponse().getContentAsString())
+                .as("and its code names the status rather than reusing REQ-400")
+                .contains("REQ-404");
     }
 
     /**
