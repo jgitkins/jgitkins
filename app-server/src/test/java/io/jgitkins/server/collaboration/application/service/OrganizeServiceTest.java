@@ -29,6 +29,7 @@ import io.jgitkins.server.collaboration.domain.vo.OrganizeMemberRole;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeName;
 import io.jgitkins.server.collaboration.domain.vo.OwnerId;
 import io.jgitkins.server.collaboration.domain.vo.MemberUserId;
+import io.jgitkins.server.shared.domain.exception.InvalidIdentifierException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -127,10 +128,21 @@ class OrganizeServiceTest {
         verify(organizeRepository, never()).save(any(Organize.class));
     }
 
+    /**
+     * Task 2.95 moved this answer. The service used to throw OrganizeAccessDeniedException for a null
+     * requester, which is a 403 saying "not allowed" about a value that is simply not an identifier.
+     * OwnerId.of now rejects it with a mapped domain exception, and the "authenticated user required"
+     * answer belongs to the adapter, where OrganizeController gives it as a 401.
+     *
+     * <p>What the service loses is the distinction between "no requester" and "invalid requester id".
+     * Over HTTP that costs nothing: the controller rejects an absent principal before the command is
+     * built. An internal caller passing null now reads "Identifier must be a positive value", which is
+     * accurate about what happened even though a server bug is the real cause.
+     */
     @Test
-    void createOrganize_throwsWhenCurrentUserIsMissing() {
+    void createOrganize_rejectsAMissingCurrentUserAsAnInvalidOwnerId() {
         OrganizeCreationCommand command = new OrganizeCreationCommand("org", "desc", null);
-        assertThrows(OrganizeAccessDeniedException.class, () -> service.createOrganize(command));
+        assertThrows(InvalidIdentifierException.class, () -> service.createOrganize(command));
         verify(organizeRepository, never()).save(any(Organize.class));
     }
 

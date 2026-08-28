@@ -2,7 +2,6 @@ package io.jgitkins.server.collaboration.application.service;
 
 import io.jgitkins.server.collaboration.application.dto.command.OrganizeCreationCommand;
 import io.jgitkins.server.collaboration.application.dto.result.OrganizeCreationResult;
-import io.jgitkins.server.collaboration.application.exception.OrganizeAccessDeniedException;
 import io.jgitkins.server.collaboration.application.mapper.OrganizeApplicationMapper;
 import io.jgitkins.server.collaboration.application.port.in.OrganizeCreationUseCase;
 import io.jgitkins.server.collaboration.application.port.in.OrganizeDeletionUseCase;
@@ -43,10 +42,11 @@ public class OrganizeService implements OrganizeCreationUseCase,
     public OrganizeCreationResult createOrganize(OrganizeCreationCommand command) {
         // 1. 입력 정합성 검증 (Domain VO 생성)
         OrganizeName name = OrganizeName.from(command.name());
+        // No null guard on the requester here. OwnerId.of below rejects null and non-positive with a
+        // mapped domain exception, and the "authenticated user required" answer belongs to the adapter,
+        // which OrganizeController gives as a 401. Keeping a copy here answered 403 for the same
+        // condition and could only disagree with it.
         Long ownerId = command.requesterUserId();
-        if (ownerId == null) {
-            throw new OrganizeAccessDeniedException("An authenticated user is required");
-        }
 
         // 2. 데이터 정합성 검증
         organizeValidator.validateCreation(name);

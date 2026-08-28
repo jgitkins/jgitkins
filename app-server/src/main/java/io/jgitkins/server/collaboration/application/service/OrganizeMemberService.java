@@ -64,8 +64,12 @@ public class OrganizeMemberService implements OrganizeMemberAddUseCase,
     @Override
     @Transactional
     public void removeOrganizeMember(Long organizeId, Long requesterUserId, Long targetUserId) {
-        if (organizeId == null || requesterUserId == null || targetUserId == null) {
-            throw new OrganizeAccessDeniedException("Authentication and member identifiers are required");
+        // Narrowed to the requester. The other two are identifiers, and OrganizeId.of and
+        // MemberUserId.of below reject null and non-positive with a mapped domain exception, so
+        // checking them here answered 403 for what is a malformed identifier rather than a permission
+        // problem. The requester check stays: it is an authorization answer, not a value check.
+        if (requesterUserId == null) {
+            throw new OrganizeAccessDeniedException("Authentication is required");
         }
         OrganizeId id = OrganizeId.of(organizeId);
         organizeRepository.lockByIdForMembershipMutation(id);
