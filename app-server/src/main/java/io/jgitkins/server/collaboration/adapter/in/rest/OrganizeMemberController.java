@@ -8,11 +8,10 @@ import io.jgitkins.server.collaboration.application.port.in.OrganizeMemberAddUse
 import io.jgitkins.server.collaboration.application.port.in.OrganizeMemberQueryUseCase;
 import io.jgitkins.server.collaboration.application.port.in.OrganizeMemberRemoveUseCase;
 import io.jgitkins.server.collaboration.adapter.in.support.RequesterUserIdResolver;
-import io.jgitkins.server.shared.application.error.ApplicationErrorCode;
-import io.jgitkins.server.shared.application.exception.ApplicationException;
 import io.jgitkins.core.web.api.response.ApiResponse;
 import io.jgitkins.server.collaboration.adapter.in.rest.dto.request.OrganizeMemberAddRequest;
 import io.jgitkins.server.collaboration.adapter.in.rest.mapper.OrganizeMemberRequestMapper;
+import io.jgitkins.server.shared.application.exception.UnauthenticatedException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -44,8 +43,7 @@ public class OrganizeMemberController {
                                                        @Valid @RequestBody OrganizeMemberAddRequest request,
                                                        @AuthenticationPrincipal(expression = "username") String subject) {
         Long requesterUserId = requesterUserIdResolver.resolve(subject)
-                .orElseThrow(() -> new ApplicationException(ApplicationErrorCode.UNAUTHENTICATED,
-                        "Authentication required"));
+                .orElseThrow(() -> new UnauthenticatedException("Authentication required"));
         OrganizeMemberAddCommand command = organizeMemberRequestMapper.toCommand(organizeId, request, requesterUserId);
         organizeMemberAddUseCase.addOrganizeMember(command);
         return ApiResponse.ok();
@@ -57,8 +55,7 @@ public class OrganizeMemberController {
                                                           @PathVariable @Positive Long userId,
                                                           @AuthenticationPrincipal(expression = "username") String subject) {
         Long requesterUserId = requesterUserIdResolver.resolve(subject)
-                .orElseThrow(() -> new ApplicationException(ApplicationErrorCode.UNAUTHENTICATED,
-                        "Authentication required"));
+                .orElseThrow(() -> new UnauthenticatedException("Authentication required"));
         organizeMemberRemoveUseCase.removeOrganizeMember(organizeId, requesterUserId, userId);
         return ApiResponse.noContent();
     }

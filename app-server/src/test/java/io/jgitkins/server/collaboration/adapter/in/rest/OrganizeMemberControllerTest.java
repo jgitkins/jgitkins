@@ -132,7 +132,7 @@ class OrganizeMemberControllerTest {
     }
 
     @Test
-    void addMember_missingRequesterReturnsRaw401ApplicationError() throws Exception {
+    void addMember_missingRequesterReturns401() throws Exception {
         when(requesterUserIdResolver.resolve(null)).thenReturn(java.util.Optional.empty());
 
         mockMvc.perform(post("/api/organizes/1/members")
@@ -144,19 +144,31 @@ class OrganizeMemberControllerTest {
                                 {"userId":2,"role":"MEMBER"}
                                 """))
                 .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.error.code").value("UNAUTHENTICATED"))
+                // Task 2.91. The status was already 401 and stays 401; the code changes from the raw
+                // ApplicationErrorCode name to the problem spec's AUTH-001, which is what the other four
+                // controllers throwing UnauthenticatedException already return. The spec for this task
+                // claimed consolidating the two exception types was wire-identical. It is not: the
+                // status matches, the body's code does not, and these two tests were named "Raw"
+                // because their author was pinning exactly that difference.
+                .andExpect(jsonPath("$.error.code").value("AUTH-001"))
                 .andExpect(jsonPath("$.error.message").value("Authentication required"))
                 .andExpect(jsonPath("$.error.source").value("application"));
         verifyNoInteractions(organizeMemberAddUseCase, organizeMemberRequestMapper);
     }
 
     @Test
-    void removeMember_missingRequesterReturnsRaw401ApplicationError() throws Exception {
+    void removeMember_missingRequesterReturns401() throws Exception {
         when(requesterUserIdResolver.resolve(null)).thenReturn(java.util.Optional.empty());
 
         mockMvc.perform(delete("/api/organizes/1/members/2"))
                 .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.error.code").value("UNAUTHENTICATED"))
+                // Task 2.91. The status was already 401 and stays 401; the code changes from the raw
+                // ApplicationErrorCode name to the problem spec's AUTH-001, which is what the other four
+                // controllers throwing UnauthenticatedException already return. The spec for this task
+                // claimed consolidating the two exception types was wire-identical. It is not: the
+                // status matches, the body's code does not, and these two tests were named "Raw"
+                // because their author was pinning exactly that difference.
+                .andExpect(jsonPath("$.error.code").value("AUTH-001"))
                 .andExpect(jsonPath("$.error.message").value("Authentication required"))
                 .andExpect(jsonPath("$.error.source").value("application"));
         verifyNoInteractions(organizeMemberRemoveUseCase);

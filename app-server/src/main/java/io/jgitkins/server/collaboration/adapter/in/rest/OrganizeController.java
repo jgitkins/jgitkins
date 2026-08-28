@@ -11,7 +11,7 @@ import io.jgitkins.core.web.api.response.ApiResponse;
 import io.jgitkins.server.collaboration.adapter.in.rest.dto.request.OrganizeCreationRequest;
 import io.jgitkins.server.collaboration.adapter.in.rest.mapper.OrganizeRequestMapper;
 import io.jgitkins.server.collaboration.adapter.in.support.RequesterUserIdResolver;
-import io.jgitkins.server.collaboration.application.exception.OrganizeAccessDeniedException;
+import io.jgitkins.server.shared.application.exception.UnauthenticatedException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -40,7 +40,7 @@ public class OrganizeController {
             @Valid @RequestBody OrganizeCreationRequest request,
             @AuthenticationPrincipal(expression = "username") String subject) {
         Long requesterUserId = requesterUserIdResolver.resolve(subject)
-                .orElseThrow(() -> new OrganizeAccessDeniedException("An authenticated user is required"));
+                .orElseThrow(() -> new UnauthenticatedException("An authenticated user is required"));
         OrganizeCreationCommand command = organizeRequestMapper.toCommand(request, requesterUserId);
         OrganizeCreationResult result = organizeCreationUseCase.createOrganize(command);
         return ApiResponse.created(result.id(), result);

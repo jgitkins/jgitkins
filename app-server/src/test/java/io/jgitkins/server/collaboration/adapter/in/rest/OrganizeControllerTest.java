@@ -127,20 +127,20 @@ class OrganizeControllerTest {
     }
 
     @Test
-    void createOrganize_nullRequesterReturnsOrg403ApplicationError() throws Exception {
+    void createOrganize_nullRequesterReturns401() throws Exception {
         when(requesterUserIdResolver.resolve(null)).thenReturn(java.util.Optional.empty());
         assertCreateDenied(new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(
                 new NullUsernamePrincipal(), null, java.util.List.of()), null);
     }
 
     @Test
-    void createOrganize_blankRequesterReturnsOrg403ApplicationError() throws Exception {
+    void createOrganize_blankRequesterReturns401() throws Exception {
         when(requesterUserIdResolver.resolve(" ")).thenReturn(java.util.Optional.empty());
         assertCreateDenied(tokenFor(" "), " ");
     }
 
     @Test
-    void createOrganize_nonnumericRequesterReturnsOrg403ApplicationError() throws Exception {
+    void createOrganize_nonnumericRequesterReturns401() throws Exception {
         when(requesterUserIdResolver.resolve("not-numeric")).thenReturn(java.util.Optional.empty());
         assertCreateDenied(tokenFor("not-numeric"), "not-numeric");
     }
@@ -157,8 +157,13 @@ class OrganizeControllerTest {
         mockMvc.perform(post("/api/organizes")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"name\":\"core-team\",\"description\":\"Core Team\"}"))
-                .andExpect(status().isForbidden())
-                .andExpect(jsonPath("$.error.code").value("ORG-403"))
+                // Task 2.91 changed this on purpose. A caller with no credentials was answered 403
+                // ORG-403, which says "you are not allowed", when the truth is "I do not know who you
+                // are". RFC 9110 puts that at 401, the apiAnauthorizeHandler wired into this same chain
+                // answers 401, and the other five controllers answer 401. This one disagreed with all
+                // three.
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.error.code").value("AUTH-001"))
                 .andExpect(jsonPath("$.error.message").value("An authenticated user is required"))
                 .andExpect(jsonPath("$.error.source").value("application"));
         org.mockito.Mockito.verify(requesterUserIdResolver).resolve(subject);
