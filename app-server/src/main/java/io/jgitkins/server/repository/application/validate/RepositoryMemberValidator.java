@@ -8,31 +8,31 @@ import io.jgitkins.server.repository.domain.vo.RepositoryMemberUserId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+/**
+ * Membership queries for the repository member flow.
+ *
+ * <p>Three identifier-checking methods used to live here and are gone. The TODO they carried said form
+ * validation belonged in the presentation layer, and that is now where it is: the request DTO carries
+ * {@code @NotNull @Positive} on userId and every path-variable id carries {@code @Positive}, so a null
+ * or non-positive identifier no longer reaches this layer over HTTP at all. Behind them,
+ * {@code RepositoryId.of} and {@code RepositoryMemberUserId.of} reject the same values with a mapped
+ * domain exception, and the policy answers a null repository id as not-found.
+ */
 @Component
 @RequiredArgsConstructor
 public class RepositoryMemberValidator {
 
     private final RepositoryMemberPersistencePort repositoryMemberPort;
 
-    // TODO: form 검증은 presentation 계층으로 이관할것
+    /**
+     * The one check that was not a duplicate. No value object guards whether the command object itself
+     * is null, so deleting this with the field checks turned a typed 422 into a NullPointerException
+     * and a 500. The field checks are gone because {@code RepositoryId.of} and
+     * {@code RepositoryMemberUserId.of} reject the same values; this one has nothing behind it.
+     */
     public void validateAddCommand(RepositoryMemberAddCommand command) {
-        if (command == null || command.repositoryId() == null || command.userId() == null) {
-            throw new MemberIdentifierRequiredException(
-                    "RepositoryId and RepositoryMemberUserId are required to add a repository member");
-        }
-    }
-
-    public void validateRepositoryId(Long repositoryId) {
-        if (repositoryId == null) {
-            throw new MemberIdentifierRequiredException(
-                    "RepositoryId is required");
-        }
-    }
-
-    public void validateMemberIdentifiers(Long repositoryId, Long userId) {
-        if (repositoryId == null || userId == null) {
-            throw new MemberIdentifierRequiredException(
-                    "RepositoryId and RepositoryMemberUserId are required");
+        if (command == null) {
+            throw new MemberIdentifierRequiredException("A repository member command is required");
         }
     }
 

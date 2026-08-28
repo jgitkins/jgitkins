@@ -22,6 +22,7 @@ import io.jgitkins.server.repository.domain.vo.OrganizationMembershipRole;
 import io.jgitkins.server.repository.domain.vo.RepositoryId;
 import io.jgitkins.server.repository.domain.vo.RepositoryMemberRole;
 import io.jgitkins.server.repository.domain.vo.RepositoryMemberUserId;
+import io.jgitkins.server.shared.domain.exception.InvalidIdentifierException;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.List;
@@ -244,12 +245,25 @@ class RepositoryMemberServiceTest {
         verify(repositoryMemberPort, never()).save(any(RepositoryMember.class));
     }
 
+    /**
+     * Task 2.96 narrowed what this covers. A null command still throws a typed exception, because no
+     * value object guards whether the command object itself is null and deleting that check turned it
+     * into a NullPointerException and a 500.
+     *
+     * <p>The null-fields case moved: RepositoryId.of and RepositoryMemberUserId.of reject it with a
+     * mapped domain exception, and over HTTP it no longer arrives at all, since the request DTO carries
+     * @NotNull @Positive on userId and the path variable carries @Positive.
+     */
     @Test
-    void addRepositoryMember_throwsWhenCommandInvalid() {
+    void addRepositoryMember_throwsWhenCommandIsNull() {
         assertThrows(JgitkinsException.class, () -> service.addRepositoryMember(null));
-        assertThrows(JgitkinsException.class, () -> service.addRepositoryMember(
-                new RepositoryMemberAddCommand(7L, 1L, null, null)
-        ));
+    }
+
+    @Test
+    void addRepositoryMember_rejectsNullIdentifiersThroughTheValueObjects() {
+        repositoryIsOwnedByRequester();
+        assertThrows(InvalidIdentifierException.class, () -> service.addRepositoryMember(
+                new RepositoryMemberAddCommand(7L, 1L, null, null)));
     }
 
     @Test

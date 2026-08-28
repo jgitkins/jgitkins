@@ -43,7 +43,6 @@ public class RepositoryMemberService implements RepositoryMemberManagementUseCas
     @Override
     @Transactional
     public void removeRepositoryMember(Long requesterUserId, Long repositoryId, Long userId) {
-        repositoryMemberValidator.validateMemberIdentifiers(repositoryId, userId);
         repositoryMemberManagementPolicy.validateCanManageMembers(requesterUserId, repositoryId);
         repositoryMemberPort.deleteByRepositoryIdAndUserId(
                 RepositoryId.of(repositoryId), RepositoryMemberUserId.of(userId));
@@ -52,7 +51,6 @@ public class RepositoryMemberService implements RepositoryMemberManagementUseCas
     @Override
     @Transactional(readOnly = true)
     public List<RepositoryMemberSummary> getRepositoryMembers(Long requesterUserId, Long repositoryId) {
-        repositoryMemberValidator.validateRepositoryId(repositoryId);
         // Ordering is the contract: existence, then authentication, then authorization, then exactly one
         // member query. A member list is never public, so an unauthorized caller must not be able to
         // learn the membership size from a timing or an error shape.
