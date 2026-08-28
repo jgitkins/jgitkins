@@ -78,7 +78,7 @@ Runner가 처리할 수 있는 범위다. 현재는 `GLOBAL`, `ORGANIZE`, `REPOS
 
 `Job`은 이 context의 root다.
 
-- 코드 근거: `server/src/main/java/io/jgitkins/server/domain/aggregate/Job.java`
+- 코드 근거: `app-server/src/main/java/io/jgitkins/server/execution/domain/aggregate/Job.java`
 - 유스케이스 근거: `JobCreateUseCase`, `JobDispatchUseCase`, `JobResultReportUseCase`
 - 서비스 근거: `JobService`, `JobDispatchService`, `JobResultReportService`
 
@@ -96,7 +96,7 @@ Runner가 처리할 수 있는 범위다. 현재는 `GLOBAL`, `ORGANIZE`, `REPOS
 
 `JobHistory`는 `Job` 내부 Entity다.
 
-- 코드 근거: `server/src/main/java/io/jgitkins/server/domain/model/JobHistory.java`
+- 코드 근거: `app-server/src/main/java/io/jgitkins/server/execution/domain/entity/JobHistory.java`
 - 식별: `JobHistoryId`
 - 상태 값: `JobStatus`
 
@@ -106,7 +106,7 @@ Runner가 처리할 수 있는 범위다. 현재는 `GLOBAL`, `ORGANIZE`, `REPOS
 
 `Runner`는 이 context의 root다.
 
-- 코드 근거: `server/src/main/java/io/jgitkins/server/domain/aggregate/Runner.java`
+- 코드 근거: `app-server/src/main/java/io/jgitkins/server/execution/domain/aggregate/Runner.java`
 - 유스케이스 근거: `RunnerRegisterUseCase`, `RunnerLoadUseCase`, `RunnerDeleteUseCase`, `RunnerActivateUseCase`
 - 서비스 근거: `RunnerManagementService`, `RunnerReadService`
 

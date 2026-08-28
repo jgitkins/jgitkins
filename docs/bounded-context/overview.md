@@ -39,7 +39,7 @@
 
 - 정의: 로그인, 소유, 권한 판단의 기준이 되는 사용자 계정.
 - 현재 분류: Entity 또는 Aggregate Root 후보.
-- 코드 근거: `server/domain/model/User.java`, `UserIdentity.java`, `UserCredential.java`, `UserAuthority.java`, `UserStatus.java`.
+- 코드 근거: `app-server/src/main/java/io/jgitkins/server/identity/access/domain/aggregate/User.java`, `UserIdentity.java`, `UserCredential.java`, `UserAuthority.java`, `UserStatus.java`.
 - 테이블 근거: `USER`, `USER_CREDENTIALS`.
 - 메모: 인증 identity와 credential 경계가 함께 걸려 있다.
 
@@ -47,14 +47,14 @@
 
 - 정의: 외부 인증 제공자에서 온 사용자 신원.
 - 현재 분류: `User` 하위 Entity 후보.
-- 코드 근거: `server/domain/model/UserIdentity.java`, `OAuthLoginUseCase`, `OAuthLoginService`.
+- 코드 근거: `app-server/src/main/java/io/jgitkins/server/identity/access/domain/entity/UserIdentity.java`, `OAuthLoginUseCase`, `OAuthLoginService`.
 - 메모: 외부 로그인 결과를 내부 `User`와 연결한다.
 
 ### User Credential
 
 - 정의: 사용자의 개인 자격증명. 현재는 PAT 중심.
 - 현재 분류: `User` 하위 Entity 후보.
-- 코드 근거: `server/domain/model/UserCredential.java`, `UserCredentialIssueUseCase`, `UserCredentialService`.
+- 코드 근거: `app-server/src/main/java/io/jgitkins/server/identity/access/domain/entity/UserCredential.java`, `UserCredentialIssueUseCase`, `UserCredentialService`.
 - 테이블 근거: `USER_CREDENTIALS`.
 - 메모: 만료, 사용 이력, 감사 요구가 커지면 별도 Aggregate 후보가 된다.
 
@@ -62,7 +62,7 @@
 
 - 정의: 여러 사용자가 함께 저장소를 소유하는 협업 단위.
 - 현재 분류: Aggregate Root.
-- 코드 근거: `server/domain/aggregate/Organize.java`, `OrganizeMember.java`, `OrganizeCreationUseCase`, `OrganizeMember*UseCase`.
+- 코드 근거: `app-server/src/main/java/io/jgitkins/server/collaboration/domain/aggregate/Organize.java`, `OrganizeMember.java`, `OrganizeCreationUseCase`, `OrganizeMember*UseCase`.
 - 테이블 근거: `ORGANIZE`, `ORGANIZE_MEMBER`.
 - 메모: 코드명은 `Organize`, 문서 용어는 `Organization`을 사용한다.
 
@@ -70,7 +70,7 @@
 
 - 정의: 특정 `Organization`에 속한 사용자와 역할.
 - 현재 분류: Entity 또는 관계 모델.
-- 코드 근거: `server/domain/model/OrganizeMember.java`, `OrganizeMemberRole.java`.
+- 코드 근거: `app-server/src/main/java/io/jgitkins/server/collaboration/domain/entity/OrganizeMember.java`, `OrganizeMemberRole.java`.
 - 테이블 근거: `ORGANIZE_MEMBER`.
 - 메모: `Repository Member`와 같은 membership 패턴의 scope별 변형이다.
 
@@ -78,7 +78,7 @@
 
 - 정의: Git 저장소와 서비스 메타데이터를 함께 가지는 작업 단위.
 - 현재 분류: Aggregate Root.
-- 코드 근거: `server/repository/domain/aggregate/Repository.java`, `RepositoryCreateUseCase`, `RepositoryLoadUseCase`, `RepositoryManagementService`.
+- 코드 근거: `app-server/src/main/java/io/jgitkins/server/repository/domain/aggregate/Repository.java`, `RepositoryCreateUseCase`, `RepositoryLoadUseCase`, `RepositoryManagementService`.
 - 테이블 근거: `REPOSITORY`.
 - 주요 값: `RepositoryId`, `RepositoryName`, `RepositoryPath`, `RepositoryVisibility`, `OwnerType`, `OwnerId`, `BranchName`.
 - 메모: Git object graph 자체는 외부 상태다.
@@ -87,7 +87,7 @@
 
 - 정의: 특정 `Repository`에 접근 가능한 사용자와 역할.
 - 현재 분류: Entity 또는 관계 모델.
-- 코드 근거: `server/repository/domain/model/RepositoryMember.java`, `RepositoryMemberRole.java`, `RepositoryMember*UseCase`.
+- 코드 근거: `app-server/src/main/java/io/jgitkins/server/repository/domain/model/RepositoryMember.java`, `RepositoryMemberRole.java`, `RepositoryMember*UseCase`.
 - 테이블 근거: `REPOSITORY_MEMBER`.
 - 메모: 현재는 `Repository` 내부 Entity보다 관계 모델에 가깝다.
 
@@ -95,7 +95,7 @@
 
 - 정의: `Repository` 안의 Git branch와 branch 메타데이터.
 - 현재 분류: Entity 후보.
-- 코드 근거: `server/repository/domain/entity/Branch.java`, `BranchName.java`, `BranchCreateUseCase`, `BranchLoadUseCase`, `BranchManagementService`.
+- 코드 근거: `app-server/src/main/java/io/jgitkins/server/repository/domain/entity/Branch.java`, `BranchName.java`, `BranchCreateUseCase`, `BranchLoadUseCase`, `BranchManagementService`.
 - 테이블 근거: `BRANCH`.
 - 메모: `Repository`에 종속된 Entity로 본다.
 
@@ -103,7 +103,7 @@
 
 - 정의: source branch 변경을 target branch에 합치기 위한 요청.
 - 현재 분류: Aggregate Root.
-- 코드 근거: `server/domain/pr/aggregate/PullRequest.java`, `CreatePullRequestUseCase`, `GetPullRequestDetailUseCase`, `PullRequestService`.
+- 코드 근거: `app-server/src/main/java/io/jgitkins/server/change/review/domain/aggregate/PullRequest.java`, `CreatePullRequestUseCase`, `GetPullRequestDetailUseCase`, `PullRequestService`.
 - 테이블 근거: `PULL_REQUEST`.
 - 주요 값: `PullRequestId`, `BranchHeadSnapshot`, `PullRequestStatus`, `TargetDrift`.
 - 메모: source/target snapshot은 저장 상태이고 mergeability는 조회 계산값이다.
@@ -112,7 +112,7 @@
 
 - 정의: 특정 repository, branch, commit에 대한 CI 실행 요청.
 - 현재 분류: Aggregate Root.
-- 코드 근거: `server/domain/aggregate/Job.java`, `JobHistory.java`, `JobCreateUseCase`, `JobDispatchUseCase`, `JobResultReportUseCase`.
+- 코드 근거: `app-server/src/main/java/io/jgitkins/server/execution/domain/aggregate/Job.java`, `JobHistory.java`, `JobCreateUseCase`, `JobDispatchUseCase`, `JobResultReportUseCase`.
 - 테이블 근거: `JOB`, `JOB_HISTORY`.
 - 메모: `JobHistory`를 내부 Entity로 가지는 모델이 현재 구현과 맞다.
 

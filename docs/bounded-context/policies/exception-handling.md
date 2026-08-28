@@ -6,21 +6,21 @@
 
 분석 대상은 아래 7개 파일이다.
 
-- `src/main/java/io/jgitkins/server/application/exception/ApplicationException.java`
-- `src/main/java/io/jgitkins/server/domain/exception/DomainException.java`
-- `src/main/java/io/jgitkins/server/domain/exception/RunnerAlreadyActiveException.java`
-- `src/main/java/io/jgitkins/server/domain/exception/RunnerTokenMismatchException.java`
-- `src/main/java/io/jgitkins/server/domain/exception/RunnerTokenMissingException.java`
-- `src/main/java/io/jgitkins/server/domain/exception/UserAlreadyActivatedException.java`
-- `src/main/java/io/jgitkins/server/infrastructure/exception/InfrastructureException.java`
+- `app-server/src/main/java/io/jgitkins/server/shared/application/exception/ApplicationException.java`
+- `app-server/src/main/java/io/jgitkins/server/shared/domain/exception/DomainException.java`
+- `app-server/src/main/java/io/jgitkins/server/execution/domain/exception/RunnerAlreadyActiveException.java`
+- `app-server/src/main/java/io/jgitkins/server/execution/domain/exception/RunnerTokenMismatchException.java`
+- `app-server/src/main/java/io/jgitkins/server/execution/domain/exception/RunnerTokenMissingException.java`
+- `app-server/src/main/java/io/jgitkins/server/identity/access/domain/exception/UserAlreadyActivatedException.java`
+- `app-server/src/main/java/io/jgitkins/server/common/infrastructure/exception/InfrastructureException.java`
 
 함께 참고한 현재 핵심 구조는 아래 파일들이다.
 
-- `src/main/java/io/jgitkins/server/common/exception/JgitkinsException.java`
-- `src/main/java/io/jgitkins/server/presentation/advice/GlobalExceptionHandler.java`
-- `src/main/java/io/jgitkins/server/presentation/advice/mapper/*`
-- `src/main/java/io/jgitkins/server/presentation/common/ApiResponse.java`
-- `src/main/java/io/jgitkins/server/presentation/common/ApiError.java`
+- `core-common/src/main/java/io/jgitkins/core/common/exception/JgitkinsException.java`
+- `app-server/src/main/java/io/jgitkins/server/common/presentation/advice/GlobalExceptionHandler.java`
+- `app-server/src/main/java/io/jgitkins/server/common/presentation/advice/mapper/*`
+- `core-web/src/main/java/io/jgitkins/core/web/api/response/ApiResponse.java`
+- `core-web/src/main/java/io/jgitkins/core/web/api/response/ApiError.java`
 
 ## 선택한 방식
 
@@ -122,7 +122,7 @@
 
 ### 6. 응답 모델이 이중화되어 있다
 
-현재는 `ApiResponse`/`ApiError`가 실제 응답으로 쓰이는데, `presentation/exception/ErrorResponse.java`도 별도로 존재한다. 분석 기준에서 `ErrorResponse`는 실제 사용 경로가 확인되지 않았고, 유지할 이유도 약하다.
+~~현재는 `ApiResponse`/`ApiError`가 실제 응답으로 쓰이는데, presentation/exception/ErrorResponse.java 도 별도로 존재한다.~~ **해소됨 (2026-08-28 확인).** `ErrorResponse` 는 어느 모듈에도 존재하지 않는다. 응답 모델은 `ApiResponse`/`ApiError` 한 벌이며, 둘 다 `core-web` 모듈로 이동했다.
 
 따라서 이 문서 기준 결론은 명확하다.
 
@@ -257,3 +257,21 @@ GlobalExceptionHandler
 ## 개선 제안 3가지
 
 ### 제안 1. 예외 타입 기반 처리로 완성하기
+
+
+---
+
+## 부록: 모듈 경계 이동 (2026-08-28 정정)
+
+이 문서가 인용하던 경로 중 세 개는 단순 경로 오류가 아니라 **모듈이 바뀐 것**이다.
+경로만 고치면 같은 오해가 다시 생기므로 사실을 적어 둔다.
+
+| 타입 | 이전 (문서 서술) | 현재 모듈 |
+|---|---|---|
+| `JgitkinsException` | `app-server` 내부 | **`core-common`** |
+| `ApiResponse` | `app-server` 내부 | **`core-web`** |
+| `ApiError` | `app-server` 내부 | **`core-web`** |
+
+`app-server` 는 `io.jgitkins.core.web.api.response.ApiResponse` 를 import 해서 쓴다.
+`app-runner` 와 `app-web` 은 각자 같은 이름의 클래스를 따로 갖고 있으므로, 클래스명만으로
+어느 모듈을 가리키는지 판단하면 틀린다.

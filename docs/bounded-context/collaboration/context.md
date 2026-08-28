@@ -61,7 +61,7 @@
 
 `Organize`는 이 context의 root다.
 
-- 코드 근거: `server/src/main/java/io/jgitkins/server/domain/aggregate/Organize.java`
+- 코드 근거: `app-server/src/main/java/io/jgitkins/server/collaboration/domain/aggregate/Organize.java`
 - 유스케이스 근거: `OrganizeCreationUseCase`, `OrganizeLoadUseCase`, `OrganizeDeletionUseCase`
 - 서비스 근거: `OrganizeService`
 
@@ -78,7 +78,7 @@
 
 `OrganizeMember`는 현재 organization 내부 entity보다 관계 모델에 가깝다.
 
-- 코드 근거: `server/src/main/java/io/jgitkins/server/domain/model/OrganizeMember.java`
+- 코드 근거: `app-server/src/main/java/io/jgitkins/server/collaboration/domain/entity/OrganizeMember.java`
 - 서비스 근거: `OrganizeMemberService`
 - 식별: `organizeId + userId`
 

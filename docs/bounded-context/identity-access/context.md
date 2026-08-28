@@ -77,7 +77,7 @@ PENDING 상태 사용자가 username을 확정하고 ACTIVE로 전환하는 과�
 
 `User`는 현재 이 context의 중심 모델이다.
 
-- 코드 근거: `server/src/main/java/io/jgitkins/server/domain/model/User.java`
+- 코드 근거: `app-server/src/main/java/io/jgitkins/server/identity/access/domain/aggregate/User.java`
 - 유스케이스 근거: `OAuthLoginUseCase`, `SignupUseCase`, `AdminUserUpdateUseCase`
 - 서비스 근거: `OAuthLoginService`, `UserProfileService`, `AdminUserService`
 
@@ -98,7 +98,7 @@ PENDING 상태 사용자가 username을 확정하고 ACTIVE로 전환하는 과�
 
 `UserIdentity`는 현재 `User`에 종속된 외부 identity 모델로 본다.
 
-- 코드 근거: `server/src/main/java/io/jgitkins/server/domain/model/UserIdentity.java`
+- 코드 근거: `app-server/src/main/java/io/jgitkins/server/identity/access/domain/entity/UserIdentity.java`
 - 식별: `id`
 - 연결: `userId`, `providerName`, `providerSub`
 
@@ -108,7 +108,7 @@ PENDING 상태 사용자가 username을 확정하고 ACTIVE로 전환하는 과�
 
 `UserCredential`은 현재 `User`에 종속된 credential 모델로 본다.
 
-- 코드 근거: `server/src/main/java/io/jgitkins/server/domain/model/UserCredential.java`
+- 코드 근거: `app-server/src/main/java/io/jgitkins/server/identity/access/domain/entity/UserCredential.java`
 - 식별: `id`
 - 연결: `userId`
 - provider: 현재 `PAT`
