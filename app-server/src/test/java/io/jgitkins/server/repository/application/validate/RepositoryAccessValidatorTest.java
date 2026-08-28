@@ -1,6 +1,9 @@
 package io.jgitkins.server.repository.application.validate;
 
 import static org.mockito.Mockito.verify;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.assertj.core.api.Assertions.assertThat;
 import io.jgitkins.server.repository.application.contract.result.RepositoryResult;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -98,14 +101,29 @@ class RepositoryAccessValidatorTest {
     }
 
     @Test
-    void validateReadAccess_throwsForbidden_whenReadPermissionDenied() {
+    void validateReadAccess_answersNotFound_whenTheCallerCannotSeeTheRepository() {
         when(gitRepositoryAccessUseCase.resolvePermission(repository, 7L))
                 .thenReturn(RepositoryPermission.none());
 
         JgitkinsException ex = assertThrows(JgitkinsException.class,
                 () -> validator.validateReadAccess(repository, 7L));
 
-        assertEquals(ApplicationErrorCode.ACCESS_DENIED, ex.getErrorCode());
+        // Was ACCESS_DENIED. 403 on a private repository told an unauthorized caller, from the
+        // status code alone, that this id names something real. Read denial always means "cannot
+        // see it", so it is always not-found.
+        assertEquals(ApplicationErrorCode.NOT_FOUND, ex.getErrorCode());
+    }
+
+    @Test
+    void validateReadAccess_doesNotNameTheRepositoryInTheNotFoundMessage() {
+        when(gitRepositoryAccessUseCase.resolvePermission(repository, 7L))
+                .thenReturn(RepositoryPermission.none());
+
+        JgitkinsException ex = assertThrows(JgitkinsException.class,
+                () -> validator.validateReadAccess(repository, 7L));
+
+        // Answering 404 while the body says "repo" puts the leak straight back.
+        assertThat(ex.getMessage()).doesNotContain("repo");
     }
 
     @Test
@@ -128,13 +146,36 @@ class RepositoryAccessValidatorTest {
     }
 
     @Test
-    void validateCanCommit_throwsForbidden_whenWritePermissionDenied() {
+    void validateCanCommit_answersForbidden_whenTheCallerCanSeeItButMayNotWrite() {
         when(gitRepositoryAccessUseCase.canWrite(null, "team", "repo", 7L)).thenReturn(false);
+        when(gitRepositoryAccessUseCase.canRead(null, "team", "repo", 7L)).thenReturn(true);
 
         JgitkinsException ex = assertThrows(JgitkinsException.class,
                 () -> validator.validateCanCommit("team", "repo", 7L));
 
+        // Visible to this caller, so 404 would deny something they can plainly read.
         assertEquals(ApplicationErrorCode.ACCESS_DENIED, ex.getErrorCode());
+    }
+
+    @Test
+    void validateCanCommit_answersNotFound_whenTheCallerCannotSeeTheRepository() {
+        when(gitRepositoryAccessUseCase.canWrite(null, "team", "repo", 7L)).thenReturn(false);
+        when(gitRepositoryAccessUseCase.canRead(null, "team", "repo", 7L)).thenReturn(false);
+
+        JgitkinsException ex = assertThrows(JgitkinsException.class,
+                () -> validator.validateCanCommit("team", "repo", 7L));
+
+        assertEquals(ApplicationErrorCode.NOT_FOUND, ex.getErrorCode());
+    }
+
+    @Test
+    void validateCanCommit_doesNotAskAboutReadAccessWhenTheWriteIsAllowed() {
+        when(gitRepositoryAccessUseCase.canWrite(null, "team", "repo", 7L)).thenReturn(true);
+
+        validator.validateCanCommit("team", "repo", 7L);
+
+        // The visibility question costs a lookup and only the denial branch needs it.
+        verify(gitRepositoryAccessUseCase, never()).canRead(any(), any(), any(), any());
     }
 
     @Test

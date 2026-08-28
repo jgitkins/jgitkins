@@ -1,6 +1,7 @@
 package io.jgitkins.server.repository.application.validate;
 
 import io.jgitkins.server.repository.application.contract.result.RepositoryResult;
+import io.jgitkins.server.repository.application.exception.RepositoryNotFoundException;
 import io.jgitkins.server.repository.application.port.in.GitRepositoryAccessUseCase;
 import io.jgitkins.server.shared.application.error.ApplicationErrorCode;
 import io.jgitkins.server.shared.application.exception.ApplicationException;
@@ -35,9 +36,10 @@ public class RepositoryAccessValidator {
         // non-member reading a PUBLIC repository: the same request succeeded while logged out and
         // failed once logged in. See RepositoryPermission#visibleOn.
         if (!permission.visibleOn("PUBLIC".equals(repository.visibility()))) {
-            throw new ApplicationException(
-                    ApplicationErrorCode.ACCESS_DENIED,
-                    "Insufficient permission to access repository: " + repository.name());
+            // Not-found, not forbidden. Reaching here means the caller cannot see this repository at
+            // all, and 403 would tell them from the status code alone that a private repository with
+            // this id exists. The name must not appear in the message for the same reason.
+            throw new RepositoryNotFoundException();
         }
     }
 
@@ -57,6 +59,15 @@ public class RepositoryAccessValidator {
         boolean allowed = gitRepositoryAccessUseCase.canWrite(
                 null, namespace.trim(), repoName.trim(), requesterUserId);
         if (!allowed) {
+            // Split on visibility, matching the deletion path. The extra read check runs only on the
+            // denial branch, so the allowed path pays nothing for it.
+            if (!gitRepositoryAccessUseCase.canRead(
+                    null, namespace.trim(), repoName.trim(), requesterUserId)) {
+                // Cannot see it: 403 here would confirm that namespace/repoName names something real.
+                // canRead is also false when the repository does not resolve at all, which is the
+                // same answer a caller should get for a name that does not exist.
+                throw new RepositoryNotFoundException();
+            }
             throw new ApplicationException(
                     ApplicationErrorCode.ACCESS_DENIED,
                     "Insufficient permission to commit to repository: " + namespace + "/" + repoName);
