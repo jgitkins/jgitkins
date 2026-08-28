@@ -904,8 +904,8 @@
           {
             "id": 95,
             "title": "[refactor][collaboration] 애플리케이션 계층의 중복 검증 5곳 제거 (사용자 지적: OrganizeService 45~49행)",
-            "description": "OrganizeService.createOrganize:45-49 가 requesterUserId null 을 직접 검사하는데, 55행의 OwnerId.of(ownerId) 가 이미 'null 또는 <= 0' 을 거부한다. 사용자가 지적한 대로 애플리케이션만 지저분해진다. 다만 그냥 지우면 안 된다: 애플리케이션 검사는 OrganizeAccessDeniedException → ORG-403 → HTTP 403 을 던지고, OwnerId.of 는 IllegalArgumentException → HTTP 500 이다(2.93). 2.93 선행 없이 지우면 403 이 500 이 된다. 또한 이 특정 검사는 순수 중복이 아니다 — '인증된 사용자 필요'라는 인가 답변이고, OrganizeController:41 이 이미 같은 예외로 같은 답을 한다. 진짜 중복은 도메인 대 애플리케이션이 아니라 어댑터 대 애플리케이션이며, 2.91(그 403 은 401 이어야 한다)과 얽힌다. collaboration 의 나머지 지점: OrganizeMemberService:34, 38, 48, 67. 각 지점마다 (i) 도메인 VO 가 같은 것을 검증하는지, (ii) 지우면 상태 코드가 바뀌는지, (iii) 인가 답변인지 불변식 답변인지 판정해 기록한다.",
-            "status": "pending",
+            "description": "OrganizeService.createOrganize:45-49 가 requesterUserId null 을 직접 검사하는데, 55행의 OwnerId.of(ownerId) 가 이미 'null 또는 <= 0' 을 거부한다. 사용자가 지적한 대로 애플리케이션만 지저분해진다. 다만 그냥 지우면 안 된다: 애플리케이션 검사는 OrganizeAccessDeniedException → ORG-403 → HTTP 403 을 던지고, OwnerId.of 는 IllegalArgumentException → HTTP 500 이다(2.93). 2.93 선행 없이 지우면 403 이 500 이 된다. 또한 이 특정 검사는 순수 중복이 아니다 — '인증된 사용자 필요'라는 인가 답변이고, OrganizeController:41 이 이미 같은 예외로 같은 답을 한다. 진짜 중복은 도메인 대 애플리케이션이 아니라 어댑터 대 애플리케이션이며, 2.91(그 403 은 401 이어야 한다)과 얽힌다. collaboration 의 나머지 지점: OrganizeMemberService:34, 38, 48, 67. 각 지점마다 (i) 도메인 VO 가 같은 것을 검증하는지, (ii) 지우면 상태 코드가 바뀌는지, (iii) 인가 답변인지 불변식 답변인지 판정해 기록한다. DONE (2026-08-28). 5곳 중 **2곳 변경, 3곳 유지**. 제거: OrganizeService:47(순수 중복 — OwnerId.of 가 이제 매핑된 예외를 던지고, 인증 답변은 2.91 로 어댑터가 401 로 준다). 좁힘: OrganizeMemberService:67 이 값 3개를 검사해 403 하나를 던지고 있었는데, 그중 둘은 OrganizeId.of/MemberUserId.of 가 이미 거부하는 식별자라 형식 오류를 권한 문제로 보고하고 있었다 — 요청자만 남겼다. 유지: :34(인가 답변), :38(존재 확인), :48(인가 결정 그 자체). 원래 집계는 이 셋도 중복으로 셌고, 그대로 지웠으면 인가를 삭제했다.",
+            "status": "done",
             "dependencies": [
               "93"
             ],
