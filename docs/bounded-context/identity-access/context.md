@@ -186,7 +186,7 @@ PENDING 상태 사용자가 username을 확정하고 ACTIVE로 전환하는 과�
 
 외부 경계는 다음과 같다.
 
-- `UserPersistencePort`
+- `UserRepository`
   - 사용자 저장, 조회
 - `UserIdentityPersistencePort`
   - 외부 identity 저장, 조회

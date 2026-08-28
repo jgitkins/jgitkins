@@ -201,7 +201,7 @@ Runner가 처리할 수 있는 범위다. 현재는 `GLOBAL`, `ORGANIZE`, `REPOS
 
 1. runner token으로 `Runner`를 찾는다.
 2. runner scope로 dispatch context를 만든다.
-3. `JobPersistencePort.findNextDispatchableJob(...)`로 dispatch 가능한 job을 찾는다.
+3. `JobRepository.findNextDispatchableJob(...)`로 dispatch 가능한 job을 찾는다.
 4. `job.publish(runnerId)`를 호출한다.
 5. 새 `JobHistory`를 저장한다.
 6. `JobDispatchResult`를 반환한다.
@@ -230,9 +230,9 @@ Runner가 처리할 수 있는 범위다. 현재는 `GLOBAL`, `ORGANIZE`, `REPOS
 
 외부 경계는 다음과 같다.
 
-- `JobPersistencePort`
+- `JobRepository`
   - `Job` 저장, dispatch 대상 조회, `JobHistory` 저장
-- `RunnerPersistencePort`
+- `RunnerRepository`
   - `Runner` 저장, 조회, 삭제
 - `PipelineConfigPort`
   - pipeline config 조회

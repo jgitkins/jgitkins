@@ -85,7 +85,7 @@ Repository 안의 변경 흐름을 식별하는 브랜치 메타데이터다.
 `Repository`는 이 context의 root다.
 
 - 코드 근거: `app-server/src/main/java/io/jgitkins/server/repository/domain/aggregate/Repository.java`
-- 유스케이스 근거: `RepositoryCreateUseCase`, `RepositoryLoadUseCase`, `RepositoryDeleteUseCase`
+- 유스케이스 근거: `RepositoryManagementUseCase` (생성·삭제), `RepositoryLoadUseCase`
 - 서비스 근거: `RepositoryManagementService`, `RepositoryLoadService`
 
 Repository가 직접 소유하거나 결정하는 값은 다음과 같다.

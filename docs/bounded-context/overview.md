@@ -78,7 +78,7 @@
 
 - 정의: Git 저장소와 서비스 메타데이터를 함께 가지는 작업 단위.
 - 현재 분류: Aggregate Root.
-- 코드 근거: `app-server/src/main/java/io/jgitkins/server/repository/domain/aggregate/Repository.java`, `RepositoryCreateUseCase`, `RepositoryLoadUseCase`, `RepositoryManagementService`.
+- 코드 근거: `app-server/src/main/java/io/jgitkins/server/repository/domain/aggregate/Repository.java`, `RepositoryManagementUseCase`, `RepositoryLoadUseCase`, `RepositoryManagementService`.
 - 테이블 근거: `REPOSITORY`.
 - 주요 값: `RepositoryId`, `RepositoryName`, `RepositoryPath`, `RepositoryVisibility`, `OwnerType`, `OwnerId`, `BranchName`.
 - 메모: Git object graph 자체는 외부 상태다.
@@ -95,7 +95,7 @@
 
 - 정의: `Repository` 안의 Git branch와 branch 메타데이터.
 - 현재 분류: Entity 후보.
-- 코드 근거: `app-server/src/main/java/io/jgitkins/server/repository/domain/entity/Branch.java`, `BranchName.java`, `BranchCreateUseCase`, `BranchLoadUseCase`, `BranchManagementService`.
+- 코드 근거: `app-server/src/main/java/io/jgitkins/server/repository/domain/entity/Branch.java`, `BranchName.java`, `BranchManagementUseCase`, `BranchLoadUseCase`, `BranchManagementService`.
 - 테이블 근거: `BRANCH`.
 - 메모: `Repository`에 종속된 Entity로 본다.
 
@@ -103,7 +103,7 @@
 
 - 정의: source branch 변경을 target branch에 합치기 위한 요청.
 - 현재 분류: Aggregate Root.
-- 코드 근거: `app-server/src/main/java/io/jgitkins/server/change/review/domain/aggregate/PullRequest.java`, `CreatePullRequestUseCase`, `GetPullRequestDetailUseCase`, `PullRequestService`.
+- 코드 근거: `app-server/src/main/java/io/jgitkins/server/change/review/domain/aggregate/PullRequest.java`, `CreatePullRequestUseCase`, `GetPullRequestDetailUseCase`, `PullRequestCreateService`, `PullRequestQueryService`.
 - 테이블 근거: `PULL_REQUEST`.
 - 주요 값: `PullRequestId`, `BranchHeadSnapshot`, `PullRequestStatus`, `TargetDrift`.
 - 메모: source/target snapshot은 저장 상태이고 mergeability는 조회 계산값이다.
@@ -228,3 +228,24 @@ flowchart TB
   - bounded context 상세 문서의 인덱스
 
 이 문서는 상세 컨텍스트 문서보다 상위의 용어 사전과 경계 초안이다.
+
+## 아웃바운드 계약 명명 규약 (2026-08-28 정정)
+
+이 문서군은 영속화 계약을 `...PersistencePort` 로 부르고 있었다. 그런 이름의 타입은
+어느 모듈에도 없다. 개별 오타가 아니라 규약 자체에 대한 오해였으므로, 실제 규약을 적는다.
+
+| 역할 | 규약 | 위치 | 예 |
+|---|---|---|---|
+| Aggregate 생명주기 (저장·조회·삭제) | `<Aggregate>Repository` | `<context>/domain/repository/` | `JobRepository`, `UserRepository`, `RepositoryRepository`, `RunnerRepository` |
+| 컨텍스트 간 단순 조회 | `...QueryPort` | `<context>/application/port/out/` | `OrganizeQueryPort`, `UserQueryPort` |
+| 외부 시스템·ACL 계약 | `...Port` | `<context>/application/port/out/` | `MergePort`, `PipelineConfigPort`, `CloneUrlPort` |
+| 인바운드 유스케이스 | `...UseCase` | `<context>/application/port/in/` | `RepositoryManagementUseCase` |
+
+주의할 점 둘.
+
+- **`Repository` 는 두 가지를 뜻한다.** 저장소 애그리거트(`Repository.java`)이기도 하고
+  영속화 포트 접미사이기도 하다. 그래서 저장소 컨텍스트의 포트는 `RepositoryRepository` 다.
+  어색하지만 규약대로다.
+- **클래스명만으로 모듈을 판단하면 틀린다.** `RepositoryCreateUseCase` 는 `app-web` 에만
+  있고 `app-server` 에는 없다. `ApiResponse`/`ApiError` 는 `core-web`·`app-runner`·`app-web`
+  세 곳에 같은 이름으로 존재한다. 인용할 때 모듈을 함께 적는다.

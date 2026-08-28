@@ -128,7 +128,7 @@ push event에 대해 job 생성 가능 여부와 어떤 pipeline file을 실행�
 
 현재 흐름은 다음과 같다.
 
-1. `MergeGitPort.previewMergeability(...)`가 `MergeResult`를 반환한다.
+1. `MergePort.previewMergeability(...)`가 `MergeResult`를 반환한다.
 2. `MergeabilityAssessmentAssembler`가 이를 `MergeabilityAssessment`로 변환한다.
 3. status, topology, conflicts, reason을 조합한다.
 
@@ -147,11 +147,11 @@ push event에 대해 job 생성 가능 여부와 어떤 pipeline file을 실행�
 외부 경계는 다음과 같다.
 
 - `OrganizeQueryPort`
-- `UserPersistencePort`
-- `RepositoryPersistencePort`
+- `UserRepository`
+- `RepositoryRepository`
 - `OrganizeMemberPersistencePort`
 - `RepositoryMemberPersistencePort`
-- `MergeGitPort`
+- `MergePort`
 - `PipelineConfigPort`
 - `FileGitPort`
 

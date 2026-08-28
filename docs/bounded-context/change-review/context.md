@@ -322,7 +322,7 @@ Pull Request 상태는 다음 3개다.
 `MergeService` 흐름은 다음과 같다.
 
 1. `namespace`, `repoName`, `sourceBranch`, `targetBranch`를 입력으로 받는다.
-2. `MergeGitPort`를 통해 실제 Git merge를 수행한다.
+2. `MergePort`를 통해 실제 Git merge를 수행한다.
 3. `MergeResult`를 반환한다.
 
 현재 구현은 merge command와 PR 상태 전이를 완전히 통합하지 않는다. 후속 작업에서는 merge 성공 시 `PullRequest.markMerged()`와 영속 반영을 연결해야 한다.
@@ -347,7 +347,7 @@ Pull Request 상태는 다음 3개다.
 
 - `BranchGitPort`
   - branch HEAD commit 조회
-- `MergeGitPort`
+- `MergePort`
   - mergeability preview와 실제 merge 수행
 - `RepositoryLookupService`
   - `namespace + repoName`으로 repository 식별
