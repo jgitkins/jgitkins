@@ -924,6 +924,18 @@
             "priority": "medium",
             "details": "2.95 와 같은 패턴이 다른 4개 컨텍스트에 16곳 있다: repository 11, execution 3, change 1, identity/access 1. 도메인 VO 가 같은 값을 이미 검증하는데 애플리케이션이 먼저 손으로 검사한다. 2.93 이 도메인 불변식을 4xx 로 매핑한 뒤에만 안전하게 지울 수 있다 — 그전에 지우면 각 제거가 4xx 를 500 으로 바꾼다. 2.95 와 분리한 이유는 컨텍스트마다 예외 타입과 상태 코드가 다르고 독립적으로 출시 가능하기 때문이다. repository 가 11곳으로 가장 많으므로 거기부터 하고, 각 지점을 인가 답변 / 불변식 답변 / 순수 중복 셋으로 분류해 기록한다.",
             "testStrategy": "2.95 와 동일: 제거 전 현재 상태 코드를 고정하고 제거 후 유지 확인. 컨텍스트별로 커밋을 분리해 회귀 시 범위를 좁힌다."
+          },
+          {
+            "id": 97,
+            "title": "[docs][architecture][all-contexts] C4·ADR·arc42 기반 아키텍처 다이어그램 문서화",
+            "description": "현재 main의 bounded context, Ports and Adapters, persistence 선택자, 인증/인가 및 주요 inbound·outbound 흐름을 C4 Model로 시각화하고, 핵심 설계 결정은 ADR로 남기며, 전체 문서 구조와 탐색 순서는 arc42에 맞춰 정리한다. 다이어그램은 코드와 실제 배치에 근거해야 하며 구현 상태와 목표 구조를 구분한다.",
+            "status": "pending",
+            "dependencies": [
+              "77"
+            ],
+            "priority": "medium",
+            "details": "산출물: 시스템 컨텍스트·컨테이너·필요한 컴포넌트 수준의 C4 다이어그램, bounded context 경계와 context 간 ACL/port 및 persistence adapter 흐름, 주요 결정의 ADR 문서, arc42 목차에 맞춘 architecture overview/index 연결. 기존 API·DB·wire 계약은 변경하지 않는다. 각 그림에는 범위, 참여자, 의존 방향, 구현/목표 상태를 명시하고 문서 내 링크와 렌더링 가능 여부를 검증한다.",
+            "testStrategy": "문서 링크·파일 경로·Mermaid/SVG 등 선택한 다이어그램 문법의 정적 검증, 실제 소스 패키지/구성 클래스와 다이어그램 노드의 대조, 문서 렌더링 확인. 코드 테스트나 API 변경은 이 task의 범위가 아니다."
           }
         ]
       },
