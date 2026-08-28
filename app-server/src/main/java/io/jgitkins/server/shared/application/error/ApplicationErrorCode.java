@@ -7,6 +7,8 @@ public enum ApplicationErrorCode implements ErrorCode {
     ACCESS_DENIED("ACCESS_DENIED", "Access denied"),
     NOT_FOUND("NOT_FOUND", "Requested resource not found"),
     ALREADY_EXISTS("ALREADY_EXISTS", "Resource already exists"),
+    /** The resource exists and its current state forbids the request. Not a duplicate. */
+    CONFLICT("CONFLICT", "Request conflicts with the current state"),
     UNPROCESSABLE("UNPROCESSABLE", "Request could not be processed");
 
     private final String code;

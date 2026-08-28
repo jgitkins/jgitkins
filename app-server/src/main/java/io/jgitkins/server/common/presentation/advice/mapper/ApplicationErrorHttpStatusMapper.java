@@ -26,6 +26,7 @@ public class ApplicationErrorHttpStatusMapper implements ErrorHttpStatusMapper {
             case ACCESS_DENIED -> HttpStatus.FORBIDDEN;
             case NOT_FOUND -> HttpStatus.NOT_FOUND;
             case ALREADY_EXISTS -> HttpStatus.CONFLICT;
+            case CONFLICT -> HttpStatus.CONFLICT;
             case UNPROCESSABLE -> HttpStatus.UNPROCESSABLE_ENTITY;
         };
     }

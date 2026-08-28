@@ -7,7 +7,11 @@ import io.jgitkins.server.collaboration.application.port.in.OrganizeCreationUseC
 import io.jgitkins.server.collaboration.application.port.in.OrganizeDeletionUseCase;
 import io.jgitkins.server.collaboration.application.port.in.OrganizeLoadUseCase;
 import io.jgitkins.server.collaboration.application.port.out.DomainEventPublisher;
+import io.jgitkins.server.collaboration.application.exception.OrganizeAccessDeniedException;
+import io.jgitkins.server.collaboration.application.exception.OrganizeHasRepositoriesException;
 import io.jgitkins.server.collaboration.application.port.out.OrganizeMemberPersistencePort;
+import io.jgitkins.server.collaboration.application.port.out.OrganizeMembershipQueryPort;
+import io.jgitkins.server.collaboration.application.port.out.OrganizeOwnedRepositoryCountPort;
 
 import io.jgitkins.server.collaboration.application.validate.OrganizeValidator;
 import io.jgitkins.server.collaboration.domain.aggregate.Organize;
@@ -36,6 +40,8 @@ public class OrganizeService implements OrganizeCreationUseCase,
     private final DomainEventPublisher domainEventPublisher;
     private final OrganizeValidator organizeValidator;
     private final OrganizeApplicationMapper organizeApplicationMapper;
+    private final OrganizeMembershipQueryPort organizeMembershipQueryPort;
+    private final OrganizeOwnedRepositoryCountPort organizeOwnedRepositoryCountPort;
 
     @Override
     @Transactional
@@ -100,8 +106,50 @@ public class OrganizeService implements OrganizeCreationUseCase,
 
     @Override
     @Transactional
-    public void deleteOrganize(Long organizeId) {
+    /**
+     * @throws OrganizeAccessDeniedException when the requester is absent or is not an organization
+     *     OWNER. 403 rather than 404: {@code GET /api/organizes} lists every organization without
+     *     authentication, so the existence of one is not a secret worth hiding behind a not-found.
+     * @throws OrganizeHasRepositoriesException when the organization still owns repositories
+     */
+    public void deleteOrganize(Long requesterUserId, Long organizeId) {
         organizeValidator.findByIdOrThrow(organizeId);
+
+        // Before this the method took no requester at all, so no layer could authorize: the
+        // controller passed no principal, SecurityConfig is permitAll, and there is no method
+        // security. Anyone could delete any organization.
+        requireOwner(requesterUserId, organizeId);
+
+        // Refused rather than cascaded. The schema declares no foreign keys, so deleting the
+        // ORGANIZE row would leave every repository it owns pointing at an id that no longer
+        // resolves, with no way to re-attach them. See OrganizeHasRepositoriesException and the
+        // delayed-deletion direction in TODOS.md, which is what removes this guard.
+        long ownedRepositories = organizeOwnedRepositoryCountPort.countByOrganizeId(organizeId);
+        if (ownedRepositories > 0) {
+            throw new OrganizeHasRepositoriesException(ownedRepositories);
+        }
+
         organizeRepository.deleteById(OrganizeId.of(organizeId));
+    }
+
+    /**
+     * OWNER only, matching {@code OrganizeMemberService} for add and remove. Deleting the
+     * organization is a strictly larger authority than administering its membership, so it cannot
+     * be granted to a role that membership administration withholds.
+     *
+     * <p>Third copy of this check in this context ({@code OrganizeMemberService:47} and {@code :84}
+     * are the others). Not extracted yet: the three sit in different services with different
+     * surrounding flows, and a shared helper now would be an abstraction over a coincidence.
+     * Extract on the fourth.
+     */
+    private void requireOwner(Long requesterUserId, Long organizeId) {
+        if (requesterUserId == null) {
+            throw new OrganizeAccessDeniedException("Authentication is required");
+        }
+        if (organizeMembershipQueryPort.findRoleByOrganizeIdAndUserId(organizeId, requesterUserId)
+                .filter(role -> role == OrganizeMemberRole.OWNER)
+                .isEmpty()) {
+            throw new OrganizeAccessDeniedException("Only an organization owner can delete it");
+        }
     }
 }

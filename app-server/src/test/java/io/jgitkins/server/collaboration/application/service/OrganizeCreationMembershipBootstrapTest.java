@@ -67,7 +67,11 @@ class OrganizeCreationMembershipBootstrapTest {
                 new OrganizeCreationResult(1L, "team", null, 7L, null, null));
         organizeService = new OrganizeService(
                 organizeRepository, memberRepository, domainEventPublisher,
-                organizeValidator, organizeApplicationMapper);
+                organizeValidator, organizeApplicationMapper,
+                Mockito.mock(io.jgitkins.server.collaboration.application.port.out
+                        .OrganizeMembershipQueryPort.class),
+                Mockito.mock(io.jgitkins.server.collaboration.application.port.out
+                        .OrganizeOwnedRepositoryCountPort.class));
         transactionTemplate = new TransactionTemplate(new DataSourceTransactionManager(dataSource));
     }
 
@@ -108,7 +112,11 @@ class OrganizeCreationMembershipBootstrapTest {
                 .when(failingMemberPersistence).save(Mockito.any());
         OrganizeService failingService = new OrganizeService(
                 organizeRepository, failingMemberPersistence, domainEventPublisher,
-                organizeValidator, organizeApplicationMapper);
+                organizeValidator, organizeApplicationMapper,
+                Mockito.mock(io.jgitkins.server.collaboration.application.port.out
+                        .OrganizeMembershipQueryPort.class),
+                Mockito.mock(io.jgitkins.server.collaboration.application.port.out
+                        .OrganizeOwnedRepositoryCountPort.class));
 
         assertThatThrownBy(() -> transactionTemplate.executeWithoutResult(status ->
                 failingService.createOrganize(new OrganizeCreationCommand("member-failure", "description", 7L))))

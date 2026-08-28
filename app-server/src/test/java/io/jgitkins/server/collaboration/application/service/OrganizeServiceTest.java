@@ -24,6 +24,7 @@ import io.jgitkins.core.common.exception.JgitkinsException;
 import io.jgitkins.server.collaboration.domain.aggregate.Organize;
 import io.jgitkins.server.collaboration.domain.entity.OrganizeMember;
 import io.jgitkins.server.collaboration.domain.event.OrganizeCreatedEvent;
+import io.jgitkins.server.collaboration.application.exception.OrganizeHasRepositoriesException;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeId;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeMemberRole;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeName;
@@ -57,6 +58,10 @@ class OrganizeServiceTest {
     @Mock
     private OrganizeApplicationMapper organizeApplicationMapper;
 
+    @Mock
+    private io.jgitkins.server.collaboration.application.port.out.OrganizeOwnedRepositoryCountPort
+            ownedRepositoryCountPort;
+
     private OrganizeService service;
 
     @BeforeEach
@@ -66,7 +71,9 @@ class OrganizeServiceTest {
                 organizeMemberPort,
                 domainEventPublisher,
                 new OrganizeValidator(organizeRepository, organizeMemberQueryPort),
-                organizeApplicationMapper);
+                organizeApplicationMapper,
+                organizeMemberQueryPort,
+                ownedRepositoryCountPort);
     }
 
     @Test
@@ -215,21 +222,92 @@ class OrganizeServiceTest {
         verify(organizeMemberQueryPort).findRoleByOrganizeIdAndUserId(eq(12L), eq(7L));
     }
 
-    @Test
-    void deleteOrganize_deletesWhenExists() {
-        Organize existing = sampleOrganize(3L, "org3", 1L);
-        when(organizeRepository.findById(OrganizeId.of(3L))).thenReturn(Optional.of(existing));
+    // --- task 2.111: deleteOrganize had no requester at all ------------------------------------
+    //
+    // The use case signature carried no actor, so no layer could authorize: the controller passed no
+    // principal, SecurityConfig is permitAll, and there is no method security. Anyone could delete
+    // any organization, and with no foreign keys in the schema that orphans every repository it
+    // owned, permanently.
 
-        service.deleteOrganize(3L);
+    private static final long OWNER_ID = 7L;
+    private static final long STRANGER_ID = 99L;
+
+    private void ownerIsSignedIn(long organizeId) {
+        when(organizeMemberQueryPort.findRoleByOrganizeIdAndUserId(organizeId, OWNER_ID))
+                .thenReturn(Optional.of(OrganizeMemberRole.OWNER));
+    }
+
+    private void organizeExists(long organizeId) {
+        when(organizeRepository.findById(OrganizeId.of(organizeId)))
+                .thenReturn(Optional.of(sampleOrganize(organizeId, "org" + organizeId, 1L)));
+    }
+
+    @Test
+    void deleteOrganize_deletesForAnOwnerWhenNoRepositoriesRemain() {
+        organizeExists(3L);
+        ownerIsSignedIn(3L);
+        when(ownedRepositoryCountPort.countByOrganizeId(3L)).thenReturn(0L);
+
+        service.deleteOrganize(OWNER_ID, 3L);
 
         verify(organizeRepository).deleteById(OrganizeId.of(3L));
     }
 
     @Test
-    void deleteOrganize_throwsWhenMissing() {
+    void deleteOrganize_refusesAnAnonymousCaller() {
+        organizeExists(3L);
+
+        assertThrows(OrganizeAccessDeniedException.class, () -> service.deleteOrganize(null, 3L));
+        verify(organizeRepository, never()).deleteById(any(OrganizeId.class));
+    }
+
+    @Test
+    void deleteOrganize_refusesSomeoneWhoIsNotAMember() {
+        organizeExists(3L);
+        when(organizeMemberQueryPort.findRoleByOrganizeIdAndUserId(3L, STRANGER_ID))
+                .thenReturn(Optional.empty());
+
+        assertThrows(OrganizeAccessDeniedException.class, () -> service.deleteOrganize(STRANGER_ID, 3L));
+        verify(organizeRepository, never()).deleteById(any(OrganizeId.class));
+    }
+
+    @Test
+    void deleteOrganize_refusesAPlainMember() {
+        organizeExists(3L);
+        when(organizeMemberQueryPort.findRoleByOrganizeIdAndUserId(3L, STRANGER_ID))
+                .thenReturn(Optional.of(OrganizeMemberRole.MEMBER));
+
+        assertThrows(OrganizeAccessDeniedException.class, () -> service.deleteOrganize(STRANGER_ID, 3L));
+    }
+
+    @Test
+    void deleteOrganize_refusesAMaintainer() {
+        organizeExists(3L);
+        when(organizeMemberQueryPort.findRoleByOrganizeIdAndUserId(3L, STRANGER_ID))
+                .thenReturn(Optional.of(OrganizeMemberRole.MAINTAINER));
+
+        // Deleting the organization is a larger authority than administering its membership, which
+        // MAINTAINER is already denied.
+        assertThrows(OrganizeAccessDeniedException.class, () -> service.deleteOrganize(STRANGER_ID, 3L));
+    }
+
+    @Test
+    void deleteOrganize_refusesWhileTheOrganizationStillOwnsRepositories() {
+        organizeExists(3L);
+        ownerIsSignedIn(3L);
+        when(ownedRepositoryCountPort.countByOrganizeId(3L)).thenReturn(2L);
+
+        // No foreign keys in the schema, so deleting here would leave two repositories pointing at an
+        // id that no longer resolves, and a new organization gets a new id. There is no way back.
+        assertThrows(OrganizeHasRepositoriesException.class, () -> service.deleteOrganize(OWNER_ID, 3L));
+        verify(organizeRepository, never()).deleteById(any(OrganizeId.class));
+    }
+
+    @Test
+    void deleteOrganize_checksExistenceBeforeAuthorization() {
         when(organizeRepository.findById(OrganizeId.of(404L))).thenReturn(Optional.empty());
 
-        assertThrows(JgitkinsException.class, () -> service.deleteOrganize(404L));
+        assertThrows(JgitkinsException.class, () -> service.deleteOrganize(OWNER_ID, 404L));
         verify(organizeRepository, never()).deleteById(any(OrganizeId.class));
     }
 

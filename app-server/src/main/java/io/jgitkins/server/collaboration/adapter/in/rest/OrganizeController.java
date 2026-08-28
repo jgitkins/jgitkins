@@ -68,8 +68,14 @@ public class OrganizeController {
 
     @Operation(summary = "Delete Organize")
     @DeleteMapping("/{organizeId}")
-    public ResponseEntity<ApiResponse<Void>> deleteOrganize(@PathVariable @Positive Long organizeId) {
-        organizeDeletionUseCase.deleteOrganize(organizeId);
+    public ResponseEntity<ApiResponse<Void>> deleteOrganize(
+            @PathVariable @Positive Long organizeId,
+            @AuthenticationPrincipal(expression = "username") String subject) {
+        // 401, not 403, for a caller with no credentials. Task 2.91 settled that for this
+        // controller: the truth is "I do not know who you are", not "you are not allowed".
+        Long requesterUserId = requesterUserIdResolver.resolve(subject)
+                .orElseThrow(() -> new UnauthenticatedException("An authenticated user is required"));
+        organizeDeletionUseCase.deleteOrganize(requesterUserId, organizeId);
         return ApiResponse.noContent();
     }
 }

@@ -226,11 +226,26 @@ class OrganizeControllerTest {
     }
 
     @Test
-    void deleteOrganize_returnsNoContent() throws Exception {
+    void deleteOrganize_returnsNoContentAndPassesTheRequester() throws Exception {
+        when(requesterUserIdResolver.resolve("7")).thenReturn(java.util.Optional.of(7L));
+
         mockMvc.perform(delete("/api/organizes/9"))
                 .andExpect(status().isNoContent());
 
-        verify(organizeDeletionUseCase).deleteOrganize(9L);
+        // The exact requester, not any(). Before task 2.111 the use case took no actor at all.
+        verify(organizeDeletionUseCase).deleteOrganize(7L, 9L);
+    }
+
+    @Test
+    void deleteOrganize_rejectsAnAnonymousCallerWithoutReachingTheUseCase() throws Exception {
+        org.springframework.security.core.context.SecurityContextHolder.clearContext();
+        when(requesterUserIdResolver.resolve(null)).thenReturn(java.util.Optional.empty());
+
+        mockMvc.perform(delete("/api/organizes/9"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.error.code").value("AUTH-001"));
+
+        org.mockito.Mockito.verifyNoInteractions(organizeDeletionUseCase);
     }
 
     private static org.springframework.security.core.Authentication tokenFor(String subject) {

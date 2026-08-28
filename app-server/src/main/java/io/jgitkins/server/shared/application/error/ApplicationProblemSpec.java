@@ -20,6 +20,8 @@ public enum ApplicationProblemSpec implements ProblemSpec<ApplicationErrorCode> 
     ORGANIZE_MEMBER_ALREADY_EXISTS(ApplicationErrorCode.ALREADY_EXISTS, "ORG-MEMBER-409", "Organization member already exists", "organize.memberAlreadyExists"),
     REPOSITORY_ALREADY_EXISTS(ApplicationErrorCode.ALREADY_EXISTS, "REPO-409", "Repository already exists", "repository.alreadyExists"),
     BRANCH_ALREADY_EXISTS(ApplicationErrorCode.ALREADY_EXISTS, "BRANCH-409", "Branch already exists", "branch.alreadyExists"),
+    ORGANIZE_HAS_REPOSITORIES(ApplicationErrorCode.CONFLICT, "ORG-409-REPOS",
+            "Organization still owns repositories", "organize.hasRepositories"),
     INVALID_NAMESPACE(ApplicationErrorCode.UNPROCESSABLE, "NAMESPACE-422", "Namespace is invalid", "namespace.invalid"),
     INVALID_OWNER_CONTEXT(ApplicationErrorCode.UNPROCESSABLE, "OWNER-CTX-422", "Owner context is invalid", "owner.contextInvalid"),
     MEMBER_IDENTIFIER_REQUIRED(ApplicationErrorCode.UNPROCESSABLE, "MEMBER-ID-422", "Member identifier is required", "member.identifierRequired"),
