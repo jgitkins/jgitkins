@@ -7,8 +7,10 @@ import io.jgitkins.server.common.infrastructure.config.security.handler.ApiAcces
 import io.jgitkins.server.common.infrastructure.config.security.handler.ApiAnauthorizeHandler;
 import io.jgitkins.server.common.infrastructure.config.security.handler.OAuth2LoginSuccessHandler;
 import io.jgitkins.server.identity.access.application.port.in.OAuthLoginUseCase;
+import io.jgitkins.server.repository.application.port.in.GitRepositoryAccessUseCase;
 import io.jgitkins.server.identity.access.adapter.in.security.JwtAuthenticationFilter;
 import io.jgitkins.server.identity.access.application.service.JwtAuthService;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -24,6 +26,29 @@ import org.springframework.security.web.util.matcher.OrRequestMatcher;
 
 @Configuration
 public class SecurityConfig {
+
+    @Bean
+    GitSmartHttpAuthFilter gitSmartHttpAuthFilter(GitRepositoryAccessUseCase gitRepositoryAccessUseCase) {
+        return new GitSmartHttpAuthFilter(gitRepositoryAccessUseCase);
+    }
+
+    /**
+     * Keeps the git auth filter out of the servlet filter chain.
+     *
+     * <p>Spring Boot auto-registers every {@code Filter} bean on {@code /*}. This filter belongs
+     * only inside {@link #gitSecurityFilterChain}, which scopes it to the git URL patterns and
+     * positions it before {@code BasicAuthenticationFilter}. Without this registration disabled it
+     * would be mapped twice, and the duplicate would sit at {@code LOWEST_PRECEDENCE} across every
+     * request in the application rather than at the position this class chose for it.
+     */
+    @Bean
+    FilterRegistrationBean<GitSmartHttpAuthFilter> gitSmartHttpAuthFilterRegistration(
+            GitSmartHttpAuthFilter gitSmartHttpAuthFilter) {
+        FilterRegistrationBean<GitSmartHttpAuthFilter> registration =
+                new FilterRegistrationBean<>(gitSmartHttpAuthFilter);
+        registration.setEnabled(false);
+        return registration;
+    }
 
     @Bean
     @Order(1)

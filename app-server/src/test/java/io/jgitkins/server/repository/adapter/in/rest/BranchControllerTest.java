@@ -5,6 +5,7 @@ import static org.mockito.Mockito.doThrow;
 import io.jgitkins.server.shared.application.exception.ApplicationException;
 import io.jgitkins.server.shared.application.error.ApplicationErrorCode;
 import io.jgitkins.server.repository.application.exception.RepositoryNotFoundException;
+import io.jgitkins.server.support.ErrorStatusMappingTestConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.AfterEach;
 import io.jgitkins.server.support.TestAuthentication;
@@ -38,7 +39,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(BranchController.class)
-@Import(RequesterUserIdResolver.class)
+@Import({RequesterUserIdResolver.class, ErrorStatusMappingTestConfig.class})
 @AutoConfigureMockMvc(addFilters = false)
 class BranchControllerTest {
 

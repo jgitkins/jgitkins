@@ -6,11 +6,9 @@ import io.jgitkins.server.common.infrastructure.config.JpaPersistenceConfigurati
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 
 @SpringBootApplication
-@ComponentScan("io.jgitkins.server")
 @Import({DataSourceConfig.class, MybatisConfig.class, JpaPersistenceConfiguration.class})
 @MapperScan(basePackages = {
     "io.jgitkins.server.collaboration.adapter.out.persistence.mapper",

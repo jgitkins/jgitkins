@@ -6,6 +6,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.doThrow;
 import io.jgitkins.server.repository.application.exception.RepositoryNotFoundException;
 import io.jgitkins.server.repository.application.exception.RepositoryAccessDeniedException;
+import io.jgitkins.server.support.ErrorStatusMappingTestConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.AfterEach;
 import io.jgitkins.server.support.TestAuthentication;
@@ -41,7 +42,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(RepositoryManagementController.class)
-@Import(RequesterUserIdResolver.class)
+@Import({RequesterUserIdResolver.class, ErrorStatusMappingTestConfig.class})
 @AutoConfigureMockMvc(addFilters = false)
 class RepositoryManagementControllerTest {
 

@@ -11,10 +11,19 @@ import java.io.IOException;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-@Component
+/**
+ * Challenges git smart-HTTP requests that need credentials.
+ *
+ * <p>Not a {@code @Component}. {@link io.jgitkins.server.common.infrastructure.config.security.SecurityConfig}
+ * constructs it and places it inside the git security chain with
+ * {@code addFilterBefore(..., BasicAuthenticationFilter.class)}, scoped to the git URL patterns.
+ * Component-annotating it made Spring Boot additionally auto-register it as a servlet filter on
+ * {@code /*}, so it was mapped twice: once where it belongs and once across every request in the
+ * application. {@code OncePerRequestFilter} hid the duplicate at runtime, and the stray mapping was
+ * a no-op on non-git URLs, which is why nothing failed.
+ */
 @RequiredArgsConstructor
 @Slf4j
 public class GitSmartHttpAuthFilter extends OncePerRequestFilter {

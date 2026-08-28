@@ -12,6 +12,7 @@ import io.jgitkins.server.repository.application.port.in.RepositoryLoadUseCase;
 import io.jgitkins.server.repository.application.port.in.RepositoryOverviewUseCase;
 import io.jgitkins.server.support.TestAuthentication;
 import java.util.List;
+import io.jgitkins.server.support.ErrorStatusMappingTestConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,7 +31,7 @@ import org.springframework.test.web.servlet.MockMvc;
  * test. Anonymous must stay anonymous — a null requester reaching the use case, not a 401.
  */
 @WebMvcTest(WebRepositoryController.class)
-@Import(RequesterUserIdResolver.class)
+@Import({RequesterUserIdResolver.class, ErrorStatusMappingTestConfig.class})
 @AutoConfigureMockMvc(addFilters = false)
 class WebRepositoryControllerTest {
 
