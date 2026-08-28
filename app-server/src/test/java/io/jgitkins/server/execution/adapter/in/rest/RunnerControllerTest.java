@@ -31,6 +31,7 @@ import io.jgitkins.server.execution.adapter.in.rest.dto.request.RunnerCreateRequ
 import io.jgitkins.server.execution.adapter.in.rest.dto.response.RunnerResponse;
 import io.jgitkins.server.execution.adapter.in.rest.mapper.RunnerRequestMapper;
 import io.jgitkins.server.execution.adapter.in.rest.mapper.RunnerResponseMapper;
+import io.jgitkins.server.support.ErrorStatusMappingTestConfig;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -68,13 +69,7 @@ class RunnerControllerTest {
 
     @BeforeEach
     void setUp() {
-        CompositeErrorHttpStatusMapper statusMapper = new CompositeErrorHttpStatusMapper(
-                List.of(
-                        new DomainErrorHttpStatusMapper(),
-                        new ApplicationErrorHttpStatusMapper(),
-                        new InfrastructureErrorHttpStatusMapper()
-                )
-        );
+        CompositeErrorHttpStatusMapper statusMapper = ErrorStatusMappingTestConfig.realMapper();
         RunnerController controller = new RunnerController(
                 runnerRegisterUseCase,
                 runnerLoadUseCase,

@@ -16,12 +16,12 @@ import io.jgitkins.server.change.review.application.exception.RepositoryReferenc
 import io.jgitkins.server.change.review.application.port.in.CreatePullRequestUseCase;
 import io.jgitkins.server.change.review.application.port.in.GetPullRequestDetailUseCase;
 import io.jgitkins.server.common.presentation.advice.GlobalExceptionHandler;
-import io.jgitkins.server.common.presentation.advice.mapper.CompositeErrorHttpStatusMapper;
 import io.jgitkins.server.change.review.adapter.in.rest.dto.request.PullRequestCreateRequest;
 import io.jgitkins.server.change.review.domain.model.BranchHeadSnapshot;
 import io.jgitkins.server.change.review.domain.model.PullRequestStatus;
 import io.jgitkins.server.change.review.domain.model.TargetDrift;
 import io.jgitkins.server.change.review.domain.model.vo.PullRequestId;
+import io.jgitkins.server.support.ErrorStatusMappingTestConfig;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,8 +42,6 @@ class PullRequestControllerTest {
     @Mock
     private GetPullRequestDetailUseCase getPullRequestDetailUseCase;
 
-    @Mock
-    private CompositeErrorHttpStatusMapper statusMapper;
 
     private MockMvc mockMvc;
     private ObjectMapper objectMapper;
@@ -52,7 +50,7 @@ class PullRequestControllerTest {
     void setUp() {
         PullRequestController controller = new PullRequestController(createPullRequestUseCase, getPullRequestDetailUseCase);
         this.mockMvc = MockMvcBuilders.standaloneSetup(controller)
-                .setControllerAdvice(new GlobalExceptionHandler(statusMapper)).build();
+                .setControllerAdvice(new GlobalExceptionHandler(ErrorStatusMappingTestConfig.realMapper())).build();
         this.objectMapper = new ObjectMapper();
     }
 
@@ -105,7 +103,6 @@ class PullRequestControllerTest {
 
     @Test
     void createPullRequest_preservesRepositoryNotFoundWireContract() throws Exception {
-        when(statusMapper.map(any())).thenReturn(HttpStatus.NOT_FOUND);
         when(createPullRequestUseCase.createPullRequest(any(PullRequestCreateCommand.class)))
                 .thenThrow(new RepositoryReferenceNotFoundException("team", "repo"));
 

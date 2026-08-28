@@ -16,7 +16,7 @@ import io.jgitkins.server.change.review.application.exception.BranchHeadNotFound
 import io.jgitkins.server.change.review.application.port.in.MergeUseCase;
 import io.jgitkins.server.change.review.application.port.in.MergeabilityCheckUseCase;
 import io.jgitkins.server.common.presentation.advice.GlobalExceptionHandler;
-import io.jgitkins.server.common.presentation.advice.mapper.CompositeErrorHttpStatusMapper;
+import io.jgitkins.server.support.ErrorStatusMappingTestConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,8 +36,6 @@ class MergeControllerTest {
     @Mock
     private MergeUseCase mergeUseCase;
 
-    @Mock
-    private CompositeErrorHttpStatusMapper statusMapper;
 
     private MockMvc mockMvc;
     private ObjectMapper objectMapper;
@@ -46,7 +44,7 @@ class MergeControllerTest {
     void setUp() {
         MergeController controller = new MergeController(mergeabilityCheckUseCase, mergeUseCase);
         this.mockMvc = MockMvcBuilders.standaloneSetup(controller)
-                .setControllerAdvice(new GlobalExceptionHandler(statusMapper)).build();
+                .setControllerAdvice(new GlobalExceptionHandler(ErrorStatusMappingTestConfig.realMapper())).build();
         this.objectMapper = new ObjectMapper();
     }
 
@@ -91,7 +89,6 @@ class MergeControllerTest {
 
     @Test
     void performMerge_preservesBranchNotFoundWireContract() throws Exception {
-        when(statusMapper.map(any())).thenReturn(HttpStatus.NOT_FOUND);
         when(mergeUseCase.performMerge(eq("team"), eq("repo"), any(MergeRequest.class)))
                 .thenThrow(new BranchHeadNotFoundException("missing"));
 

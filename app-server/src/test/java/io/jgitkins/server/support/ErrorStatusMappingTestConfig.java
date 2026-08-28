@@ -3,8 +3,10 @@ package io.jgitkins.server.support;
 import io.jgitkins.server.common.presentation.advice.mapper.ApplicationErrorHttpStatusMapper;
 import io.jgitkins.server.common.presentation.advice.mapper.CompositeErrorHttpStatusMapper;
 import io.jgitkins.server.common.presentation.advice.mapper.DomainErrorHttpStatusMapper;
+import io.jgitkins.server.common.presentation.advice.mapper.ErrorHttpStatusMapper;
 import io.jgitkins.server.common.presentation.advice.mapper.InfrastructureErrorHttpStatusMapper;
 import io.jgitkins.server.common.presentation.advice.mapper.PresentationErrorHttpStatusMapper;
+import java.util.List;
 import org.springframework.context.annotation.Import;
 
 /**
@@ -33,4 +35,32 @@ import org.springframework.context.annotation.Import;
         PresentationErrorHttpStatusMapper.class
 })
 public class ErrorStatusMappingTestConfig {
+
+    /**
+     * The same mapper graph for tests that build {@code GlobalExceptionHandler} by hand instead of
+     * going through a slice, which {@code standaloneSetup} forces.
+     *
+     * <p>One factory rather than a literal list per call site, because the list has already drifted:
+     * {@code RunnerControllerTest} and {@code RepositoryContentControllerTest} each built a composite
+     * without {@code PresentationErrorHttpStatusMapper}, so a {@code PresentationErrorCode} there fell
+     * to {@link CompositeErrorHttpStatusMapper}'s {@code orElse(INTERNAL_SERVER_ERROR)} while production
+     * answered 400 or 401. Nothing failed, because neither context throws one today.
+     */
+    public static CompositeErrorHttpStatusMapper realMapper() {
+        return new CompositeErrorHttpStatusMapper(delegates());
+    }
+
+    /**
+     * Exposed so {@code ErrorStatusMappingCompletenessTest} can compare this list against the mappers
+     * that actually exist. Kept here rather than reading it back off
+     * {@code CompositeErrorHttpStatusMapper}, which would mean opening a production accessor for a
+     * test's benefit.
+     */
+    public static List<ErrorHttpStatusMapper> delegates() {
+        return List.of(
+                new DomainErrorHttpStatusMapper(),
+                new ApplicationErrorHttpStatusMapper(),
+                new InfrastructureErrorHttpStatusMapper(),
+                new PresentationErrorHttpStatusMapper());
+    }
 }

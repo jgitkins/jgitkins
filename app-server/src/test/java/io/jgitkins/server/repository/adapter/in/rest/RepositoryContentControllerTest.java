@@ -29,6 +29,7 @@ import io.jgitkins.server.common.presentation.advice.mapper.ApplicationErrorHttp
 import io.jgitkins.server.common.presentation.advice.mapper.CompositeErrorHttpStatusMapper;
 import io.jgitkins.server.common.presentation.advice.mapper.DomainErrorHttpStatusMapper;
 import io.jgitkins.server.common.presentation.advice.mapper.InfrastructureErrorHttpStatusMapper;
+import io.jgitkins.server.support.ErrorStatusMappingTestConfig;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -59,11 +60,7 @@ class RepositoryContentControllerTest {
 
         @BeforeEach
         void setUp() {
-                CompositeErrorHttpStatusMapper statusMapper = new CompositeErrorHttpStatusMapper(
-                                List.of(
-                                                new DomainErrorHttpStatusMapper(),
-                                                new ApplicationErrorHttpStatusMapper(),
-                                                new InfrastructureErrorHttpStatusMapper()));
+                CompositeErrorHttpStatusMapper statusMapper = ErrorStatusMappingTestConfig.realMapper();
                 RepositoryContentController controller = new RepositoryContentController(
                                 fileUploadUseCase,
                                 fileTreeLoadUseCase,
