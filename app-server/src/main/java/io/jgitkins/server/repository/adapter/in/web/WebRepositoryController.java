@@ -1,7 +1,6 @@
 package io.jgitkins.server.repository.adapter.in.web;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.beans.factory.annotation.Qualifier;
 import io.jgitkins.server.identity.access.adapter.in.support.RequesterUserIdResolver;
 import io.jgitkins.core.web.api.response.ApiResponse;
 import io.jgitkins.server.repository.application.contract.result.RepositoryOverviewResult;
@@ -22,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequiredArgsConstructor
 @Tag(name = "Web Repository")
 @RequestMapping("/api/internal/repositories")
 @Validated
@@ -31,18 +31,6 @@ public class WebRepositoryController {
 	private final RepositoryOverviewUseCase repositoryOverviewUseCase;
 	private final RequesterUserIdResolver requesterUserIdResolver;
 
-	/**
-	 * Explicit constructor: the qualifier must sit on the parameter, and two beans of type
-	 * {@code RequesterUserIdResolver} exist with deliberately different error semantics.
-	 */
-	WebRepositoryController(RepositoryLoadUseCase repositoryLoadUseCase,
-			RepositoryOverviewUseCase repositoryOverviewUseCase,
-			@Qualifier("identityRequesterUserIdResolver")
-			RequesterUserIdResolver requesterUserIdResolver) {
-		this.repositoryLoadUseCase = repositoryLoadUseCase;
-		this.repositoryOverviewUseCase = repositoryOverviewUseCase;
-		this.requesterUserIdResolver = requesterUserIdResolver;
-	}
 
 	/** Anonymous is allowed for these reads; a malformed principal still throws. */
 	private Long optionalRequester(String subject) {

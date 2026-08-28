@@ -7,9 +7,9 @@ import io.jgitkins.core.web.api.response.ApiResponse;
 import io.jgitkins.server.shared.application.exception.UnauthenticatedException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import jakarta.validation.Valid;
 import java.security.Principal;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,27 +17,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequiredArgsConstructor
 @Tag(name = "Signup")
 @RequestMapping("/api/signup")
 public class SignupController {
 
     private final SignupUseCase signupUseCase;
     private final RequesterUserIdResolver requesterUserIdResolver;
-
-    /**
-     * Explicit constructor rather than {@code @RequiredArgsConstructor}.
-     *
-     * <p>The qualifier has to sit on the constructor parameter, and Lombok's generated constructor
-     * cannot carry it. Two beans of type {@code RequesterUserIdResolver} exist — this context's and
-     * collaboration's, which have deliberately different error semantics — so an unqualified injection
-     * would either fail as ambiguous or, worse, resolve to whichever one the container preferred.
-     */
-    SignupController(SignupUseCase signupUseCase,
-                     @Qualifier("identityRequesterUserIdResolver")
-                     RequesterUserIdResolver requesterUserIdResolver) {
-        this.signupUseCase = signupUseCase;
-        this.requesterUserIdResolver = requesterUserIdResolver;
-    }
 
     @Operation(summary = "Activate signup with username")
     @PostMapping("/activate")

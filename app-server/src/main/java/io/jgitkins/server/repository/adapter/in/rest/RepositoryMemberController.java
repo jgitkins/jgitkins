@@ -3,7 +3,6 @@ package io.jgitkins.server.repository.adapter.in.rest;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.Valid;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.beans.factory.annotation.Qualifier;
 import io.jgitkins.server.shared.application.exception.UnauthenticatedException;
 import io.jgitkins.server.identity.access.adapter.in.support.RequesterUserIdResolver;
 import io.jgitkins.server.repository.application.contract.command.RepositoryMemberAddCommand;
@@ -25,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequiredArgsConstructor
 @Tag(name = "Repository Members")
 @RequestMapping("/api/repositories/{repositoryId}/members")
 public class RepositoryMemberController {
@@ -33,14 +33,6 @@ public class RepositoryMemberController {
     private final RepositoryMemberLoadUseCase repositoryMemberLoadUseCase;
     private final RequesterUserIdResolver requesterUserIdResolver;
 
-    RepositoryMemberController(RepositoryMemberManagementUseCase repositoryMemberManagementUseCase,
-                              RepositoryMemberLoadUseCase repositoryMemberLoadUseCase,
-                              @Qualifier("identityRequesterUserIdResolver")
-                              RequesterUserIdResolver requesterUserIdResolver) {
-        this.repositoryMemberManagementUseCase = repositoryMemberManagementUseCase;
-        this.repositoryMemberLoadUseCase = repositoryMemberLoadUseCase;
-        this.requesterUserIdResolver = requesterUserIdResolver;
-    }
 
     /**
      * Resolves the caller once, before any use case is touched.

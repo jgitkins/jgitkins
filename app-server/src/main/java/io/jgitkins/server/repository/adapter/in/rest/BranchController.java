@@ -3,7 +3,6 @@ package io.jgitkins.server.repository.adapter.in.rest;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.Valid;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.beans.factory.annotation.Qualifier;
 import io.jgitkins.server.shared.application.exception.UnauthenticatedException;
 import io.jgitkins.server.identity.access.adapter.in.support.RequesterUserIdResolver;
 import io.swagger.v3.oas.annotations.Operation;
@@ -24,6 +23,7 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/repositories/{repositoryId}/branches")
 @Tag(name = "Branch Management", description = "브랜치 조회/생성/삭제")
 public class BranchController {
@@ -33,20 +33,6 @@ public class BranchController {
     private final BranchRequestMapper branchRequestMapper;
     private final RequesterUserIdResolver requesterUserIdResolver;
 
-    /**
-     * Explicit constructor rather than {@code @RequiredArgsConstructor}: the qualifier must sit on the
-     * constructor parameter, and the wrong resolver bean turns a malformed principal into a silent empty.
-     */
-    BranchController(BranchLoadUseCase branchLoadUseCase,
-                     BranchManagementUseCase branchManagementUseCase,
-                     BranchRequestMapper branchRequestMapper,
-                     @Qualifier("identityRequesterUserIdResolver")
-                     RequesterUserIdResolver requesterUserIdResolver) {
-        this.branchLoadUseCase = branchLoadUseCase;
-        this.branchManagementUseCase = branchManagementUseCase;
-        this.branchRequestMapper = branchRequestMapper;
-        this.requesterUserIdResolver = requesterUserIdResolver;
-    }
 
     /**
      * Resolves the caller once, before any use case is touched.

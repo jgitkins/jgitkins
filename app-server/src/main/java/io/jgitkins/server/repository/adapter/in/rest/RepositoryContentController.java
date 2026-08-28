@@ -1,7 +1,6 @@
 package io.jgitkins.server.repository.adapter.in.rest;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.beans.factory.annotation.Qualifier;
 import io.jgitkins.server.shared.application.exception.UnauthenticatedException;
 import io.jgitkins.server.identity.access.adapter.in.support.RequesterUserIdResolver;
 import io.jgitkins.server.repository.application.contract.result.FileEntry;
@@ -32,6 +31,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 @Tag(name = "Repository Content", description = "저장소 파일 업로드 및 트리 조회")
 @RequestMapping("/api/repositories")
 public class RepositoryContentController {
@@ -41,16 +41,6 @@ public class RepositoryContentController {
     private final RepositoryLoadUseCase repositoryLoadUseCase;
     private final RequesterUserIdResolver requesterUserIdResolver;
 
-    RepositoryContentController(FileUploadUseCase fileUploadUseCase,
-                                FileTreeLoadUseCase fileTreeLoadUseCase,
-                                RepositoryLoadUseCase repositoryLoadUseCase,
-                                @Qualifier("identityRequesterUserIdResolver")
-                                RequesterUserIdResolver requesterUserIdResolver) {
-        this.fileUploadUseCase = fileUploadUseCase;
-        this.fileTreeLoadUseCase = fileTreeLoadUseCase;
-        this.repositoryLoadUseCase = repositoryLoadUseCase;
-        this.requesterUserIdResolver = requesterUserIdResolver;
-    }
 
     /**
      * Resolves the caller once, before any use case is touched.

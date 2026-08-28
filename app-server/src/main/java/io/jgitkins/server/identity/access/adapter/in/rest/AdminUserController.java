@@ -13,7 +13,8 @@ import io.jgitkins.server.shared.application.exception.UnauthenticatedException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Qualifier;
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,6 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
  * itself lives in the service so a second inbound adapter cannot bypass it.
  */
 @RestController
+@RequiredArgsConstructor
 @Tag(name = "Admin Users")
 @RequestMapping("/api/admin/users")
 public class AdminUserController {
@@ -41,14 +43,6 @@ public class AdminUserController {
     private final AdminUserUpdateUseCase adminUserUpdateUseCase;
     private final RequesterUserIdResolver requesterUserIdResolver;
 
-    AdminUserController(AdminUserQueryUseCase adminUserQueryUseCase,
-                        AdminUserUpdateUseCase adminUserUpdateUseCase,
-                        @Qualifier("identityRequesterUserIdResolver")
-                        RequesterUserIdResolver requesterUserIdResolver) {
-        this.adminUserQueryUseCase = adminUserQueryUseCase;
-        this.adminUserUpdateUseCase = adminUserUpdateUseCase;
-        this.requesterUserIdResolver = requesterUserIdResolver;
-    }
 
     private Long requireRequester(String subject) {
         return requesterUserIdResolver.resolve(subject)

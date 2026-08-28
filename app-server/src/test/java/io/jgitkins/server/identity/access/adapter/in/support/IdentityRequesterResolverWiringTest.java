@@ -10,17 +10,27 @@ import org.mockito.Mockito;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
 /**
- * The controller must hold the identity resolver, not merely a resolver.
+ * The two resolvers are distinct types, and they disagree about malformed input.
  *
- * <p>Two beans of type {@code RequesterUserIdResolver} exist, one per bounded context, with deliberately
- * different error semantics: collaboration's swallows every parse failure into {@code Optional.empty()},
- * and this context's throws. If the controller were wired to the collaboration bean, a malformed
- * principal would produce {@code empty()} and the request would be reported as unauthenticated — the
- * same status the client sees today, so no HTTP test could tell the difference. The distinction is only
- * visible at the injection point, which is why this test looks there.
+ * <p>This class used to claim that a {@code @Qualifier} was load-bearing because "two beans of type
+ * {@code RequesterUserIdResolver} exist". That was wrong. Two beans share the simple NAME, but they are
+ * unrelated classes with no common supertype: {@code identity.access...RequesterUserIdResolver} and
+ * {@code collaboration...RequesterUserIdResolver}. Spring resolves by type, and a field declared as the
+ * identity type has exactly one candidate, so the qualifier never disambiguated anything. It has been
+ * removed from all seven injection points and every one now uses {@code @RequiredArgsConstructor}.
  *
- * <p>Asserting both bean names exist would not catch it. This resolves the field the controller actually
- * holds.
+ * <p>Proof, not assertion: this runner registers BOTH beans, which is the exact condition the qualifier
+ * was supposed to handle, and the unqualified controller still wires correctly.
+ *
+ * <p>Note that {@link #identityResolverHoldsTheIdentityType()} cannot fail while the field keeps its
+ * declared type -- it documents the guarantee rather than testing it. The assertion that carries real
+ * weight is {@link #theIdentityAndCollaborationResolversDisagreeOnMalformedInput()}: it pins the
+ * behavioural difference that makes picking the right one matter at all. If those two ever agreed, the
+ * name collision would be harmless and this file could go.
+ *
+ * <p>The remaining smell is the collision itself -- two classes with one simple name across contexts,
+ * the same shape as the duplicated {@code OrganizeAlreadyExistsException}. Renaming one is tracked
+ * separately; it is not this test's job.
  */
 class IdentityRequesterResolverWiringTest {
 
@@ -34,7 +44,7 @@ class IdentityRequesterResolverWiringTest {
             .withBean(SignupController.class);
 
     @Test
-    void identityResolverLoadsWithIdentityBeanName() {
+    void identityResolverHoldsTheIdentityType() {
         runner.run(context -> {
             assertThat(context).hasNotFailed();
             assertThat(context).hasBean("identityRequesterUserIdResolver");
@@ -57,8 +67,8 @@ class IdentityRequesterResolverWiringTest {
 
     @Test
     void theIdentityAndCollaborationResolversDisagreeOnMalformedInput() {
-        // The reason the wiring assertion above matters, stated as an executable fact rather than as a
-        // claim in a comment. If these two ever agreed, the qualifier would be cosmetic.
+        // The fact that makes the wiring above worth stating at all. If these two ever agreed, the
+        // name collision would carry no risk.
         var identity = new RequesterUserIdResolver();
         var collaboration = new io.jgitkins.server.collaboration.adapter.in.support
                 .RequesterUserIdResolver();

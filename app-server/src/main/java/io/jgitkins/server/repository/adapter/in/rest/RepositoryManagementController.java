@@ -1,7 +1,6 @@
 package io.jgitkins.server.repository.adapter.in.rest;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.beans.factory.annotation.Qualifier;
 import io.jgitkins.server.shared.application.exception.UnauthenticatedException;
 import io.jgitkins.server.identity.access.adapter.in.support.RequesterUserIdResolver;
 import io.jgitkins.server.repository.application.contract.command.RepositoryCreateCommand;
@@ -26,6 +25,7 @@ import org.springframework.validation.annotation.Validated;
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 @Tag(name = "Repository Management", description = "저장소 관리")
 @RequestMapping("/api/repositories")
 @Validated
@@ -38,23 +38,6 @@ public class RepositoryManagementController {
     private final RepositoryRequestMapper repositoryRequestMapper;
     private final RequesterUserIdResolver requesterUserIdResolver;
 
-    /**
-     * Explicit constructor rather than {@code @RequiredArgsConstructor}: the qualifier must sit on the
-     * constructor parameter. Two beans of type {@code RequesterUserIdResolver} exist with deliberately
-     * different error semantics, and the wrong one turns a malformed principal into a silent empty.
-     */
-    RepositoryManagementController(RepositoryManagementUseCase repositoryManagementUseCase,
-                                   RepositoryLoadUseCase repositoryLoadUseCase,
-                                   RepositoryOverviewUseCase repositoryOverviewUseCase,
-                                   RepositoryRequestMapper repositoryRequestMapper,
-                                   @Qualifier("identityRequesterUserIdResolver")
-                                   RequesterUserIdResolver requesterUserIdResolver) {
-        this.repositoryManagementUseCase = repositoryManagementUseCase;
-        this.repositoryLoadUseCase = repositoryLoadUseCase;
-        this.repositoryOverviewUseCase = repositoryOverviewUseCase;
-        this.repositoryRequestMapper = repositoryRequestMapper;
-        this.requesterUserIdResolver = requesterUserIdResolver;
-    }
 
     /**
      * Resolves the caller once, before any use case is touched.
