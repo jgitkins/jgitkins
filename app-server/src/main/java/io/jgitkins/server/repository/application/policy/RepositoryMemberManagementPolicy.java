@@ -52,7 +52,8 @@ public class RepositoryMemberManagementPolicy {
 
     /**
      * @throws RepositoryNotFoundException when the repository does not exist, preserving the existing 404
-     * @throws RepositoryAccessDeniedException when the requester may not manage members, preserving 403
+     * @throws RepositoryNotFoundException when the repository does not exist OR the requester may not
+     *         manage its members. The two are deliberately indistinguishable (task 2.92).
      */
     public void validateCanManageMembers(Long requesterUserId, Long repositoryId) {
         if (repositoryId == null) {
@@ -102,9 +103,27 @@ public class RepositoryMemberManagementPolicy {
         return ownerType;
     }
 
-    private RepositoryAccessDeniedException denied() {
-        // One message for every denial. A caller must not be able to tell "not the owner" from "not an
-        // organization OWNER" from "the owner type is unreadable".
-        return new RepositoryAccessDeniedException("Repository member management is not allowed");
+    /**
+     * Every denial answers not-found, not forbidden.
+     *
+     * <p>Task 2.92. Answering 404 when the repository does not exist and 403 when it exists but the
+     * caller may not manage its members told an unauthorized caller that a private repository exists,
+     * from the status code alone. GitHub answers 404 for a private repository the caller cannot see,
+     * and this now does the same.
+     *
+     * <p>The message changes with it: saying "member management is not allowed" while answering 404
+     * admits the repository exists and puts the leak straight back.
+     *
+     * <p>Scope is this method. {@code RepositoryAccessDeniedException} keeps its meaning everywhere
+     * else, including {@code RepositoryValidator}, which answers repository creation and organization
+     * membership. Editing the exception class instead would have turned unrelated endpoints into 404s.
+     *
+     * <p>Accepted cost: an organization MEMBER or MAINTAINER attempting member management now reads
+     * "not found" rather than "not allowed". GitHub pays the same.
+     */
+    private RepositoryNotFoundException denied() {
+        // The no-argument form on purpose: the (Long) form renders "Repository not found: null",
+        // which announces that the id was not the reason.
+        return new RepositoryNotFoundException();
     }
 }

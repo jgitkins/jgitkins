@@ -6,6 +6,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 
 import io.jgitkins.server.repository.application.contract.command.RepositoryMemberAddCommand;
 import io.jgitkins.server.repository.application.contract.result.RepositoryResult;
@@ -23,6 +25,7 @@ import io.jgitkins.server.repository.domain.vo.RepositoryId;
 import io.jgitkins.server.repository.domain.vo.RepositoryMemberRole;
 import io.jgitkins.server.repository.domain.vo.RepositoryMemberUserId;
 import io.jgitkins.server.shared.domain.exception.InvalidIdentifierException;
+import io.jgitkins.server.repository.application.exception.RepositoryNotFoundException;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.List;
@@ -146,6 +149,32 @@ class RepositoryMemberServiceTest {
         assertThrows(JgitkinsException.class, () -> service.addRepositoryMember(
                 new RepositoryMemberAddCommand(OWNER_ID, REPOSITORY_ID, 2L, RepositoryMemberRole.MAINTAINER)));
         verify(repositoryMemberPort, never()).save(any(RepositoryMember.class));
+    }
+
+    /**
+     * Task 2.92. The point is not that a denial throws, it is that a denial is INDISTINGUISHABLE from a
+     * missing repository. Before this, an unauthorized caller got 403 for a repository that exists and
+     * 404 for one that does not, so the status code answered "does this private repository exist?"
+     *
+     * <p>Asserted as one test rather than two so the equality is the assertion. Two separate tests each
+     * checking their own exception type would still pass if the two drifted apart again.
+     */
+    @Test
+    void aDeniedCallerAndAMissingRepositoryAreIndistinguishable() {
+        repositoryIsOwnedByOrganization();
+        requesterHasOrganizationRole(OrganizationMembershipRole.MEMBER);
+        Class<?> denied = catchThrowable(() -> service.getRepositoryMembers(OWNER_ID, REPOSITORY_ID))
+                .getClass();
+
+        when(repositoryQueryPort.loadRepository(REPOSITORY_ID)).thenReturn(Optional.empty());
+        Class<?> missing = catchThrowable(() -> service.getRepositoryMembers(OWNER_ID, REPOSITORY_ID))
+                .getClass();
+
+        assertThat(denied)
+                .as("a caller who may not manage members must not be able to tell that the repository "
+                        + "exists, so the denial and the not-found answer must be the same exception")
+                .isEqualTo(missing);
+        assertThat(denied).isEqualTo(RepositoryNotFoundException.class);
     }
 
     @Test
