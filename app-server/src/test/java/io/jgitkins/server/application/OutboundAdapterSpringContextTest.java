@@ -103,7 +103,7 @@ public class OutboundAdapterSpringContextTest {
         assertThat(applicationContext.getBeansOfType(JwtTokenIssuerAdapter.class)).hasSize(1);
         assertThat(applicationContext.getBeansOfType(JwtTokenVerifierAdapter.class)).hasSize(1);
         assertThat(applicationContext.getBeansOfType(JwtProperties.class)).hasSize(1);
-        assertThat(environment.getProperty("jgitkins.security.jwt.secret")).isEqualTo("test-jwt-secret-test-jwt-secret");
+        assertThat(environment.getProperty("jgitkins.security.jwt.secret")).isEqualTo("jgitkins-test-jwt-secret-256-bit-minimum");
         assertThat(environment.getProperty("jgitkins.security.jwt.ttl-seconds", Long.class)).isEqualTo(900L);
     }
 

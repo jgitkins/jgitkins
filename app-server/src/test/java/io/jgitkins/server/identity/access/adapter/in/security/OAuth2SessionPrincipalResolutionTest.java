@@ -40,13 +40,7 @@ import org.springframework.test.web.servlet.MvcResult;
  * runs on an empty H2, so data-dependent routes still answer 500 from a missing table. What must never
  * come back is a failure that happens before the controller is entered.
  */
-// The jwt secret is overridden locally because the shared test fixture
-// ("test-jwt-secret-test-jwt-secret", 31 bytes / 248 bits) is below the 256-bit floor HS256 requires,
-// so no test in this repository can mint a token with it -- which is why the Bearer path through the
-// real chain had no coverage before this class. Fixing the shared fixture is filed separately; this
-// override keeps the change that needed the guard from also editing a fixture every test profile reads.
 @SpringBootTest(properties = {
-        "jgitkins.security.jwt.secret=autoplan-f4-guard-secret-well-over-256-bits-long",
         "spring.autoconfigure.exclude="
         + "net.devh.boot.grpc.server.autoconfigure.GrpcHealthServiceAutoConfiguration,"
         + "net.devh.boot.grpc.server.autoconfigure.GrpcAdviceAutoConfiguration,"

@@ -33,5 +33,5 @@ jgitkins:
       rest-scheme: http
   security:
     jwt:
-      secret: test-jwt-secret-test-jwt-secret
+      secret: jgitkins-test-jwt-secret-256-bit-minimum
       ttl-seconds: 900

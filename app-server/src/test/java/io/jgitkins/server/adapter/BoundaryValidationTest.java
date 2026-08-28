@@ -29,7 +29,6 @@ import org.springframework.test.web.servlet.MvcResult;
  * distinction that matters is whether the request was refused at the boundary or reached the domain.
  */
 @SpringBootTest(properties = {
-        "jgitkins.security.jwt.secret=boundary-validation-secret-well-over-256-bits-long",
         "spring.autoconfigure.exclude="
         + "net.devh.boot.grpc.server.autoconfigure.GrpcHealthServiceAutoConfiguration,"
         + "net.devh.boot.grpc.server.autoconfigure.GrpcAdviceAutoConfiguration,"
