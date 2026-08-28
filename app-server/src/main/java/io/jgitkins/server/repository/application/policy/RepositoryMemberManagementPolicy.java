@@ -7,6 +7,7 @@ import io.jgitkins.server.repository.application.port.out.RepositoryQueryPort;
 import io.jgitkins.server.repository.domain.vo.OrganizationMembershipRole;
 import io.jgitkins.server.shared.domain.model.vo.OwnerType;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 /**
@@ -43,6 +44,7 @@ import org.springframework.stereotype.Component;
  * <p>Takes {@link RepositoryQueryPort} rather than {@code RepositoryRepository}: this is a read to make a
  * decision, not an aggregate load to mutate, and the port it uses says which.
  */
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class RepositoryMemberManagementPolicy {
@@ -57,17 +59,17 @@ public class RepositoryMemberManagementPolicy {
      */
     public void validateCanManageMembers(Long requesterUserId, Long repositoryId) {
         if (repositoryId == null) {
-            throw new RepositoryNotFoundException(repositoryId);
+            throw denied(null, null, "no repository id supplied");
         }
         // The repository query happens before anything else, and before the membership query below.
         // Reading membership first would let a caller learn that a repository exists by timing or by
         // error shape. The organization lookup is reached only on the organization-owned branch, and
         // still precedes every repository-member read and write.
         var repository = repositoryQueryPort.loadRepository(repositoryId)
-                .orElseThrow(() -> new RepositoryNotFoundException(repositoryId));
+                .orElseThrow(() -> denied(requesterUserId, repositoryId, "repository does not exist"));
 
         if (requesterUserId == null || repository.ownerId() == null) {
-            throw denied();
+            throw denied(requesterUserId, repositoryId, "requester or owner id is absent");
         }
 
         OwnerType ownerType = ownerTypeOf(repository.ownerType());
@@ -80,7 +82,7 @@ public class RepositoryMemberManagementPolicy {
         };
 
         if (!allowed) {
-            throw denied();
+            throw denied(requesterUserId, repositoryId, "requester does not own the repository");
         }
     }
 
@@ -95,10 +97,10 @@ public class RepositoryMemberManagementPolicy {
         try {
             ownerType = OwnerType.from(stored);
         } catch (IllegalArgumentException unknownOwnerType) {
-            throw denied();
+            throw denied(null, null, "owner type is not recognised");
         }
         if (ownerType == null) {
-            throw denied();
+            throw denied(null, null, "owner type is null");
         }
         return ownerType;
     }
@@ -121,9 +123,20 @@ public class RepositoryMemberManagementPolicy {
      * <p>Accepted cost: an organization MEMBER or MAINTAINER attempting member management now reads
      * "not found" rather than "not allowed". GitHub pays the same.
      */
-    private RepositoryNotFoundException denied() {
-        // The no-argument form on purpose: the (Long) form renders "Repository not found: null",
-        // which announces that the id was not the reason.
+    private RepositoryNotFoundException denied(Long requesterUserId, Long repositoryId, String reason) {
+        // Task 2.118. The response is deliberately uninformative; the log must not be. Before this,
+        // the only record was GlobalExceptionHandler's warn, which after task 2.92 read
+        // "REPO-404, 404, Repository not found" -- no requester, no repository, no indication that a
+        // permission check had failed. Making the caller unable to tell the two apart was the design.
+        // Making the operator unable to tell them apart was an accident, and it removed the signal
+        // that an enumeration sweep is in progress.
+        log.warn("Repository member management denied: requester={} repository={} reason={}",
+                requesterUserId, repositoryId, reason);
+
+        // The no-argument form on purpose. Every exit from this method has to produce the SAME
+        // message: the status and code were already identical after 2.92, so a body that said
+        // "Repository not found: 12" for a missing repository and "Repository not found" for a
+        // refused one put the enumeration oracle back one JSON field over.
         return new RepositoryNotFoundException();
     }
 }

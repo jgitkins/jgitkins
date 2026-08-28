@@ -37,8 +37,12 @@ public class RepositoryManagementService implements RepositoryManagementUseCase 
     @Transactional
     public void deleteRepository(Long requesterUserId, Long repositoryId) {
         RepositoryId id = RepositoryId.of(repositoryId);
+        // No-argument form, matching RepositoryDeletionPolicy below. The ordering comment already
+        // explains why not-found is decided first; what it missed is that the two outcomes also have
+        // to READ the same. "Repository not found: 12" here against "Repository not found" from the
+        // policy told the caller which of the two had happened.
         Repository repository = repositoryRepository.findById(id)
-                .orElseThrow(() -> new RepositoryNotFoundException(repositoryId));
+                .orElseThrow(RepositoryNotFoundException::new);
 
         // Not-found is decided before ownership, preserving the existing order. Checking ownership
         // first would let a caller distinguish "exists but not yours" from "does not exist", turning
