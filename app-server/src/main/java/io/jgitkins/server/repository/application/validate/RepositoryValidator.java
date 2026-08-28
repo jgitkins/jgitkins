@@ -54,19 +54,6 @@ public class RepositoryValidator {
         assertOrganizeMembership(requesterUserId, organizeId);
     }
 
-    public void enforceDeletionPermission(Long requesterUserId, Repository repository) {
-        if (repository.getOwnerType() != OwnerType.USER
-                || repository.getOwnerId() == null
-                || repository.getOwnerId().getValue() == null) {
-            return;
-        }
-        Long requesterId = requireRequesterId(requesterUserId);
-        if (!repository.getOwnerId().getValue().equals(requesterId)) {
-            throw new RepositoryAccessDeniedException(
-                    "Cannot delete another user's repository");
-        }
-    }
-
     /**
      * Kept as a method rather than inlined so the failure has exactly one definition.
      *

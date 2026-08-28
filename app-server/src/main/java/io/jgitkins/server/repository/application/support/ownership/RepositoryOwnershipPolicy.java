@@ -2,6 +2,7 @@ package io.jgitkins.server.repository.application.support.ownership;
 
 import io.jgitkins.server.repository.application.contract.command.RepositoryCreateCommand;
 import io.jgitkins.server.repository.application.contract.internal.RepositoryCreationPlan;
+import io.jgitkins.server.repository.application.policy.RepositoryDeletionPolicy;
 import io.jgitkins.server.repository.application.validate.RepositoryValidator;
 import io.jgitkins.server.repository.domain.aggregate.Repository;
 import io.jgitkins.server.shared.domain.model.vo.BranchName;
@@ -22,6 +23,7 @@ public class RepositoryOwnershipPolicy {
 
     private final RepositoryValidator repositoryValidator;
     private final RepositoryNamespaceResolver repositoryNamespaceResolver;
+    private final RepositoryDeletionPolicy repositoryDeletionPolicy;
 
     public RepositoryCreationPlan prepareCreation(RepositoryCreateCommand command) {
         OwnerType ownerType = command.ownerType();
@@ -55,7 +57,7 @@ public class RepositoryOwnershipPolicy {
     }
 
     public void validateDeletion(Long requesterUserId, Repository repository) {
-        repositoryValidator.enforceDeletionPermission(requesterUserId, repository);
+        repositoryDeletionPolicy.validateCanDelete(requesterUserId, repository);
     }
 
     private OwnerId resolveOwnerId(Long requesterUserId, OwnerType ownerType, Long organizeId) {

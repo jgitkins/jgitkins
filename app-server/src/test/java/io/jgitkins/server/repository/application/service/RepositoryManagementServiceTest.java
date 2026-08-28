@@ -50,6 +50,8 @@ class RepositoryManagementServiceTest {
     private OrganizationMembershipPort organizationMembershipPort;
     @Mock
     private RepositoryActorPort repositoryActorPort;
+    @Mock
+    private io.jgitkins.server.repository.application.policy.RepositoryDeletionPolicy repositoryDeletionPolicy;
 
     private RepositoryManagementService service;
     private RepositoryValidator repositoryValidator;
@@ -59,7 +61,8 @@ class RepositoryManagementServiceTest {
         repositoryValidator = new RepositoryValidator(repositoryRepository, organizationMembershipPort);
         RepositoryOwnershipPolicy repositoryOwnershipPolicy = new RepositoryOwnershipPolicy(
                 repositoryValidator,
-                repositoryNamespaceResolver
+                repositoryNamespaceResolver,
+                repositoryDeletionPolicy
         );
         service = new RepositoryManagementService(
                 repositoryApplicationMapper,
@@ -125,28 +128,35 @@ class RepositoryManagementServiceTest {
         verify(repositoryProvisioner).provision(any(Repository.class), any(InitialCommitOptions.class));
     }
 
+    /**
+     * Replaced for task 2.83. This test used to mock an ORGANIZATION-owned repository and assert that
+     * requester 7 deleted it successfully, with no membership stubbed anywhere -- it pinned the missing
+     * authorization as intended behaviour. The service delegates the decision, so the service test now
+     * asserts the delegation and the outcome; who may delete is decided in RepositoryDeletionPolicyTest.
+     */
     @Test
-    void deleteRepository_throwsWhenDeletingOtherUsersRepository() {
+    void deleteRepository_deletesWhenThePolicyAllowsIt() {
         Repository repository = org.mockito.Mockito.mock(Repository.class);
         when(repositoryRepository.findById(RepositoryId.of(1L))).thenReturn(Optional.of(repository));
-        when(repository.getOwnerType()).thenReturn(OwnerType.USER);
-        when(repository.getOwnerId()).thenReturn(OwnerId.of(10L));
-
-        assertThrows(JgitkinsException.class, () -> service.deleteRepository(7L, 1L));
-
-        verify(repositoryProvisioner, never()).delete(any(Repository.class));
-        verify(repositoryRepository, never()).deleteById(any(RepositoryId.class));
-    }
-
-    @Test
-    void deleteRepository_deletesWhenAccessible() {
-        Repository repository = org.mockito.Mockito.mock(Repository.class);
-        when(repositoryRepository.findById(RepositoryId.of(1L))).thenReturn(Optional.of(repository));
-        when(repository.getOwnerType()).thenReturn(OwnerType.ORGANIZATION);
 
         service.deleteRepository(7L, 1L);
 
+        verify(repositoryDeletionPolicy).validateCanDelete(7L, repository);
         verify(repositoryProvisioner).delete(repository);
         verify(repositoryRepository).deleteById(RepositoryId.of(1L));
+    }
+
+    @Test
+    void deleteRepository_doesNotDeleteWhenThePolicyRefuses() {
+        Repository repository = org.mockito.Mockito.mock(Repository.class);
+        when(repositoryRepository.findById(RepositoryId.of(1L))).thenReturn(Optional.of(repository));
+        org.mockito.Mockito.doThrow(new io.jgitkins.server.repository.application.exception.RepositoryAccessDeniedException("nope"))
+                .when(repositoryDeletionPolicy).validateCanDelete(7L, repository);
+
+        assertThrows(JgitkinsException.class, () -> service.deleteRepository(7L, 1L));
+
+        // The git directory must not be removed for a refused delete: the provisioner is irreversible.
+        verify(repositoryProvisioner, never()).delete(any(Repository.class));
+        verify(repositoryRepository, never()).deleteById(any(RepositoryId.class));
     }
 }

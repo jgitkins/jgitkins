@@ -3,6 +3,7 @@ package io.jgitkins.server.repository.application.support.ownership;
 import static org.mockito.Mockito.verify;
 
 import io.jgitkins.server.shared.application.support.RepositoryNamespaceResolver;
+import io.jgitkins.server.repository.application.policy.RepositoryDeletionPolicy;
 import io.jgitkins.server.repository.application.validate.RepositoryValidator;
 import io.jgitkins.server.repository.domain.aggregate.Repository;
 import io.jgitkins.server.repository.domain.vo.RepositoryName;
@@ -34,30 +35,35 @@ class RepositoryOwnershipPolicyTest {
     @Mock
     private RepositoryNamespaceResolver repositoryNamespaceResolver;
 
+    @Mock
+    private RepositoryDeletionPolicy repositoryDeletionPolicy;
+
     @Test
     void validateDeletion_passesExplicitRequesterToValidator() {
         RepositoryOwnershipPolicy policy =
-                new RepositoryOwnershipPolicy(repositoryValidator, repositoryNamespaceResolver);
+                new RepositoryOwnershipPolicy(
+                        repositoryValidator, repositoryNamespaceResolver, repositoryDeletionPolicy);
         Repository repository = userOwnedRepository();
 
         policy.validateDeletion(7L, repository);
 
         // The exact argument, not any(): passing the wrong requester through would authorize a
         // deletion for someone other than the caller and still look like a working delegation.
-        verify(repositoryValidator).enforceDeletionPermission(7L, repository);
+        verify(repositoryDeletionPolicy).validateCanDelete(7L, repository);
     }
 
     @Test
     void validateDeletion_forwardsANullRequesterRatherThanSubstitutingOne() {
         RepositoryOwnershipPolicy policy =
-                new RepositoryOwnershipPolicy(repositoryValidator, repositoryNamespaceResolver);
+                new RepositoryOwnershipPolicy(
+                        repositoryValidator, repositoryNamespaceResolver, repositoryDeletionPolicy);
         Repository repository = userOwnedRepository();
 
         policy.validateDeletion(null, repository);
 
         // Forwarded, not defaulted. The validator owns the rejection, and a policy that substituted a
         // fallback actor here would authorize a deletion for whoever that fallback named.
-        verify(repositoryValidator).enforceDeletionPermission(null, repository);
+        verify(repositoryDeletionPolicy).validateCanDelete(null, repository);
     }
 
     private static Repository userOwnedRepository() {
