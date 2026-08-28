@@ -39,7 +39,7 @@ class RunnerReadServiceTest {
     void getRunner_returnsMappedResult() {
         Runner runner = Runner.restore(1L, "RNR-TOKEN", "runner", RunnerStatus.OFFLINE,
                 RunnerScopeType.GLOBAL, null, null, LocalDateTime.now(), LocalDateTime.now());
-        RunnerDetailResult mapped = new RunnerDetailResult(1L, null, null, "OFFLINE", null, null);
+        RunnerDetailResult mapped = new RunnerDetailResult(1L, null, "OFFLINE", null, null);
 
         when(runnerPort.findById(1L)).thenReturn(Optional.of(runner));
         when(runnerApplicationMapper.toActivationResult(runner)).thenReturn(mapped);
@@ -68,8 +68,8 @@ class RunnerReadServiceTest {
         Runner b = Runner.restore(2L, "T2", "b", RunnerStatus.ONLINE,
                 RunnerScopeType.GLOBAL, null, "10.0.0.1", LocalDateTime.now(), LocalDateTime.now());
 
-        RunnerDetailResult ma = new RunnerDetailResult(1L, null, null, null, null, null);
-        RunnerDetailResult mb = new RunnerDetailResult(2L, null, null, null, null, null);
+        RunnerDetailResult ma = new RunnerDetailResult(1L, null, null, null, null);
+        RunnerDetailResult mb = new RunnerDetailResult(2L, null, null, null, null);
 
         when(runnerPort.findAll()).thenReturn(List.of(a, b));
         when(runnerApplicationMapper.toActivationResult(a)).thenReturn(ma);

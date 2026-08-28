@@ -109,8 +109,8 @@ class RunnerControllerTest {
 
     @Test
     void getRunners_returnsMappedResponses() throws Exception {
-        RunnerDetailResult detail = new RunnerDetailResult(1L, null, "runner", "ONLINE", null, LocalDateTime.now());
-        RunnerResponse response = new RunnerResponse(1L, null, "runner", "ONLINE", null, null);
+        RunnerDetailResult detail = new RunnerDetailResult(1L, "runner", "ONLINE", null, LocalDateTime.now());
+        RunnerResponse response = new RunnerResponse(1L, "runner", "ONLINE", null, null);
 
         when(runnerLoadUseCase.getRunners()).thenReturn(List.of(detail));
         when(runnerResponseMapper.toResponses(any())).thenReturn(List.of(response));
@@ -125,8 +125,8 @@ class RunnerControllerTest {
 
     @Test
     void getRunner_returnsSingleRunner() throws Exception {
-        RunnerDetailResult detail = new RunnerDetailResult(2L, null, "runner-2", "OFFLINE", null, LocalDateTime.now());
-        RunnerResponse response = new RunnerResponse(2L, null, "runner-2", "OFFLINE", null, null);
+        RunnerDetailResult detail = new RunnerDetailResult(2L, "runner-2", "OFFLINE", null, LocalDateTime.now());
+        RunnerResponse response = new RunnerResponse(2L, "runner-2", "OFFLINE", null, null);
 
         when(runnerLoadUseCase.getRunner(2L)).thenReturn(detail);
         when(runnerResponseMapper.toResponse(detail)).thenReturn(response);
