@@ -950,8 +950,8 @@
           {
             "id": 99,
             "title": "[api][dx][app-server] 검증 오류가 첫 필드만 반환하고, 깨진 JSON 메시지가 Jackson 내부를 노출",
-            "description": "GlobalExceptionHandler:146 의 extractValidationMessage 가 getFieldError() 로 첫 번째 필드 오류만 반환한다. 지금은 제약이 5개 DTO 에만 있어 드러나지 않지만 2.94 가 제약을 넓히면 다중 필드 오류가 흔해지고 클라이언트가 한 번에 하나씩 고치게 된다. 모든 필드 오류를 반환하도록 바꾼다. 함께: :153 의 폴백 ex.getMessage() 가 HttpMessageNotReadableException 에서 Jackson 내부(클래스명, JSON 포인터)를 400 본문에 노출한다. 값 자체는 에코되지 않는 것을 확인했으므로(getDefaultMessage 는 제약 메시지) 자격증명 노출 위험은 없다.",
-            "status": "pending",
+            "description": "GlobalExceptionHandler:146 의 extractValidationMessage 가 getFieldError() 로 첫 번째 필드 오류만 반환한다. 지금은 제약이 5개 DTO 에만 있어 드러나지 않지만 2.94 가 제약을 넓히면 다중 필드 오류가 흔해지고 클라이언트가 한 번에 하나씩 고치게 된다. 모든 필드 오류를 반환하도록 바꾼다. 함께: :153 의 폴백 ex.getMessage() 가 HttpMessageNotReadableException 에서 Jackson 내부(클래스명, JSON 포인터)를 400 본문에 노출한다. 값 자체는 에코되지 않는 것을 확인했으므로(getDefaultMessage 는 제약 메시지) 자격증명 노출 위험은 없다. DONE (2026-08-28). 두 검증 경로 모두 집계가 필요했다 — 첫 판에서 HandlerMethodValidationException 분기를 첫 오류만 반환하게 써서 테스트가 잡았다. **단일 오류는 기존 메시지를 유지한다**: HttpCompatibility 테스트가 그 문자열을 고정하고 있고, 접두를 붙이면 'username: username is required' 가 된다. 그 구분은 SignupActivationHttpCompatibilityTest 를 깨뜨려서 알았다.",
+            "status": "done",
             "dependencies": [
               "94"
             ],
