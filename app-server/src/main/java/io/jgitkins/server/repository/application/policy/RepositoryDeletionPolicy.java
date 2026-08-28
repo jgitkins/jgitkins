@@ -84,6 +84,13 @@ public class RepositoryDeletionPolicy {
         }
 
         Long ownerId = repository.getOwnerId().getValue();
+        // The organization lookup below is NOT a duplicate of the one inside resolvePermission, even
+        // though both call the same port. resolvePermission returns on its first match and checks
+        // repository membership BEFORE organization membership, so an organization OWNER who is also
+        // an explicit member of this repository comes back as REPOSITORY_<role> and never as
+        // ORGANIZATION_OWNER. Reading the role off the permission would deny that caller the deletion
+        // of a repository they own. This asks the question resolvePermission cannot answer: is this
+        // caller the organization's OWNER, regardless of which role won the precedence contest.
         boolean allowed = switch (repository.getOwnerType()) {
             case USER -> ownerId.equals(requesterUserId);
             case ORGANIZATION -> organizationMembershipPort

@@ -136,6 +136,23 @@ class RepositoryDeletionPolicyTest {
         assertThrows(RepositoryNotFoundException.class, () -> policy.validateCanDelete(null, repo));
     }
 
+    /**
+     * The gap the eng review found. resolvePermission checks repository membership before
+     * organization membership and returns on the first match, so this caller's role reads
+     * REPOSITORY_WRITER. Deriving "is an organization OWNER" from that role would deny an owner the
+     * deletion of their own organization's repository.
+     */
+    @Test
+    void organizationOwnerWhoIsAlsoARepositoryMember_mayStillDelete() {
+        Repository repo = organizationRepository(RepositoryVisibility.PRIVATE);
+        when(gitRepositoryAccessService.resolvePermission(repo, STRANGER_ID))
+                .thenReturn(new RepositoryPermission("REPOSITORY_WRITER", true, true));
+        when(organizationMembershipPort.findRoleByOrganizationIdAndUserId(ORG_ID, STRANGER_ID))
+                .thenReturn(Optional.of(OrganizationMembershipRole.OWNER));
+
+        assertDoesNotThrow(() -> policy.validateCanDelete(STRANGER_ID, repo));
+    }
+
     // --- user-owned -----------------------------------------------------------------------------
 
     @Test
