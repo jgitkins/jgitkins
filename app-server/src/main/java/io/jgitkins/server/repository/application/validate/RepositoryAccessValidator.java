@@ -31,7 +31,10 @@ public class RepositoryAccessValidator {
         // user who might coincidentally be a member.
         RepositoryPermission permission = gitRepositoryAccessUseCase.resolvePermission(
                 repository, requesterUserId);
-        if (!permission.member()) {
+        // visibleOn, not member(). This used to read member() alone, which denied an authenticated
+        // non-member reading a PUBLIC repository: the same request succeeded while logged out and
+        // failed once logged in. See RepositoryPermission#visibleOn.
+        if (!permission.visibleOn("PUBLIC".equals(repository.visibility()))) {
             throw new ApplicationException(
                     ApplicationErrorCode.ACCESS_DENIED,
                     "Insufficient permission to access repository: " + repository.name());

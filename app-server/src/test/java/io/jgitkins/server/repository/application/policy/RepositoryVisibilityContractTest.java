@@ -70,6 +70,22 @@ class RepositoryVisibilityContractTest {
         assertThat(permission.member()).isFalse();
     }
 
+    @Test
+    void memberForAnAuthenticatedNonMemberOnAPublicRepository() {
+        when(repositoryMemberPort.findByRepositoryIdAndUserId(any(), any())).thenReturn(Optional.empty());
+        when(organizationMembershipPort.findRoleByOrganizationIdAndUserId(42L, 99L)).thenReturn(Optional.empty());
+
+        RepositoryPermission permission = service.resolvePermission(repository(RepositoryVisibility.PUBLIC), 99L);
+
+        // The trap. decide()'s PUBLIC short-circuit is `isPublic && userId == null` -- it covers the
+        // ANONYMOUS caller only. An authenticated non-member on a public repository falls through to
+        // none(), so member() is false. Any caller reading member() as "may read" without checking
+        // PUBLIC first is wrong for exactly this case. both callers check PUBLIC first
+        // now -- the deletion policy inline (so it can short-circuit) and the access validator via
+        // RepositoryPermission#visibleOn. The validator was missing that branch until this was found.
+        assertThat(permission.member()).isFalse();
+    }
+
     private static Repository repository(RepositoryVisibility visibility) {
         return Repository.rehydrate(
                 RepositoryId.of(1L), OwnerType.ORGANIZATION, OwnerId.of(42L),

@@ -56,6 +56,34 @@ class RepositoryAccessValidatorTest {
         verify(gitRepositoryAccessUseCase).resolvePermission(repository, 42L);
     }
 
+    /**
+     * The regression. This denied 403 before the fix: decide()'s public short-circuit is
+     * `isPublic && userId == null`, so an authenticated non-member fell through to none() and
+     * member() was false. The same GET succeeded while logged out and failed once logged in.
+     *
+     * <p>allowsAnonymousReadOfAPublicRepository below did not catch it because the anonymous caller
+     * is precisely the one case the short-circuit does cover.
+     */
+    @Test
+    void validateReadAccess_allowsAnAuthenticatedNonMemberToReadAPublicRepository() {
+        RepositoryResult publicRepository = new RepositoryResult(
+                1L, "USER", "repo", "org/repo", "main", "PUBLIC",
+                null, 1L, null, "/org/repo.git", null, false, null, null, null);
+        when(gitRepositoryAccessUseCase.resolvePermission(publicRepository, 99L))
+                .thenReturn(RepositoryPermission.none());
+
+        assertDoesNotThrow(() -> validator.validateReadAccess(publicRepository, 99L));
+    }
+
+    @Test
+    void validateReadAccess_stillDeniesANonMemberOnAPrivateRepository() {
+        when(gitRepositoryAccessUseCase.resolvePermission(repository, 99L))
+                .thenReturn(RepositoryPermission.none());
+
+        // The fix must not open private repositories: visibleOn(false) is still member().
+        assertThrows(JgitkinsException.class, () -> validator.validateReadAccess(repository, 99L));
+    }
+
     @Test
     void validateReadAccess_allowsAnonymousReadOfAPublicRepository() {
         RepositoryResult publicRepository = new RepositoryResult(

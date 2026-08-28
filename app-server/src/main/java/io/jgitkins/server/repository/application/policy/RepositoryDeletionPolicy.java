@@ -104,10 +104,14 @@ public class RepositoryDeletionPolicy {
         }
     }
 
+    /**
+     * The same rule as {@link io.jgitkins.server.repository.application.contract.result.RepositoryPermission#visibleOn},
+     * written with {@code ||} rather than calling it. The helper cannot short-circuit -- the
+     * permission has to be resolved before the method can be invoked on it -- and a public
+     * repository needs no membership lookup to know it is visible. Only the private branch pays.
+     */
     private boolean isVisibleTo(Repository repository, Long requesterUserId) {
-        if (repository.getVisibility() == RepositoryVisibility.PUBLIC) {
-            return true;
-        }
-        return gitRepositoryAccessService.resolvePermission(repository, requesterUserId).member();
+        return repository.getVisibility() == RepositoryVisibility.PUBLIC
+                || gitRepositoryAccessService.resolvePermission(repository, requesterUserId).member();
     }
 }
