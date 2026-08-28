@@ -15,14 +15,14 @@ import io.jgitkins.server.identity.access.domain.aggregate.User;
 import io.jgitkins.server.identity.access.domain.vo.UserStatus;
 import io.jgitkins.server.identity.access.adapter.in.rest.dto.request.OAuthLoginRequest;
 import io.jgitkins.server.identity.access.adapter.in.rest.mapper.OAuthRequestMapper;
-import java.time.LocalDateTime;
 import io.jgitkins.server.support.ErrorStatusMappingTestConfig;
+import java.time.LocalDateTime;
 import org.junit.jupiter.api.Test;
-import org.springframework.context.annotation.Import;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -39,7 +39,6 @@ class OAuthControllerTest {
 
     @MockBean
     private OAuthLoginUseCase oauthLoginUseCase;
-
 
     @MockBean
     private OAuthRequestMapper oauthRequestMapper;

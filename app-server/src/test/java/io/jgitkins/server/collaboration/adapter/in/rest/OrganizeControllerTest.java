@@ -23,8 +23,8 @@ import io.jgitkins.server.collaboration.adapter.in.rest.mapper.OrganizeRequestMa
 import io.jgitkins.server.collaboration.adapter.in.support.RequesterUserIdResolver;
 import io.jgitkins.server.common.presentation.advice.GlobalExceptionHandler;
 import io.jgitkins.server.support.PermissiveSliceSecurityConfig;
-import java.util.List;
 import io.jgitkins.server.support.ErrorStatusMappingTestConfig;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,7 +74,6 @@ class OrganizeControllerTest {
 
     @MockBean
     private RequesterUserIdResolver requesterUserIdResolver;
-
 
     @Test
     void createOrganize_returnsCreatedResponse() throws Exception {
@@ -126,7 +125,6 @@ class OrganizeControllerTest {
                 .map(java.lang.reflect.RecordComponent::getName)
                 .toList()).doesNotContain("ownerId");
     }
-
 
     @Test
     void createOrganize_nullRequesterReturnsOrg403ApplicationError() throws Exception {

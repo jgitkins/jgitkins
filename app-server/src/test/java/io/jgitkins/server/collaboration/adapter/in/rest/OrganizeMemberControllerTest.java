@@ -23,16 +23,16 @@ import io.jgitkins.server.collaboration.application.dto.command.OrganizeMemberAd
 import io.jgitkins.server.collaboration.domain.vo.OrganizeMemberRole;
 import io.jgitkins.server.common.presentation.advice.GlobalExceptionHandler;
 import io.jgitkins.server.support.PermissiveSliceSecurityConfig;
+import io.jgitkins.server.support.ErrorStatusMappingTestConfig;
 import java.time.LocalDateTime;
 import java.util.List;
-import io.jgitkins.server.support.ErrorStatusMappingTestConfig;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.context.annotation.Import;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -61,7 +61,6 @@ class OrganizeMemberControllerTest {
 
     @MockBean
     private OrganizeMemberAddUseCase organizeMemberAddUseCase;
-
 
     @MockBean
     private OrganizeMemberQueryUseCase organizeMemberQueryUseCase;

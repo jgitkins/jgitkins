@@ -13,15 +13,15 @@ import io.jgitkins.server.identity.access.application.dto.result.UserAdminSummar
 import io.jgitkins.server.identity.access.application.dto.result.UserIdentitySummary;
 import io.jgitkins.server.identity.access.application.port.in.AdminUserQueryUseCase;
 import io.jgitkins.server.identity.access.application.port.in.AdminUserUpdateUseCase;
+import io.jgitkins.server.support.ErrorStatusMappingTestConfig;
 import java.time.LocalDateTime;
 import java.util.List;
-import io.jgitkins.server.support.ErrorStatusMappingTestConfig;
 import org.junit.jupiter.api.Test;
-import org.springframework.context.annotation.Import;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -38,7 +38,6 @@ class AdminUserControllerTest {
 
     @MockBean
     private AdminUserQueryUseCase adminUserQueryUseCase;
-
 
     @MockBean
     private AdminUserUpdateUseCase adminUserUpdateUseCase;

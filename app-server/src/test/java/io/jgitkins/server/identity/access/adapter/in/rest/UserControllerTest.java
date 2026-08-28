@@ -8,15 +8,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import io.jgitkins.server.identity.access.application.dto.result.UserSummary;
 import io.jgitkins.server.identity.access.application.port.in.PublicUserQueryUseCase;
+import io.jgitkins.server.support.ErrorStatusMappingTestConfig;
 import java.time.LocalDateTime;
 import java.util.List;
-import io.jgitkins.server.support.ErrorStatusMappingTestConfig;
 import org.junit.jupiter.api.Test;
-import org.springframework.context.annotation.Import;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(UserController.class)
@@ -29,7 +29,6 @@ class UserControllerTest {
 
     @MockBean
     private PublicUserQueryUseCase publicUserQueryUseCase;
-
 
     @Test
     void listUsers_returnsApiResponseWithUserSummaries() throws Exception {
