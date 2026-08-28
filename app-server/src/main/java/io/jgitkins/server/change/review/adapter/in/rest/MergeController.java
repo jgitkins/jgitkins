@@ -1,5 +1,6 @@
 package io.jgitkins.server.change.review.adapter.in.rest;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.Valid;
 import io.jgitkins.core.web.api.response.ApiResponse;
 import io.jgitkins.server.change.review.application.dto.command.MergeRequest;
@@ -29,8 +30,8 @@ public class MergeController {
     @Operation(summary = "Check Mergeability", description = "소스 브랜치가 타겟 브랜치로 병합 가능한지 확인")
     @GetMapping("/repositories/{namespace}/{repoName}/merge/check")
     public ResponseEntity<ApiResponse<MergeResult>> checkMergeability(
-            @PathVariable String namespace,
-            @PathVariable String repoName,
+            @PathVariable @NotBlank String namespace,
+            @PathVariable @NotBlank String repoName,
             @RequestParam String sourceBranch,
             @RequestParam String targetBranch
     ) throws IOException {
@@ -41,8 +42,8 @@ public class MergeController {
     @Operation(summary = "Merge", description = "소스 브랜치를 타겟 브랜치로 병합")
     @PostMapping("/repositories/{namespace}/{repoName}/merge")
     public ResponseEntity<ApiResponse<MergeResult>> performMerge(
-            @PathVariable String namespace,
-            @PathVariable String repoName,
+            @PathVariable @NotBlank String namespace,
+            @PathVariable @NotBlank String repoName,
             @Valid @RequestBody MergeRequest request
     ) throws IOException {
         MergeResult result = mergeUseCase.performMerge(namespace, repoName, request);

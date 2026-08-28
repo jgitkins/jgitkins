@@ -1,5 +1,6 @@
 package io.jgitkins.server.change.review.adapter.in.rest;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.Valid;
 import io.jgitkins.core.web.api.response.ApiResponse;
 import io.jgitkins.server.change.review.application.dto.command.PullRequestCreateCommand;
@@ -33,8 +34,8 @@ public class PullRequestController {
     @Operation(summary = "Create Pull Request", description = "source 브랜치와 target 브랜치의 검토 요청을 생성")
     @PostMapping
     public ResponseEntity<ApiResponse<PullRequestResult>> createPullRequest(
-            @PathVariable String namespace,
-            @PathVariable String repoName,
+            @PathVariable @NotBlank String namespace,
+            @PathVariable @NotBlank String repoName,
             @Valid @RequestBody PullRequestCreateRequest request) {
         PullRequestCreateCommand command = new PullRequestCreateCommand(
                 namespace,

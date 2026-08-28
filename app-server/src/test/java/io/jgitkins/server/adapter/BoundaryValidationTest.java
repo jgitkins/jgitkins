@@ -1,6 +1,7 @@
 package io.jgitkins.server.adapter;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 import java.util.List;
@@ -77,6 +78,56 @@ class BoundaryValidationTest {
                             violation.get("route"), violation.get("body"))
                     .isEqualTo(400);
         }
+    }
+
+    /**
+     * The path-variable half, on a route that can actually reach it.
+     *
+     * <p>Spring 6.1 enables built-in parameter validation only when the class is NOT annotated
+     * {@code @Validated}; that path throws {@code HandlerMethodValidationException}, while a
+     * {@code @Validated} class goes through AOP and throws {@code ConstraintViolationException}.
+     * {@code GlobalExceptionHandler} covered the second and not the first, so the built-in path fell to
+     * the framework's own {@code ErrorResponse} handling: 400, but with an empty body. A caller got a
+     * status and no error code, no message, no field name, while every other error on this API carries
+     * the {@code ApiResponse} envelope.
+     *
+     * <p>{@code MergeController} is used because it has no {@code @Validated} and its check route is a
+     * plain GET. {@code RepositoryContentController} also lacks {@code @Validated} and has three
+     * constrained path variables, but its route is multipart and the request fails during part binding
+     * before validation runs, so it cannot demonstrate this.
+     */
+    @Test
+    void aBlankPathSegmentIsRefusedWithTheSameEnvelopeAsEveryOtherError() throws Exception {
+        MvcResult result = mockMvc.perform(
+                        get("/repositories/{namespace}/{repoName}/merge/check", " ", "repo")
+                                .param("sourceBranch", "feature")
+                                .param("targetBranch", "main"))
+                .andReturn();
+
+        assertThat(result.getResponse().getStatus())
+                .as("a blank path segment is refused at the boundary")
+                .isEqualTo(400);
+        assertThat(result.getResponse().getContentAsString())
+                .as("and carries the ApiResponse envelope rather than an empty body")
+                .contains("\"code\"")
+                .contains("must not be blank");
+    }
+
+    /**
+     * An unmatched path is the caller's typo, not a server failure.
+     *
+     * <p>{@code GlobalExceptionHandler} listed {@code NoHandlerFoundException}, but Spring 6 throws
+     * {@code NoResourceFoundException} for an unmatched path, so every mistyped URL fell to the
+     * {@code Exception} catch-all and answered 500 INTERNAL_ERROR. Found while building the
+     * path-variable test above, whose first URL was wrong.
+     */
+    @Test
+    void anUnmatchedPathIsNotAServerError() throws Exception {
+        MvcResult result = mockMvc.perform(get("/api/there-is-no-such-route")).andReturn();
+
+        assertThat(result.getResponse().getStatus())
+                .as("a mistyped URL is a client error")
+                .isNotEqualTo(500);
     }
 
     /**

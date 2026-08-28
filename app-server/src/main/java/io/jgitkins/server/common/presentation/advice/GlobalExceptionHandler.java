@@ -18,11 +18,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
+import org.springframework.context.MessageSourceResolvable;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @RestControllerAdvice
 @Slf4j
@@ -41,7 +44,8 @@ public class GlobalExceptionHandler {
             ConstraintViolationException.class,
             MethodArgumentNotValidException.class,
             HttpMessageNotReadableException.class,
-            MethodArgumentTypeMismatchException.class
+            MethodArgumentTypeMismatchException.class,
+            HandlerMethodValidationException.class
     })
     public ResponseEntity<ApiResponse<Void>> handlePresentationException(Exception ex) {
         String message = extractValidationMessage(ex);
@@ -87,8 +91,14 @@ public class GlobalExceptionHandler {
     }
 
 
-    @ExceptionHandler(NoHandlerFoundException.class)
-    public ResponseEntity<ApiResponse<Void>> handleNoHandler(NoHandlerFoundException ex) {
+    /**
+     * {@code NoResourceFoundException} joined {@code NoHandlerFoundException} here because Spring 6 is
+     * what throws for an unmatched path now. Only the older type was listed, so every mistyped URL fell
+     * to the {@code Exception} catch-all and answered 500 INTERNAL_ERROR: the server reporting its own
+     * failure for what is entirely the caller's typo.
+     */
+    @ExceptionHandler({NoHandlerFoundException.class, NoResourceFoundException.class})
+    public ResponseEntity<ApiResponse<Void>> handleNoHandler(Exception ex) {
         return buildResponse(PresentationProblemSpec.BAD_REQUEST, HttpStatus.NOT_FOUND, ex.getMessage(),
                 SOURCE_PRESENTATION);
     }
@@ -142,6 +152,19 @@ public class GlobalExceptionHandler {
     }
 
     private String extractValidationMessage(Exception ex) {
+        // Spring 6.1 splits parameter validation in two. A class without @Validated gets the built-in
+        // path and throws HandlerMethodValidationException; a class with it goes through AOP and throws
+        // ConstraintViolationException. Both are the same class of failure to a caller, and both must
+        // carry the ApiResponse envelope: the built-in one implements ErrorResponse, so without this
+        // branch Spring already answered 400 but with an empty body, leaving the caller a status and no
+        // error code, message, or field name.
+        if (ex instanceof HandlerMethodValidationException hmve) {
+            return hmve.getAllErrors().stream()
+                    .map(MessageSourceResolvable::getDefaultMessage)
+                    .filter(message -> message != null && !message.isBlank())
+                    .findFirst()
+                    .orElse(ex.getMessage());
+        }
         if (ex instanceof MethodArgumentNotValidException manve) {
             FieldError fieldError = manve.getBindingResult().getFieldError();
             if (fieldError != null
