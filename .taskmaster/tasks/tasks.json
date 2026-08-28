@@ -86,7 +86,7 @@
         "status": "in-progress",
         "dependencies": [],
         "priority": "high",
-        "details": "기존 기능별 Task를 카테고리 기반(신규기능/리팩토링/보안)으로 재구성함.",
+        "details": "기존 기능별 Task를 카테고리 기반(신규기능/리팩토링/보안)으로 재구성함.\n\n[문서 이관 2026-08-28] .taskmaster/docs 의 68개 계획 문서(852K)를 ~/.gstack/projects/jgitkins/taskmaster-docs/ 로 옮겼다. 저장소에서는 git rm 했으므로 이 task 본문이 참조하는 .taskmaster/docs/refactor/*.md 경로는 그 위치에서 찾을 것. git 이력에는 그대로 남아 있어 git show <커밋>:<경로> 로도 열람 가능하다.",
         "testStrategy": "카테고리별 우선순위에 따라 하위 작업을 순차 수행하고 회귀 테스트를 적용한다.",
         "updatedAt": "2026-08-21T04:01:31.685Z",
         "subtasks": [
@@ -94,7 +94,7 @@
             "id": 34,
             "title": "[bounded-context infrastructure 분리][plan][P1][server, docs] Common infrastructure와 bounded context infrastructure 패키지 분리 계획 수립",
             "description": "`server/common/infrastructure` 에 공통 설정만 남기고, 각 bounded context 의 persistence model, mapper, adapter, technical support 를 context 하위 `infrastructure` 로 이동하는 실행 계획을 수립한다.",
-            "details": "참조 문서: `.taskmaster/docs/refactor/task_2_34_plan.md`. 검토 범위는 `app-server/src/main/java/io/jgitkins/server/infrastructure/adapter/persistence/*`, `app-server/src/main/java/io/jgitkins/server/infrastructure/mapper/*`, `app-server/src/main/java/io/jgitkins/server/infrastructure/persistence/*`, `app-server/src/main/java/io/jgitkins/server/common/infrastructure/*` 신설 기준, 그리고 `collaboration`, `repository`, `identity.access`, `change.review`, `execution` 각 bounded context 의 `infrastructure` 패키지 설계다. 목표는 공통 기술 설정과 비즈니스 의미가 있는 persistence 자산을 분리해, package tree 가 소유권을 숨기지 않도록 만드는 것이다. 계획 문서는 공통 vs context 경계 원칙, 3가지 방법 비교, phase 별 이동 순서, package policy test 추가안, generated MBG 산출물 이동 기준, 병렬 작업 lane, NOT in scope 를 포함한다.",
+            "details": "참조 문서: `.taskmaster/docs/refactor/task_2_34_plan.md`. 검토 범위는 `app-server/src/main/java/io/jgitkins/server/infrastructure/adapter/persistence/*`, `app-server/src/main/java/io/jgitkins/server/infrastructure/mapper/*`, `app-server/src/main/java/io/jgitkins/server/infrastructure/persistence/*`, `app-server/src/main/java/io/jgitkins/server/common/infrastructure/*` 신설 기준, 그리고 `collaboration`, `repository`, `identity.access`, `change.review`, `execution` 각 bounded context 의 `infrastructure` 패키지 설계다. 목표는 공통 기술 설정과 비즈니스 의미가 있는 persistence 자산을 분리해, package tree 가 소유권을 숨기지 않도록 만드는 것이다. 계획 문서는 공통 vs context 경계 원칙, 3가지 방법 비교, phase 별 이동 순서, package policy test 추가안, generated MBG 산출물 이동 기준, 병렬 작업 lane, NOT in scope 를 포함한다.\n\n[문서 이관 2026-08-28] .taskmaster/docs 의 68개 계획 문서(852K)를 ~/.gstack/projects/jgitkins/taskmaster-docs/ 로 옮겼다. 저장소에서는 git rm 했으므로 이 task 본문이 참조하는 .taskmaster/docs/refactor/*.md 경로는 그 위치에서 찾을 것. git 이력에는 그대로 남아 있어 git show <커밋>:<경로> 로도 열람 가능하다.",
             "status": "done",
             "dependencies": [
               33
@@ -107,7 +107,7 @@
             "id": 35,
             "title": "[bounded-context application 분리][plan][P1][server, docs] server/application 잔재를 bounded context application 으로 분류하는 계획 수립",
             "description": "`server/application` 하위에 남아 있는 common/dto/exception/mapper/port/service/support/validate 객체와 관련 테스트를 seam 기준으로 `repository`, `change/review`, `execution`, `identity/access`, `shared` 로 분류하는 실행 계획을 수립한다.",
-            "details": "참조 문서: `.taskmaster/docs/refactor/task_2_35_application_plan.md`. 검토 범위는 `app-server/src/main/java/io/jgitkins/server/application/common/*`, `app-server/src/main/java/io/jgitkins/server/application/dto/*`, `app-server/src/main/java/io/jgitkins/server/application/exception/*`, `app-server/src/main/java/io/jgitkins/server/application/mapper/*`, `app-server/src/main/java/io/jgitkins/server/application/port/*`, `app-server/src/main/java/io/jgitkins/server/application/service/*`, `app-server/src/main/java/io/jgitkins/server/application/support/*`, `app-server/src/main/java/io/jgitkins/server/application/validate/*`, 그리고 대응하는 `app-server/src/test/java/io/jgitkins/server/application/*` 테스트 패키지다. 목표는 top-level application 을 공용 저장소처럼 두지 않고, `shared/application` 과 각 bounded context application 패키지로 소유권을 분리하는 것이다.",
+            "details": "참조 문서: `.taskmaster/docs/refactor/task_2_35_application_plan.md`. 검토 범위는 `app-server/src/main/java/io/jgitkins/server/application/common/*`, `app-server/src/main/java/io/jgitkins/server/application/dto/*`, `app-server/src/main/java/io/jgitkins/server/application/exception/*`, `app-server/src/main/java/io/jgitkins/server/application/mapper/*`, `app-server/src/main/java/io/jgitkins/server/application/port/*`, `app-server/src/main/java/io/jgitkins/server/application/service/*`, `app-server/src/main/java/io/jgitkins/server/application/support/*`, `app-server/src/main/java/io/jgitkins/server/application/validate/*`, 그리고 대응하는 `app-server/src/test/java/io/jgitkins/server/application/*` 테스트 패키지다. 목표는 top-level application 을 공용 저장소처럼 두지 않고, `shared/application` 과 각 bounded context application 패키지로 소유권을 분리하는 것이다.\n\n[문서 이관 2026-08-28] .taskmaster/docs 의 68개 계획 문서(852K)를 ~/.gstack/projects/jgitkins/taskmaster-docs/ 로 옮겼다. 저장소에서는 git rm 했으므로 이 task 본문이 참조하는 .taskmaster/docs/refactor/*.md 경로는 그 위치에서 찾을 것. git 이력에는 그대로 남아 있어 git show <커밋>:<경로> 로도 열람 가능하다.",
             "status": "done",
             "dependencies": [
               34
@@ -120,7 +120,7 @@
             "id": 36,
             "title": "[plain domain object 분리][plan][P1][server, docs] server/domain 잔재를 shared/domain 및 context domain 으로 분류하는 계획 수립",
             "description": "`server/domain` 하위에 남아 있는 aggregate/error/event/exception/vo 객체를 공용 도메인 primitive 와 context 전용 domain 으로 나누고, bounded context 소유권이 드러나는 패키지로 이관하는 실행 계획을 수립한다.",
-            "details": "참조 문서: `.taskmaster/docs/refactor/task_2_36_domain_plan.md`. 검토 범위는 `app-server/src/main/java/io/jgitkins/server/domain/*`, `app-server/src/main/java/io/jgitkins/server/domain/aggregate/*`, `app-server/src/main/java/io/jgitkins/server/domain/error/*`, `app-server/src/main/java/io/jgitkins/server/domain/event/*`, `app-server/src/main/java/io/jgitkins/server/domain/exception/*`, `app-server/src/main/java/io/jgitkins/server/domain/model/vo/*` 이다. 목표는 공용 value object / domain base / domain event contract 는 `shared/domain` 으로, context-specific aggregate / exception / vo 는 각 bounded context domain 으로 재배치하는 것이다.",
+            "details": "참조 문서: `.taskmaster/docs/refactor/task_2_36_domain_plan.md`. 검토 범위는 `app-server/src/main/java/io/jgitkins/server/domain/*`, `app-server/src/main/java/io/jgitkins/server/domain/aggregate/*`, `app-server/src/main/java/io/jgitkins/server/domain/error/*`, `app-server/src/main/java/io/jgitkins/server/domain/event/*`, `app-server/src/main/java/io/jgitkins/server/domain/exception/*`, `app-server/src/main/java/io/jgitkins/server/domain/model/vo/*` 이다. 목표는 공용 value object / domain base / domain event contract 는 `shared/domain` 으로, context-specific aggregate / exception / vo 는 각 bounded context domain 으로 재배치하는 것이다.\n\n[문서 이관 2026-08-28] .taskmaster/docs 의 68개 계획 문서(852K)를 ~/.gstack/projects/jgitkins/taskmaster-docs/ 로 옮겼다. 저장소에서는 git rm 했으므로 이 task 본문이 참조하는 .taskmaster/docs/refactor/*.md 경로는 그 위치에서 찾을 것. git 이력에는 그대로 남아 있어 git show <커밋>:<경로> 로도 열람 가능하다.",
             "status": "done",
             "dependencies": [
               34
@@ -133,7 +133,7 @@
             "id": 37,
             "title": "[bounded-context presentation 분리][plan][P1][server, docs] server/presentation 잔재를 common presentation 및 context presentation 으로 분류하는 계획 수립",
             "description": "`server/presentation` 하위에 남아 있는 advice/error/exception/api controller 객체를 common web support 와 bounded context presentation 으로 분류하는 실행 계획을 수립한다.",
-            "details": "참조 문서: `.taskmaster/docs/refactor/task_2_37_presentation_plan.md`. 검토 범위는 `app-server/src/main/java/io/jgitkins/server/presentation/advice/*`, `app-server/src/main/java/io/jgitkins/server/presentation/advice/mapper/*`, `app-server/src/main/java/io/jgitkins/server/presentation/api/*`, `app-server/src/main/java/io/jgitkins/server/presentation/common/error/*`, `app-server/src/main/java/io/jgitkins/server/presentation/exception/*`, `app-server/src/main/java/io/jgitkins/server/presentation/mapper/*`, `app-server/src/main/java/io/jgitkins/server/presentation/validate/*` 이다. 목표는 공통 web concern 은 `common/presentation` 으로 고정하고, feature controller 는 `repository`, `change/review`, 필요 시 `execution` 등의 bounded context presentation 으로 이동시키는 것이다.",
+            "details": "참조 문서: `.taskmaster/docs/refactor/task_2_37_presentation_plan.md`. 검토 범위는 `app-server/src/main/java/io/jgitkins/server/presentation/advice/*`, `app-server/src/main/java/io/jgitkins/server/presentation/advice/mapper/*`, `app-server/src/main/java/io/jgitkins/server/presentation/api/*`, `app-server/src/main/java/io/jgitkins/server/presentation/common/error/*`, `app-server/src/main/java/io/jgitkins/server/presentation/exception/*`, `app-server/src/main/java/io/jgitkins/server/presentation/mapper/*`, `app-server/src/main/java/io/jgitkins/server/presentation/validate/*` 이다. 목표는 공통 web concern 은 `common/presentation` 으로 고정하고, feature controller 는 `repository`, `change/review`, 필요 시 `execution` 등의 bounded context presentation 으로 이동시키는 것이다.\n\n[문서 이관 2026-08-28] .taskmaster/docs 의 68개 계획 문서(852K)를 ~/.gstack/projects/jgitkins/taskmaster-docs/ 로 옮겼다. 저장소에서는 git rm 했으므로 이 task 본문이 참조하는 .taskmaster/docs/refactor/*.md 경로는 그 위치에서 찾을 것. git 이력에는 그대로 남아 있어 git show <커밋>:<경로> 로도 열람 가능하다.",
             "status": "done",
             "dependencies": [
               34
@@ -1262,6 +1262,52 @@
             "priority": "high",
             "details": "GitRequestAuthSupport:10-20 의 resolveUserId 가 request.getHeader(\"X-User-Id\") 를 파싱해 그대로 돌려주고, 이것이 git 인가의 유일한 신원 출처다 — GitSmartHttpAuthorizer:29,:45 가 그 값을 gitRepositoryAccessUseCase.canRead/canWrite 에 그대로 넘긴다. 이 헤더를 채우는 리버스 프록시나 게이트웨이는 저장소 어디에도 없다. 함께: GitSmartHttpAuthFilter:56-63 은 Authorization 헤더의 *존재* 만 확인하고 값을 파싱하지도 검증하지도 않는다. 체인에 http.httpBasic(...) 이 없기 때문이다(httpBasic grep 0건) — addFilterBefore(..., BasicAuthenticationFilter.class) 는 위치만 지정할 뿐 그 필터를 설치하지 않는다. 그래서 PatAuthenticationProvider 와 PatTokenAuthenticationService(BCrypt PAT 검증)가 @Component 로 등록만 되고 어떤 AuthenticationManager 에도 연결되지 않은 고아다. 완화 요인: GitServlet 이 아직 등록되지 않아(GitServlet/ServletRegistrationBean grep 0건) 현재는 도달 불가다. 그래서 P0 이되 '지금 털린다' 가 아니라 '서블릿을 배선하는 순간 인증이 없다' 이다. 배선 전에 반드시 닫아야 한다.",
             "testStrategy": "httpBasic 설치 후 잘못된 자격증명이 401 인지. X-User-Id 헤더를 위조해도 다른 사용자로 해석되지 않는지. PAT provider 가 실제 체인에 연결됐는지."
+          },
+          {
+            "id": 128,
+            "title": "[cleanup][app-server] 손으로 쓴 생성자 7개 정리 — 다만 4개는 lombok.config 없이는 바꾸면 안 된다",
+            "description": "의존성 주입은 이미 @RequiredArgsConstructor 로 통일돼 있다: 137개 클래스가 쓰고 손으로 쓴 것은 7개뿐이다. 그런데 그 7개를 일괄 전환하면 주입이 깨진다. 4개가 필드에 @Qualifier 를 달고 있고 (RepositoryContentController, RepositoryMemberController, WebRepositoryController, AdminUserController — 전부 identityRequesterUserIdResolver 같은 한정자를 쓴다), Lombok 의 @RequiredArgsConstructor 는 필드 애노테이션을 생성자 파라미터로 기본 전파하지 않는다. 저장소 전체에 lombok.config 파일이 없으므로 lombok.copyableAnnotations 설정도 없다. 지금 바꾸면 한정자가 사라져 스프링이 다른 빈을 주입하거나 모호성으로 기동에 실패한다. AdminUserController 의 명시적 생성자는 어제 5b37679 가 관리자 인가를 넣으며 만든 것이다. 따라서 두 단계로 한다. (1) 안전하게 전환 가능한 3개: MergeGitAdapter, PushEventCommandResolver, PipelineConfigGitAdapter — @Qualifier 가 없다. (2) 나머지 4개는 저장소 루트에 lombok.config 를 만들어 lombok.copyableAnnotations += org.springframework.beans.factory.annotation.Qualifier 를 넣은 뒤에만 전환한다. lombok.config 도입은 모듈 전체 컴파일에 영향을 주므로 그 자체를 하나의 결정으로 다룬다. 전환하지 않기로 한다면 그 4개에 '한정자 전파 때문에 명시적 생성자를 유지한다'는 주석을 남겨 다음 사람이 다시 시도하지 않게 한다.",
+            "status": "pending",
+            "dependencies": [],
+            "priority": "low",
+            "details": "의존성 주입은 이미 @RequiredArgsConstructor 로 통일돼 있다: 137개 클래스가 쓰고 손으로 쓴 것은 7개뿐이다. 그런데 그 7개를 일괄 전환하면 주입이 깨진다. 4개가 필드에 @Qualifier 를 달고 있고 (RepositoryContentController, RepositoryMemberController, WebRepositoryController, AdminUserController — 전부 identityRequesterUserIdResolver 같은 한정자를 쓴다), Lombok 의 @RequiredArgsConstructor 는 필드 애노테이션을 생성자 파라미터로 기본 전파하지 않는다. 저장소 전체에 lombok.config 파일이 없으므로 lombok.copyableAnnotations 설정도 없다. 지금 바꾸면 한정자가 사라져 스프링이 다른 빈을 주입하거나 모호성으로 기동에 실패한다. AdminUserController 의 명시적 생성자는 어제 5b37679 가 관리자 인가를 넣으며 만든 것이다. 따라서 두 단계로 한다. (1) 안전하게 전환 가능한 3개: MergeGitAdapter, PushEventCommandResolver, PipelineConfigGitAdapter — @Qualifier 가 없다. (2) 나머지 4개는 저장소 루트에 lombok.config 를 만들어 lombok.copyableAnnotations += org.springframework.beans.factory.annotation.Qualifier 를 넣은 뒤에만 전환한다. lombok.config 도입은 모듈 전체 컴파일에 영향을 주므로 그 자체를 하나의 결정으로 다룬다. 전환하지 않기로 한다면 그 4개에 '한정자 전파 때문에 명시적 생성자를 유지한다'는 주석을 남겨 다음 사람이 다시 시도하지 않게 한다.",
+            "testStrategy": "전환 후 애플리케이션 컨텍스트가 기동하는지, 특히 RequesterUserIdResolver 두 구현 중 identity 쪽이 주입되는지 단정하는 테스트. 한정자를 일부러 제거해 실패하는 negative control 로 전파가 실제로 동작함을 증명."
+          },
+          {
+            "id": 129,
+            "title": "[refactor][naming][app-server] 쓰기를 가진 컨트롤러에 Management 접미사를 붙여 이름을 통일한다",
+            "description": "현재 19개 컨트롤러 중 Management 접미사를 가진 것은 RepositoryManagementController 하나뿐이라 규칙이 아니라 예외로 보인다. 쓰기 매핑(@Post/@Put/@Patch/@Delete) 보유 여부로 나누면 경계가 분명하다. 쓰기 보유(관리 대상): MergeController 1, PullRequestController 1, OrganizeController 2, OrganizeMemberController 2, RunnerController 3, AdminUserController 1, OAuthController 1, SignupController 1, UserCredentialController 2, BranchController 2, RepositoryContentController 2, RepositoryMemberController 2. 읽기 전용: WebOrganizeController, UserController, RepositoryCommitController, RepositoryFileController, WebRepositoryController. 먼저 규칙을 정할 것: 리소스 수명주기를 관리하는 것만 붙일지(Organize, Branch, Runner, RepositoryMember, OrganizeMember, UserCredential, PullRequest), 아니면 쓰기가 하나라도 있으면 붙일지. 후자는 OAuthController 와 SignupController 처럼 인증 흐름이라 관리가 아닌 것까지 포함되므로 전자를 권한다. 선행 조건이 하나 있다: ArchitecturePackageConventionTest 가 컨트롤러를 포함해 .class 리터럴 103개를 하드코딩하고 있어서 이름을 바꾸면 그 목록도 함께 고쳐야 한다. 2.107 이 그 목록을 소스 스캔으로 바꾸므로 그 뒤에 하면 목록 수정이 사라진다. 이름 변경은 URL 을 바꾸지 않는다(@RequestMapping 경로는 그대로) — 순수 클래스명 변경이다.",
+            "status": "pending",
+            "dependencies": [
+              "107"
+            ],
+            "priority": "low",
+            "details": "현재 19개 컨트롤러 중 Management 접미사를 가진 것은 RepositoryManagementController 하나뿐이라 규칙이 아니라 예외로 보인다. 쓰기 매핑(@Post/@Put/@Patch/@Delete) 보유 여부로 나누면 경계가 분명하다. 쓰기 보유(관리 대상): MergeController 1, PullRequestController 1, OrganizeController 2, OrganizeMemberController 2, RunnerController 3, AdminUserController 1, OAuthController 1, SignupController 1, UserCredentialController 2, BranchController 2, RepositoryContentController 2, RepositoryMemberController 2. 읽기 전용: WebOrganizeController, UserController, RepositoryCommitController, RepositoryFileController, WebRepositoryController. 먼저 규칙을 정할 것: 리소스 수명주기를 관리하는 것만 붙일지(Organize, Branch, Runner, RepositoryMember, OrganizeMember, UserCredential, PullRequest), 아니면 쓰기가 하나라도 있으면 붙일지. 후자는 OAuthController 와 SignupController 처럼 인증 흐름이라 관리가 아닌 것까지 포함되므로 전자를 권한다. 선행 조건이 하나 있다: ArchitecturePackageConventionTest 가 컨트롤러를 포함해 .class 리터럴 103개를 하드코딩하고 있어서 이름을 바꾸면 그 목록도 함께 고쳐야 한다. 2.107 이 그 목록을 소스 스캔으로 바꾸므로 그 뒤에 하면 목록 수정이 사라진다. 이름 변경은 URL 을 바꾸지 않는다(@RequestMapping 경로는 그대로) — 순수 클래스명 변경이다.",
+            "testStrategy": "이름 변경 후 전체 테스트 통과와 매핑 경로 무변경 확인. 슬라이스 테스트의 @WebMvcTest 대상 클래스명도 함께 갱신됐는지."
+          },
+          {
+            "id": 130,
+            "title": "[architecture][collaboration][app-server] 조직 생성의 도메인 규칙이 애플리케이션 서비스에 나와 있다 — aggregate 안으로 넣는다",
+            "description": "사용자가 지목한 OrganizeService:44-49 주변이 출발점이다. 이 서비스는 조직 생성 규칙을 스스로 조립한다. (a) 이벤트 수명주기를 밖에서 몬다: :55 createWithoutEvent 로 만들고, 저장한 뒤 :68 recordCreated 를 호출하고, :69-71 에서 getDomainEvents 복사·publish·clearDomainEvents 를 손으로 한다. Organize 는 이벤트를 기록하는 create(:28) 와 기록하지 않는 createWithoutEvent(:45) 를 동시에 노출하고 recordCreated(:58) 도 public 이라, aggregate 가 자기 이벤트 시점을 스스로 정하지 못한다. 측정해 보면 이 패턴을 가진 aggregate 는 Organize 하나뿐이다 — Repository, Job, Runner, User 는 이벤트 메서드가 0이다. 즉 저장소 전반의 관례가 아니라 이 한 곳의 이탈이다. (b) '생성자는 그 조직의 OWNER 멤버가 된다' 는 규칙이 :63-67 에 있다. 이것은 collaboration 도메인의 불변식이지 오케스트레이션이 아니다. 짝이 되는 '마지막 OWNER 는 제거할 수 없다' 는 OrganizeMemberService:89 에 있어, 같은 불변식의 양쪽이 서로 다른 서비스에 흩어져 있다. 목표: createWithoutEvent 와 public recordCreated 를 없애고 create 하나로 모으되 id 발급 이후 이벤트가 확정되도록 하고, 소유자 멤버십 부트스트랩을 Organize 안이나 collaboration 도메인 서비스로 옮긴다. 주의: 2.95 가 이 메서드의 중복 검증을 막 정리했으므로(:45-48 의 주석이 그 근거다) 그 결정을 되돌리지 말 것. 이 task 는 검증을 되돌리는 것이 아니라 생성 규칙을 옮기는 것이다.",
+            "status": "pending",
+            "dependencies": [
+              "113"
+            ],
+            "priority": "medium",
+            "details": "사용자가 지목한 OrganizeService:44-49 주변이 출발점이다. 이 서비스는 조직 생성 규칙을 스스로 조립한다. (a) 이벤트 수명주기를 밖에서 몬다: :55 createWithoutEvent 로 만들고, 저장한 뒤 :68 recordCreated 를 호출하고, :69-71 에서 getDomainEvents 복사·publish·clearDomainEvents 를 손으로 한다. Organize 는 이벤트를 기록하는 create(:28) 와 기록하지 않는 createWithoutEvent(:45) 를 동시에 노출하고 recordCreated(:58) 도 public 이라, aggregate 가 자기 이벤트 시점을 스스로 정하지 못한다. 측정해 보면 이 패턴을 가진 aggregate 는 Organize 하나뿐이다 — Repository, Job, Runner, User 는 이벤트 메서드가 0이다. 즉 저장소 전반의 관례가 아니라 이 한 곳의 이탈이다. (b) '생성자는 그 조직의 OWNER 멤버가 된다' 는 규칙이 :63-67 에 있다. 이것은 collaboration 도메인의 불변식이지 오케스트레이션이 아니다. 짝이 되는 '마지막 OWNER 는 제거할 수 없다' 는 OrganizeMemberService:89 에 있어, 같은 불변식의 양쪽이 서로 다른 서비스에 흩어져 있다. 목표: createWithoutEvent 와 public recordCreated 를 없애고 create 하나로 모으되 id 발급 이후 이벤트가 확정되도록 하고, 소유자 멤버십 부트스트랩을 Organize 안이나 collaboration 도메인 서비스로 옮긴다. 주의: 2.95 가 이 메서드의 중복 검증을 막 정리했으므로(:45-48 의 주석이 그 근거다) 그 결정을 되돌리지 말 것. 이 task 는 검증을 되돌리는 것이 아니라 생성 규칙을 옮기는 것이다.",
+            "testStrategy": "조직 생성 시 OWNER 멤버가 함께 생기고 이벤트가 발행되는지를 도메인 단위 테스트로. 서비스에서 멤버십 생성 코드를 지워도 여전히 통과해야 규칙이 실제로 도메인으로 옮겨진 것이다."
+          },
+          {
+            "id": 131,
+            "title": "[architecture][all-contexts][app-server] application 계층의 dto 와 contract 패키지가 컨텍스트마다 다르다 — 하나로 통일",
+            "description": "같은 역할의 패키지가 컨텍스트마다 다른 이름을 쓴다. 측정값: collaboration dto=2/contract=0, repository dto=1/contract=1, execution dto=1/contract=1, identity/access dto=2/contract=1, change/review dto=2/contract=0. 즉 세 컨텍스트는 두 이름을 동시에 갖고 있고 두 컨텍스트는 dto 만 갖는다. 'command/result 를 어디에 두는가' 라는 같은 질문에 컨텍스트마다 다른 답이 있어서, 새 파일을 만들 때마다 결정을 다시 하게 되고 코드 리뷰에서 매번 재론된다. 하나를 정해 나머지를 이관한다. contract 를 권한다 — 이 계층이 담는 것은 직렬화 대상이 아니라 유스케이스의 입출력 계약이고, adapter 쪽 request/response DTO 와 이름이 겹치지 않아 구분이 쉬워진다. ArchitecturePackageConventionTest 가 패키지 배치를 검사하므로 함께 갱신해야 하며, 2.107 이 그 목록을 스캔으로 바꾼 뒤에 하면 수정 범위가 줄어든다. 이 항목은 2.111~2.127 이 다루는 결함이 아니라 순수 구조 정리이므로 우선순위는 낮다. 참고: 이 문제는 컨텍스트별 패키지 구조 불일치의 한 갈래이고, domain/vo 대 domain/model/vo, domain/exception 유무도 같은 부류다 — 함께 다룰지 별도로 둘지 결정할 것.",
+            "status": "pending",
+            "dependencies": [
+              "107"
+            ],
+            "priority": "low",
+            "details": "같은 역할의 패키지가 컨텍스트마다 다른 이름을 쓴다. 측정값: collaboration dto=2/contract=0, repository dto=1/contract=1, execution dto=1/contract=1, identity/access dto=2/contract=1, change/review dto=2/contract=0. 즉 세 컨텍스트는 두 이름을 동시에 갖고 있고 두 컨텍스트는 dto 만 갖는다. 'command/result 를 어디에 두는가' 라는 같은 질문에 컨텍스트마다 다른 답이 있어서, 새 파일을 만들 때마다 결정을 다시 하게 되고 코드 리뷰에서 매번 재론된다. 하나를 정해 나머지를 이관한다. contract 를 권한다 — 이 계층이 담는 것은 직렬화 대상이 아니라 유스케이스의 입출력 계약이고, adapter 쪽 request/response DTO 와 이름이 겹치지 않아 구분이 쉬워진다. ArchitecturePackageConventionTest 가 패키지 배치를 검사하므로 함께 갱신해야 하며, 2.107 이 그 목록을 스캔으로 바꾼 뒤에 하면 수정 범위가 줄어든다. 이 항목은 2.111~2.127 이 다루는 결함이 아니라 순수 구조 정리이므로 우선순위는 낮다. 참고: 이 문제는 컨텍스트별 패키지 구조 불일치의 한 갈래이고, domain/vo 대 domain/model/vo, domain/exception 유무도 같은 부류다 — 함께 다룰지 별도로 둘지 결정할 것.",
+            "testStrategy": "이관 후 각 컨텍스트가 동일한 패키지 집합을 갖는지 단정하는 가드레일 테스트와 negative control."
           }
         ]
       },
