@@ -19,6 +19,7 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.dircache.DirCache;
 import org.eclipse.jgit.dircache.DirCacheBuilder;
+import org.eclipse.jgit.dircache.DirCacheEditor;
 import org.eclipse.jgit.dircache.DirCacheEntry;
 import org.eclipse.jgit.errors.IncorrectObjectTypeException;
 import org.eclipse.jgit.errors.MissingObjectException;
@@ -86,8 +87,13 @@ public class RepositoryGitCommitAdapter implements CommitGitPort {
             String authorEmail,
             List<CommitFile> files) {
         try (Repository repository = repositoryResolver.openBareRepository(namespace, repoName)) {
-            ObjectId commitId = createCommit(repository, branch, message, authorName, authorEmail, files);
-            updateBranchReference(repository, branch, commitId);
+            // The branch head is read ONCE and used for both the tree and the ref compare-and-swap.
+            // updateBranchReference used to re-read it, which made the CAS compare a value against
+            // itself: a commit that landed in between passed the check and was then overwritten.
+            ObjectId parentCommitId = resolveBranchHead(repository, branch);
+            ObjectId commitId = createCommit(
+                    repository, branch, message, authorName, authorEmail, files, parentCommitId);
+            updateBranchReference(repository, branch, commitId, parentCommitId);
         } catch (IOException e) {
             throw new CommitFailedException("Failed to commit changes", e);
         }
@@ -98,13 +104,13 @@ public class RepositoryGitCommitAdapter implements CommitGitPort {
             String message,
             String authorName,
             String authorEmail,
-            List<CommitFile> files) throws IOException {
+            List<CommitFile> files,
+            ObjectId parentCommitId) throws IOException {
         String commitMessage = StringUtils.hasText(message) ? message.trim() : "Initial commit";
         PersonIdent ident = createPersonIdent(authorName, authorEmail);
-        ObjectId parentCommitId = resolveBranchHead(repository, branch);
 
         try (ObjectInserter inserter = repository.newObjectInserter()) {
-            ObjectId treeId = writeTree(inserter, files);
+            ObjectId treeId = writeTree(repository, inserter, files, parentCommitId);
 
             CommitBuilder commitBuilder = new CommitBuilder();
             commitBuilder.setTreeId(treeId);
@@ -121,43 +127,98 @@ public class RepositoryGitCommitAdapter implements CommitGitPort {
         }
     }
 
-    private ObjectId writeTree(ObjectInserter inserter, List<CommitFile> files) throws IOException {
+    /**
+     * Builds the commit tree as an OVERLAY on the parent, not a replacement of it.
+     *
+     * <p>This used to start from an empty {@code DirCache.newInCore()} and add only the files being
+     * committed, so a single-file upload produced a tree containing exactly that file. The parent was
+     * still attached via {@code setParentId}, which made the commit graph look normal while every
+     * other file on the branch vanished from HEAD. app-web calls this path from its upload button.
+     *
+     * <p>{@link DirCacheEditor} rather than {@link DirCacheBuilder#add}: builder.add APPENDS. Adding
+     * an entry for a path the parent tree already carries would leave the DirCache holding two
+     * entries for one path. PathEdit replaces-or-inserts, which is the overlay semantics wanted here.
+     */
+    private ObjectId writeTree(Repository repository,
+            ObjectInserter inserter,
+            List<CommitFile> files,
+            ObjectId parentCommitId) throws IOException {
         DirCache dirCache = DirCache.newInCore();
-        DirCacheBuilder builder = dirCache.builder();
 
-        if (files != null) {
-            files.stream()
-                    .filter(file -> file != null && StringUtils.hasText(file.getPath()))
-                    .sorted(Comparator.comparing(CommitFile::getPath))
-                    .forEach(file -> builder.add(createEntry(inserter, file)));
+        DirCacheBuilder builder = dirCache.builder();
+        if (parentCommitId != null) {
+            try (RevWalk walk = new RevWalk(repository);
+                    ObjectReader reader = repository.newObjectReader()) {
+                RevCommit parent = walk.parseCommit(parentCommitId);
+                builder.addTree(new byte[0], DirCacheEntry.STAGE_0, reader, parent.getTree());
+            }
+        }
+        builder.finish();
+
+        // Blobs are inserted before the editor runs. DirCacheEditor.PathEdit#apply cannot throw a
+        // checked exception, and insertion is the part that fails, so it must not happen in there.
+        List<StagedFile> staged = stage(inserter, files);
+        if (!staged.isEmpty()) {
+            DirCacheEditor editor = dirCache.editor();
+            for (StagedFile file : staged) {
+                editor.add(new DirCacheEditor.PathEdit(file.path()) {
+                    @Override
+                    public void apply(DirCacheEntry entry) {
+                        entry.setFileMode(FileMode.REGULAR_FILE);
+                        entry.setObjectId(file.blobId());
+                    }
+                });
+            }
+            editor.finish();
         }
 
-        builder.finish();
         return dirCache.writeTree(inserter);
     }
 
-    private DirCacheEntry createEntry(ObjectInserter inserter, CommitFile file) {
+    private List<StagedFile> stage(ObjectInserter inserter, List<CommitFile> files) {
+        List<StagedFile> staged = new ArrayList<>();
+        if (files == null) {
+            return staged;
+        }
+        files.stream()
+                .filter(file -> file != null && StringUtils.hasText(file.getPath()))
+                .sorted(Comparator.comparing(CommitFile::getPath))
+                .forEach(file -> staged.add(stageOne(inserter, file)));
+        return staged;
+    }
+
+    private StagedFile stageOne(ObjectInserter inserter, CommitFile file) {
         try {
             byte[] content = file.getContent() != null ? file.getContent() : new byte[0];
-            ObjectId blobId = inserter.insert(Constants.OBJ_BLOB, content);
-            DirCacheEntry entry = new DirCacheEntry(normalizePath(file.getPath()));
-            entry.setFileMode(FileMode.REGULAR_FILE);
-            entry.setObjectId(blobId);
-            return entry;
+            return new StagedFile(normalizePath(file.getPath()),
+                    inserter.insert(Constants.OBJ_BLOB, content));
         } catch (IOException e) {
             throw new CommitFailedException(
                     "Failed to stage commit file: " + file.getPath(), e);
         }
     }
 
-    private void updateBranchReference(Repository repository, String branch, ObjectId commitId) throws IOException {
+    private record StagedFile(String path, ObjectId blobId) {
+    }
+
+    /**
+     * @param expectedOldObjectId the head this commit's tree was built from, or {@code null} when the
+     *     branch did not exist. Supplied by the caller rather than re-read here: re-reading compared
+     *     the head against itself, so a commit that landed between tree construction and ref update
+     *     satisfied the check and was then discarded. {@code zeroId} means "must not exist yet",
+     *     which is the same guarantee for branch creation.
+     */
+    // Package-private so a test can hand it a deliberately stale parent. The race it guards
+    // (a commit landing between tree construction and ref update) cannot be triggered
+    // deterministically through commit(), and a threaded test that only sometimes races would
+    // pass whether or not the CAS works.
+    void updateBranchReference(Repository repository, String branch, ObjectId commitId,
+            ObjectId expectedOldObjectId) throws IOException {
         String branchRef = Constants.R_HEADS + branch;
-        ObjectId currentHead = resolveBranchHead(repository, branch);
 
         RefUpdate refUpdate = repository.updateRef(branchRef);
-        if (currentHead != null) {
-            refUpdate.setExpectedOldObjectId(currentHead);
-        }
+        refUpdate.setExpectedOldObjectId(
+                expectedOldObjectId != null ? expectedOldObjectId : ObjectId.zeroId());
         refUpdate.setNewObjectId(commitId);
         refUpdate.setRefLogMessage("commit: " + branch, false);
 
