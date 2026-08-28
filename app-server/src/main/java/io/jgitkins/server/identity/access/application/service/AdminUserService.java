@@ -11,7 +11,10 @@ import io.jgitkins.server.identity.access.application.port.out.UserQueryPort;
 import io.jgitkins.server.identity.access.application.contract.result.UserQueryResult;
 import io.jgitkins.server.identity.access.domain.aggregate.User;
 import io.jgitkins.server.identity.access.domain.repository.UserRepository;
+import io.jgitkins.server.identity.access.application.exception.AdminPrivilegeRequiredException;
+import io.jgitkins.server.identity.access.domain.vo.UserAuthority;
 import io.jgitkins.server.identity.access.domain.vo.UserStatus;
+import io.jgitkins.server.shared.application.exception.UnauthenticatedException;
 import java.util.List;
 import java.util.Locale;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +32,8 @@ public class AdminUserService implements AdminUserQueryUseCase, AdminUserUpdateU
 
     @Override
     @Transactional(readOnly = true)
-    public List<UserAdminSummary> getUsers() {
+    public List<UserAdminSummary> getUsers(Long requesterUserId) {
+        requireAdministrator(requesterUserId);
         return userQueryPort.findAll()
                 .stream()
                 .map(userApplicationMapper::toAdminSummary)
@@ -38,7 +42,8 @@ public class AdminUserService implements AdminUserQueryUseCase, AdminUserUpdateU
 
     @Override
     @Transactional(readOnly = true)
-    public UserAdminDetail getUser(Long userId) {
+    public UserAdminDetail getUser(Long requesterUserId, Long userId) {
+        requireAdministrator(requesterUserId);
         UserQueryResult user = userQueryPort.findUserDetailsById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found")); // TODO: 도메인 예외 throw
 
@@ -52,7 +57,9 @@ public class AdminUserService implements AdminUserQueryUseCase, AdminUserUpdateU
 
     @Override
     @Transactional
-    public void updateUserStatus(Long userId, String status) {
+    public void updateUserStatus(Long requesterUserId, Long userId, String status) {
+        requireAdministrator(requesterUserId);
+
 
         // TODO: 상태에 대한 순수 유효성 검증은 API (@Valid) 단으로 이관
         UserStatus normalized = normalizeStatus(status);
@@ -79,4 +86,28 @@ public class AdminUserService implements AdminUserQueryUseCase, AdminUserUpdateU
         }
         return UserStatus.fromString(normalized);
     }
+
+    /**
+     * Every method on this service is an administrator operation and every one of them was reachable
+     * unauthenticated before this.
+     *
+     * <p>The use case signatures carried no requester at all, so no layer could have authorized:
+     * the controller passed no principal, SecurityConfig is {@code anyRequest().permitAll()}, and
+     * this application uses no method security. Anyone who could reach the port could set any
+     * account, administrators included, to BLOCKED or DELETED, and could list every user.
+     *
+     * <p>The gate lives here rather than in the controller so a second inbound adapter cannot reach
+     * the operation without it.
+     */
+    private void requireAdministrator(Long requesterUserId) {
+        if (requesterUserId == null) {
+            throw new UnauthenticatedException();
+        }
+        User requester = userRepository.findById(requesterUserId)
+                .orElseThrow(AdminPrivilegeRequiredException::new);
+        if (requester.getAuthority() != UserAuthority.ADMIN) {
+            throw new AdminPrivilegeRequiredException();
+        }
+    }
+
 }

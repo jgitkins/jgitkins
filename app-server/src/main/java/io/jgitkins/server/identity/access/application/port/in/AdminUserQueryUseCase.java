@@ -5,6 +5,6 @@ import io.jgitkins.server.identity.access.application.dto.result.UserAdminSummar
 import java.util.List;
 
 public interface AdminUserQueryUseCase {
-    List<UserAdminSummary> getUsers();
-    UserAdminDetail getUser(Long userId);
+    List<UserAdminSummary> getUsers(Long requesterUserId);
+    UserAdminDetail getUser(Long requesterUserId, Long userId);
 }
