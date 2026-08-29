@@ -134,7 +134,9 @@
 
 현재 흐름은 다음과 같다.
 
-1. inbound adapter가 `UserIdentityPort`로 requester를 resolve한다.
+1. inbound adapter가 `RequesterUserIdResolver`로 requester를 resolve해 커맨드에 담는다.
+   (`UserIdentityPort` 가 아니다 — 그 포트는 인터페이스와 `InProcessUserIdentityAdapter` 만
+   있고 애플리케이션 계층에서 부르는 곳이 없다. 2026-08-29 확인, 정리는 task 2.105.)
 2. organization이 없거나 legacy owner-only 상태면 mutation을 거부한다.
 3. add는 OWNER requester만 MEMBER/MAINTAINER/OWNER를 즉시 추가한다.
 4. remove는 organization row를 `SELECT ... FOR UPDATE`로 잠근다.
