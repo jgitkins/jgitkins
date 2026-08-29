@@ -94,7 +94,7 @@ class RepositoryContentControllerTest {
 
     @Test
     void getTree_returnsWrappedEntries() throws Exception {
-        when(fileTreeLoadUseCase.getTree("team", "repo", "main", "src"))
+        when(fileTreeLoadUseCase.getTree("team", "repo", "main", "src", 7L))
                 .thenReturn(List.of(FileEntry.builder().name("README.md").path("README.md").type("blob").build()));
 
         mockMvc.perform(get("/api/repositories/team/repo/refs/main/tree")
@@ -104,7 +104,7 @@ class RepositoryContentControllerTest {
                 .andExpect(jsonPath("$.data[0].type").value("blob"))
                 .andExpect(jsonPath("$.error").doesNotExist());
 
-        verify(fileTreeLoadUseCase).getTree("team", "repo", "main", "src");
+        verify(fileTreeLoadUseCase).getTree("team", "repo", "main", "src", 7L);
     }
 
     @Test

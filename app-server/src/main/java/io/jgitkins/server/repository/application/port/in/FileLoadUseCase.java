@@ -5,5 +5,6 @@ import io.jgitkins.server.repository.application.contract.result.FileEntry;
 import java.util.List;
 
 public interface FileLoadUseCase {
-    List<FileEntry> getAllFiles(String namespace, String repoName, String reference);
+    /** @param requesterUserId nullable: a public repository is readable anonymously. */
+    List<FileEntry> getAllFiles(String namespace, String repoName, String reference, Long requesterUserId);
 }

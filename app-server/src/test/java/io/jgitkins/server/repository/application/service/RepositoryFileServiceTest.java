@@ -17,6 +17,9 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.eq;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import io.jgitkins.server.repository.application.exception.RepositoryNotFoundException;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -70,21 +73,56 @@ class RepositoryFileServiceTest {
                 eq("msg"), eq("jgitkins"), eq("no-reply@jgitkins.local"), eq(files));
     }
 
+    // --- task 2.125: both read paths went straight to git ---------------------------------------
+    //
+    // Neither method checked visibility. RepositoryFileController exposes both without a principal
+    // and SecurityConfig is permitAll, so an anonymous caller could list every file name and path in
+    // a private repository. The task named the app-web route; the server answered the same thing
+    // directly, which is why fixing app-web alone would have closed nothing.
+
+    private static final long REQUESTER = 7L;
+
     @Test
-    void getTree_delegatesToFileGitPort() {
+    void getTree_readsOnlyAfterTheVisibilityCheckPasses() {
         when(fileGitPort.listTree("ns", "repo", "main", "src")).thenReturn(Collections.emptyList());
 
-        service.getTree("ns", "repo", "main", "src");
+        service.getTree("ns", "repo", "main", "src", REQUESTER);
 
-        verify(fileGitPort).listTree("ns", "repo", "main", "src");
+        org.mockito.InOrder order = org.mockito.Mockito.inOrder(repositoryAccessValidator, fileGitPort);
+        order.verify(repositoryAccessValidator).validateReadAccess("ns", "repo", REQUESTER);
+        order.verify(fileGitPort).listTree("ns", "repo", "main", "src");
     }
 
     @Test
-    void getAllFiles_delegatesToFileGitPort() {
+    void getTree_doesNotTouchGitWhenTheRepositoryIsNotVisible() {
+        org.mockito.Mockito.doThrow(new RepositoryNotFoundException())
+                .when(repositoryAccessValidator).validateReadAccess("ns", "repo", REQUESTER);
+
+        assertThrows(RepositoryNotFoundException.class,
+                () -> service.getTree("ns", "repo", "main", "src", REQUESTER));
+        verify(fileGitPort, org.mockito.Mockito.never()).listTree(any(), any(), any(), any());
+    }
+
+    @Test
+    void getAllFiles_readsOnlyAfterTheVisibilityCheckPasses() {
         when(fileGitPort.listAllFiles("ns", "repo", "main")).thenReturn(Collections.emptyList());
 
-        service.getAllFiles("ns", "repo", "main");
+        service.getAllFiles("ns", "repo", "main", REQUESTER);
 
-        verify(fileGitPort).listAllFiles("ns", "repo", "main");
+        org.mockito.InOrder order = org.mockito.Mockito.inOrder(repositoryAccessValidator, fileGitPort);
+        order.verify(repositoryAccessValidator).validateReadAccess("ns", "repo", REQUESTER);
+        order.verify(fileGitPort).listAllFiles("ns", "repo", "main");
+    }
+
+    @Test
+    void getAllFiles_doesNotTouchGitWhenTheRepositoryIsNotVisible() {
+        org.mockito.Mockito.doThrow(new RepositoryNotFoundException())
+                .when(repositoryAccessValidator).validateReadAccess("ns", "repo", null);
+
+        // Anonymous is passed through as null rather than rejected up front: a public repository is
+        // readable without credentials, and canRead is what decides.
+        assertThrows(RepositoryNotFoundException.class,
+                () -> service.getAllFiles("ns", "repo", "main", null));
+        verify(fileGitPort, org.mockito.Mockito.never()).listAllFiles(any(), any(), any());
     }
 }

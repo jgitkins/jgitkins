@@ -58,13 +58,17 @@ public class RepositoryFileService implements FileUploadUseCase,
     public List<FileEntry> getTree(String namespace,
             String repoName,
             String branch,
-            String directory) {
+            String directory,
+            Long requesterUserId) {
+        repositoryAccessValidator.validateReadAccess(namespace, repoName, requesterUserId);
         return fileGitPort.listTree(namespace, repoName, branch, directory);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<FileEntry> getAllFiles(String namespace, String repoName, String reference) {
+    public List<FileEntry> getAllFiles(String namespace, String repoName, String reference,
+            Long requesterUserId) {
+        repositoryAccessValidator.validateReadAccess(namespace, repoName, requesterUserId);
         return fileGitPort.listAllFiles(namespace, repoName, reference);
     }
 

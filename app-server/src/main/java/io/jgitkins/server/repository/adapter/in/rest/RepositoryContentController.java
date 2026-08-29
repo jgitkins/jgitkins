@@ -95,8 +95,11 @@ public class RepositoryContentController {
     public ResponseEntity<ApiResponse<List<FileEntry>>> getTree(@PathVariable String namespace,
             @PathVariable String repoName,
             @PathVariable String branch,
-            @RequestParam(name = "dir", required = false, defaultValue = "") String dir) {
-        List<FileEntry> files = fileTreeLoadUseCase.getTree(namespace, repoName, branch, dir);
+            @RequestParam(name = "dir", required = false, defaultValue = "") String dir,
+            @AuthenticationPrincipal(expression = "username") String subject) {
+        // Nullable requester: a public repository's tree is readable anonymously, and canRead decides.
+        List<FileEntry> files = fileTreeLoadUseCase.getTree(namespace, repoName, branch, dir,
+                requesterUserIdResolver.resolve(subject).orElse(null));
         return ApiResponse.ok(files);
     }
 

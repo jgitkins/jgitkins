@@ -9,6 +9,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import io.jgitkins.server.repository.application.contract.result.FileEntry;
 import io.jgitkins.server.repository.application.port.in.FileLoadUseCase;
 import java.util.List;
+import io.jgitkins.server.identity.access.adapter.in.support.RequesterUserIdResolver;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,17 +25,25 @@ class RepositoryFileControllerTest {
     @Mock
     private FileLoadUseCase fileLoadUseCase;
 
+    @Mock
+    private RequesterUserIdResolver requesterUserIdResolver;
+
     private MockMvc mockMvc;
 
     @BeforeEach
     void setUp() {
-        RepositoryFileController controller = new RepositoryFileController(fileLoadUseCase);
-        this.mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
+        RepositoryFileController controller =
+                new RepositoryFileController(fileLoadUseCase, requesterUserIdResolver);
+        this.mockMvc = MockMvcBuilders.standaloneSetup(controller)
+                .setCustomArgumentResolvers(
+                        new org.springframework.security.web.method.annotation
+                                .AuthenticationPrincipalArgumentResolver())
+                .build();
     }
 
     @Test
     void listFiles_usesDefaultRef_whenMissing() throws Exception {
-        when(fileLoadUseCase.getAllFiles("team", "repo", "")).thenReturn(List.of(
+        when(fileLoadUseCase.getAllFiles("team", "repo", "", null)).thenReturn(List.of(
                 FileEntry.builder().name("README.md").path("README.md").type("blob").build()
         ));
 
@@ -41,24 +51,24 @@ class RepositoryFileControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data[0].name").value("README.md"));
 
-        verify(fileLoadUseCase).getAllFiles("team", "repo", "");
+        verify(fileLoadUseCase).getAllFiles("team", "repo", "", null);
     }
 
     @Test
     void listFiles_forSpecificRef_returnsFiles() throws Exception {
-        when(fileLoadUseCase.getAllFiles("team", "repo", "feature"))
+        when(fileLoadUseCase.getAllFiles("team", "repo", "feature", null))
                 .thenReturn(List.of(FileEntry.builder().name("A.java").type("blob").build()));
 
         mockMvc.perform(get("/repositories/team/repo/files").param("ref", "feature"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data[0].name").value("A.java"));
 
-        verify(fileLoadUseCase).getAllFiles("team", "repo", "feature");
+        verify(fileLoadUseCase).getAllFiles("team", "repo", "feature", null);
     }
 
     @Test
     void listFileIndex_returnsCompactFields() throws Exception {
-        when(fileLoadUseCase.getAllFiles("team", "repo", "main")).thenReturn(List.of(
+        when(fileLoadUseCase.getAllFiles("team", "repo", "main", null)).thenReturn(List.of(
                 FileEntry.builder().name("README.md").path("README.md").type("blob").mode("100644").size(12L).build()
         ));
 

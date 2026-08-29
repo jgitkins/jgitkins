@@ -44,6 +44,26 @@ public class RepositoryAccessValidator {
     }
 
     /**
+     * Read gate for the paths that hold a namespace and a name rather than a loaded result.
+     *
+     * <p>Mirrors {@link #validateCanCommit} in shape. The file paths went straight to git with no
+     * check of any kind, so an anonymous caller could list every file name and path in a private
+     * repository. Task 2.125 named the app-web route; the server answered the same thing directly.
+     *
+     * <p>{@code canRead} checks PUBLIC before membership, so an anonymous read of a public repository
+     * still succeeds. That is why this takes a nullable requester instead of demanding one.
+     *
+     * @throws RepositoryNotFoundException when the caller cannot see the repository. Not-found rather
+     *     than forbidden, and with no name in the message: a read denial means "cannot see it" by
+     *     definition, and naming the repository in the body would put the leak back.
+     */
+    public void validateReadAccess(String namespace, String repoName, Long requesterUserId) {
+        if (!gitRepositoryAccessUseCase.canRead(null, namespace.trim(), repoName.trim(), requesterUserId)) {
+            throw new RepositoryNotFoundException();
+        }
+    }
+
+    /**
      * @param requesterUserId supplied by the inbound adapter, task 2.64. It used to come from
      *     {@code RepositoryActorPort} inside this method, which made a write authorization decision
      *     depend on ambient security state and impossible to exercise for a chosen actor.
