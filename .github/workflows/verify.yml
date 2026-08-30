@@ -1,9 +1,12 @@
 name: verify
 
+# Manual only, for now. The workflow is live and runnable -- the point of task
+# 2.104b was that it stopped being a `.disabled` file GitHub does not parse --
+# but nothing triggers it automatically: the deployment target it used to guard
+# has been torn down, so there is nothing for a push to protect yet. Turning it
+# back on is adding `push: [main]` and `pull_request:` here; deliberately not
+# `develop`, whose last commit is 2026-04-02.
 on:
-  push:
-    branches:
-      - develop
   workflow_dispatch:
 
 permissions:
@@ -16,6 +19,7 @@ concurrency:
 jobs:
   detect:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     outputs:
       server: ${{ steps.filter.outputs.server }}
       web: ${{ steps.filter.outputs.web }}

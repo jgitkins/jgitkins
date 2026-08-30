@@ -1,9 +1,14 @@
 name: deploy
 
+# Deploy is manual, and only manual. It does not share verify's triggers: an
+# app-*-release.yml run scp's a compose file to a live host and recreates the
+# service there, so a `pull_request` trigger would deploy every PR opened from a
+# branch in this repository -- those runs receive secrets. `push: [develop]` is
+# not carried over either; develop's last commit is 2026-04-02 and every branch
+# since has been cut from main, so that trigger has not fired in five months.
+# Moving deploy to `push: [main]` is a separate decision from installing the
+# verify gate and is not made here.
 on:
-  push:
-    branches:
-      - develop
   workflow_dispatch:
 
 permissions:

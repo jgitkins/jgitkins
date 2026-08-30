@@ -2,6 +2,10 @@
 
 set -euo pipefail
 
+# On `pull_request` there is no github.event.before, so EVENT_BEFORE arrives empty and this falls
+# through to HEAD^. That is the right answer rather than a lucky one: actions/checkout checks out
+# the merge commit for a PR, whose first parent is the base branch tip, so diffing HEAD^..HEAD is
+# exactly the set of files the PR changes.
 resolve_base_sha() {
   local before_sha="${EVENT_BEFORE:-}"
 
