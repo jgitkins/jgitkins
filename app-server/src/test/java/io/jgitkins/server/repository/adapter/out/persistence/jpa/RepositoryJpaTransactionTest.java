@@ -2,7 +2,6 @@ package io.jgitkins.server.repository.adapter.out.persistence.jpa;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import io.jgitkins.server.persistence.jpa.JpaMariaDbTestSupport;
 import io.jgitkins.server.repository.application.port.out.RepositoryEndpointPort;
@@ -53,10 +52,6 @@ class RepositoryJpaTransactionTest {
 
     @BeforeEach
     void setUp() {
-        assumeTrue(JpaMariaDbTestSupport.mariaDbReachable(),
-                "MariaDB is not reachable at " + JpaMariaDbTestSupport.URL
-                        + " -- repository cutover atomicity is UNVERIFIED, not satisfied.");
-
         DriverManagerDataSource dataSource = JpaMariaDbTestSupport.dataSource();
         factoryBean = JpaMariaDbTestSupport.entityManagerFactory(dataSource, "repository-jpa-transaction",
                 "io.jgitkins.server.repository.adapter.out.persistence.jpa",

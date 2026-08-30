@@ -2,7 +2,6 @@ package io.jgitkins.server.execution.adapter.out.persistence.jpa;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import io.jgitkins.server.execution.domain.aggregate.Runner;
 import io.jgitkins.server.execution.domain.vo.RunnerScopeType;
@@ -45,10 +44,6 @@ class RunnerJpaTransactionTest {
 
     @BeforeEach
     void setUp() {
-        assumeTrue(JpaMariaDbTestSupport.mariaDbReachable(),
-                "MariaDB is not reachable at " + JpaMariaDbTestSupport.URL
-                        + " -- runner registration atomicity is UNVERIFIED, not satisfied.");
-
         DriverManagerDataSource dataSource = JpaMariaDbTestSupport.dataSource();
         factoryBean = JpaMariaDbTestSupport.entityManagerFactory(dataSource, "runner-jpa-transaction", PACKAGES);
         emf = factoryBean.getObject();

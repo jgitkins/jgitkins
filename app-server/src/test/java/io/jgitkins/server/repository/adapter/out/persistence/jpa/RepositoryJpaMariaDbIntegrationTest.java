@@ -1,7 +1,6 @@
 package io.jgitkins.server.repository.adapter.out.persistence.jpa;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import io.jgitkins.server.collaboration.adapter.out.persistence.jpa.OrganizeJpaEntity;
 import io.jgitkins.server.collaboration.adapter.out.persistence.jpa.OrganizeJpaRepository;
@@ -65,9 +64,6 @@ class RepositoryJpaMariaDbIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        assumeTrue(JpaMariaDbTestSupport.mariaDbReachable(),
-                "MariaDB on 127.0.0.1:53306 is required for repository JPA evidence");
-
         DriverManagerDataSource dataSource = JpaMariaDbTestSupport.dataSource();
         emf = JpaMariaDbTestSupport.entityManagerFactory(dataSource, "repository-jpa-integration",
                 PACKAGES_REPOSITORY, PACKAGES_COLLABORATION, PACKAGES_IDENTITY).getObject();

@@ -1,7 +1,6 @@
 package io.jgitkins.server.persistence;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import io.jgitkins.server.persistence.jpa.JpaMariaDbTestSupport;
 import jakarta.persistence.Column;
@@ -62,10 +61,6 @@ class FinalMariaDbPlacementTest {
 
     @Test
     void placementPassesAgainstMariaDb() throws Exception {
-        assumeTrue(JpaMariaDbTestSupport.mariaDbReachable(),
-                "MariaDB is not reachable at " + JpaMariaDbTestSupport.URL
-                        + " -- final placement is UNVERIFIED, not satisfied.");
-
         Map<String, Set<String>> mappedColumnsByTable = mappedColumnsByTable();
         assertThat(mappedColumnsByTable)
                 .as("no @Entity was discovered under app-server; tasks 2.70-2.76 added several, so the "

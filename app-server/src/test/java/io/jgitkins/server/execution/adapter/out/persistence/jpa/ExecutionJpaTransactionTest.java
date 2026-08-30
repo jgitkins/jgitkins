@@ -1,7 +1,6 @@
 package io.jgitkins.server.execution.adapter.out.persistence.jpa;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import io.jgitkins.server.execution.domain.aggregate.Job;
 import io.jgitkins.server.execution.domain.entity.JobHistory;
@@ -66,10 +65,6 @@ class ExecutionJpaTransactionTest {
 
     @BeforeEach
     void setUp() {
-        assumeTrue(JpaMariaDbTestSupport.mariaDbReachable(),
-                "MariaDB is not reachable at " + JpaMariaDbTestSupport.URL
-                        + " -- compare-before-append is UNVERIFIED, not satisfied.");
-
         DriverManagerDataSource dataSource = JpaMariaDbTestSupport.dataSource();
         factoryBean = JpaMariaDbTestSupport.entityManagerFactory(
                 dataSource, "execution-jpa-transaction", PACKAGES);

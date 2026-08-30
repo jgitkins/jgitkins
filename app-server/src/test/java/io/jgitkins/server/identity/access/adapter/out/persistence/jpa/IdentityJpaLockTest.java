@@ -2,7 +2,6 @@ package io.jgitkins.server.identity.access.adapter.out.persistence.jpa;
 
 import io.jgitkins.server.persistence.jpa.JpaMariaDbTestSupport;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import jakarta.persistence.EntityManagerFactory;
 import java.time.Duration;
@@ -48,10 +47,6 @@ class IdentityJpaLockTest {
 
     @BeforeEach
     void setUp() {
-        assumeTrue(JpaMariaDbTestSupport.mariaDbReachable(),
-                "MariaDB is not reachable at " + JpaMariaDbTestSupport.URL
-                        + " -- the identity row-lock contract is UNVERIFIED, not satisfied.");
-
         DriverManagerDataSource dataSource = JpaMariaDbTestSupport.dataSource();
         factoryBean = JpaMariaDbTestSupport.entityManagerFactory(dataSource, "identity-lock", "io.jgitkins.server.identity.access.adapter.out.persistence.jpa");
         EntityManagerFactory emf = factoryBean.getObject();

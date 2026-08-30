@@ -1,14 +1,11 @@
 package io.jgitkins.server.collaboration.adapter.out.persistence.jpa;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import io.jgitkins.server.collaboration.domain.repository.OrganizeRepository;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeId;
+import io.jgitkins.server.persistence.jpa.JpaMariaDbTestSupport;
 import jakarta.persistence.EntityManagerFactory;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
@@ -44,14 +41,11 @@ import org.springframework.transaction.support.TransactionTemplate;
  *
  * <p>Same shape as the MyBatis test: one transaction holds the lock, a second times how long its own
  * lock call blocks. A locked read waits for the holder to commit; an unlocked read returns at once.
- * Real MariaDB because the behaviour is InnoDB's. Skips when the database is down, in which case the
- * contract is unverified rather than satisfied.
+ * Real MariaDB because the behaviour is InnoDB's — since task 2.103 that database is the
+ * Testcontainers singleton owned by {@link JpaMariaDbTestSupport}, so there is no longer a state in
+ * which this contract is unverified and the suite still reports success.
  */
 class OrganizeJpaLockContractMariaDbTest {
-
-    private static final String URL = "jdbc:mariadb://127.0.0.1:53306/JGITKINS";
-    private static final String USER = "root";
-    private static final String PASSWORD = "root1234";
 
     private static final Duration HOLD = Duration.ofMillis(1500);
     private static final Duration MIN_EXPECTED_WAIT = Duration.ofMillis(1000);
@@ -63,23 +57,9 @@ class OrganizeJpaLockContractMariaDbTest {
     private Long organizeId;
     private String path;
 
-    private static boolean reachable() {
-        try (Connection ignored = DriverManager.getConnection(URL, USER, PASSWORD)) {
-            return true;
-        } catch (SQLException e) {
-            return false;
-        }
-    }
-
     @BeforeEach
     void setUp() {
-        assumeTrue(reachable(),
-                "MariaDB is not reachable at " + URL + " -- the JPA row-lock contract is UNVERIFIED, "
-                        + "not satisfied. Bring it up with the docker-compose.local.yml override and load "
-                        + "app-server/data/ddl.sql.");
-
-        DriverManagerDataSource dataSource = new DriverManagerDataSource(URL, USER, PASSWORD);
-        dataSource.setDriverClassName("org.mariadb.jdbc.Driver");
+        DriverManagerDataSource dataSource = JpaMariaDbTestSupport.dataSource();
 
         factoryBean = new LocalContainerEntityManagerFactoryBean();
         factoryBean.setDataSource(dataSource);

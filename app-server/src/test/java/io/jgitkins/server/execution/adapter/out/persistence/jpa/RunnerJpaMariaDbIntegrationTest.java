@@ -1,7 +1,6 @@
 package io.jgitkins.server.execution.adapter.out.persistence.jpa;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import io.jgitkins.server.execution.domain.aggregate.Runner;
 import io.jgitkins.server.execution.domain.vo.RunnerScopeType;
@@ -34,9 +33,6 @@ class RunnerJpaMariaDbIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        assumeTrue(JpaMariaDbTestSupport.mariaDbReachable(),
-                "MariaDB on 127.0.0.1:53306 is required for execution-runner JPA evidence");
-
         DriverManagerDataSource dataSource = JpaMariaDbTestSupport.dataSource();
         factoryBean = JpaMariaDbTestSupport.entityManagerFactory(dataSource, "runner-jpa-integration", PACKAGES);
         emf = factoryBean.getObject();

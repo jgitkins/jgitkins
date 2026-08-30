@@ -2,7 +2,6 @@ package io.jgitkins.server.identity.access.adapter.out.persistence.jpa;
 
 import io.jgitkins.server.persistence.jpa.JpaMariaDbTestSupport;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import io.jgitkins.server.identity.access.domain.aggregate.User;
 import io.jgitkins.server.identity.access.domain.entity.UserCredential;
@@ -45,10 +44,6 @@ class IdentityJpaMariaDbIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        assumeTrue(JpaMariaDbTestSupport.mariaDbReachable(),
-                "MariaDB is not reachable at " + JpaMariaDbTestSupport.URL
-                        + " -- the identity slice is UNVERIFIED, not satisfied.");
-
         DriverManagerDataSource dataSource = JpaMariaDbTestSupport.dataSource();
         factoryBean = JpaMariaDbTestSupport.entityManagerFactory(dataSource, "identity-reference-slice", "io.jgitkins.server.identity.access.adapter.out.persistence.jpa");
         EntityManagerFactory emf = factoryBean.getObject();

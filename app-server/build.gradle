@@ -29,6 +29,18 @@ ext {
 	protobufVersion = '3.25.3'
 }
 
+// The Spring Boot 3.2.3 BOM pins Testcontainers 1.19.5, which ships docker-java 3.3.4. That
+// client sends an unversioned /info to the Docker socket, and the socket Docker Desktop exposes
+// today answers it with HTTP 400 and an empty body -- Testcontainers reports "Could not find a
+// valid Docker environment" on a machine where `docker info` works fine. Overriding the BOM is
+// the fix; it must be an explicit pin rather than a floating version so the day this breaks
+// again, the version that broke it is in a commit.
+dependencyManagement {
+	imports {
+		mavenBom 'org.testcontainers:testcontainers-bom:1.21.3'
+	}
+}
+
 dependencies {
 	implementation project(':core-common')
 	implementation project(':core-web')
@@ -75,6 +87,8 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
 	testRuntimeOnly 'com.h2database:h2'
+	testImplementation 'org.testcontainers:mariadb'
+	testImplementation 'org.testcontainers:junit-jupiter'
 
 	// utility
 	implementation 'org.mapstruct:mapstruct:1.5.5.Final'
@@ -99,6 +113,20 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 	systemProperty 'spring.profiles.active', 'test'
+	// The MariaDB test container loads this into /docker-entrypoint-initdb.d/. It lives in
+	// data/, not src/test/resources, so it is not on the classpath and cannot be resolved with
+	// forClasspathResource. An absolute path is used rather than a relative one because a
+	// relative path resolves against the working directory, which differs between Gradle and an
+	// IDE run -- and when it resolves to nothing the container comes up on an empty schema and
+	// the mapping tests report success against no tables at all.
+	systemProperty 'jgitkins.test.ddl', file('data/ddl.sql').absolutePath
+	// docker-java defaults to Docker API 1.32. Current engines refuse it -- Docker Desktop's
+	// minimum is 1.40 -- and the refusal arrives as an empty 200-shaped body with status 400,
+	// which Testcontainers reports as "Could not find a valid Docker environment" on a machine
+	// where `docker info` works. 1.41 is Docker 20.10 and older than anything still running.
+	// Note this is the system property, not the DOCKER_API_VERSION environment variable: only
+	// the property is read on the socket-discovery path that finds the daemon here.
+	systemProperty 'api.version', '1.41'
 }
 
 bootJar {

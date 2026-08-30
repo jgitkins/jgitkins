@@ -1,7 +1,6 @@
 package io.jgitkins.server.execution.adapter.out.persistence.jpa;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import io.jgitkins.server.execution.application.contract.internal.DispatchableJob;
 import io.jgitkins.server.execution.application.contract.internal.JobDispatchScope;
@@ -51,9 +50,6 @@ class JobDispatchJpaMariaDbIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        assumeTrue(JpaMariaDbTestSupport.mariaDbReachable(),
-                "MariaDB on 127.0.0.1:53306 is required for dispatch-query JPA evidence");
-
         DriverManagerDataSource dataSource = JpaMariaDbTestSupport.dataSource();
         factoryBean = JpaMariaDbTestSupport.entityManagerFactory(
                 dataSource, "dispatch-query-jpa-integration", PACKAGES);

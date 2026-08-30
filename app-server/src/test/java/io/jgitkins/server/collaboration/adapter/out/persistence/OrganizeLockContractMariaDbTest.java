@@ -1,15 +1,12 @@
 package io.jgitkins.server.collaboration.adapter.out.persistence;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import io.jgitkins.server.collaboration.domain.repository.OrganizeRepository;
+import io.jgitkins.server.persistence.jpa.JpaMariaDbTestSupport;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeId;
 import io.jgitkins.server.collaboration.adapter.out.persistence.support.OrganizeDomainMapper;
 import io.jgitkins.server.collaboration.adapter.out.persistence.mapper.OrganizeEntityMbgMapper;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.time.Duration;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -55,15 +52,11 @@ import org.springframework.transaction.support.TransactionTemplate;
  *
  * <p>It runs against real MariaDB because the lock is an InnoDB behaviour. H2 in MariaDB mode may
  * accept the same SQL without reproducing the same blocking, which would make a green result
- * meaningless. When the database is not reachable the test skips rather than fails, so
- * {@code ./gradlew test} stays usable on a machine without it; a skip means the lock contract was
- * not verified, and must not be recorded as evidence.
+ * meaningless. Task 2.103 moved that database into a Testcontainers singleton owned by
+ * {@link JpaMariaDbTestSupport}, so the test no longer skips when nothing is listening on 53306 —
+ * an unverified lock contract now reads as a failure, which is what it always was.
  */
 class OrganizeLockContractMariaDbTest {
-
-    private static final String URL = "jdbc:mariadb://127.0.0.1:53306/JGITKINS";
-    private static final String USER = "root";
-    private static final String PASSWORD = "root1234";
 
     /** Long enough that scheduling noise cannot explain the wait, short enough to keep the test fast. */
     private static final Duration HOLD = Duration.ofMillis(1500);
@@ -78,23 +71,9 @@ class OrganizeLockContractMariaDbTest {
     private Long organizeId;
     private String path;
 
-    private static boolean reachable() {
-        try (Connection ignored = DriverManager.getConnection(URL, USER, PASSWORD)) {
-            return true;
-        } catch (SQLException e) {
-            return false;
-        }
-    }
-
     @BeforeEach
     void setUp() throws Exception {
-        assumeTrue(reachable(),
-                "MariaDB is not reachable at " + URL + " -- the row-lock contract is UNVERIFIED, not satisfied. "
-                        + "Bring it up with the docker-compose.local.yml override and load app-server/data/ddl.sql.");
-
-        DriverManagerDataSource driverDataSource = new DriverManagerDataSource(URL, USER, PASSWORD);
-        driverDataSource.setDriverClassName("org.mariadb.jdbc.Driver");
-        dataSource = driverDataSource;
+        dataSource = JpaMariaDbTestSupport.dataSource();
         jdbc = new JdbcTemplate(dataSource);
         transactions = new TransactionTemplate(new DataSourceTransactionManager(dataSource));
 

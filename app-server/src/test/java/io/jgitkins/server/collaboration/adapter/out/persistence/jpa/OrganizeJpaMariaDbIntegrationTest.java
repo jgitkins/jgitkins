@@ -3,7 +3,6 @@ package io.jgitkins.server.collaboration.adapter.out.persistence.jpa;
 import io.jgitkins.server.persistence.jpa.JpaMariaDbTestSupport;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import io.jgitkins.server.collaboration.application.exception.OrganizeNotFoundException;
 import io.jgitkins.server.collaboration.domain.aggregate.Organize;
@@ -49,10 +48,6 @@ class OrganizeJpaMariaDbIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        assumeTrue(JpaMariaDbTestSupport.mariaDbReachable(),
-                "MariaDB is not reachable at " + JpaMariaDbTestSupport.URL
-                        + " -- the reference slice is UNVERIFIED, not satisfied.");
-
         DriverManagerDataSource dataSource = JpaMariaDbTestSupport.dataSource();
         factoryBean = JpaMariaDbTestSupport.entityManagerFactory(dataSource, "organize-reference-slice", "io.jgitkins.server.collaboration.adapter.out.persistence.jpa");
         EntityManagerFactory emf = factoryBean.getObject();
