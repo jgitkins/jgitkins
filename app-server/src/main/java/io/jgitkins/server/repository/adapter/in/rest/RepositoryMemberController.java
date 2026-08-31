@@ -2,9 +2,9 @@ package io.jgitkins.server.repository.adapter.in.rest;
 
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.Valid;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import io.jgitkins.server.shared.application.security.AuthenticatedUser;
+import io.jgitkins.server.shared.application.security.CurrentUser;
 import io.jgitkins.server.shared.application.exception.UnauthenticatedException;
-import io.jgitkins.server.identity.access.adapter.in.support.RequesterUserIdResolver;
 import io.jgitkins.server.repository.application.contract.command.RepositoryMemberAddCommand;
 import io.jgitkins.server.repository.application.contract.result.RepositoryMemberSummary;
 import io.jgitkins.server.repository.application.port.in.RepositoryMemberLoadUseCase;
@@ -31,7 +31,6 @@ public class RepositoryMemberController {
 
     private final RepositoryMemberManagementUseCase repositoryMemberManagementUseCase;
     private final RepositoryMemberLoadUseCase repositoryMemberLoadUseCase;
-    private final RequesterUserIdResolver requesterUserIdResolver;
 
 
     /**
@@ -40,20 +39,28 @@ public class RepositoryMemberController {
      * <p>A malformed principal must not reach the application layer: if it did, the first observable
      * effect of a broken credential would be a database read for whatever id was salvaged from it.
      */
-    private Long requireRequester(String subject) {
-        return requesterUserIdResolver.resolve(subject)
-                .orElseThrow(() -> new UnauthenticatedException("Authentication required"));
-    }
 
+
+    /**
+     * The requester, or 401.
+     *
+     * <p>Rejected here rather than inside the use case: the first observable effect of an absent or
+     * unusable credential must not be a database read for whatever id was salvaged from it.
+     */
+    private static Long requireRequester(AuthenticatedUser currentUser) {
+        if (currentUser == null) {
+            throw new UnauthenticatedException("Authentication required");
+        }
+        return currentUser.userId();
+    }
 
     @Operation(summary = "Add repository member")
     @PostMapping
     public ResponseEntity<ApiResponse<Void>> addMember(@PathVariable @Positive Long repositoryId,
                                                        @Valid @RequestBody RepositoryMemberAddRequest request,
-                                                       @AuthenticationPrincipal(expression = "username")
-                                                       String subject) {
+                                                       @CurrentUser AuthenticatedUser currentUser) {
         RepositoryMemberAddCommand command = new RepositoryMemberAddCommand(
-                requireRequester(subject), repositoryId, request.userId(), request.role());
+                requireRequester(currentUser), repositoryId, request.userId(), request.role());
         repositoryMemberManagementUseCase.addRepositoryMember(command);
         return ApiResponse.ok();
     }
@@ -62,10 +69,9 @@ public class RepositoryMemberController {
     @DeleteMapping("/{userId}")
     public ResponseEntity<ApiResponse<Void>> removeMember(@PathVariable @Positive Long repositoryId,
                                                           @PathVariable @Positive Long userId,
-                                                          @AuthenticationPrincipal(expression = "username")
-                                                          String subject) {
+                                                          @CurrentUser AuthenticatedUser currentUser) {
         repositoryMemberManagementUseCase.removeRepositoryMember(
-                requireRequester(subject), repositoryId, userId);
+                requireRequester(currentUser), repositoryId, userId);
         return ApiResponse.noContent();
     }
 
@@ -73,10 +79,10 @@ public class RepositoryMemberController {
     @GetMapping
     public ResponseEntity<ApiResponse<java.util.List<RepositoryMemberSummary>>> listMembers(
             @PathVariable @Positive Long repositoryId,
-            @AuthenticationPrincipal(expression = "username") String subject) {
+            @CurrentUser AuthenticatedUser currentUser) {
         // requireRequester, not optionalRequester: a member list is never public, so an absent
         // caller is a rejection rather than a narrower result.
         return ApiResponse.ok(repositoryMemberLoadUseCase.getRepositoryMembers(
-                requireRequester(subject), repositoryId));
+                requireRequester(currentUser), repositoryId));
     }
 }

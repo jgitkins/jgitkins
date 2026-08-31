@@ -3,6 +3,7 @@ package io.jgitkins.server.identity.access.adapter.in.security;
 import io.jgitkins.server.common.infrastructure.config.security.handler.ApiAnauthorizeHandler;
 import io.jgitkins.server.identity.access.application.dto.result.JwtAuthenticationResult;
 import io.jgitkins.server.identity.access.application.service.JwtAuthService;
+import io.jgitkins.server.shared.application.security.AuthenticatedUser;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -15,7 +16,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -60,8 +60,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         JwtAuthenticationResult authenticationResult = result.get();
         List<SimpleGrantedAuthority> authorities = authenticationResult.roles().stream()
                 .map(SimpleGrantedAuthority::new).toList();
+        // AuthenticatedUser, not Spring's User wrapping the id as a username. The principal is now a
+        // type controllers can declare, which is what removes the expression = "username" round trip
+        // and the two 500s it caused. AuthenticatedUser implements Principal, so
+        // authentication.getName() still answers the numeric id for the three consumers that parse it.
         var auth = new UsernamePasswordAuthenticationToken(
-                new User(String.valueOf(authenticationResult.userId()), "", authorities), null, authorities);
+                new AuthenticatedUser(authenticationResult.userId()), null, authorities);
         auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
         SecurityContextHolder.getContext().setAuthentication(auth);
         filterChain.doFilter(request, response);

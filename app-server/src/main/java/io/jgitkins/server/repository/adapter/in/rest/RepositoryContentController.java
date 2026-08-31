@@ -1,8 +1,8 @@
 package io.jgitkins.server.repository.adapter.in.rest;
 
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import io.jgitkins.server.shared.application.security.AuthenticatedUser;
+import io.jgitkins.server.shared.application.security.CurrentUser;
 import io.jgitkins.server.shared.application.exception.UnauthenticatedException;
-import io.jgitkins.server.identity.access.adapter.in.support.RequesterUserIdResolver;
 import io.jgitkins.server.repository.application.contract.result.FileEntry;
 import io.jgitkins.server.repository.application.contract.command.FileUploadInfo;
 import io.jgitkins.server.repository.adapter.in.rest.dto.request.FileUploadRequest;
@@ -39,7 +39,6 @@ public class RepositoryContentController {
     private final FileUploadUseCase fileUploadUseCase;
     private final FileTreeLoadUseCase fileTreeLoadUseCase;
     private final RepositoryLoadUseCase repositoryLoadUseCase;
-    private final RequesterUserIdResolver requesterUserIdResolver;
 
 
     /**
@@ -48,11 +47,20 @@ public class RepositoryContentController {
      * <p>A malformed principal must not reach the application layer: if it did, the first observable
      * effect of a broken credential would be a database read for whatever id was salvaged from it.
      */
-    private Long requireRequester(String subject) {
-        return requesterUserIdResolver.resolve(subject)
-                .orElseThrow(() -> new UnauthenticatedException("Authentication required"));
-    }
 
+
+    /**
+     * The requester, or 401.
+     *
+     * <p>Rejected here rather than inside the use case: the first observable effect of an absent or
+     * unusable credential must not be a database read for whatever id was salvaged from it.
+     */
+    private static Long requireRequester(AuthenticatedUser currentUser) {
+        if (currentUser == null) {
+            throw new UnauthenticatedException("Authentication required");
+        }
+        return currentUser.userId();
+    }
 
     @Operation(summary = "File Upload")
     @PostMapping(value = "/{namespace}/{repoName}/files/{branch}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -62,9 +70,9 @@ public class RepositoryContentController {
             @PathVariable @NotBlank String branch,
             @Parameter(schema = @Schema(type = "string", format = "binary")) @RequestPart("file") MultipartFile file,
             @Valid @RequestPart("request") FileUploadInfo request,
-            @AuthenticationPrincipal(expression = "username") String subject) {
+            @CurrentUser AuthenticatedUser currentUser) {
         fileUploadUseCase.uploadFileToRepository(
-                requireRequester(subject), namespace, repoName, branch, file, request);
+                requireRequester(currentUser), namespace, repoName, branch, file, request);
         return ApiResponse.ok("File uploaded and committed.");
     }
 
@@ -75,10 +83,10 @@ public class RepositoryContentController {
             @RequestParam("path") @NotBlank String path,
             @RequestParam("message") @NotBlank String message,
             @Parameter(schema = @Schema(type = "string", format = "binary")) @RequestPart("file") MultipartFile file,
-            @AuthenticationPrincipal(expression = "username") String subject) {
+            @CurrentUser AuthenticatedUser currentUser) {
         // The requester is resolved before the repository lookup, so an unauthenticated caller
         // cannot use this route to learn whether a repository id exists.
-        Long requesterUserId = requireRequester(subject);
+        Long requesterUserId = requireRequester(currentUser);
         RepositoryKey key = repositoryLoadUseCase.resolveRepositoryKey(repositoryId)
                 .orElseThrow(() -> new RepositoryNotFoundException(repositoryId));
         FileUploadInfo request = FileUploadInfo.builder()
@@ -96,10 +104,10 @@ public class RepositoryContentController {
             @PathVariable String repoName,
             @PathVariable String branch,
             @RequestParam(name = "dir", required = false, defaultValue = "") String dir,
-            @AuthenticationPrincipal(expression = "username") String subject) {
+            @CurrentUser AuthenticatedUser currentUser) {
         // Nullable requester: a public repository's tree is readable anonymously, and canRead decides.
         List<FileEntry> files = fileTreeLoadUseCase.getTree(namespace, repoName, branch, dir,
-                requesterUserIdResolver.resolve(subject).orElse(null));
+                AuthenticatedUser.userIdOrNull(currentUser));
         return ApiResponse.ok(files);
     }
 

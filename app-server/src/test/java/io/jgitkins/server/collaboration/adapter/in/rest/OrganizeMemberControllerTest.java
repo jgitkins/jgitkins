@@ -15,7 +15,6 @@ import io.jgitkins.server.collaboration.application.dto.result.OrganizeMemberSum
 import io.jgitkins.server.collaboration.application.port.in.OrganizeMemberAddUseCase;
 import io.jgitkins.server.collaboration.application.port.in.OrganizeMemberQueryUseCase;
 import io.jgitkins.server.collaboration.application.port.in.OrganizeMemberRemoveUseCase;
-import io.jgitkins.server.collaboration.adapter.in.support.RequesterUserIdResolver;
 import io.jgitkins.server.collaboration.adapter.in.rest.OrganizeMemberController;
 import io.jgitkins.server.collaboration.adapter.in.rest.dto.request.OrganizeMemberAddRequest;
 import io.jgitkins.server.collaboration.adapter.in.rest.mapper.OrganizeMemberRequestMapper;
@@ -48,9 +47,7 @@ class OrganizeMemberControllerTest {
 
     @BeforeEach
     void authenticate() {
-        org.springframework.security.core.context.SecurityContextHolder.getContext().setAuthentication(
-                new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(
-                        new org.springframework.security.core.userdetails.User("7", "", java.util.List.of()), "", java.util.List.of()));
+        io.jgitkins.server.support.TestAuthentication.authenticateAs(7L);
     }
 
     @Autowired
@@ -71,12 +68,9 @@ class OrganizeMemberControllerTest {
     @MockBean
     private OrganizeMemberRequestMapper organizeMemberRequestMapper;
 
-    @MockBean
-    private RequesterUserIdResolver requesterUserIdResolver;
 
     @Test
     void addMember_returnsOk() throws Exception {
-        when(requesterUserIdResolver.resolve("7")).thenReturn(java.util.Optional.of(7L));
         when(organizeMemberRequestMapper.toCommand(org.mockito.ArgumentMatchers.eq(1L),
                 org.mockito.ArgumentMatchers.any(OrganizeMemberAddRequest.class), org.mockito.ArgumentMatchers.eq(7L)))
                 .thenReturn(new OrganizeMemberAddCommand(1L, 2L, OrganizeMemberRole.MEMBER, 7L));
@@ -101,7 +95,6 @@ class OrganizeMemberControllerTest {
 
     @Test
     void addMember_allowsMissingRoleAndPassesNullRole() throws Exception {
-        when(requesterUserIdResolver.resolve("7")).thenReturn(java.util.Optional.of(7L));
         when(organizeMemberRequestMapper.toCommand(org.mockito.ArgumentMatchers.eq(1L),
                 org.mockito.ArgumentMatchers.any(OrganizeMemberAddRequest.class), org.mockito.ArgumentMatchers.eq(7L)))
                 .thenReturn(new OrganizeMemberAddCommand(1L, 3L, null, 7L));
@@ -124,7 +117,6 @@ class OrganizeMemberControllerTest {
 
     @Test
     void removeMember_returnsNoContent() throws Exception {
-        when(requesterUserIdResolver.resolve("7")).thenReturn(java.util.Optional.of(7L));
         mockMvc.perform(delete("/api/organizes/1/members/2").with(user("7")))
                 .andExpect(status().isNoContent());
 
@@ -133,7 +125,7 @@ class OrganizeMemberControllerTest {
 
     @Test
     void addMember_missingRequesterReturns401() throws Exception {
-        when(requesterUserIdResolver.resolve(null)).thenReturn(java.util.Optional.empty());
+        io.jgitkins.server.support.TestAuthentication.clear();
 
         mockMvc.perform(post("/api/organizes/1/members")
                         .with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication(
@@ -158,7 +150,7 @@ class OrganizeMemberControllerTest {
 
     @Test
     void removeMember_missingRequesterReturns401() throws Exception {
-        when(requesterUserIdResolver.resolve(null)).thenReturn(java.util.Optional.empty());
+        io.jgitkins.server.support.TestAuthentication.clear();
 
         mockMvc.perform(delete("/api/organizes/1/members/2"))
                 .andExpect(status().isUnauthorized())

@@ -64,9 +64,7 @@ class RepositoryContentControllerTest {
                 RepositoryContentController controller = new RepositoryContentController(
                                 fileUploadUseCase,
                                 fileTreeLoadUseCase,
-                                repositoryLoadUseCase,
-                                new io.jgitkins.server.identity.access.adapter.in.support
-                                                .RequesterUserIdResolver());
+                                repositoryLoadUseCase);
                 LocalValidatorFactoryBean validator = new LocalValidatorFactoryBean();
                 validator.afterPropertiesSet();
 
@@ -193,8 +191,6 @@ class RepositoryContentControllerTest {
         }
 
         /** The malformed subjects the identity resolver must refuse. Zero is malformed, not absent. */
-        private static final java.util.List<String> MALFORMED_SUBJECTS =
-                        java.util.List.of("0", "00", "-1", "+1", " 7", "7 ", "abc", "9999999999999999999999");
 
         private MockMultipartFile textPart() {
                 return new MockMultipartFile("file", "hello.txt", MediaType.TEXT_PLAIN_VALUE, "hello".getBytes());
@@ -208,16 +204,14 @@ class RepositoryContentControllerTest {
         }
 
         @Test
-        void uploadFile_rejectsMalformedPrincipalWithAuth001AndNoCommit() throws Exception {
-                for (String malformed : MALFORMED_SUBJECTS) {
-                        TestAuthentication.authenticateAs(malformed);
+        void uploadFile_rejectsAnUnauthenticatedCallerWithAuth001AndNoCommit() throws Exception {
+                TestAuthentication.clear();
                         mockMvc.perform(multipart("/api/repositories/{namespace}/{repoName}/files/{branch}",
                                         "alice", "sample-repo", "main")
                                         .file(textPart()).file(infoPart())
                                         .contentType(MediaType.MULTIPART_FORM_DATA))
                                         .andExpect(status().isUnauthorized())
                                         .andExpect(jsonPath("$.error.code").value("AUTH-001"));
-                }
                 // The upload never reaches the use case, so a denied request has not read the multipart
                 // into commit files or spent temp space on content it will never commit.
                 verifyNoInteractions(fileUploadUseCase);
@@ -265,16 +259,14 @@ class RepositoryContentControllerTest {
         }
 
         @Test
-        void uploadFileByRepositoryId_rejectsMalformedPrincipalWithAuth001AndNoCommit() throws Exception {
-                for (String malformed : MALFORMED_SUBJECTS) {
-                        TestAuthentication.authenticateAs(malformed);
+        void uploadFileByRepositoryId_rejectsAnUnauthenticatedCallerWithAuth001AndNoCommit() throws Exception {
+                TestAuthentication.clear();
                         mockMvc.perform(multipart("/api/repositories/{repositoryId}/files", 10L)
                                         .file(textPart())
                                         .param("branch", "main").param("path", "docs/hello.txt")
                                         .param("message", "add file"))
                                         .andExpect(status().isUnauthorized())
                                         .andExpect(jsonPath("$.error.code").value("AUTH-001"));
-                }
                 verifyNoInteractions(fileUploadUseCase);
                 // And the repository was never looked up, so this route cannot be used to probe whether a
                 // repository id exists without a valid credential.

@@ -20,7 +20,6 @@ import io.jgitkins.server.collaboration.application.port.in.OrganizeLoadUseCase;
 import io.jgitkins.server.collaboration.adapter.in.rest.OrganizeController;
 import io.jgitkins.server.collaboration.adapter.in.rest.dto.request.OrganizeCreationRequest;
 import io.jgitkins.server.collaboration.adapter.in.rest.mapper.OrganizeRequestMapper;
-import io.jgitkins.server.collaboration.adapter.in.support.RequesterUserIdResolver;
 import io.jgitkins.server.common.presentation.advice.GlobalExceptionHandler;
 import io.jgitkins.server.support.PermissiveSliceSecurityConfig;
 import io.jgitkins.server.support.ErrorStatusMappingTestConfig;
@@ -49,9 +48,7 @@ class OrganizeControllerTest {
 
     @BeforeEach
     void authenticate() {
-        org.springframework.security.core.context.SecurityContextHolder.getContext().setAuthentication(
-                new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(
-                        new org.springframework.security.core.userdetails.User("7", "", java.util.List.of()), "", java.util.List.of()));
+        io.jgitkins.server.support.TestAuthentication.authenticateAs(7L);
     }
 
     @Autowired
@@ -72,15 +69,12 @@ class OrganizeControllerTest {
     @MockBean
     private OrganizeRequestMapper organizeRequestMapper;
 
-    @MockBean
-    private RequesterUserIdResolver requesterUserIdResolver;
 
     @Test
     void createOrganize_returnsCreatedResponse() throws Exception {
         OrganizeCreationCommand command = new OrganizeCreationCommand("core-team", "Core Team", 7L);
         OrganizeCreationResult result = new OrganizeCreationResult(10L, "core-team", "Core Team", 1L, null, null);
 
-        when(requesterUserIdResolver.resolve("7")).thenReturn(java.util.Optional.of(7L));
         when(organizeRequestMapper.toCommand(org.mockito.ArgumentMatchers.any(OrganizeCreationRequest.class), org.mockito.ArgumentMatchers.eq(7L)))
                 .thenReturn(command);
         when(organizeCreationUseCase.createOrganize(command)).thenReturn(result);
@@ -104,7 +98,6 @@ class OrganizeControllerTest {
         OrganizeCreationCommand command = new OrganizeCreationCommand("core-team", "Core Team", 7L);
         OrganizeCreationResult result = new OrganizeCreationResult(10L, "core-team", "Core Team", 7L, null, null);
 
-        when(requesterUserIdResolver.resolve("7")).thenReturn(java.util.Optional.of(7L));
         when(organizeRequestMapper.toCommand(org.mockito.ArgumentMatchers.any(OrganizeCreationRequest.class), org.mockito.ArgumentMatchers.eq(7L)))
                 .thenReturn(command);
         when(organizeCreationUseCase.createOrganize(command)).thenReturn(result);
@@ -128,20 +121,17 @@ class OrganizeControllerTest {
 
     @Test
     void createOrganize_nullRequesterReturns401() throws Exception {
-        when(requesterUserIdResolver.resolve(null)).thenReturn(java.util.Optional.empty());
         assertCreateDenied(new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(
                 new NullUsernamePrincipal(), null, java.util.List.of()), null);
     }
 
     @Test
     void createOrganize_blankRequesterReturns401() throws Exception {
-        when(requesterUserIdResolver.resolve(" ")).thenReturn(java.util.Optional.empty());
         assertCreateDenied(tokenFor(" "), " ");
     }
 
     @Test
     void createOrganize_nonnumericRequesterReturns401() throws Exception {
-        when(requesterUserIdResolver.resolve("not-numeric")).thenReturn(java.util.Optional.empty());
         assertCreateDenied(tokenFor("not-numeric"), "not-numeric");
     }
 
@@ -166,7 +156,9 @@ class OrganizeControllerTest {
                 .andExpect(jsonPath("$.error.code").value("AUTH-001"))
                 .andExpect(jsonPath("$.error.message").value("An authenticated user is required"))
                 .andExpect(jsonPath("$.error.source").value("application"));
-        org.mockito.Mockito.verify(requesterUserIdResolver).resolve(subject);
+        // The resolver that used to be verified here is gone: the principal arrives typed, so there
+        // is no name-to-number step left to assert. What matters is unchanged and asserted above --
+        // an anonymous caller is refused and the use case is never reached.
         org.mockito.Mockito.verifyNoInteractions(organizeCreationUseCase, organizeRequestMapper);
     }
 
@@ -187,7 +179,6 @@ class OrganizeControllerTest {
 
     @Test
     void getAccessibleOrganizes_returnsList() throws Exception {
-        when(requesterUserIdResolver.resolve("7")).thenReturn(java.util.Optional.of(7L));
         when(organizeLoadUseCase.getAccessibleOrganizes(7L)).thenReturn(List.of(
                 new OrganizeCreationResult(3L, "org-c", null, null, null, null)
         ));
@@ -201,7 +192,7 @@ class OrganizeControllerTest {
 
     @Test
     void getAccessibleOrganizes_withoutRequesterReturnsOkEmptyList() throws Exception {
-        when(requesterUserIdResolver.resolve("7")).thenReturn(java.util.Optional.empty());
+        io.jgitkins.server.support.TestAuthentication.clear();
         when(organizeLoadUseCase.getAccessibleOrganizes(null)).thenReturn(List.of());
 
         mockMvc.perform(get("/api/organizes/me"))
@@ -227,7 +218,6 @@ class OrganizeControllerTest {
 
     @Test
     void deleteOrganize_returnsNoContentAndPassesTheRequester() throws Exception {
-        when(requesterUserIdResolver.resolve("7")).thenReturn(java.util.Optional.of(7L));
 
         mockMvc.perform(delete("/api/organizes/9"))
                 .andExpect(status().isNoContent());
@@ -239,7 +229,6 @@ class OrganizeControllerTest {
     @Test
     void deleteOrganize_rejectsAnAnonymousCallerWithoutReachingTheUseCase() throws Exception {
         org.springframework.security.core.context.SecurityContextHolder.clearContext();
-        when(requesterUserIdResolver.resolve(null)).thenReturn(java.util.Optional.empty());
 
         mockMvc.perform(delete("/api/organizes/9"))
                 .andExpect(status().isUnauthorized())

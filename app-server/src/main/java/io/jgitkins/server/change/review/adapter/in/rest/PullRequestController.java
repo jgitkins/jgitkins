@@ -16,9 +16,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import io.jgitkins.server.change.review.adapter.in.support.ReviewRequesterResolver;
 import io.jgitkins.server.shared.application.exception.UnauthenticatedException;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import io.jgitkins.server.shared.application.security.AuthenticatedUser;
+import io.jgitkins.server.shared.application.security.CurrentUser;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,11 +34,19 @@ public class PullRequestController {
 
     private final CreatePullRequestUseCase createPullRequestUseCase;
     private final GetPullRequestDetailUseCase getPullRequestDetailUseCase;
-    private final ReviewRequesterResolver reviewRequesterResolver;
 
-    private Long requireRequester(String subject) {
-        return reviewRequesterResolver.resolve(subject)
-                .orElseThrow(() -> new UnauthenticatedException("Authentication required"));
+
+    /**
+     * The requester, or 401.
+     *
+     * <p>Rejected here rather than inside the use case: the first observable effect of an absent or
+     * unusable credential must not be a database read for whatever id was salvaged from it.
+     */
+    private static Long requireRequester(AuthenticatedUser currentUser) {
+        if (currentUser == null) {
+            throw new UnauthenticatedException("Authentication required");
+        }
+        return currentUser.userId();
     }
 
     @Operation(summary = "Create Pull Request", description = "source 브랜치와 target 브랜치의 검토 요청을 생성")
@@ -47,9 +55,9 @@ public class PullRequestController {
             @PathVariable @NotBlank String namespace,
             @PathVariable @NotBlank String repoName,
             @Valid @RequestBody PullRequestCreateRequest request,
-            @AuthenticationPrincipal(expression = "username") String subject) {
+            @CurrentUser AuthenticatedUser currentUser) {
         // Required, not nullable: opening a pull request writes.
-        Long requesterUserId = requireRequester(subject);
+        Long requesterUserId = requireRequester(currentUser);
         PullRequestCreateCommand command = new PullRequestCreateCommand(
                 namespace,
                 repoName,
@@ -63,10 +71,10 @@ public class PullRequestController {
     @GetMapping("/{pullRequestId}")
     public ResponseEntity<ApiResponse<PullRequestDetailResult>> getPullRequestDetail(
             @PathVariable @Positive Long pullRequestId,
-            @AuthenticationPrincipal(expression = "username") String subject) throws IOException {
+            @CurrentUser AuthenticatedUser currentUser) throws IOException {
         // Nullable: a public repository's pull request is readable anonymously.
         return ApiResponse.ok(getPullRequestDetailUseCase.getPullRequestDetail(
                 PullRequestId.of(pullRequestId),
-                reviewRequesterResolver.resolve(subject).orElse(null)));
+                AuthenticatedUser.userIdOrNull(currentUser)));
     }
 }

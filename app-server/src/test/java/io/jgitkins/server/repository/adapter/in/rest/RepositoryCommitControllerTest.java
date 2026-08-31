@@ -29,8 +29,7 @@ class RepositoryCommitControllerTest {
     @BeforeEach
     void setUp() {
         RepositoryCommitController controller = new RepositoryCommitController(
-                commitLoadUseCase, new io.jgitkins.server.identity.access.adapter.in.support
-                        .RequesterUserIdResolver());
+                commitLoadUseCase);
         // standaloneSetup builds no security filter chain, so @AuthenticationPrincipal has no
         // resolver unless one is registered here. Without it the parameter fails to resolve rather
         // than arriving null, and the failure reads as a routing problem.

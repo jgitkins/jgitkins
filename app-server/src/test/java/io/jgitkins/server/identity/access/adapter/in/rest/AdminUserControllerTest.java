@@ -13,7 +13,6 @@ import io.jgitkins.server.identity.access.application.dto.result.UserAdminSummar
 import io.jgitkins.server.identity.access.application.dto.result.UserIdentitySummary;
 import io.jgitkins.server.identity.access.application.port.in.AdminUserQueryUseCase;
 import io.jgitkins.server.identity.access.application.port.in.AdminUserUpdateUseCase;
-import io.jgitkins.server.identity.access.adapter.in.support.RequesterUserIdResolver;
 import io.jgitkins.server.support.ErrorStatusMappingTestConfig;
 import io.jgitkins.server.support.TestAuthentication;
 import java.time.LocalDateTime;
@@ -33,7 +32,7 @@ import org.springframework.test.web.servlet.MockMvc;
 @AutoConfigureMockMvc(addFilters = false)
 // Required, not decorative: the slice pulls in GlobalExceptionHandler as a @RestControllerAdvice
 // but excludes its CompositeErrorHttpStatusMapper dependency, so the context fails to start without this.
-@Import({RequesterUserIdResolver.class, ErrorStatusMappingTestConfig.class})
+@Import({ErrorStatusMappingTestConfig.class})
 class AdminUserControllerTest {
 
     @Autowired

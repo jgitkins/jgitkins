@@ -1,8 +1,8 @@
 package io.jgitkins.server.repository.adapter.in.rest;
 
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import io.jgitkins.server.shared.application.security.AuthenticatedUser;
+import io.jgitkins.server.shared.application.security.CurrentUser;
 import io.jgitkins.server.shared.application.exception.UnauthenticatedException;
-import io.jgitkins.server.identity.access.adapter.in.support.RequesterUserIdResolver;
 import io.jgitkins.server.repository.application.contract.command.RepositoryCreateCommand;
 import io.jgitkins.server.repository.application.contract.result.RepositoryOverviewResult;
 import io.jgitkins.server.repository.application.contract.result.RepositoryResult;
@@ -36,7 +36,6 @@ public class RepositoryManagementController {
     private final RepositoryOverviewUseCase repositoryOverviewUseCase;
 
     private final RepositoryRequestMapper repositoryRequestMapper;
-    private final RequesterUserIdResolver requesterUserIdResolver;
 
 
     /**
@@ -54,22 +53,31 @@ public class RepositoryManagementController {
      * that line, and a broken credential must not be silently downgraded to "anonymous", which would let
      * a corrupted token quietly read exactly the public subset instead of being reported.
      */
-    private Long optionalRequester(String subject) {
-        return requesterUserIdResolver.resolve(subject).orElse(null);
+    private static Long optionalRequester(AuthenticatedUser currentUser) {
+        return AuthenticatedUser.userIdOrNull(currentUser);
     }
 
-    private Long requireRequester(String subject) {
-        return requesterUserIdResolver.resolve(subject)
-                .orElseThrow(() -> new UnauthenticatedException("Authentication required"));
-    }
 
+
+    /**
+     * The requester, or 401.
+     *
+     * <p>Rejected here rather than inside the use case: the first observable effect of an absent or
+     * unusable credential must not be a database read for whatever id was salvaged from it.
+     */
+    private static Long requireRequester(AuthenticatedUser currentUser) {
+        if (currentUser == null) {
+            throw new UnauthenticatedException("Authentication required");
+        }
+        return currentUser.userId();
+    }
 
     @Operation(summary = "Create Repository", description = "ownerType required.")
     @PostMapping
     public ResponseEntity<ApiResponse<RepositoryResult>> create(
             @Valid @RequestBody RepositoryCreateRequest request,
-            @AuthenticationPrincipal(expression = "username") String subject) {
-        Long requesterUserId = requireRequester(subject);
+            @CurrentUser AuthenticatedUser currentUser) {
+        Long requesterUserId = requireRequester(currentUser);
         RepositoryCreateCommand createCommand = repositoryRequestMapper.toCommand(requesterUserId, request);
         RepositoryResult result = repositoryManagementUseCase.create(createCommand);
         return ApiResponse.created(result.id(), result);
@@ -79,32 +87,32 @@ public class RepositoryManagementController {
     @GetMapping("/{repositoryId}")
     public ResponseEntity<ApiResponse<RepositoryResult>> getRepository(
             @PathVariable @Positive Long repositoryId,
-            @AuthenticationPrincipal(expression = "username") String subject) {
-        return ApiResponse.ok(repositoryLoadUseCase.loadRepository(optionalRequester(subject), repositoryId));
+            @CurrentUser AuthenticatedUser currentUser) {
+        return ApiResponse.ok(repositoryLoadUseCase.loadRepository(optionalRequester(currentUser), repositoryId));
     }
 
     @Operation(summary = "Get Repositories")
     @GetMapping
     public ResponseEntity<ApiResponse<List<RepositoryResult>>> getRepositories(
-            @AuthenticationPrincipal(expression = "username") String subject) {
-        return ApiResponse.ok(repositoryLoadUseCase.loadRepositories(optionalRequester(subject)));
+            @CurrentUser AuthenticatedUser currentUser) {
+        return ApiResponse.ok(repositoryLoadUseCase.loadRepositories(optionalRequester(currentUser)));
     }
 
     @Operation(summary = "Get User Repositories by Username")
     @GetMapping("/users/{username}")
     public ResponseEntity<ApiResponse<List<RepositoryResult>>> getUserRepositories(
             @PathVariable("username") @NotBlank String username,
-            @AuthenticationPrincipal(expression = "username") String subject) {
+            @CurrentUser AuthenticatedUser currentUser) {
         return ApiResponse.ok(
-                repositoryLoadUseCase.loadUserRepositories(optionalRequester(subject), username));
+                repositoryLoadUseCase.loadUserRepositories(optionalRequester(currentUser), username));
     }
 
     @Operation(summary = "Delete Repository")
     @DeleteMapping("/{repositoryId}")
     public ResponseEntity<ApiResponse<Void>> deleteRepository(
             @PathVariable @Positive Long repositoryId,
-            @AuthenticationPrincipal(expression = "username") String subject) {
-        repositoryManagementUseCase.deleteRepository(requireRequester(subject), repositoryId);
+            @CurrentUser AuthenticatedUser currentUser) {
+        repositoryManagementUseCase.deleteRepository(requireRequester(currentUser), repositoryId);
         return ApiResponse.noContent();
     }
 
@@ -115,9 +123,9 @@ public class RepositoryManagementController {
     @GetMapping("/{repositoryId}/overview")
     public ResponseEntity<ApiResponse<RepositoryOverviewResult>> getOverview(@PathVariable @Positive Long repositoryId,
                                                                              @RequestParam(name = "branch", required = false) String branch,
-                                                                             @AuthenticationPrincipal(expression = "username") String subject) {
+                                                                             @CurrentUser AuthenticatedUser currentUser) {
         return ApiResponse.ok(repositoryOverviewUseCase.getOverview(
-                optionalRequester(subject), repositoryId, branch));
+                optionalRequester(currentUser), repositoryId, branch));
     }
 
 }

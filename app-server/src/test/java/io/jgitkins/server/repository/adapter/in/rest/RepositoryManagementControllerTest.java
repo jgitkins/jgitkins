@@ -11,7 +11,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.AfterEach;
 import io.jgitkins.server.support.TestAuthentication;
 import org.springframework.context.annotation.Import;
-import io.jgitkins.server.identity.access.adapter.in.support.RequesterUserIdResolver;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
@@ -42,7 +41,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(RepositoryManagementController.class)
-@Import({RequesterUserIdResolver.class, ErrorStatusMappingTestConfig.class})
+@Import({ErrorStatusMappingTestConfig.class})
 @AutoConfigureMockMvc(addFilters = false)
 class RepositoryManagementControllerTest {
 
@@ -151,38 +150,29 @@ class RepositoryManagementControllerTest {
     }
 
     /** The malformed subjects the identity resolver must refuse. Zero is malformed, not absent. */
-    private static final java.util.List<String> MALFORMED_SUBJECTS =
-            java.util.List.of("0", "00", "-1", "+1", " 7", "7 ", "abc", "9999999999999999999999");
 
+    /**
+     * Rejects an unauthenticated caller with AUTH-001 and no use case interaction.
+     *
+     * <p>This helper used to loop over malformed principal names first -- "0", "00", "-1", "+1",
+     * " 42", "42 ", "abc", an overflowing digit string -- and assert each was refused here. None of
+     * them is expressible any more: the principal is an {@code AuthenticatedUser} carrying a positive
+     * Long, so a malformed requester cannot reach a controller to be rejected by one.
+     *
+     * <p>The rule moved rather than vanished. {@code JwtTokenCodec.parseSubject} rejects the same
+     * spellings against the token itself, and {@code JwtTokenCodecTest} asserts twenty-five of them.
+     * That is the better location: the codec sits on the path of every authenticated request, while
+     * this controller was one of twelve, and three of the twelve used a laxer resolver that accepted
+     * "0" outright.
+     */
     private void assertRejectedWithAuth001(java.util.function.Supplier<org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder> request)
             throws Exception {
-        for (String malformed : MALFORMED_SUBJECTS) {
-            TestAuthentication.authenticateAs(malformed);
-            mockMvc.perform(request.get())
-                    .andExpect(status().isUnauthorized())
-                    .andExpect(jsonPath("$.error.code").value("AUTH-001"));
-        }
         TestAuthentication.clear();
         mockMvc.perform(request.get())
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.error.code").value("AUTH-001"));
     }
 
-    @Test
-    void create_rejectsMalformedPrincipalWithAuth001AndNoUseCase() throws Exception {
-        String body = objectMapper.writeValueAsString(java.util.Map.of(
-                "repoName", "sample-repo", "ownerType", "USER", "mainBranch", "main"));
-        for (String malformed : MALFORMED_SUBJECTS) {
-            TestAuthentication.authenticateAs(malformed);
-            mockMvc.perform(post("/api/repositories")
-                            .contentType(MediaType.APPLICATION_JSON).content(body))
-                    .andExpect(status().isUnauthorized())
-                    .andExpect(jsonPath("$.error.code").value("AUTH-001"));
-        }
-        // The point of resolving at the adapter: a broken credential never reaches the use case, so it
-        // cannot cause a repository row, a git directory, or an audit entry.
-        verifyNoInteractions(repositoryManagementUseCase);
-    }
 
     @Test
     void create_rejectsAnonymousWithAuth001AndNoUseCase() throws Exception {
@@ -229,11 +219,6 @@ class RepositoryManagementControllerTest {
                 .andExpect(status().isNotFound());
     }
 
-    @Test
-    void deleteRepository_rejectsMalformedPrincipalWithAuth001AndNoUseCase() throws Exception {
-        assertRejectedWithAuth001(() -> delete("/api/repositories/1"));
-        verifyNoInteractions(repositoryManagementUseCase);
-    }
 
     @Test
     void deleteRepository_rejectsAnonymousWithAuth001AndNoUseCase() throws Exception {

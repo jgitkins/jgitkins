@@ -84,19 +84,29 @@ class JwtTokenCodecTest {
      * unverified, and deleting the resolver would take the only enforcement of these four rules with
      * it -- silently, because every one of them parses.
      *
-     * <p>Parameterized rather than four bodies so that adding the next spelling of a non-id is one
-     * line, and so a reader sees the set rather than four similar methods.
+     * <p>The case set was carried over wholesale from {@code RequesterUserIdResolverTest} when 2.88b
+     * deleted that resolver. Porting it rather than writing a smaller one on the way past matters:
+     * that test asserted things this one did not, including that leading zeros are accepted, and a
+     * migration that quietly narrows coverage is how a rule stops being enforced without anyone
+     * choosing to stop enforcing it.
      */
     @org.junit.jupiter.params.ParameterizedTest(name = "subject \"{0}\" is refused")
     @org.junit.jupiter.params.provider.ValueSource(strings = {
-            "0",        // parses to 0; no user has id zero
-            "-1",       // parses fine; ids are positive
-            "\u0665",   // Arabic-Indic five -- Character.digit accepts it, so Long.parseLong reads 5
-            "+1",        // parses to 1; a second spelling of one identity
-            "1 ",        // trailing space; String.isBlank-style trimming would have hidden this
-            " 1",
-            "1e3",       // not a digit string at all, but a plausible-looking number
-            "99999999999999999999"  // all digits, wider than a long
+            // Non-positive. Parse cleanly, name no row that can exist.
+            "0", "00", "000", "0000000000", "-0", "-1",
+            // Non-ASCII digits. Character.digit accepts these, so Long.parseLong reads them as
+            // numbers -- an id that depends on the script it was written in is not an id.
+            "\u0665",
+            // Extra spellings of one id.
+            "+1",
+            // Whitespace. String.isBlank treats every Unicode space as blank, so a mangled token
+            // padded with one would have been reported as an absent principal rather than a broken
+            // credential. The check is ASCII-explicit for that reason.
+            " ", "\t", "\n", "\r", "   \t\n\r  ", "1 ", " 1", "\t42", "42 ",
+            // Not digit strings, but plausible enough that a lenient parser might take them.
+            "abc", "4a2", "42.0", "42L", "4_2", "1e3",
+            // All digits, wider than a long.
+            "99999999999999999999", "9999999999999999999999"
     })
     void verifyRefusesSubjectsThatAreNotUserIds(String subject) {
         JwtProperties p = properties(900);

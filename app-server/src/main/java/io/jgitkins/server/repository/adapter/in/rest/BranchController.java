@@ -2,9 +2,9 @@ package io.jgitkins.server.repository.adapter.in.rest;
 
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.Valid;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import io.jgitkins.server.shared.application.security.AuthenticatedUser;
+import io.jgitkins.server.shared.application.security.CurrentUser;
 import io.jgitkins.server.shared.application.exception.UnauthenticatedException;
-import io.jgitkins.server.identity.access.adapter.in.support.RequesterUserIdResolver;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +31,6 @@ public class BranchController {
     private final BranchLoadUseCase branchLoadUseCase;
     private final BranchManagementUseCase branchManagementUseCase;
     private final BranchRequestMapper branchRequestMapper;
-    private final RequesterUserIdResolver requesterUserIdResolver;
 
 
     /**
@@ -40,21 +39,29 @@ public class BranchController {
      * <p>A malformed principal must not reach the application layer: if it did, the first observable
      * effect of a broken credential would be a database read for whatever id was salvaged from it.
      */
-    private Long requireRequester(String subject) {
-        return requesterUserIdResolver.resolve(subject)
-                .orElseThrow(() -> new UnauthenticatedException("Authentication required"));
-    }
 
+
+    /**
+     * The requester, or 401.
+     *
+     * <p>Rejected here rather than inside the use case: the first observable effect of an absent or
+     * unusable credential must not be a database read for whatever id was salvaged from it.
+     */
+    private static Long requireRequester(AuthenticatedUser currentUser) {
+        if (currentUser == null) {
+            throw new UnauthenticatedException("Authentication required");
+        }
+        return currentUser.userId();
+    }
 
     @Operation(summary = "Create branch")
     @PostMapping
     public ResponseEntity<ApiResponse<Void>> create(@PathVariable @Positive Long repositoryId,
                                                     @Valid @RequestBody BranchCreateRequest request,
-                                                    @AuthenticationPrincipal(expression = "username")
-                                                    String subject) {
+                                                    @CurrentUser AuthenticatedUser currentUser) {
 
         BranchCreateCommand createCommand = branchRequestMapper.toCommand(
-                requireRequester(subject), repositoryId, request);
+                requireRequester(currentUser), repositoryId, request);
         branchManagementUseCase.createBranch(createCommand);
 
         URI location = LocationUriBuilder.create(request.branchName());
@@ -66,12 +73,12 @@ public class BranchController {
     @GetMapping
     public ResponseEntity<ApiResponse<List<BranchSearchResult>>> getBranches(
             @PathVariable @Positive Long repositoryId,
-            @AuthenticationPrincipal(expression = "username") String subject) {
+            @CurrentUser AuthenticatedUser currentUser) {
         // Nullable requester: a public repository's branch list is readable anonymously, and the
         // visibility rule decides. Demanding a requester here would answer 401 to a logged-out
         // visitor browsing a public repository.
         return ApiResponse.ok(branchLoadUseCase.loadBranches(
-                repositoryId, requesterUserIdResolver.resolve(subject).orElse(null)));
+                repositoryId, AuthenticatedUser.userIdOrNull(currentUser)));
     }
 
     @Operation(summary = "Get Branch")
@@ -79,19 +86,18 @@ public class BranchController {
     public ResponseEntity<ApiResponse<BranchSearchResult>> getBranch(
             @PathVariable @Positive Long repositoryId,
             @PathVariable String branchName,
-            @AuthenticationPrincipal(expression = "username") String subject) {
+            @CurrentUser AuthenticatedUser currentUser) {
         return ApiResponse.ok(branchLoadUseCase.loadBranch(
-                repositoryId, branchName, requesterUserIdResolver.resolve(subject).orElse(null)));
+                repositoryId, branchName, AuthenticatedUser.userIdOrNull(currentUser)));
     }
 
     @Operation(summary = "Delete branch")
     @DeleteMapping("/{branchName}")
     public ResponseEntity<ApiResponse<Void>> deleteBranch(@PathVariable @Positive Long repositoryId,
                                                           @PathVariable String branchName,
-                                                          @AuthenticationPrincipal(expression = "username")
-                                                          String subject) {
+                                                          @CurrentUser AuthenticatedUser currentUser) {
 
-        branchManagementUseCase.deleteBranch(requireRequester(subject), repositoryId, branchName);
+        branchManagementUseCase.deleteBranch(requireRequester(currentUser), repositoryId, branchName);
         return ApiResponse.noContent();
     }
 }

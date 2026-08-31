@@ -9,7 +9,6 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jgitkins.server.collaboration.application.dto.result.OrganizeCreationResult;
 import io.jgitkins.server.collaboration.application.port.in.OrganizeLoadUseCase;
-import io.jgitkins.server.collaboration.adapter.in.support.RequesterUserIdResolver;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,22 +29,17 @@ class WebOrganizeControllerTest {
     @Mock
     private OrganizeLoadUseCase organizeLoadUseCase;
 
-    @Mock
-    private RequesterUserIdResolver requesterUserIdResolver;
 
     @BeforeEach
     void setUp() {
-        org.springframework.security.core.context.SecurityContextHolder.getContext().setAuthentication(
-                new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(
-                        new org.springframework.security.core.userdetails.User("7", "", java.util.List.of()), "", java.util.List.of()));
+        io.jgitkins.server.support.TestAuthentication.authenticateAs(7L);
         mockMvc = MockMvcBuilders.standaloneSetup(
-                new WebOrganizeController(organizeLoadUseCase, requesterUserIdResolver)
+                new WebOrganizeController(organizeLoadUseCase)
         ).setCustomArgumentResolvers(new AuthenticationPrincipalArgumentResolver()).build();
     }
 
     @Test
     void getAccessibleOrganizes_preservesApplicationResultPayload() throws Exception {
-        when(requesterUserIdResolver.resolve("7")).thenReturn(java.util.Optional.of(7L));
                 when(organizeLoadUseCase.getAccessibleOrganizes(7L)).thenReturn(List.of(
                 new OrganizeCreationResult(3L, "org-c", "description", 7L, null, null)
         ));
@@ -65,7 +59,6 @@ class WebOrganizeControllerTest {
     @Test
     void getAccessibleOrganizes_withoutSubject_passesNullAndReturnsEmpty() throws Exception {
         org.springframework.security.core.context.SecurityContextHolder.clearContext();
-        when(requesterUserIdResolver.resolve(null)).thenReturn(java.util.Optional.empty());
         when(organizeLoadUseCase.getAccessibleOrganizes(null)).thenReturn(List.of());
 
         mockMvc.perform(get("/api/internal/organizes"))

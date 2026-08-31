@@ -1,7 +1,7 @@
 package io.jgitkins.server.repository.adapter.in.web;
 
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import io.jgitkins.server.identity.access.adapter.in.support.RequesterUserIdResolver;
+import io.jgitkins.server.shared.application.security.AuthenticatedUser;
+import io.jgitkins.server.shared.application.security.CurrentUser;
 import io.jgitkins.core.web.api.response.ApiResponse;
 import io.jgitkins.server.repository.application.contract.result.RepositoryOverviewResult;
 import io.jgitkins.server.repository.application.contract.result.RepositoryResult;
@@ -29,12 +29,11 @@ public class WebRepositoryController {
 
 	private final RepositoryLoadUseCase repositoryLoadUseCase;
 	private final RepositoryOverviewUseCase repositoryOverviewUseCase;
-	private final RequesterUserIdResolver requesterUserIdResolver;
 
 
 	/** Anonymous is allowed for these reads; a malformed principal still throws. */
-	private Long optionalRequester(String subject) {
-		return requesterUserIdResolver.resolve(subject).orElse(null);
+	private static Long optionalRequester(AuthenticatedUser currentUser) {
+		return AuthenticatedUser.userIdOrNull(currentUser);
 	}
 
 
@@ -42,10 +41,10 @@ public class WebRepositoryController {
 	@GetMapping("/users/{username}")
 	public ResponseEntity<ApiResponse<List<RepositoryResult>>> getUserRepositories(
 			@PathVariable("username") @NotBlank String username,
-			@AuthenticationPrincipal(expression = "username") String subject
+			@CurrentUser AuthenticatedUser currentUser
 	) {
 		return ApiResponse.ok(
-				repositoryLoadUseCase.loadUserRepositories(optionalRequester(subject), username));
+				repositoryLoadUseCase.loadUserRepositories(optionalRequester(currentUser), username));
 	}
 
 	@Operation(summary = "Get Repository Overview by Namespace/Repo (Web)")
@@ -54,9 +53,9 @@ public class WebRepositoryController {
 			@PathVariable @NotBlank String namespace,
 			@PathVariable @NotBlank String repoName,
 			@RequestParam(name = "branch", required = false) String branch,
-			@AuthenticationPrincipal(expression = "username") String subject
+			@CurrentUser AuthenticatedUser currentUser
 	) {
 		return ApiResponse.ok(repositoryOverviewUseCase.getOverviewByPath(
-				optionalRequester(subject), namespace, repoName, branch));
+				optionalRequester(currentUser), namespace, repoName, branch));
 	}
 }

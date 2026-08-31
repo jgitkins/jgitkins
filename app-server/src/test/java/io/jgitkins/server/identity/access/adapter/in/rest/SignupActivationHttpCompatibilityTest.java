@@ -12,7 +12,6 @@ import io.jgitkins.server.common.presentation.advice.mapper.CompositeErrorHttpSt
 import io.jgitkins.server.common.presentation.advice.mapper.DomainErrorHttpStatusMapper;
 import io.jgitkins.server.common.presentation.advice.mapper.InfrastructureErrorHttpStatusMapper;
 import io.jgitkins.server.common.presentation.advice.mapper.PresentationErrorHttpStatusMapper;
-import io.jgitkins.server.identity.access.adapter.in.support.RequesterUserIdResolver;
 import io.jgitkins.server.identity.access.application.exception.OrganizeAlreadyExistsException;
 import io.jgitkins.server.identity.access.application.exception.UserNotFoundException;
 import io.jgitkins.server.identity.access.application.exception.UsernameAlreadyExistsException;
@@ -38,8 +37,7 @@ import org.springframework.test.web.servlet.MockMvc;
 @WebMvcTest(SignupController.class)
 @AutoConfigureMockMvc(addFilters = false)
 @Import({GlobalExceptionHandler.class, ErrorStatusMappingTestConfig.class,
-        SignupActivationHttpCompatibilityTest.StatusMapperConfiguration.class,
-        RequesterUserIdResolver.class})
+        SignupActivationHttpCompatibilityTest.StatusMapperConfiguration.class})
 class SignupActivationHttpCompatibilityTest {
 
     @Autowired private MockMvc mockMvc;
@@ -130,12 +128,23 @@ class SignupActivationHttpCompatibilityTest {
         return performBody("{\"username\":\"" + username + "\"}");
     }
 
+    @org.junit.jupiter.api.AfterEach
+    void clearAuthentication() {
+        // The context is a thread local; a leftover authentication leaks into the next class on the
+        // same thread and shows up as a test that passes alone and fails in the suite.
+        io.jgitkins.server.support.TestAuthentication.clear();
+    }
     private org.springframework.test.web.servlet.ResultActions performBody(String body) throws Exception {
         // Every compatibility case carries a valid principal, so the responses being compared are the
         // ones a real authenticated caller gets. The unauthenticated path is asserted separately below;
         // folding it in here would have every case exercising the 401 instead.
+        //
+        // Set on SecurityContextHolder, not with MockMvc.principal(). The route reads @CurrentUser,
+        // which resolves from the context; the request principal is not consulted, so .principal(...)
+        // would leave the parameter null and turn every case here into a 401 that reads like an
+        // authorization bug.
+        io.jgitkins.server.support.TestAuthentication.authenticateAs(42L);
         return mockMvc.perform(post("/api/signup/activate")
-                .principal(() -> "42")
                 .contentType(MediaType.APPLICATION_JSON).content(body));
     }
 
@@ -143,6 +152,7 @@ class SignupActivationHttpCompatibilityTest {
     void anonymousRequestKeepsTheUnauthenticatedEnvelope() throws Exception {
         // Task 2.63 moved this rejection from the service to the adapter. The status and envelope must
         // not have moved with it -- that is the entire compatibility claim of this task.
+        io.jgitkins.server.support.TestAuthentication.clear();
         mockMvc.perform(post("/api/signup/activate")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"username\":\"new_name\"}"))

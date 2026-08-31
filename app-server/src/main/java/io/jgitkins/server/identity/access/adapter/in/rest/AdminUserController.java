@@ -4,7 +4,6 @@ import jakarta.validation.constraints.Positive;
 import jakarta.validation.Valid;
 import io.jgitkins.server.identity.access.application.dto.result.UserAdminDetail;
 import io.jgitkins.server.identity.access.application.dto.result.UserAdminSummary;
-import io.jgitkins.server.identity.access.adapter.in.support.RequesterUserIdResolver;
 import io.jgitkins.server.identity.access.application.port.in.AdminUserQueryUseCase;
 import io.jgitkins.server.identity.access.application.port.in.AdminUserUpdateUseCase;
 import io.jgitkins.core.web.api.response.ApiResponse;
@@ -16,7 +15,8 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import io.jgitkins.server.shared.application.security.AuthenticatedUser;
+import io.jgitkins.server.shared.application.security.CurrentUser;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -41,27 +41,35 @@ public class AdminUserController {
 
     private final AdminUserQueryUseCase adminUserQueryUseCase;
     private final AdminUserUpdateUseCase adminUserUpdateUseCase;
-    private final RequesterUserIdResolver requesterUserIdResolver;
 
 
-    private Long requireRequester(String subject) {
-        return requesterUserIdResolver.resolve(subject)
-                .orElseThrow(() -> new UnauthenticatedException("Authentication required"));
+
+    /**
+     * The requester, or 401.
+     *
+     * <p>Rejected here rather than inside the use case: the first observable effect of an absent or
+     * unusable credential must not be a database read for whatever id was salvaged from it.
+     */
+    private static Long requireRequester(AuthenticatedUser currentUser) {
+        if (currentUser == null) {
+            throw new UnauthenticatedException("Authentication required");
+        }
+        return currentUser.userId();
     }
 
     @Operation(summary = "List users")
     @GetMapping
     public ResponseEntity<ApiResponse<List<UserAdminSummary>>> listUsers(
-            @AuthenticationPrincipal(expression = "username") String subject) {
-        return ApiResponse.ok(adminUserQueryUseCase.getUsers(requireRequester(subject)));
+            @CurrentUser AuthenticatedUser currentUser) {
+        return ApiResponse.ok(adminUserQueryUseCase.getUsers(requireRequester(currentUser)));
     }
 
     @Operation(summary = "Get user detail")
     @GetMapping("/{userId}")
     public ResponseEntity<ApiResponse<UserAdminDetail>> getUser(
             @PathVariable @Positive Long userId,
-            @AuthenticationPrincipal(expression = "username") String subject) {
-        return ApiResponse.ok(adminUserQueryUseCase.getUser(requireRequester(subject), userId));
+            @CurrentUser AuthenticatedUser currentUser) {
+        return ApiResponse.ok(adminUserQueryUseCase.getUser(requireRequester(currentUser), userId));
     }
 
     @Operation(summary = "Update user status")
@@ -69,8 +77,8 @@ public class AdminUserController {
     public ResponseEntity<ApiResponse<Void>> updateStatus(
             @PathVariable @Positive Long userId,
             @Valid @RequestBody UserStatusUpdateRequest request,
-            @AuthenticationPrincipal(expression = "username") String subject) {
-        adminUserUpdateUseCase.updateUserStatus(requireRequester(subject), userId, request.status());
+            @CurrentUser AuthenticatedUser currentUser) {
+        adminUserUpdateUseCase.updateUserStatus(requireRequester(currentUser), userId, request.status());
         return ApiResponse.ok();
     }
 }

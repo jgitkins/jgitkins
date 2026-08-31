@@ -7,8 +7,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import io.jgitkins.server.identity.access.adapter.in.support.RequesterUserIdResolver;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import io.jgitkins.server.shared.application.security.AuthenticatedUser;
+import io.jgitkins.server.shared.application.security.CurrentUser;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,20 +23,18 @@ import java.util.List;
 public class RepositoryCommitController {
 
     private final CommitLoadUseCase commitLoadUseCase;
-    private final RequesterUserIdResolver requesterUserIdResolver;
 
     @Operation(summary = "View Commit Detail", description = "커밋 상세 조회")
     @GetMapping("/{namespace}/{repoName}/commits/{commitHash}")
     public ResponseEntity<ApiResponse<CommitHistory>> getCommitDetail(@PathVariable String namespace,
                                                                       @PathVariable String repoName,
                                                                       @PathVariable String commitHash,
-                                                                      @AuthenticationPrincipal(expression = "username")
-                                                                      String subject) {
+                                                                      @CurrentUser AuthenticatedUser currentUser) {
         // Nullable requester: public repositories stay readable anonymously. Until task P0a this
         // route passed the namespace and name straight to git with no requester and no rule, so the
         // commit contents of any private repository were readable by anyone who knew its name.
         CommitHistory commitHistory = commitLoadUseCase.getCommit(namespace, repoName, commitHash,
-                requesterUserIdResolver.resolve(subject).orElse(null));
+                AuthenticatedUser.userIdOrNull(currentUser));
         return ApiResponse.ok(commitHistory);
     }
 
@@ -45,10 +43,9 @@ public class RepositoryCommitController {
     public ResponseEntity<ApiResponse<List<CommitHistory>>> getBranchCommitHistories(@PathVariable String namespace,
                                                                                      @PathVariable String repoName,
                                                                                      @PathVariable String branch,
-                                                                                     @AuthenticationPrincipal(expression = "username")
-                                                                                     String subject) {
+                                                                                     @CurrentUser AuthenticatedUser currentUser) {
         List<CommitHistory> commitHistories = commitLoadUseCase.getCommits(namespace, repoName, branch,
-                requesterUserIdResolver.resolve(subject).orElse(null));
+                AuthenticatedUser.userIdOrNull(currentUser));
         return ApiResponse.ok(commitHistories);
     }
 }

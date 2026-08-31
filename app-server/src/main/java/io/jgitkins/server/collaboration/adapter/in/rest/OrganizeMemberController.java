@@ -7,7 +7,6 @@ import io.jgitkins.server.collaboration.application.dto.result.OrganizeMemberSum
 import io.jgitkins.server.collaboration.application.port.in.OrganizeMemberAddUseCase;
 import io.jgitkins.server.collaboration.application.port.in.OrganizeMemberQueryUseCase;
 import io.jgitkins.server.collaboration.application.port.in.OrganizeMemberRemoveUseCase;
-import io.jgitkins.server.collaboration.adapter.in.support.RequesterUserIdResolver;
 import io.jgitkins.core.web.api.response.ApiResponse;
 import io.jgitkins.server.collaboration.adapter.in.rest.dto.request.OrganizeMemberAddRequest;
 import io.jgitkins.server.collaboration.adapter.in.rest.mapper.OrganizeMemberRequestMapper;
@@ -23,7 +22,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import io.jgitkins.server.shared.application.security.AuthenticatedUser;
+import io.jgitkins.server.shared.application.security.CurrentUser;
 
 @RestController
 @RequiredArgsConstructor
@@ -35,15 +35,26 @@ public class OrganizeMemberController {
     private final OrganizeMemberQueryUseCase organizeMemberQueryUseCase;
     private final OrganizeMemberRemoveUseCase organizeMemberRemoveUseCase;
     private final OrganizeMemberRequestMapper organizeMemberRequestMapper;
-    private final RequesterUserIdResolver requesterUserIdResolver;
+
+    /**
+     * The requester, or 401.
+     *
+     * <p>Rejected here rather than inside the use case: the first observable effect of an absent or
+     * unusable credential must not be a database read for whatever id was salvaged from it.
+     */
+    private static Long requireRequester(AuthenticatedUser currentUser) {
+        if (currentUser == null) {
+            throw new UnauthenticatedException("Authentication required");
+        }
+        return currentUser.userId();
+    }
 
     @Operation(summary = "Add organize member")
     @PostMapping
     public ResponseEntity<ApiResponse<Void>> addMember(@PathVariable @Positive Long organizeId,
                                                        @Valid @RequestBody OrganizeMemberAddRequest request,
-                                                       @AuthenticationPrincipal(expression = "username") String subject) {
-        Long requesterUserId = requesterUserIdResolver.resolve(subject)
-                .orElseThrow(() -> new UnauthenticatedException("Authentication required"));
+                                                       @CurrentUser AuthenticatedUser currentUser) {
+        Long requesterUserId = requireRequester(currentUser);
         OrganizeMemberAddCommand command = organizeMemberRequestMapper.toCommand(organizeId, request, requesterUserId);
         organizeMemberAddUseCase.addOrganizeMember(command);
         return ApiResponse.ok();
@@ -53,9 +64,8 @@ public class OrganizeMemberController {
     @DeleteMapping("/{userId}")
     public ResponseEntity<ApiResponse<Void>> removeMember(@PathVariable @Positive Long organizeId,
                                                           @PathVariable @Positive Long userId,
-                                                          @AuthenticationPrincipal(expression = "username") String subject) {
-        Long requesterUserId = requesterUserIdResolver.resolve(subject)
-                .orElseThrow(() -> new UnauthenticatedException("Authentication required"));
+                                                          @CurrentUser AuthenticatedUser currentUser) {
+        Long requesterUserId = requireRequester(currentUser);
         organizeMemberRemoveUseCase.removeOrganizeMember(organizeId, requesterUserId, userId);
         return ApiResponse.noContent();
     }

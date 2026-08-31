@@ -5,7 +5,6 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import io.jgitkins.server.identity.access.adapter.in.support.RequesterUserIdResolver;
 import io.jgitkins.server.repository.application.contract.result.RepositoryOverviewResult;
 import io.jgitkins.server.repository.application.contract.result.RepositoryResult;
 import io.jgitkins.server.repository.application.port.in.RepositoryLoadUseCase;
@@ -31,7 +30,7 @@ import org.springframework.test.web.servlet.MockMvc;
  * test. Anonymous must stay anonymous — a null requester reaching the use case, not a 401.
  */
 @WebMvcTest(WebRepositoryController.class)
-@Import({RequesterUserIdResolver.class, ErrorStatusMappingTestConfig.class})
+@Import({ErrorStatusMappingTestConfig.class})
 @AutoConfigureMockMvc(addFilters = false)
 class WebRepositoryControllerTest {
 

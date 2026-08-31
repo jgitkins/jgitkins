@@ -6,7 +6,6 @@ import io.jgitkins.core.web.api.response.ApiResponse;
 import io.jgitkins.server.change.review.application.dto.command.MergeRequest;
 import io.jgitkins.server.change.review.application.dto.result.MergeResult;
 import io.jgitkins.server.change.review.application.port.in.MergeUseCase;
-import io.jgitkins.server.change.review.adapter.in.support.ReviewRequesterResolver;
 import io.jgitkins.server.change.review.application.port.in.MergeabilityCheckUseCase;
 import io.jgitkins.server.shared.application.exception.UnauthenticatedException;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,7 +13,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import io.jgitkins.server.shared.application.security.AuthenticatedUser;
+import io.jgitkins.server.shared.application.security.CurrentUser;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,11 +29,19 @@ public class MergeController {
 
     private final MergeabilityCheckUseCase mergeabilityCheckUseCase;
     private final MergeUseCase mergeUseCase;
-    private final ReviewRequesterResolver reviewRequesterResolver;
 
-    private Long requireRequester(String subject) {
-        return reviewRequesterResolver.resolve(subject)
-                .orElseThrow(() -> new UnauthenticatedException("Authentication required"));
+
+    /**
+     * The requester, or 401.
+     *
+     * <p>Rejected here rather than inside the use case: the first observable effect of an absent or
+     * unusable credential must not be a database read for whatever id was salvaged from it.
+     */
+    private static Long requireRequester(AuthenticatedUser currentUser) {
+        if (currentUser == null) {
+            throw new UnauthenticatedException("Authentication required");
+        }
+        return currentUser.userId();
     }
 
     @Operation(summary = "Check Mergeability", description = "소스 브랜치가 타겟 브랜치로 병합 가능한지 확인")
@@ -43,13 +51,13 @@ public class MergeController {
             @PathVariable @NotBlank String repoName,
             @RequestParam String sourceBranch,
             @RequestParam String targetBranch,
-            @AuthenticationPrincipal(expression = "username") String subject
+            @CurrentUser AuthenticatedUser currentUser
     ) throws IOException {
         // Nullable, unlike performMerge below: previewing a merge reads the repository, and a public
         // repository is readable anonymously. requireRequester here would answer 401 to a logged-out
         // visitor looking at a public repository.
         MergeResult result = mergeabilityCheckUseCase.checkMergeability(namespace, repoName,
-                sourceBranch, targetBranch, reviewRequesterResolver.resolve(subject).orElse(null));
+                sourceBranch, targetBranch, AuthenticatedUser.userIdOrNull(currentUser));
         return ApiResponse.ok(result);
     }
 
@@ -59,12 +67,12 @@ public class MergeController {
             @PathVariable @NotBlank String namespace,
             @PathVariable @NotBlank String repoName,
             @Valid @RequestBody MergeRequest request,
-            @AuthenticationPrincipal(expression = "username") String subject
+            @CurrentUser AuthenticatedUser currentUser
     ) throws IOException {
         // The requester comes from the principal, never from the body. MergeRequest is bound from
         // the request payload; an actor field there would be caller-controlled.
         MergeResult result = mergeUseCase.performMerge(
-                namespace, repoName, request, requireRequester(subject));
+                namespace, repoName, request, requireRequester(currentUser));
         return ApiResponse.ok(result);
     }
 }

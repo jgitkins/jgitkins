@@ -9,7 +9,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import io.jgitkins.server.repository.application.contract.result.FileEntry;
 import io.jgitkins.server.repository.application.port.in.FileLoadUseCase;
 import java.util.List;
-import io.jgitkins.server.identity.access.adapter.in.support.RequesterUserIdResolver;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,15 +24,13 @@ class RepositoryFileControllerTest {
     @Mock
     private FileLoadUseCase fileLoadUseCase;
 
-    @Mock
-    private RequesterUserIdResolver requesterUserIdResolver;
 
     private MockMvc mockMvc;
 
     @BeforeEach
     void setUp() {
         RepositoryFileController controller =
-                new RepositoryFileController(fileLoadUseCase, requesterUserIdResolver);
+                new RepositoryFileController(fileLoadUseCase);
         this.mockMvc = MockMvcBuilders.standaloneSetup(controller)
                 .setCustomArgumentResolvers(
                         new org.springframework.security.web.method.annotation

@@ -10,7 +10,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.AfterEach;
 import io.jgitkins.server.support.TestAuthentication;
 import org.springframework.context.annotation.Import;
-import io.jgitkins.server.identity.access.adapter.in.support.RequesterUserIdResolver;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -35,7 +34,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(RepositoryMemberController.class)
-@Import({RequesterUserIdResolver.class, ErrorStatusMappingTestConfig.class})
+@Import({ErrorStatusMappingTestConfig.class})
 @AutoConfigureMockMvc(addFilters = false)
 class RepositoryMemberControllerTest {
 
@@ -121,31 +120,30 @@ class RepositoryMemberControllerTest {
     }
 
     /** The malformed subjects the identity resolver must refuse. Zero is malformed, not absent. */
-    private static final java.util.List<String> MALFORMED_SUBJECTS =
-            java.util.List.of("0", "00", "-1", "+1", " 7", "7 ", "abc", "9999999999999999999999");
 
+    /**
+     * Rejects an unauthenticated caller with AUTH-001 and no use case interaction.
+     *
+     * <p>This helper used to loop over malformed principal names first -- "0", "00", "-1", "+1",
+     * " 42", "42 ", "abc", an overflowing digit string -- and assert each was refused here. None of
+     * them is expressible any more: the principal is an {@code AuthenticatedUser} carrying a positive
+     * Long, so a malformed requester cannot reach a controller to be rejected by one.
+     *
+     * <p>The rule moved rather than vanished. {@code JwtTokenCodec.parseSubject} rejects the same
+     * spellings against the token itself, and {@code JwtTokenCodecTest} asserts twenty-five of them.
+     * That is the better location: the codec sits on the path of every authenticated request, while
+     * this controller was one of twelve, and three of the twelve used a laxer resolver that accepted
+     * "0" outright.
+     */
     private void assertRejectedWithAuth001(
             java.util.function.Supplier<org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder> request)
             throws Exception {
-        for (String malformed : MALFORMED_SUBJECTS) {
-            TestAuthentication.authenticateAs(malformed);
-            mockMvc.perform(request.get())
-                    .andExpect(status().isUnauthorized())
-                    .andExpect(jsonPath("$.error.code").value("AUTH-001"));
-        }
         TestAuthentication.clear();
         mockMvc.perform(request.get())
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.error.code").value("AUTH-001"));
     }
 
-    @Test
-    void addMember_rejectsMalformedPrincipalWithAuth001AndNoWrite() throws Exception {
-        String body = "{\"userId\":2,\"role\":\"MAINTAINER\"}";
-        assertRejectedWithAuth001(() -> post("/api/repositories/1/members")
-                .contentType(MediaType.APPLICATION_JSON).content(body));
-        verifyNoInteractions(repositoryMemberManagementUseCase);
-    }
 
     @Test
     void addMember_rejectsAnonymousWithAuth001AndNoWrite() throws Exception {
@@ -182,11 +180,6 @@ class RepositoryMemberControllerTest {
                 .andExpect(status().isNotFound());
     }
 
-    @Test
-    void removeMember_rejectsMalformedPrincipalWithAuth001AndNoWrite() throws Exception {
-        assertRejectedWithAuth001(() -> delete("/api/repositories/1/members/2"));
-        verifyNoInteractions(repositoryMemberManagementUseCase);
-    }
 
     @Test
     void removeMember_rejectsAnonymousWithAuth001AndNoWrite() throws Exception {
@@ -238,11 +231,4 @@ class RepositoryMemberControllerTest {
         mockMvc.perform(get("/api/repositories/1/members")).andExpect(status().isNotFound());
     }
 
-    @Test
-    void listMembers_rejectsMalformedPrincipal() throws Exception {
-        assertRejectedWithAuth001(() -> get("/api/repositories/1/members"));
-        // A member list is never public, so unlike the repository reads this route rejects rather than
-        // narrowing -- and the use case is never reached, so nothing can be inferred from a response time.
-        verifyNoInteractions(repositoryMemberLoadUseCase);
-    }
 }

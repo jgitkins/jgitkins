@@ -51,8 +51,7 @@ class PullRequestControllerTest {
     @BeforeEach
     void setUp() {
         PullRequestController controller = new PullRequestController(createPullRequestUseCase,
-                getPullRequestDetailUseCase,
-                new io.jgitkins.server.change.review.adapter.in.support.ReviewRequesterResolver());
+                getPullRequestDetailUseCase);
         this.mockMvc = MockMvcBuilders.standaloneSetup(controller)
                 // standaloneSetup wires no Spring Security, so @AuthenticationPrincipal has no
                 // resolver without this and the parameter fails to resolve rather than arriving null.

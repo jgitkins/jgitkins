@@ -7,7 +7,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.jgitkins.server.identity.access.adapter.in.support.RequesterUserIdResolver;
 import io.jgitkins.server.identity.access.application.port.in.SignupUseCase;
 import io.jgitkins.server.support.ErrorStatusMappingTestConfig;
 import org.junit.jupiter.api.Test;
@@ -21,7 +20,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(SignupController.class)
 @AutoConfigureMockMvc(addFilters = false)
-@Import({RequesterUserIdResolver.class, ErrorStatusMappingTestConfig.class})
+@Import({ErrorStatusMappingTestConfig.class})
 class SignupControllerTest {
 
     @Autowired
@@ -33,13 +32,18 @@ class SignupControllerTest {
     @MockBean
     private SignupUseCase signupUseCase;
 
+    @org.junit.jupiter.api.AfterEach
+    void clearAuthentication() {
+        io.jgitkins.server.support.TestAuthentication.clear();
+    }
+
     @Test
     void activate_callsUseCaseAndReturnsOk() throws Exception {
+        io.jgitkins.server.support.TestAuthentication.authenticateAs(42L);
         String body = objectMapper.writeValueAsString(java.util.Map.of("username", "new_name"));
 
         mockMvc.perform(post("/api/signup/activate")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .principal(() -> "42")
                         .content(body))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.error").doesNotExist());
@@ -49,20 +53,22 @@ class SignupControllerTest {
 
     @Test
     void activate_withMissingField_returnsBadRequest() throws Exception {
+        io.jgitkins.server.support.TestAuthentication.authenticateAs(42L);
         mockMvc.perform(post("/api/signup/activate")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .principal(() -> "42")
                         .content("{}"))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
     void activate_passesAuthenticatedRequesterId() throws Exception {
+        // Leading zeros still resolve to the parsed number, asserted at the codec in JwtTokenCodecTest.
+        // Here the principal is already typed, so the id arrives as 9 with no string in between.
+        io.jgitkins.server.support.TestAuthentication.authenticateAs(9L);
         String body = objectMapper.writeValueAsString(java.util.Map.of("username", "new_name"));
 
         mockMvc.perform(post("/api/signup/activate")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .principal(() -> "0000000009")
                         .content(body))
                 .andExpect(status().isOk());
 
@@ -73,26 +79,24 @@ class SignupControllerTest {
     }
 
     @Test
-    void activate_rejectsMalformedRequesterWithoutUseCaseInteraction() throws Exception {
+    void activate_rejectsAnAnonymousRequesterWithoutTouchingTheUseCase() throws Exception {
+        // This test used to loop over "0", "00", "-1", "+1", " 42", "42 ", "abc" and an overflowing
+        // digit string, feeding each as a principal name. None of them is expressible any more:
+        // AuthenticatedUser takes a positive Long, so a malformed requester cannot reach a controller
+        // to be rejected there. The rule did not go away -- it moved one layer up, to
+        // JwtTokenCodec.parseSubject, where JwtTokenCodecTest asserts the same eight spellings and
+        // twenty more against the token itself. That is the better place for it: the codec is on the
+        // path of every authenticated request, while this controller was one of twelve.
+        //
+        // What remains testable here, and is tested, is the case a client can actually produce.
         String body = objectMapper.writeValueAsString(java.util.Map.of("username", "new_name"));
+        io.jgitkins.server.support.TestAuthentication.clear();
 
-        for (String malformed : java.util.List.of("0", "00", "-1", "+1", " 42", "42 ", "abc",
-                "9999999999999999999999")) {
-            mockMvc.perform(post("/api/signup/activate")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .principal(() -> malformed)
-                            .content(body))
-                    .andExpect(status().isUnauthorized());
-        }
-
-        // Anonymous is the other rejection path and must behave the same way from the client's side.
         mockMvc.perform(post("/api/signup/activate")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(body))
                 .andExpect(status().isUnauthorized());
 
-        // The point of the whole task: a broken credential must not reach the use case. If it did, the
-        // first observable effect would be a database read for whatever id was salvaged from it.
         verifyNoInteractions(signupUseCase);
     }
 }

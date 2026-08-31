@@ -18,7 +18,6 @@ import io.jgitkins.server.change.review.application.port.in.MergeUseCase;
 import io.jgitkins.server.change.review.application.port.in.MergeabilityCheckUseCase;
 import io.jgitkins.server.common.presentation.advice.GlobalExceptionHandler;
 import io.jgitkins.server.support.ErrorStatusMappingTestConfig;
-import io.jgitkins.server.change.review.adapter.in.support.ReviewRequesterResolver;
 import java.util.Optional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,8 +39,6 @@ class MergeControllerTest {
     @Mock
     private MergeUseCase mergeUseCase;
 
-    @Mock
-    private ReviewRequesterResolver reviewRequesterResolver;
 
 
     private MockMvc mockMvc;
@@ -50,7 +47,7 @@ class MergeControllerTest {
     @BeforeEach
     void setUp() {
         MergeController controller =
-                new MergeController(mergeabilityCheckUseCase, mergeUseCase, reviewRequesterResolver);
+                new MergeController(mergeabilityCheckUseCase, mergeUseCase);
         this.mockMvc = MockMvcBuilders.standaloneSetup(controller)
                 // standaloneSetup wires no Spring Security, so @AuthenticationPrincipal would resolve
                 // to null without this and every request would look anonymous.
@@ -63,10 +60,7 @@ class MergeControllerTest {
     }
 
     private static void signIn(String subject) {
-        org.springframework.security.core.context.SecurityContextHolder.getContext().setAuthentication(
-                new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(
-                        new org.springframework.security.core.userdetails.User(subject, "", java.util.List.of()),
-                        "", java.util.List.of()));
+        io.jgitkins.server.support.TestAuthentication.authenticateAs(subject);
     }
 
     @AfterEach
@@ -76,6 +70,7 @@ class MergeControllerTest {
 
     @Test
     void checkMergeability_passesANullRequesterForAnAnonymousCaller() throws Exception {
+        io.jgitkins.server.support.TestAuthentication.clear();
         // Null, not a rejection. A merge preview reads the repository, and a public repository is
         // readable while logged out. performMerge below is the one that demands a requester.
         when(mergeabilityCheckUseCase.checkMergeability("team", "repo", "feature", "main", null))
@@ -97,7 +92,7 @@ class MergeControllerTest {
                 .sourceBranch("feature")
                 .targetBranch("main")
                 .build();
-        when(mergeabilityCheckUseCase.checkMergeability("team", "repo", "feature", "main", null))
+        when(mergeabilityCheckUseCase.checkMergeability("team", "repo", "feature", "main", 7L))
                 .thenReturn(result);
 
         mockMvc.perform(get("/repositories/team/repo/merge/check")
@@ -107,7 +102,7 @@ class MergeControllerTest {
                 .andExpect(jsonPath("$.data.status").value("MERGEABLE"))
                 .andExpect(jsonPath("$.data.sourceBranch").value("feature"));
 
-        verify(mergeabilityCheckUseCase).checkMergeability("team", "repo", "feature", "main", null);
+        verify(mergeabilityCheckUseCase).checkMergeability("team", "repo", "feature", "main", 7L);
     }
 
     @Test
@@ -117,7 +112,6 @@ class MergeControllerTest {
                 .status(MergeResult.Status.MERGED)
                 .newCommitId("abc123")
                 .build();
-        when(reviewRequesterResolver.resolve("7")).thenReturn(Optional.of(7L));
         when(mergeUseCase.performMerge(eq("team"), eq("repo"), any(MergeRequest.class), eq(7L)))
                 .thenReturn(result);
 
@@ -133,7 +127,6 @@ class MergeControllerTest {
 
     @Test
     void performMerge_preservesBranchNotFoundWireContract() throws Exception {
-        when(reviewRequesterResolver.resolve("7")).thenReturn(Optional.of(7L));
         when(mergeUseCase.performMerge(eq("team"), eq("repo"), any(MergeRequest.class), eq(7L)))
                 .thenThrow(new BranchHeadNotFoundException("missing"));
 
@@ -149,7 +142,6 @@ class MergeControllerTest {
     @Test
     void performMerge_rejectsAnAnonymousCallerWithoutReachingTheUseCase() throws Exception {
         org.springframework.security.core.context.SecurityContextHolder.clearContext();
-        when(reviewRequesterResolver.resolve(null)).thenReturn(Optional.empty());
 
         mockMvc.perform(post("/repositories/team/repo/merge")
                         .contentType(MediaType.APPLICATION_JSON)
