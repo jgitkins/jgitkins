@@ -77,12 +77,21 @@ public class SecurityConfig {
                 .requestMatchers("/oauth2/**", "/login/**", "/swagger-ui/**", "/actuator/prometheus", "/v3/api-docs/**")
                 .permitAll()
                 .anyRequest().permitAll());
-        // Anonymous is disabled deliberately. AnonymousAuthenticationFilter sets the principal to the
-        // String "anonymousUser", and @AuthenticationPrincipal(expression = "username") evaluates that
-        // expression against the principal unguarded, so every anonymous-allowed read returned 500 with
-        // SpelEvaluationException EL1008E. Nothing on this chain needs the anonymous token: every rule
-        // here is permitAll and authorization is decided in the controllers, while the two consumers of
-        // Authentication#getName already treat a null authentication as absent.
+        // Anonymous is disabled, and the reason it was disabled has since been removed.
+        //
+        // AnonymousAuthenticationFilter sets the principal to the String "anonymousUser". The routes
+        // that read a requester used @AuthenticationPrincipal(expression = "username"), which SpEL
+        // evaluated against that String unguarded, so every anonymous-allowed read answered 500 with
+        // SpelEvaluationException EL1008E. Task 2.88 deleted the expression: @CurrentUser carries no
+        // expression, and AuthenticationPrincipalArgumentResolver returns null for a principal that is
+        // not an AuthenticatedUser. So that failure class no longer exists.
+        //
+        // It stays off only because nothing on this chain needs it while every rule here is permitAll
+        // and authorization is decided in the controllers. Task 2.133 turns it back on as part of
+        // flipping the default to authenticated() -- authorizeHttpRequests cannot distinguish
+        // anonymous from unauthenticated without the anonymous token. Whoever does that should know
+        // the EL1008E blocker is already gone and check the getName consumers under an anonymous
+        // token rather than re-deriving this from the comment that used to stand here.
         http.anonymous(anonymous -> anonymous.disable());
         http.oauth2Login(oauth2 -> oauth2.successHandler(successHandler));
         http.oauth2Client(Customizer.withDefaults());
