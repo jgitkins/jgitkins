@@ -54,6 +54,15 @@ SSH 키냐, `ROLE_GIT` 이 무엇을 뜻하냐, 공개 저장소의 익명 fetch
 - `PatAuthenticationProvider`, `PatTokenAuthenticationService` (BCrypt PAT 검증) 는
   `@Component` 로 등록만 되고 어떤 `AuthenticationManager` / `ProviderManager` 에도
   연결되지 않은 고아다. 실측: `authenticationProvider(` grep 0건.
+
+  **principal 타입은 `529ff34` 에서 미리 맞춰 뒀다.** 그 전까지
+  `PatTokenAuthenticationService` 는 principal 로 `String.valueOf(userId)` 를 반환했는데,
+  `@CurrentUser` 는 `errorOnInvalidType` 기본값(false)으로 할당 가능성만 보고,
+  `GitSmartHttpAuthorizer` 는 `instanceof AuthenticatedUser` 로 읽는다. 즉 이 provider 를
+  배선하면 PAT 로 **인증된** 요청이 조용히 익명으로 읽혔다 — 401 도 500 도 아니고, 그냥
+  요청자가 없는 것처럼. 지금은 `new AuthenticatedUser(userId)` 를 반환하므로 그 함정은
+  없다. 2.127-B 에서 새로 `Authentication` 을 만드는 코드를 추가한다면 같은 규칙을 지킬 것:
+  **principal 은 항상 `AuthenticatedUser`.**
 - 공개 저장소의 익명 fetch 규칙은 코드에서 사라지지 않았다.
   `GitSmartHttpAuthorizer.authorizeRead` 가 `resolveVisibility` 로 직접 판정한다.
   다만 receive-pack 은 항상 challenge 한다는 나머지 절반은 `GitSmartHttpAuthFilter` 와
