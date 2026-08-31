@@ -46,13 +46,12 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 			return;
 		}
 
+		// The id token, not the claims read off it. app-server verifies the signature, issuer,
+		// audience and expiry itself and takes the identity from there -- so that endpoint, which is
+		// reachable without credentials, no longer has to take a caller's word for who is logging in.
 		OAuthLoginRequest tokenRequest = new OAuthLoginRequest(
 				oauthToken.getAuthorizedClientRegistrationId(),
-				oidcUser.getSubject(),
-				oidcUser.getEmail(),
-				oidcUser.getFullName(),
-				oidcUser.getEmailVerified() != null && oidcUser.getEmailVerified(),
-				oidcUser.getPicture() != null ? oidcUser.getPicture().toString() : null
+				oidcUser.getIdToken().getTokenValue()
 		);
         // try login (issue jwt token)
 		ServerOAuthLoginResult result = appTokenIssuePort.issueOAuthLoginToken(tokenRequest);

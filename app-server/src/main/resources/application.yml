@@ -58,7 +58,16 @@ jgitkins:
 
 ---
 # OAuth
+#
+# Guarded off the test profile. Left unguarded, provider.google.issuer-uri makes Spring Boot build
+# the registration through ClientRegistrations.fromIssuerLocation, which calls
+# accounts.google.com/.well-known/openid-configuration -- eagerly, at context startup, on every
+# @SpringBootTest. A profile-specific file cannot unset a key its parent set, so the guard lives
+# here and application-test.yml supplies static values instead.
 spring:
+  config:
+    activate:
+      on-profile: "!test"
   security:
     oauth2:
       client:

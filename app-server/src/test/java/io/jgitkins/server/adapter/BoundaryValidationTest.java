@@ -61,7 +61,17 @@ class BoundaryValidationTest {
                     "field", "userId"),
             Map.of("route", "/api/repositories/1/branches",
                     "body", "{\"branchName\":\"\"}",
-                    "field", "branchName"));
+                    "field", "branchName"),
+            // The route this test's javadoc was written about. Task 2.94 put @Valid on
+            // OAuthLoginController and the record it validates carried no constraints at all, so the
+            // annotation checked nothing while looking like it did -- exactly the failure mode
+            // described above, shipped in the same task that was meant to prevent it.
+            Map.of("route", "/api/auth/oauth/login",
+                    "body", "{\"provider\":\"\",\"idToken\":\"t\"}",
+                    "field", "provider"),
+            Map.of("route", "/api/auth/oauth/login",
+                    "body", "{\"provider\":\"google\"}",
+                    "field", "idToken"));
 
     @Autowired
     private MockMvc mockMvc;

@@ -8,6 +8,8 @@ import static org.mockito.Mockito.when;
 import io.jgitkins.server.identity.access.application.dto.command.OAuthLoginCommand;
 import io.jgitkins.server.identity.access.application.dto.command.UserLoginOrSignUpCommand;
 import io.jgitkins.server.identity.access.application.dto.result.OAuthLoginResult;
+import io.jgitkins.server.identity.access.application.dto.result.VerifiedOAuthIdentity;
+import io.jgitkins.server.identity.access.application.port.out.OAuthIdTokenVerifierPort;
 import io.jgitkins.server.identity.access.application.port.out.TokenIssuerPort;
 import io.jgitkins.server.identity.access.application.support.UserService;
 import io.jgitkins.server.identity.access.domain.aggregate.User;
@@ -25,6 +27,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class OAuthLoginServiceTest {
 
     @Mock
+    private OAuthIdTokenVerifierPort idTokenVerifier;
+
+    @Mock
     private UserService userService;
 
     @Mock
@@ -35,14 +40,9 @@ class OAuthLoginServiceTest {
 
     @Test
     void login_createsOrLoadsUserAndReturnsResult() {
-        OAuthLoginCommand command = new OAuthLoginCommand(
-                "github",
-                "sub-123",
-                "user@github.com",
-                "GH User",
-                true,
-                "https://img/avatar"
-        );
+        OAuthLoginCommand command = new OAuthLoginCommand("github", "id-token-value");
+        when(idTokenVerifier.verify("github", "id-token-value")).thenReturn(new VerifiedOAuthIdentity(
+                "github", "sub-123", "user@github.com", true, "GH User", "https://img/avatar"));
 
         User user = User.rehydrate(
                 1L,

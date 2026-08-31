@@ -4,6 +4,16 @@ import io.jgitkins.core.common.problem.ProblemSpec;
 
 public enum ApplicationProblemSpec implements ProblemSpec<ApplicationErrorCode> {
     UNAUTHENTICATED(ApplicationErrorCode.UNAUTHENTICATED, "AUTH-001", "Authentication required", "auth.required"),
+    /**
+     * The identity in an OAuth login request could not be established from a token we verified.
+     * One spec for every reason -- unknown provider, bad signature, wrong audience, expired -- so
+     * the response cannot be used to probe which providers are configured or why a token failed.
+     */
+    OAUTH_IDENTITY_UNVERIFIED(ApplicationErrorCode.UNAUTHENTICATED, "AUTH-401-OIDC",
+            "OAuth identity could not be verified", "auth.oauthIdentityUnverified"),
+    /** We could not reach the identity provider to verify the token. Not the caller's fault. */
+    OAUTH_PROVIDER_UNAVAILABLE(ApplicationErrorCode.UPSTREAM_UNAVAILABLE, "AUTH-502-OIDC",
+            "Identity provider is unavailable", "auth.oauthProviderUnavailable"),
     ACCESS_DENIED(ApplicationErrorCode.ACCESS_DENIED, "AUTH-403", "Access denied", "auth.accessDenied"),
     ORGANIZE_ACCESS_DENIED(ApplicationErrorCode.ACCESS_DENIED, "ORG-403", "Access denied to organization", "organize.accessDenied"),
     REPOSITORY_ACCESS_DENIED(ApplicationErrorCode.ACCESS_DENIED, "REPO-403", "Access denied to repository", "repository.accessDenied"),

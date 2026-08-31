@@ -9,10 +9,6 @@ import org.mapstruct.Mapping;
 public interface OAuthRequestMapper {
 
     @Mapping(target = "provider", source = "request.provider")
-    @Mapping(target = "subject", source = "request.subject")
-    @Mapping(target = "email", source = "request.email")
-    @Mapping(target = "name", source = "request.name")
-    @Mapping(target = "emailVerified", source = "request.emailVerified")
-    @Mapping(target = "avatarUrl", source = "request.avatarUrl")
+    @Mapping(target = "idToken", source = "request.idToken")
     OAuthLoginCommand toCommand(OAuthLoginRequest request);
 }

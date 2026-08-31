@@ -19,6 +19,21 @@ spring:
           google:
             client-id: test-client
             client-secret: test-secret
+        # Static provider metadata, so no OIDC discovery runs. application.yml's OAuth document is
+        # guarded off this profile for the same reason: issuer-uri there makes Spring Boot call
+        # accounts.google.com/.well-known/openid-configuration at context startup, on every
+        # @SpringBootTest. Confirmed by reading the built registration back -- clientName came out as
+        # the issuer URL, the fingerprint fromIssuerLocation leaves. A suite that cannot start
+        # without reaching Google goes red for reasons no commit contains. Nothing here performs an
+        # authorization code flow; OidcIdTokenVerifierAdapter reads jwkSetUri, and its own tests
+        # supply a decoder rather than fetching this URL.
+        provider:
+          google:
+            authorization-uri: http://localhost/oauth2/authorize
+            token-uri: http://localhost/oauth2/token
+            jwk-set-uri: http://localhost/oauth2/jwks
+            user-info-uri: http://localhost/oauth2/userinfo
+            user-name-attribute: sub
 
 jgitkins:
   server:

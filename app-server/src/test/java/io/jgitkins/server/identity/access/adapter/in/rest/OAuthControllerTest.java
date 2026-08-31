@@ -47,22 +47,8 @@ class OAuthControllerTest {
 
     @Test
     void login_returnsWrappedTokenAndUser() throws Exception {
-        OAuthLoginRequest request = new OAuthLoginRequest(
-                "google",
-                "sub-123",
-                "user@example.com",
-                "tester",
-                true,
-                "https://img.example.com/me.png"
-        );
-        OAuthLoginCommand command = new OAuthLoginCommand(
-                "google",
-                "sub-123",
-                "user@example.com",
-                "tester",
-                true,
-                "https://img.example.com/me.png"
-        );
+        OAuthLoginRequest request = new OAuthLoginRequest("google", "id-token-value");
+        OAuthLoginCommand command = new OAuthLoginCommand("google", "id-token-value");
         User user = User.rehydrate(
                 1L,
                 "tester",

@@ -28,6 +28,7 @@ public class ApplicationErrorHttpStatusMapper implements ErrorHttpStatusMapper {
             case ALREADY_EXISTS -> HttpStatus.CONFLICT;
             case CONFLICT -> HttpStatus.CONFLICT;
             case UNPROCESSABLE -> HttpStatus.UNPROCESSABLE_ENTITY;
+            case UPSTREAM_UNAVAILABLE -> HttpStatus.BAD_GATEWAY;
         };
     }
 
