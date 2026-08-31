@@ -7,6 +7,7 @@ import io.jgitkins.server.change.review.application.mapper.PullRequestResultMapp
 import io.jgitkins.server.change.review.application.port.in.CreatePullRequestUseCase;
 import io.jgitkins.server.change.review.application.port.out.BranchHeadPort;
 import io.jgitkins.server.change.review.application.port.out.RepositoryReferencePort;
+import io.jgitkins.server.change.review.application.port.out.RepositoryWriteAccessPort;
 import io.jgitkins.server.change.review.application.port.out.ReviewRepositoryReference;
 import io.jgitkins.server.change.review.domain.aggregate.PullRequest;
 import io.jgitkins.server.change.review.domain.model.BranchHeadSnapshot;
@@ -21,10 +22,16 @@ public class PullRequestCreateService implements CreatePullRequestUseCase {
     private final PullRequestRepository pullRequestRepository;
     private final RepositoryReferencePort repositoryReferencePort;
     private final BranchHeadPort branchHeadPort;
+    private final RepositoryWriteAccessPort repositoryWriteAccessPort;
     private final PullRequestResultMapper resultMapper;
 
     @Override @Transactional
-    public PullRequestResult createPullRequest(PullRequestCreateCommand command) {
+    public PullRequestResult createPullRequest(PullRequestCreateCommand command, Long requesterUserId) {
+        // Before the repository lookup: an unauthenticated caller must not learn from the error
+        // whether a namespace/name pair resolves. requireWriteAccess answers 401 with no requester,
+        // 404 for a repository they cannot see, and 403 for one they can see but may not write.
+        repositoryWriteAccessPort.requireWriteAccess(
+                command.namespace(), command.repoName(), requesterUserId);
         ReviewRepositoryReference repository = repositoryReferencePort.findByPath(command.namespace(), command.repoName())
                 .orElseThrow(() -> new RepositoryReferenceNotFoundException(command.namespace(), command.repoName()));
         BranchHeadSnapshot source = branchHeadPort.getCurrentHead(repository, command.sourceBranch());

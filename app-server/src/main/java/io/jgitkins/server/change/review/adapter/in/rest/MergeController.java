@@ -42,9 +42,14 @@ public class MergeController {
             @PathVariable @NotBlank String namespace,
             @PathVariable @NotBlank String repoName,
             @RequestParam String sourceBranch,
-            @RequestParam String targetBranch
+            @RequestParam String targetBranch,
+            @AuthenticationPrincipal(expression = "username") String subject
     ) throws IOException {
-        MergeResult result = mergeabilityCheckUseCase.checkMergeability(namespace, repoName, sourceBranch, targetBranch);
+        // Nullable, unlike performMerge below: previewing a merge reads the repository, and a public
+        // repository is readable anonymously. requireRequester here would answer 401 to a logged-out
+        // visitor looking at a public repository.
+        MergeResult result = mergeabilityCheckUseCase.checkMergeability(namespace, repoName,
+                sourceBranch, targetBranch, reviewRequesterResolver.resolve(subject).orElse(null));
         return ApiResponse.ok(result);
     }
 

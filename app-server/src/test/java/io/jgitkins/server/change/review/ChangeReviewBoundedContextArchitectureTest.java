@@ -57,6 +57,7 @@ class ChangeReviewBoundedContextArchitectureTest {
                         // rule in one place, including the visibility split from 577c1a0; restating
                         // it here would produce a second copy of a security decision.
                         || normalized.endsWith("/adapter/out/acl/RepositoryWriteAccessAclAdapter.java")
+                        || normalized.endsWith("/adapter/out/acl/RepositoryReadAccessAclAdapter.java")
                         || normalized.endsWith("/adapter/out/acl/RepositoryReferenceAclAdapterTest.java")
                         || normalized.endsWith("/adapter/out/acl/BranchHeadAclAdapterTest.java");
                 assertThat(foreignImport && !allowlisted)

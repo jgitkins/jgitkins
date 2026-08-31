@@ -28,8 +28,22 @@ class RepositoryCommitControllerTest {
 
     @BeforeEach
     void setUp() {
-        RepositoryCommitController controller = new RepositoryCommitController(commitLoadUseCase);
-        this.mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
+        RepositoryCommitController controller = new RepositoryCommitController(
+                commitLoadUseCase, new io.jgitkins.server.identity.access.adapter.in.support
+                        .RequesterUserIdResolver());
+        // standaloneSetup builds no security filter chain, so @AuthenticationPrincipal has no
+        // resolver unless one is registered here. Without it the parameter fails to resolve rather
+        // than arriving null, and the failure reads as a routing problem.
+        this.mockMvc = MockMvcBuilders.standaloneSetup(controller)
+                .setCustomArgumentResolvers(
+                        new org.springframework.security.web.method.annotation
+                                .AuthenticationPrincipalArgumentResolver())
+                .build();
+    }
+
+    @org.junit.jupiter.api.AfterEach
+    void clearAuthentication() {
+        io.jgitkins.server.support.TestAuthentication.clear();
     }
 
     @Test
@@ -40,19 +54,34 @@ class RepositoryCommitControllerTest {
                 .shortMessage("init")
                 .commitTime(LocalDateTime.now())
                 .build();
-        when(commitLoadUseCase.getCommit("team", "repo", "c1")).thenReturn(history);
+        io.jgitkins.server.support.TestAuthentication.authenticateAs("7");
+        when(commitLoadUseCase.getCommit("team", "repo", "c1", 7L)).thenReturn(history);
 
         mockMvc.perform(get("/repositories/team/repo/commits/c1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.id").value("c1"))
                 .andExpect(jsonPath("$.data.authorName").value("alice"));
 
-        verify(commitLoadUseCase).getCommit("team", "repo", "c1");
+        verify(commitLoadUseCase).getCommit("team", "repo", "c1", 7L);
+    }
+
+    @Test
+    void anonymousCallerReachesTheUseCaseWithANullRequester() throws Exception {
+        // Null, not a rejection. A public repository's history stays readable while logged out, and
+        // the visibility rule inside the use case is what decides. Answering 401 here would break
+        // anonymous browsing of public repositories.
+        when(commitLoadUseCase.getCommit("team", "repo", "c1", null))
+                .thenReturn(CommitHistory.builder().id("c1").build());
+
+        mockMvc.perform(get("/repositories/team/repo/commits/c1")).andExpect(status().isOk());
+
+        verify(commitLoadUseCase).getCommit("team", "repo", "c1", null);
     }
 
     @Test
     void getBranchCommitHistories_returnsList() throws Exception {
-        when(commitLoadUseCase.getCommits("team", "repo", "main")).thenReturn(List.of(
+        io.jgitkins.server.support.TestAuthentication.authenticateAs("7");
+        when(commitLoadUseCase.getCommits("team", "repo", "main", 7L)).thenReturn(List.of(
                 CommitHistory.builder().id("c1").shortMessage("a").build(),
                 CommitHistory.builder().id("c2").shortMessage("b").build()
         ));
@@ -62,6 +91,6 @@ class RepositoryCommitControllerTest {
                 .andExpect(jsonPath("$.data[0].id").value("c1"))
                 .andExpect(jsonPath("$.data[1].id").value("c2"));
 
-        verify(commitLoadUseCase).getCommits("team", "repo", "main");
+        verify(commitLoadUseCase).getCommits("team", "repo", "main", 7L);
     }
 }

@@ -64,14 +64,24 @@ public class BranchController {
 
     @Operation(summary = "Get Branches")
     @GetMapping
-    public ResponseEntity<ApiResponse<List<BranchSearchResult>>> getBranches(@PathVariable @Positive Long repositoryId) {
-        return ApiResponse.ok(branchLoadUseCase.loadBranches(repositoryId));
+    public ResponseEntity<ApiResponse<List<BranchSearchResult>>> getBranches(
+            @PathVariable @Positive Long repositoryId,
+            @AuthenticationPrincipal(expression = "username") String subject) {
+        // Nullable requester: a public repository's branch list is readable anonymously, and the
+        // visibility rule decides. Demanding a requester here would answer 401 to a logged-out
+        // visitor browsing a public repository.
+        return ApiResponse.ok(branchLoadUseCase.loadBranches(
+                repositoryId, requesterUserIdResolver.resolve(subject).orElse(null)));
     }
 
     @Operation(summary = "Get Branch")
     @GetMapping("/{branchName}")
-    public ResponseEntity<ApiResponse<BranchSearchResult>> getBranch(@PathVariable @Positive Long repositoryId, @PathVariable String branchName) {
-        return ApiResponse.ok(branchLoadUseCase.loadBranch(repositoryId, branchName));
+    public ResponseEntity<ApiResponse<BranchSearchResult>> getBranch(
+            @PathVariable @Positive Long repositoryId,
+            @PathVariable String branchName,
+            @AuthenticationPrincipal(expression = "username") String subject) {
+        return ApiResponse.ok(branchLoadUseCase.loadBranch(
+                repositoryId, branchName, requesterUserIdResolver.resolve(subject).orElse(null)));
     }
 
     @Operation(summary = "Delete branch")

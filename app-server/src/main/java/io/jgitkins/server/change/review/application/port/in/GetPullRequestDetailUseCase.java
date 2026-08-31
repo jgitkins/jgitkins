@@ -6,5 +6,9 @@ import java.io.IOException;
 
 public interface GetPullRequestDetailUseCase {
 
-    PullRequestDetailResult getPullRequestDetail(PullRequestId pullRequestId) throws IOException;
+    /**
+     * @param requesterUserId nullable — a public repository's pull request is readable anonymously.
+     */
+    PullRequestDetailResult getPullRequestDetail(PullRequestId pullRequestId, Long requesterUserId)
+            throws IOException;
 }

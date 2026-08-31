@@ -67,6 +67,8 @@ import org.springframework.test.context.DynamicPropertySource;
 class ChangeReviewCreateDetailSliceIntegrationTest {
     private static final String NAMESPACE = "alice";
     private static final String REPOSITORY = "demo";
+    /** The slice writes as a member; the write gate is exercised in PullRequestCreateServiceTest. */
+    private static final Long REQUESTER = 7L;
     private static final Path BARE_PATH;
     static {
         try { BARE_PATH = Files.createTempDirectory("change-review-integration-"); }
@@ -75,6 +77,25 @@ class ChangeReviewCreateDetailSliceIntegrationTest {
     private Path barePath;
     private ObjectId base;
     private ObjectId feature;
+
+    /**
+     * The two repository gates are stubbed, not exercised.
+     *
+     * <p>This slice is about the pull request lifecycle: create, persist, observe branch heads,
+     * detect target drift. Task P0a added a write gate to create and a read gate to detail, and both
+     * resolve repository membership -- which this slice's schema
+     * ({@code change-review-integration-schema.sql}) does not carry. Adding those tables would turn a
+     * lifecycle test into an authorization test that duplicates the dedicated ones and breaks
+     * whenever the permission model moves.
+     *
+     * <p>The gates being wired at all is proven by {@code PullRequestCreateServiceTest} and
+     * {@code PullRequestQueryServiceTest}, which assert the ports are called before any work runs.
+     */
+    @org.springframework.boot.test.mock.mockito.MockBean
+    private io.jgitkins.server.change.review.application.port.out.RepositoryWriteAccessPort writeAccessPort;
+
+    @org.springframework.boot.test.mock.mockito.MockBean
+    private io.jgitkins.server.change.review.application.port.out.RepositoryReadAccessPort readAccessPort;
 
     @Autowired private PullRequestCreateService createService;
     @Autowired private PullRequestQueryService queryService;
@@ -125,7 +146,7 @@ class ChangeReviewCreateDetailSliceIntegrationTest {
     @Test
     void realSpringCreatePersistDetailAndTargetDriftFixture() throws Exception {
         PullRequestResult created = runWithTimeout(() -> createService.createPullRequest(
-                new PullRequestCreateCommand(NAMESPACE, REPOSITORY, "feature", "main")));
+                new PullRequestCreateCommand(NAMESPACE, REPOSITORY, "feature", "main"), REQUESTER));
         assertThat(created.getId()).isNotNull();
         assertThat(created.getRepositoryId()).isEqualTo(1L);
         assertThat(created.getSource().commitHash().getValue()).isEqualTo(feature.name());
@@ -133,7 +154,7 @@ class ChangeReviewCreateDetailSliceIntegrationTest {
         assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM PULL_REQUEST", Integer.class)).isEqualTo(1);
 
         PullRequestDetailResult equal = runWithTimeout(() -> queryService.getPullRequestDetail(
-                PullRequestId.of(created.getId())));
+                PullRequestId.of(created.getId()), REQUESTER));
         assertThat(equal.getStoredTarget().commitHash().getValue()).isEqualTo(base.name());
         assertThat(equal.getCurrentTarget().commitHash().getValue()).isEqualTo(base.name());
         assertThat(equal.getTargetDrift().drifted()).isFalse();
@@ -145,7 +166,7 @@ class ChangeReviewCreateDetailSliceIntegrationTest {
             update(repository, "main", target);
         }
         PullRequestDetailResult drifted = runWithTimeout(() -> queryService.getPullRequestDetail(
-                PullRequestId.of(created.getId())));
+                PullRequestId.of(created.getId()), REQUESTER));
         assertThat(drifted.getCurrentTarget().commitHash()).isNotEqualTo(base.name());
         assertThat(drifted.getTargetDrift().drifted()).isTrue();
         assertThat(drifted.getTargetDrift().previousTargetHead().getValue()).isEqualTo(base.name());

@@ -12,6 +12,7 @@ import io.jgitkins.server.repository.application.port.in.RepositoryOverviewUseCa
 import io.jgitkins.server.repository.application.port.out.BranchQueryPort;
 import io.jgitkins.server.repository.application.port.out.RepositoryQueryPort;
 import io.jgitkins.server.repository.application.support.GitRepositoryAccessService;
+import io.jgitkins.server.repository.application.validate.RepositoryAccessValidator;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,7 @@ public class RepositoryOverviewService implements RepositoryOverviewUseCase {
 	private final BranchQueryPort branchQueryPort;
 	private final FileGitPort fileGitPort;
 	private final GitRepositoryAccessService gitRepositoryAccessService;
+	private final RepositoryAccessValidator repositoryAccessValidator;
 
 	@Override
 	public RepositoryOverviewResult getOverview(Long requesterUserId, Long repositoryId, String branch) {
@@ -45,6 +47,18 @@ public class RepositoryOverviewService implements RepositoryOverviewUseCase {
 
 	private RepositoryOverviewResult buildOverview(RepositoryResult repository, String branch,
 			Long requesterUserId) {
+		// First, before any branch or tree is read.
+		//
+		// This method already took the requester and already resolved a permission -- but only to
+		// fill role and writable into the response. Nothing gated on it, so the branch list and the
+		// root file tree of a private repository came back to an anonymous caller. Having the
+		// permission in hand and not acting on it is worse than not having it: the route looks
+		// authorized to anyone reading it.
+		//
+		// The gate goes through the validator rather than reading visibleOn here, so the rule lives
+		// in one place. The validator resolves the permission again from the same loaded result,
+		// which is a second in-memory call on data already fetched.
+		repositoryAccessValidator.validateReadAccess(repository, requesterUserId);
 		RepositoryKey key = resolveRepositoryKey(repository);
 		List<BranchSearchResult> branches = branchQueryPort.findAllByRepositoryId(repository.id());
 		String selectedBranch = resolveBranch(branch, branches);

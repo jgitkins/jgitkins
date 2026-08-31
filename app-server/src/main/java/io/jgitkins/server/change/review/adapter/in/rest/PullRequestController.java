@@ -16,6 +16,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import io.jgitkins.server.change.review.adapter.in.support.ReviewRequesterResolver;
+import io.jgitkins.server.shared.application.exception.UnauthenticatedException;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,26 +34,39 @@ public class PullRequestController {
 
     private final CreatePullRequestUseCase createPullRequestUseCase;
     private final GetPullRequestDetailUseCase getPullRequestDetailUseCase;
+    private final ReviewRequesterResolver reviewRequesterResolver;
+
+    private Long requireRequester(String subject) {
+        return reviewRequesterResolver.resolve(subject)
+                .orElseThrow(() -> new UnauthenticatedException("Authentication required"));
+    }
 
     @Operation(summary = "Create Pull Request", description = "source 브랜치와 target 브랜치의 검토 요청을 생성")
     @PostMapping
     public ResponseEntity<ApiResponse<PullRequestResult>> createPullRequest(
             @PathVariable @NotBlank String namespace,
             @PathVariable @NotBlank String repoName,
-            @Valid @RequestBody PullRequestCreateRequest request) {
+            @Valid @RequestBody PullRequestCreateRequest request,
+            @AuthenticationPrincipal(expression = "username") String subject) {
+        // Required, not nullable: opening a pull request writes.
+        Long requesterUserId = requireRequester(subject);
         PullRequestCreateCommand command = new PullRequestCreateCommand(
                 namespace,
                 repoName,
                 request.sourceBranch(),
                 request.targetBranch());
-        PullRequestResult result = createPullRequestUseCase.createPullRequest(command);
+        PullRequestResult result = createPullRequestUseCase.createPullRequest(command, requesterUserId);
         return ApiResponse.created(result.getId(), result);
     }
 
     @Operation(summary = "Get Pull Request Detail", description = "Pull Request의 저장 snapshot과 현재 상태를 조회")
     @GetMapping("/{pullRequestId}")
     public ResponseEntity<ApiResponse<PullRequestDetailResult>> getPullRequestDetail(
-            @PathVariable @Positive Long pullRequestId) throws IOException {
-        return ApiResponse.ok(getPullRequestDetailUseCase.getPullRequestDetail(PullRequestId.of(pullRequestId)));
+            @PathVariable @Positive Long pullRequestId,
+            @AuthenticationPrincipal(expression = "username") String subject) throws IOException {
+        // Nullable: a public repository's pull request is readable anonymously.
+        return ApiResponse.ok(getPullRequestDetailUseCase.getPullRequestDetail(
+                PullRequestId.of(pullRequestId),
+                reviewRequesterResolver.resolve(subject).orElse(null)));
     }
 }

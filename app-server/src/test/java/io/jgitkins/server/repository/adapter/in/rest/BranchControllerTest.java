@@ -107,8 +107,20 @@ class BranchControllerTest {
     }
 
     @Test
+    void getBranches_passesTheRequesterSoTheVisibilityRuleCanRun() throws Exception {
+        // The point of the parameter: before task P0a the route sent only the id, so the branch list
+        // of any private repository came back to anyone. Asserting the requester reaches the use case
+        // is what makes the rule reachable at all.
+        when(branchLoadUseCase.loadBranches(9L, 7L)).thenReturn(List.of());
+
+        mockMvc.perform(get("/api/repositories/9/branches")).andExpect(status().isOk());
+
+        verify(branchLoadUseCase).loadBranches(9L, 7L);
+    }
+
+    @Test
     void getBranches_returnsList() throws Exception {
-        when(branchLoadUseCase.loadBranches(1L)).thenReturn(List.of(
+        when(branchLoadUseCase.loadBranches(1L, 7L)).thenReturn(List.of(
                 new BranchSearchResult(1L, "main", false, false, true),
                 new BranchSearchResult(1L, "feature", false, false, false)
         ));
@@ -119,12 +131,12 @@ class BranchControllerTest {
                 .andExpect(jsonPath("$.data[0].defaultBranch").value(true))
                 .andExpect(jsonPath("$.data[1].name").value("feature"));
 
-        verify(branchLoadUseCase).loadBranches(1L);
+        verify(branchLoadUseCase).loadBranches(1L, 7L);
     }
 
     @Test
     void getBranch_returnsBranch() throws Exception {
-        when(branchLoadUseCase.loadBranch(1L, "feature"))
+        when(branchLoadUseCase.loadBranch(1L, "feature", 7L))
                 .thenReturn(new BranchSearchResult(1L, "feature", false, false, false));
 
         mockMvc.perform(get("/api/repositories/1/branches/feature"))
@@ -132,7 +144,7 @@ class BranchControllerTest {
                 .andExpect(jsonPath("$.data.name").value("feature"))
                 .andExpect(jsonPath("$.data.defaultBranch").value(false));
 
-        verify(branchLoadUseCase).loadBranch(1L, "feature");
+        verify(branchLoadUseCase).loadBranch(1L, "feature", 7L);
     }
 
     @Test

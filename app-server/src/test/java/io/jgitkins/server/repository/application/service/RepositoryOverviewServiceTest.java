@@ -1,113 +1,70 @@
 package io.jgitkins.server.repository.application.service;
 
-import static org.mockito.Mockito.verify;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-import io.jgitkins.server.repository.application.contract.result.FileEntry;
-import io.jgitkins.server.repository.application.port.out.FileGitPort;
-import io.jgitkins.server.repository.application.contract.result.BranchSearchResult;
-import io.jgitkins.server.repository.application.contract.result.RepositoryOverviewResult;
-import io.jgitkins.server.repository.application.contract.result.RepositoryPermission;
 import io.jgitkins.server.repository.application.contract.result.RepositoryResult;
+import io.jgitkins.server.repository.application.exception.RepositoryNotFoundException;
 import io.jgitkins.server.repository.application.port.out.BranchQueryPort;
+import io.jgitkins.server.repository.application.port.out.FileGitPort;
 import io.jgitkins.server.repository.application.port.out.RepositoryQueryPort;
 import io.jgitkins.server.repository.application.support.GitRepositoryAccessService;
-import java.util.List;
+import io.jgitkins.server.repository.application.validate.RepositoryAccessValidator;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
-@ExtendWith(MockitoExtension.class)
+/**
+ * The overview route's visibility gate.
+ *
+ * <p>Why this test exists rather than trusting the route's shape: {@code buildOverview} already took
+ * a requester and already resolved a permission before task P0a, and used it only to populate
+ * {@code role} and {@code writable} in the response. A reader of that method would reasonably
+ * conclude the route was authorized. It was not — the branch list and root file tree of a private
+ * repository came back to anyone.
+ *
+ * <p>Both assertions are about ordering. The gate has to run before {@code branchQueryPort} and
+ * {@code fileGitPort}, because a gate that runs after them has already read the data it was meant to
+ * withhold, and answering 404 at that point protects nothing but the response body.
+ */
 class RepositoryOverviewServiceTest {
 
-	@Mock
-	private RepositoryQueryPort repositoryQueryPort;
+    private final RepositoryQueryPort repositoryQueryPort = mock(RepositoryQueryPort.class);
+    private final BranchQueryPort branchQueryPort = mock(BranchQueryPort.class);
+    private final FileGitPort fileGitPort = mock(FileGitPort.class);
+    private final GitRepositoryAccessService accessService = mock(GitRepositoryAccessService.class);
+    private final RepositoryAccessValidator validator = mock(RepositoryAccessValidator.class);
 
-	@Mock
-	private BranchQueryPort branchQueryPort;
+    private final RepositoryOverviewService service = new RepositoryOverviewService(
+            repositoryQueryPort, branchQueryPort, fileGitPort, accessService, validator);
 
-	@Mock
-	private FileGitPort fileGitPort;
+    private final RepositoryResult repository = mock(RepositoryResult.class);
 
+    @Test
+    void getOverviewRefusesBeforeReadingBranchesOrTheTree() {
+        when(repositoryQueryPort.loadRepository(1L)).thenReturn(Optional.of(repository));
+        doThrow(new RepositoryNotFoundException())
+                .when(validator).validateReadAccess(any(RepositoryResult.class), any());
 
-	@Mock
-	private GitRepositoryAccessService gitRepositoryAccessService;
+        assertThatThrownBy(() -> service.getOverview(null, 1L, "main"))
+                .isInstanceOf(RepositoryNotFoundException.class);
 
-	@InjectMocks
-	private RepositoryOverviewService service;
+        verifyNoInteractions(branchQueryPort, fileGitPort);
+    }
 
-	@Test
-	void getOverview_passesRequesterWithoutAmbientActor() {
-		RepositoryResult repository = new RepositoryResult(
-				1L, "USER", "repo", "org/repo", "main", "PRIVATE",
-				null, 1L, null, "org/repo.git", null, false,
-				null, null, null);
-		when(repositoryQueryPort.loadRepository(1L)).thenReturn(Optional.of(repository));
-		when(branchQueryPort.findAllByRepositoryId(1L)).thenReturn(List.of());
-		when(gitRepositoryAccessService.resolvePermission(null, "org", "repo", 7L))
-				.thenReturn(new RepositoryPermission("OWNER", true, true));
+    @Test
+    void getOverviewByPathRefusesBeforeReadingBranchesOrTheTree() {
+        when(repositoryQueryPort.loadRepositoryByPath("alice", "demo"))
+                .thenReturn(Optional.of(repository));
+        doThrow(new RepositoryNotFoundException())
+                .when(validator).validateReadAccess(any(RepositoryResult.class), any());
 
-		service.getOverview(7L, 1L, "main");
+        assertThatThrownBy(() -> service.getOverviewByPath(null, "alice", "demo", "main"))
+                .isInstanceOf(RepositoryNotFoundException.class);
 
-		// The requester reaches the permission resolver as an argument. There is no RepositoryActorPort
-		// on this service any more, so an overview cannot silently authorize against whoever the
-		// security context happens to hold.
-		verify(gitRepositoryAccessService).resolvePermission(null, "org", "repo", 7L);
-	}
-
-	@Test
-	void getOverview_usesDefaultBranchAndLoadsTree() {
-		RepositoryResult repository = new RepositoryResult(
-				1L, "USER", "repo", "org/repo", "main", "PUBLIC",
-				null, 1L, null, "org/repo.git", null, false,
-				null, null, null);
-		when(repositoryQueryPort.loadRepository(1L)).thenReturn(Optional.of(repository));
-
-		List<BranchSearchResult> branches = List.of(
-				new BranchSearchResult(1L, "main", false, false, true));
-		when(branchQueryPort.findAllByRepositoryId(1L)).thenReturn(branches);
-
-		List<FileEntry> tree = List.of(FileEntry.builder().name("README.md").build());
-		when(fileGitPort.listTree("org", "repo", "main", "")).thenReturn(tree);
-				when(gitRepositoryAccessService.resolvePermission(null, "org", "repo", 7L))
-				.thenReturn(new RepositoryPermission("OWNER", true, true));
-
-		RepositoryOverviewResult result = service.getOverview(7L, 1L, null);
-
-		assertEquals("main", result.selectedBranch());
-		assertEquals(tree, result.tree());
-		assertEquals("OWNER", result.role());
-		assertEquals(true, result.writable());
-	}
-
-	@Test
-	void getOverviewByPath_loadsRepositoryByNamespaceAndName() {
-		RepositoryResult repository = new RepositoryResult(
-				1L, "USER", "repo", "org/repo", "main", "PUBLIC",
-				null, 1L, null, "org/repo.git", null, false,
-				null, null, null);
-		when(repositoryQueryPort.loadRepositoryByPath("org", "repo")).thenReturn(Optional.of(repository));
-
-		List<BranchSearchResult> branches = List.of(
-				new BranchSearchResult(1L, "main", false, false, true));
-		when(branchQueryPort.findAllByRepositoryId(1L)).thenReturn(branches);
-
-		List<FileEntry> tree = List.of(FileEntry.builder().name("README.md").build());
-		when(fileGitPort.listTree("org", "repo", "main", "")).thenReturn(tree);
-				when(gitRepositoryAccessService.resolvePermission(null, "org", "repo", null))
-				.thenReturn(new RepositoryPermission("PUBLIC_READ_ONLY", false, true));
-
-		// Anonymous, on purpose: this case covers the public-read path, which must survive the move to an
-		// explicit requester unchanged.
-		RepositoryOverviewResult result = service.getOverviewByPath(null, "org", "repo", null);
-
-		assertEquals("main", result.selectedBranch());
-		assertEquals(tree, result.tree());
-		assertEquals("PUBLIC_READ_ONLY", result.role());
-		assertEquals(false, result.writable());
-	}
+        verifyNoInteractions(branchQueryPort, fileGitPort);
+    }
 }

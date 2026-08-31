@@ -1,7 +1,9 @@
 package io.jgitkins.server.change.review.adapter.in.rest;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -48,10 +50,53 @@ class PullRequestControllerTest {
 
     @BeforeEach
     void setUp() {
-        PullRequestController controller = new PullRequestController(createPullRequestUseCase, getPullRequestDetailUseCase);
+        PullRequestController controller = new PullRequestController(createPullRequestUseCase,
+                getPullRequestDetailUseCase,
+                new io.jgitkins.server.change.review.adapter.in.support.ReviewRequesterResolver());
         this.mockMvc = MockMvcBuilders.standaloneSetup(controller)
+                // standaloneSetup wires no Spring Security, so @AuthenticationPrincipal has no
+                // resolver without this and the parameter fails to resolve rather than arriving null.
+                .setCustomArgumentResolvers(
+                        new org.springframework.security.web.method.annotation
+                                .AuthenticationPrincipalArgumentResolver())
                 .setControllerAdvice(new GlobalExceptionHandler(ErrorStatusMappingTestConfig.realMapper())).build();
         this.objectMapper = new ObjectMapper();
+        // Opening a pull request is a write and now requires a principal. MockMvc.principal() would
+        // not reach @AuthenticationPrincipal, which resolves from SecurityContextHolder.
+        io.jgitkins.server.support.TestAuthentication.authenticateAs("7");
+    }
+
+    @org.junit.jupiter.api.Test
+    void getPullRequestDetail_passesANullRequesterForAnAnonymousCaller() throws Exception {
+        // Reading a pull request on a public repository must keep working while logged out, so the
+        // route passes null rather than refusing. Creating one, above, does require a principal --
+        // that asymmetry is the read/write split, and this test is what pins it.
+        io.jgitkins.server.support.TestAuthentication.clear();
+        when(getPullRequestDetailUseCase.getPullRequestDetail(PullRequestId.of(10L), null))
+                .thenReturn(null);
+
+        mockMvc.perform(get("/repositories/team/repo/pull-requests/10"));
+
+        verify(getPullRequestDetailUseCase).getPullRequestDetail(PullRequestId.of(10L), null);
+    }
+
+    @org.junit.jupiter.api.Test
+    void createPullRequest_refusesAnAnonymousCallerBeforeTheUseCase() throws Exception {
+        // Opening a pull request writes. Until task P0a this route took no principal at all, so an
+        // anonymous caller could open one on any repository including a private one.
+        io.jgitkins.server.support.TestAuthentication.clear();
+
+        mockMvc.perform(post("/repositories/team/repo/pull-requests")
+                        .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
+                        .content("{\"sourceBranch\":\"feature\",\"targetBranch\":\"main\"}"))
+                .andExpect(status().isUnauthorized());
+
+        verifyNoInteractions(createPullRequestUseCase);
+    }
+
+    @org.junit.jupiter.api.AfterEach
+    void clearAuthentication() {
+        io.jgitkins.server.support.TestAuthentication.clear();
     }
 
     @Test
@@ -65,7 +110,7 @@ class PullRequestControllerTest {
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
-        when(createPullRequestUseCase.createPullRequest(any(PullRequestCreateCommand.class))).thenReturn(result);
+        when(createPullRequestUseCase.createPullRequest(any(PullRequestCreateCommand.class), eq(7L))).thenReturn(result);
 
         mockMvc.perform(post("/repositories/team/repo/pull-requests")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -74,7 +119,7 @@ class PullRequestControllerTest {
                 .andExpect(jsonPath("$.data.id").value(10L))
                 .andExpect(jsonPath("$.data.status").value("OPEN"));
 
-        verify(createPullRequestUseCase).createPullRequest(any(PullRequestCreateCommand.class));
+        verify(createPullRequestUseCase).createPullRequest(any(PullRequestCreateCommand.class), eq(7L));
     }
 
     @Test
@@ -91,19 +136,19 @@ class PullRequestControllerTest {
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
-        when(getPullRequestDetailUseCase.getPullRequestDetail(PullRequestId.of(10L))).thenReturn(result);
+        when(getPullRequestDetailUseCase.getPullRequestDetail(PullRequestId.of(10L), 7L)).thenReturn(result);
 
         mockMvc.perform(get("/repositories/team/repo/pull-requests/10"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.id").value(10L))
                 .andExpect(jsonPath("$.data.status").value("OPEN"));
 
-        verify(getPullRequestDetailUseCase).getPullRequestDetail(PullRequestId.of(10L));
+        verify(getPullRequestDetailUseCase).getPullRequestDetail(PullRequestId.of(10L), 7L);
     }
 
     @Test
     void createPullRequest_preservesRepositoryNotFoundWireContract() throws Exception {
-        when(createPullRequestUseCase.createPullRequest(any(PullRequestCreateCommand.class)))
+        when(createPullRequestUseCase.createPullRequest(any(PullRequestCreateCommand.class), eq(7L)))
                 .thenThrow(new RepositoryReferenceNotFoundException("team", "repo"));
 
         mockMvc.perform(post("/repositories/team/repo/pull-requests")

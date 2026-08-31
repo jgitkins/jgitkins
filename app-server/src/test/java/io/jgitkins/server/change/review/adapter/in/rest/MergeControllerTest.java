@@ -75,13 +75,29 @@ class MergeControllerTest {
     }
 
     @Test
+    void checkMergeability_passesANullRequesterForAnAnonymousCaller() throws Exception {
+        // Null, not a rejection. A merge preview reads the repository, and a public repository is
+        // readable while logged out. performMerge below is the one that demands a requester.
+        when(mergeabilityCheckUseCase.checkMergeability("team", "repo", "feature", "main", null))
+                .thenReturn(MergeResult.builder().status(MergeResult.Status.MERGEABLE)
+                        .sourceBranch("feature").targetBranch("main").build());
+
+        mockMvc.perform(get("/repositories/team/repo/merge/check")
+                        .param("sourceBranch", "feature").param("targetBranch", "main"))
+                .andExpect(status().isOk());
+
+        org.mockito.Mockito.verify(mergeabilityCheckUseCase)
+                .checkMergeability("team", "repo", "feature", "main", null);
+    }
+
+    @Test
     void checkMergeability_returnsResult() throws Exception {
         MergeResult result = MergeResult.builder()
                 .status(MergeResult.Status.MERGEABLE)
                 .sourceBranch("feature")
                 .targetBranch("main")
                 .build();
-        when(mergeabilityCheckUseCase.checkMergeability("team", "repo", "feature", "main"))
+        when(mergeabilityCheckUseCase.checkMergeability("team", "repo", "feature", "main", null))
                 .thenReturn(result);
 
         mockMvc.perform(get("/repositories/team/repo/merge/check")
@@ -91,7 +107,7 @@ class MergeControllerTest {
                 .andExpect(jsonPath("$.data.status").value("MERGEABLE"))
                 .andExpect(jsonPath("$.data.sourceBranch").value("feature"));
 
-        verify(mergeabilityCheckUseCase).checkMergeability("team", "repo", "feature", "main");
+        verify(mergeabilityCheckUseCase).checkMergeability("team", "repo", "feature", "main", null);
     }
 
     @Test

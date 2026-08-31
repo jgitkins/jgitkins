@@ -29,6 +29,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class MergeServiceTest {
 
     @Mock
+    private io.jgitkins.server.change.review.application.port.out.RepositoryReadAccessPort repositoryReadAccessPort;
+
+
+    @Mock
     private MergePort mergePort;
 
     @Mock
@@ -44,7 +48,7 @@ class MergeServiceTest {
         MergeResult result = MergeResult.builder().build();
         when(mergePort.previewMergeability("task", "repo", "src", "dst")).thenReturn(result);
 
-        MergeResult response = service.checkMergeability("task", "repo", "src", "dst");
+        MergeResult response = service.checkMergeability("task", "repo", "src", "dst", null);
 
         assertEquals(result, response);
     }
@@ -112,5 +116,20 @@ class MergeServiceTest {
         MergeabilityAssessment response = service.evaluateMergeability("task", "repo", "src", "dst");
 
         assertEquals(assessment, response);
+    }
+
+    @org.junit.jupiter.api.Test
+    void checkMergeabilityRefusesBeforeTouchingGitWhenTheRepositoryIsNotVisible() {
+        // A merge preview is a diff of two branches, so it is a read of the repository. Without this
+        // test the gate could be deleted and nothing would fail -- the other test passes a null
+        // requester against a do-nothing mock, which a missing call looks identical to.
+        RuntimeException denial = new RuntimeException("not visible");
+        org.mockito.Mockito.doThrow(denial)
+                .when(repositoryReadAccessPort).requireReadAccess("task", "repo", null);
+
+        assertEquals(denial, org.junit.jupiter.api.Assertions.assertThrows(RuntimeException.class,
+                () -> service.checkMergeability("task", "repo", "src", "dst", null)));
+
+        org.mockito.Mockito.verifyNoInteractions(mergePort);
     }
 }
