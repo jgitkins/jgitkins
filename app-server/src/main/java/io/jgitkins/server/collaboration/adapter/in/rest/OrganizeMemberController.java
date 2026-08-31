@@ -36,25 +36,13 @@ public class OrganizeMemberController {
     private final OrganizeMemberRemoveUseCase organizeMemberRemoveUseCase;
     private final OrganizeMemberRequestMapper organizeMemberRequestMapper;
 
-    /**
-     * The requester, or 401.
-     *
-     * <p>Rejected here rather than inside the use case: the first observable effect of an absent or
-     * unusable credential must not be a database read for whatever id was salvaged from it.
-     */
-    private static Long requireRequester(AuthenticatedUser currentUser) {
-        if (currentUser == null) {
-            throw new UnauthenticatedException("Authentication required");
-        }
-        return currentUser.userId();
-    }
 
     @Operation(summary = "Add organize member")
     @PostMapping
     public ResponseEntity<ApiResponse<Void>> addMember(@PathVariable @Positive Long organizeId,
                                                        @Valid @RequestBody OrganizeMemberAddRequest request,
                                                        @CurrentUser AuthenticatedUser currentUser) {
-        Long requesterUserId = requireRequester(currentUser);
+        Long requesterUserId = AuthenticatedUser.requireUserId(currentUser);
         OrganizeMemberAddCommand command = organizeMemberRequestMapper.toCommand(organizeId, request, requesterUserId);
         organizeMemberAddUseCase.addOrganizeMember(command);
         return ApiResponse.ok();
@@ -65,7 +53,7 @@ public class OrganizeMemberController {
     public ResponseEntity<ApiResponse<Void>> removeMember(@PathVariable @Positive Long organizeId,
                                                           @PathVariable @Positive Long userId,
                                                           @CurrentUser AuthenticatedUser currentUser) {
-        Long requesterUserId = requireRequester(currentUser);
+        Long requesterUserId = AuthenticatedUser.requireUserId(currentUser);
         organizeMemberRemoveUseCase.removeOrganizeMember(organizeId, requesterUserId, userId);
         return ApiResponse.noContent();
     }

@@ -1,5 +1,6 @@
 package io.jgitkins.server.identity.access.adapter.out.security;
 
+import io.jgitkins.server.shared.application.security.AuthenticatedUser;
 import io.jgitkins.server.identity.access.application.port.out.UserCredentialPersistencePort;
 import io.jgitkins.server.identity.access.application.port.out.UserQueryPort;
 import io.jgitkins.server.identity.access.domain.entity.UserCredential;
@@ -49,8 +50,15 @@ public class PatTokenAuthenticationService {
         }
 
         log.info("Authenticated user: [{}]", username);
+        // AuthenticatedUser, not the id as a String. @CurrentUser resolves by assignability with
+        // errorOnInvalidType left at false, and GitSmartHttpAuthorizer reads the principal through
+        // instanceof -- so a String principal makes an authenticated PAT request read as anonymous,
+        // silently, on every route. Nothing reaches this method today (no AuthenticationManager
+        // wires the provider that calls it), which is exactly why the type is fixed now: task
+        // 2.127-B connects it, and a trap that only springs on the day someone else wires the
+        // plumbing is the worst kind to leave behind.
         return new UsernamePasswordAuthenticationToken(
-                String.valueOf(userId),
+                new AuthenticatedUser(userId),
                 "N/A",
                 List.of(new SimpleGrantedAuthority("ROLE_GIT"))
         );

@@ -1,5 +1,6 @@
 package io.jgitkins.server.shared.application.security;
 
+import io.jgitkins.server.shared.application.exception.UnauthenticatedException;
 import java.security.Principal;
 
 /**
@@ -64,6 +65,25 @@ public record AuthenticatedUser(Long userId) implements Principal {
      */
     public static Long userIdOrNull(AuthenticatedUser currentUser) {
         return currentUser == null ? null : currentUser.userId();
+    }
+
+    /**
+     * The id, or 401 when nobody is logged in.
+     *
+     * <p>The counterpart to {@link #userIdOrNull}, and it lives here for the same reason. Nine
+     * controllers held a byte-identical private copy of this method while the permissive half was
+     * centralised -- so the branch that decides whether a write is refused was the copy-pasted one.
+     * That asymmetry is backwards: a drifting copy of {@code userIdOrNull} loosens nothing, and a
+     * drifting copy of this changes what an unauthenticated caller is told.
+     *
+     * <p>{@code OrganizeController} keeps its own, with a different message, on purpose -- see the
+     * comment there. It is the only exception, and it is one because a wire contract already shipped.
+     */
+    public static Long requireUserId(AuthenticatedUser currentUser) {
+        if (currentUser == null) {
+            throw new UnauthenticatedException("Authentication required");
+        }
+        return currentUser.userId();
     }
 
     /**

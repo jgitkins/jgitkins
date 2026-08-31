@@ -26,6 +26,13 @@ public enum ApplicationProblemSpec implements ProblemSpec<ApplicationErrorCode> 
     SOURCE_BRANCH_NOT_FOUND(ApplicationErrorCode.NOT_FOUND, "BRANCH-404-SRC", "Source branch not found", "branch.sourceNotFound"),
     COMMIT_NOT_FOUND(ApplicationErrorCode.NOT_FOUND, "COMMIT-404", "Commit not found", "commit.notFound"),
     USERNAME_ALREADY_EXISTS(ApplicationErrorCode.ALREADY_EXISTS, "USER-409-USERNAME", "Username already exists", "user.usernameAlreadyExists"),
+    /**
+     * A second provider presented an address an account already holds, and did not say it verified
+     * it. Linking would be an account takeover; creating a second account is impossible because
+     * USER.EMAIL is unique. So the answer is 409 and it names the remedy.
+     */
+    OAUTH_EMAIL_NOT_VERIFIED_FOR_LINK(ApplicationErrorCode.ALREADY_EXISTS, "AUTH-409-OIDC",
+            "That email address already belongs to an account", "auth.oauthEmailNotVerifiedForLink"),
     ORGANIZE_ALREADY_EXISTS(ApplicationErrorCode.ALREADY_EXISTS, "ORG-409", "Organization already exists", "organize.alreadyExists"),
     ORGANIZE_MEMBER_ALREADY_EXISTS(ApplicationErrorCode.ALREADY_EXISTS, "ORG-MEMBER-409", "Organization member already exists", "organize.memberAlreadyExists"),
     REPOSITORY_ALREADY_EXISTS(ApplicationErrorCode.ALREADY_EXISTS, "REPO-409", "Repository already exists", "repository.alreadyExists"),

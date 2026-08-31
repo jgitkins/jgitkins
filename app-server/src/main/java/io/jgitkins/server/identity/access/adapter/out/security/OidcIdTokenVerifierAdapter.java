@@ -44,6 +44,8 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class OidcIdTokenVerifierAdapter implements OAuthIdTokenVerifierPort {
 
+    private static final int MAX_CAUSE_DEPTH = 32;
+
     private final ClientRegistrationRepository clientRegistrationRepository;
     private final JwtDecoderFactory<ClientRegistration> idTokenDecoderFactory;
 
@@ -109,14 +111,24 @@ public class OidcIdTokenVerifierAdapter implements OAuthIdTokenVerifierPort {
         }
     }
 
+    /**
+     * Walks the cause chain, bounded.
+     *
+     * <p>The bound is not decoration. The self-reference check alone ({@code getCause() == cause})
+     * misses a two-element cycle, and a cause chain that loops would hang this thread inside a login
+     * request rather than answering it. A depth limit terminates on any cycle length, and no real
+     * exception chain from a JWKS fetch is anywhere near this deep.
+     */
     private static boolean isUpstreamFailure(Throwable failure) {
-        for (Throwable cause = failure; cause != null; cause = cause.getCause()) {
+        int depth = 0;
+        for (Throwable cause = failure; cause != null && depth < MAX_CAUSE_DEPTH; cause = cause.getCause()) {
             if (cause instanceof RemoteKeySourceException || cause instanceof IOException) {
                 return true;
             }
             if (cause.getCause() == cause) {
                 break;
             }
+            depth++;
         }
         return false;
     }

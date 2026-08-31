@@ -36,18 +36,6 @@ public class PullRequestController {
     private final GetPullRequestDetailUseCase getPullRequestDetailUseCase;
 
 
-    /**
-     * The requester, or 401.
-     *
-     * <p>Rejected here rather than inside the use case: the first observable effect of an absent or
-     * unusable credential must not be a database read for whatever id was salvaged from it.
-     */
-    private static Long requireRequester(AuthenticatedUser currentUser) {
-        if (currentUser == null) {
-            throw new UnauthenticatedException("Authentication required");
-        }
-        return currentUser.userId();
-    }
 
     @Operation(summary = "Create Pull Request", description = "source 브랜치와 target 브랜치의 검토 요청을 생성")
     @PostMapping
@@ -57,7 +45,7 @@ public class PullRequestController {
             @Valid @RequestBody PullRequestCreateRequest request,
             @CurrentUser AuthenticatedUser currentUser) {
         // Required, not nullable: opening a pull request writes.
-        Long requesterUserId = requireRequester(currentUser);
+        Long requesterUserId = AuthenticatedUser.requireUserId(currentUser);
         PullRequestCreateCommand command = new PullRequestCreateCommand(
                 namespace,
                 repoName,

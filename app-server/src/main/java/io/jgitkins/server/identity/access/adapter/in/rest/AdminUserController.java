@@ -44,24 +44,12 @@ public class AdminUserController {
 
 
 
-    /**
-     * The requester, or 401.
-     *
-     * <p>Rejected here rather than inside the use case: the first observable effect of an absent or
-     * unusable credential must not be a database read for whatever id was salvaged from it.
-     */
-    private static Long requireRequester(AuthenticatedUser currentUser) {
-        if (currentUser == null) {
-            throw new UnauthenticatedException("Authentication required");
-        }
-        return currentUser.userId();
-    }
 
     @Operation(summary = "List users")
     @GetMapping
     public ResponseEntity<ApiResponse<List<UserAdminSummary>>> listUsers(
             @CurrentUser AuthenticatedUser currentUser) {
-        return ApiResponse.ok(adminUserQueryUseCase.getUsers(requireRequester(currentUser)));
+        return ApiResponse.ok(adminUserQueryUseCase.getUsers(AuthenticatedUser.requireUserId(currentUser)));
     }
 
     @Operation(summary = "Get user detail")
@@ -69,7 +57,7 @@ public class AdminUserController {
     public ResponseEntity<ApiResponse<UserAdminDetail>> getUser(
             @PathVariable @Positive Long userId,
             @CurrentUser AuthenticatedUser currentUser) {
-        return ApiResponse.ok(adminUserQueryUseCase.getUser(requireRequester(currentUser), userId));
+        return ApiResponse.ok(adminUserQueryUseCase.getUser(AuthenticatedUser.requireUserId(currentUser), userId));
     }
 
     @Operation(summary = "Update user status")
@@ -78,7 +66,7 @@ public class AdminUserController {
             @PathVariable @Positive Long userId,
             @Valid @RequestBody UserStatusUpdateRequest request,
             @CurrentUser AuthenticatedUser currentUser) {
-        adminUserUpdateUseCase.updateUserStatus(requireRequester(currentUser), userId, request.status());
+        adminUserUpdateUseCase.updateUserStatus(AuthenticatedUser.requireUserId(currentUser), userId, request.status());
         return ApiResponse.ok();
     }
 }

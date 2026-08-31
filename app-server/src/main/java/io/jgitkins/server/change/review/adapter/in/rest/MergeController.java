@@ -31,18 +31,6 @@ public class MergeController {
     private final MergeUseCase mergeUseCase;
 
 
-    /**
-     * The requester, or 401.
-     *
-     * <p>Rejected here rather than inside the use case: the first observable effect of an absent or
-     * unusable credential must not be a database read for whatever id was salvaged from it.
-     */
-    private static Long requireRequester(AuthenticatedUser currentUser) {
-        if (currentUser == null) {
-            throw new UnauthenticatedException("Authentication required");
-        }
-        return currentUser.userId();
-    }
 
     @Operation(summary = "Check Mergeability", description = "소스 브랜치가 타겟 브랜치로 병합 가능한지 확인")
     @GetMapping("/repositories/{namespace}/{repoName}/merge/check")
@@ -54,7 +42,7 @@ public class MergeController {
             @CurrentUser AuthenticatedUser currentUser
     ) throws IOException {
         // Nullable, unlike performMerge below: previewing a merge reads the repository, and a public
-        // repository is readable anonymously. requireRequester here would answer 401 to a logged-out
+        // repository is readable anonymously. requireUserId here would answer 401 to a logged-out
         // visitor looking at a public repository.
         MergeResult result = mergeabilityCheckUseCase.checkMergeability(namespace, repoName,
                 sourceBranch, targetBranch, AuthenticatedUser.userIdOrNull(currentUser));
@@ -72,7 +60,7 @@ public class MergeController {
         // The requester comes from the principal, never from the body. MergeRequest is bound from
         // the request payload; an actor field there would be caller-controlled.
         MergeResult result = mergeUseCase.performMerge(
-                namespace, repoName, request, requireRequester(currentUser));
+                namespace, repoName, request, AuthenticatedUser.requireUserId(currentUser));
         return ApiResponse.ok(result);
     }
 }

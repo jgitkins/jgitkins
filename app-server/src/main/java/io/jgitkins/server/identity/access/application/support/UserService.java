@@ -6,6 +6,8 @@ import io.jgitkins.server.identity.access.domain.repository.UserRepository;
 import io.jgitkins.server.identity.access.domain.aggregate.User;
 import io.jgitkins.server.identity.access.domain.entity.UserIdentity;
 import io.jgitkins.server.identity.access.domain.vo.UserStatus;
+import io.jgitkins.server.shared.application.error.ApplicationProblemSpec;
+import io.jgitkins.server.shared.application.exception.ApplicationException;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -96,9 +98,17 @@ public class UserService {
          * from the beginning and was never read, so the check cost nothing to add and the absence of
          * it cost everything.
          *
-         * <p>Unverified means a new account, not a rejection. The person may well be who they say
-         * they are; we simply have nothing that says so, and two accounts are recoverable where a
-         * wrong merge is not.
+         * <p>Unverified is not a rejection of the person, but it does end this request. A second
+         * account for the same address is what the shape of this method suggests and it is not
+         * reachable: {@code USER.EMAIL} carries {@code UK_USERS_EMAIL}, so the insert fails on the
+         * unique index and the caller gets a 500 from the persistence layer. This method used to do
+         * exactly that -- the rule was right and the outcome was an opaque server error on a request
+         * the server understood perfectly well.
+         *
+         * <p>So it answers 409 and says what to do instead. Nothing is leaked by that status which
+         * the 500 did not already leak: both distinguish "this address has an account" from "it does
+         * not", and reaching either requires a provider willing to mint a token asserting an address
+         * it did not verify.
          */
         private User findOrCreateUserForIdentity(String email,
                         boolean emailVerified,
@@ -106,18 +116,41 @@ public class UserService {
                         String avatarUrl,
                         String providerName,
                         String providerSub) {
-                return findExistingUserByVerifiedEmail(email, emailVerified)
-                                .orElseGet(() -> createPendingUser(email, name, avatarUrl, providerName, providerSub));
+                if (emailVerified) {
+                        Optional<User> linkTarget = findExistingUserByEmail(email);
+                        if (linkTarget.isPresent()) {
+                                return linkTarget.get();
+                        }
+                } else {
+                        rejectWhenAddressIsAlreadyTaken(email);
+                }
+                return createPendingUser(email, name, avatarUrl, providerName, providerSub);
         }
 
-        private Optional<User> findExistingUserByVerifiedEmail(String email, boolean emailVerified) {
-                if (!emailVerified) {
-                        return Optional.empty();
-                }
+        /**
+         * The lookup that decides nothing on its own.
+         *
+         * <p>Split from the {@code emailVerified} branch so the two questions stay separate: "may
+         * this identity attach to that account" is answered by the caller, and this only finds the
+         * row. Folding the flag back in here is what made the unverified path fall through to an
+         * insert that could not succeed.
+         */
+        private Optional<User> findExistingUserByEmail(String email) {
                 if (email == null || email.isBlank()) {
                         return Optional.empty();
                 }
                 return userRepository.findByEmail(email.trim());
+        }
+
+        private void rejectWhenAddressIsAlreadyTaken(String email) {
+                if (findExistingUserByEmail(email).isEmpty()) {
+                        return;
+                }
+                throw new ApplicationException(
+                                ApplicationProblemSpec.OAUTH_EMAIL_NOT_VERIFIED_FOR_LINK,
+                                "That email address already belongs to an account. Sign in with the "
+                                                + "provider that account uses, or verify the address with this "
+                                                + "provider first.");
         }
 
         private User createPendingUser(String email,

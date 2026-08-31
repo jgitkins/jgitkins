@@ -48,7 +48,7 @@ public class RepositoryManagementController {
     /**
      * Resolves the caller for a read, where anonymous is allowed.
      *
-     * <p>Distinct from {@code requireRequester}: a public repository is readable without a caller, so an
+     * <p>Distinct from {@code AuthenticatedUser.requireUserId}: a public repository is readable without a caller, so an
      * absent principal returns null rather than a 401. A malformed one still throws — the resolver draws
      * that line, and a broken credential must not be silently downgraded to "anonymous", which would let
      * a corrupted token quietly read exactly the public subset instead of being reported.
@@ -59,25 +59,13 @@ public class RepositoryManagementController {
 
 
 
-    /**
-     * The requester, or 401.
-     *
-     * <p>Rejected here rather than inside the use case: the first observable effect of an absent or
-     * unusable credential must not be a database read for whatever id was salvaged from it.
-     */
-    private static Long requireRequester(AuthenticatedUser currentUser) {
-        if (currentUser == null) {
-            throw new UnauthenticatedException("Authentication required");
-        }
-        return currentUser.userId();
-    }
 
     @Operation(summary = "Create Repository", description = "ownerType required.")
     @PostMapping
     public ResponseEntity<ApiResponse<RepositoryResult>> create(
             @Valid @RequestBody RepositoryCreateRequest request,
             @CurrentUser AuthenticatedUser currentUser) {
-        Long requesterUserId = requireRequester(currentUser);
+        Long requesterUserId = AuthenticatedUser.requireUserId(currentUser);
         RepositoryCreateCommand createCommand = repositoryRequestMapper.toCommand(requesterUserId, request);
         RepositoryResult result = repositoryManagementUseCase.create(createCommand);
         return ApiResponse.created(result.id(), result);
@@ -112,7 +100,7 @@ public class RepositoryManagementController {
     public ResponseEntity<ApiResponse<Void>> deleteRepository(
             @PathVariable @Positive Long repositoryId,
             @CurrentUser AuthenticatedUser currentUser) {
-        repositoryManagementUseCase.deleteRepository(requireRequester(currentUser), repositoryId);
+        repositoryManagementUseCase.deleteRepository(AuthenticatedUser.requireUserId(currentUser), repositoryId);
         return ApiResponse.noContent();
     }
 

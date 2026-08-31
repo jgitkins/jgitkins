@@ -41,18 +41,6 @@ public class RepositoryMemberController {
      */
 
 
-    /**
-     * The requester, or 401.
-     *
-     * <p>Rejected here rather than inside the use case: the first observable effect of an absent or
-     * unusable credential must not be a database read for whatever id was salvaged from it.
-     */
-    private static Long requireRequester(AuthenticatedUser currentUser) {
-        if (currentUser == null) {
-            throw new UnauthenticatedException("Authentication required");
-        }
-        return currentUser.userId();
-    }
 
     @Operation(summary = "Add repository member")
     @PostMapping
@@ -60,7 +48,7 @@ public class RepositoryMemberController {
                                                        @Valid @RequestBody RepositoryMemberAddRequest request,
                                                        @CurrentUser AuthenticatedUser currentUser) {
         RepositoryMemberAddCommand command = new RepositoryMemberAddCommand(
-                requireRequester(currentUser), repositoryId, request.userId(), request.role());
+                AuthenticatedUser.requireUserId(currentUser), repositoryId, request.userId(), request.role());
         repositoryMemberManagementUseCase.addRepositoryMember(command);
         return ApiResponse.ok();
     }
@@ -71,7 +59,7 @@ public class RepositoryMemberController {
                                                           @PathVariable @Positive Long userId,
                                                           @CurrentUser AuthenticatedUser currentUser) {
         repositoryMemberManagementUseCase.removeRepositoryMember(
-                requireRequester(currentUser), repositoryId, userId);
+                AuthenticatedUser.requireUserId(currentUser), repositoryId, userId);
         return ApiResponse.noContent();
     }
 
@@ -80,9 +68,9 @@ public class RepositoryMemberController {
     public ResponseEntity<ApiResponse<java.util.List<RepositoryMemberSummary>>> listMembers(
             @PathVariable @Positive Long repositoryId,
             @CurrentUser AuthenticatedUser currentUser) {
-        // requireRequester, not optionalRequester: a member list is never public, so an absent
+        // requireUserId, not optionalRequester: a member list is never public, so an absent
         // caller is a rejection rather than a narrower result.
         return ApiResponse.ok(repositoryMemberLoadUseCase.getRepositoryMembers(
-                requireRequester(currentUser), repositoryId));
+                AuthenticatedUser.requireUserId(currentUser), repositoryId));
     }
 }

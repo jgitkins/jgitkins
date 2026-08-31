@@ -187,8 +187,13 @@ class RouteAuthenticationContractTest {
      * <p>The failure mode of a list like this is not that it goes red. It is that it grows one entry
      * at a time until it covers everything and asserts nothing. Raising this number is a deliberate
      * act that shows up in a diff.
+     *
+     * <p>Equal to {@link #PUBLIC}'s current size, not comfortably above it. At 18 against 14 entries
+     * the first four additions were free, which is the drift this constant exists to catch -- the
+     * assertion only bites once the slack runs out, and by then four routes went public without
+     * anyone deciding they should.
      */
-    private static final int PUBLIC_CEILING = 18;
+    private static final int PUBLIC_CEILING = 14;
 
     @Autowired
     @Qualifier("requestMappingHandlerMapping")

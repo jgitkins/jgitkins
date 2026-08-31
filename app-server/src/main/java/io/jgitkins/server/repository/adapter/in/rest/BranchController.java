@@ -41,18 +41,6 @@ public class BranchController {
      */
 
 
-    /**
-     * The requester, or 401.
-     *
-     * <p>Rejected here rather than inside the use case: the first observable effect of an absent or
-     * unusable credential must not be a database read for whatever id was salvaged from it.
-     */
-    private static Long requireRequester(AuthenticatedUser currentUser) {
-        if (currentUser == null) {
-            throw new UnauthenticatedException("Authentication required");
-        }
-        return currentUser.userId();
-    }
 
     @Operation(summary = "Create branch")
     @PostMapping
@@ -61,7 +49,7 @@ public class BranchController {
                                                     @CurrentUser AuthenticatedUser currentUser) {
 
         BranchCreateCommand createCommand = branchRequestMapper.toCommand(
-                requireRequester(currentUser), repositoryId, request);
+                AuthenticatedUser.requireUserId(currentUser), repositoryId, request);
         branchManagementUseCase.createBranch(createCommand);
 
         URI location = LocationUriBuilder.create(request.branchName());
@@ -97,7 +85,7 @@ public class BranchController {
                                                           @PathVariable String branchName,
                                                           @CurrentUser AuthenticatedUser currentUser) {
 
-        branchManagementUseCase.deleteBranch(requireRequester(currentUser), repositoryId, branchName);
+        branchManagementUseCase.deleteBranch(AuthenticatedUser.requireUserId(currentUser), repositoryId, branchName);
         return ApiResponse.noContent();
     }
 }

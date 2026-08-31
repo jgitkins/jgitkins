@@ -49,18 +49,6 @@ public class RepositoryContentController {
      */
 
 
-    /**
-     * The requester, or 401.
-     *
-     * <p>Rejected here rather than inside the use case: the first observable effect of an absent or
-     * unusable credential must not be a database read for whatever id was salvaged from it.
-     */
-    private static Long requireRequester(AuthenticatedUser currentUser) {
-        if (currentUser == null) {
-            throw new UnauthenticatedException("Authentication required");
-        }
-        return currentUser.userId();
-    }
 
     @Operation(summary = "File Upload")
     @PostMapping(value = "/{namespace}/{repoName}/files/{branch}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -72,7 +60,7 @@ public class RepositoryContentController {
             @Valid @RequestPart("request") FileUploadInfo request,
             @CurrentUser AuthenticatedUser currentUser) {
         fileUploadUseCase.uploadFileToRepository(
-                requireRequester(currentUser), namespace, repoName, branch, file, request);
+                AuthenticatedUser.requireUserId(currentUser), namespace, repoName, branch, file, request);
         return ApiResponse.ok("File uploaded and committed.");
     }
 
@@ -86,7 +74,7 @@ public class RepositoryContentController {
             @CurrentUser AuthenticatedUser currentUser) {
         // The requester is resolved before the repository lookup, so an unauthenticated caller
         // cannot use this route to learn whether a repository id exists.
-        Long requesterUserId = requireRequester(currentUser);
+        Long requesterUserId = AuthenticatedUser.requireUserId(currentUser);
         RepositoryKey key = repositoryLoadUseCase.resolveRepositoryKey(repositoryId)
                 .orElseThrow(() -> new RepositoryNotFoundException(repositoryId));
         FileUploadInfo request = FileUploadInfo.builder()
