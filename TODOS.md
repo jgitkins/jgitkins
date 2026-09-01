@@ -39,3 +39,33 @@ transactional outbox 는 전제가 아니다.
 필요해지는 시점에 트랜잭션당 1회 등록 + 버퍼 누적으로 바꾸거나, 이벤트를 모아
 한 번만 넘길 것. 오늘은 호출자가 `OrganizeService` 하나뿐이라 도달 불가능한
 경로이므로 미리 고치지 않는다.
+
+## 아키텍처 가드레일을 ArchUnit 으로 옮기는 것 검토
+
+**현재**: `ArchitectureScanner` 가 자바 소스를 문자열로 읽어 정규식으로 규칙을 검사하고,
+`app-server/src/test/java/io/jgitkins/server/architecture/` 아래 6개 테스트가 그 위에 서 있다.
+`app-server/build.gradle` 에 archunit 의존성은 없다.
+
+**왜**: 같은 계열의 버그가 반복해서 나온다. 소스를 글자로 읽으면 (a) 주석이 같이 읽히고
+(b) 긴 이름의 일부가 짧은 이름으로 오인된다.
+
+- (a) 2.77 / 2.65 / 2.66 — "이 기술을 일부러 쓰지 않는다"고 설명하는 javadoc 이 가드레일에
+  걸렸다. 한 세션에 세 번. 그래서 `stripComments()` 가 생겼다.
+- (b) 2.107 계획 리뷰 — `@RestController` 패턴이 `@RestControllerAdvice` 안에서 부분일치한다.
+  `ArchitectureScanner.scan():141` 이 `find()` 를 쓰기 때문이다.
+
+ArchUnit 은 바이트코드를 본다. 바이트코드에는 주석이 없고 애노테이션은 타입이므로 두 부류가
+**구조적으로 불가능**해진다. 덤으로 `freeze()` 가 기존 위반을 잠가주므로 손으로 유지하는
+allowlist 자체가 필요 없어진다 — 2.107 이 스캔으로 바꾸려는 그 목록이 사라진다.
+
+**지금 안 하는 이유**: 105개 파일 패키지 개명(2.131) 중에 테스트 기반까지 갈아끼우면
+구조 변경과 동작 변경을 동시에 하는 것이 된다. 그리고 6개 테스트가 이미 regex 스캐너 위에
+있어서, 중간 상태에서는 두 관용구가 공존한다.
+
+**시작점**: `app-server/build.gradle` 에 `testImplementation 'com.tngtech.archunit:archunit-junit5'`
+를 추가하고 `CrossContextPersistenceCouplingArchitectureTest` **하나만** 이식해 두 관용구를
+나란히 놓고 비교한다. 나머지 5개는 그 비교 결과를 보고 판단한다.
+
+**선후**: 의존성은 없지만 패키지·이름 통일 클러스터(2.107/2.101/2.129/2.131/2.132) 랜딩
+뒤가 자연스럽다. 2.107 이 컨트롤러 목록을 하나로 모은 뒤여야 이전 대상이 명확해진다.
+설계 근거: `~/.gstack/projects/jgitkins/hrk-refactor-package-naming-design-20260901-dto-to-contract-cluster.md`.
