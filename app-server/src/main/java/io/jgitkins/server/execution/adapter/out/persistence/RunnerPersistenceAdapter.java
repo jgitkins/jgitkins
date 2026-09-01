@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -44,14 +45,22 @@ public class RunnerPersistenceAdapter implements RunnerRepository {
 
             if (runner.getId() == null) {
                 runnerEntityMbgMapper.insertSelective(entity);
-                Runner restoredEntity = restoreRunner(entity);
-                runnerAssignmentEntityMbgMapper.insertSelective(runnerAssignmentDomainMapper.toEntity(restoredEntity));
-                return runnerDomainMapper.toDomain(entity, runner.getScopeType(), runner.getScopeTargetId());
+                // The requested scope, carried on an aggregate that now has the generated id. This used
+                // to map the assignment from restoreRunner(entity), which reads the scope back out of a
+                // database that has no assignment row yet -- so it returned the GLOBAL fallback and every
+                // runner created here was recorded as GLOBAL no matter what scope the caller asked for.
+                // The return value came from `runner`, so the caller saw the scope it requested and the
+                // discrepancy stayed invisible. It could not be observed while the update branch wrote no
+                // assignment row either: a runner was created GLOBAL and stayed GLOBAL. The JPA adapter
+                // maps this from `runner` and always did; the two must not disagree about scope.
+                Runner persisted = runnerDomainMapper.toDomain(
+                        entity, runner.getScopeType(), runner.getScopeTargetId());
+                runnerAssignmentEntityMbgMapper.insertSelective(runnerAssignmentDomainMapper.toEntity(persisted));
+                return persisted;
 
             } else {
                 runnerEntityMbgMapper.updateByPrimaryKeySelective(entity);
-                runnerAssignmentEntityMbgMapper
-                        .updateByPrimaryKeySelective(runnerAssignmentDomainMapper.toEntity(runner));
+                appendAssignmentIfScopeChanged(runner);
                 RunnerEntity updated = runnerEntityMbgMapper.selectByPrimaryKey(runner.getId());
                 return restoreRunner(updated);
             }
@@ -133,10 +142,43 @@ public class RunnerPersistenceAdapter implements RunnerRepository {
         return runnerDomainMapper.toDomain(entity, scopeType, targetId);
     }
 
+    /**
+     * Records a new effective scope, and only a new one.
+     *
+     * <p>This branch used to call {@code updateByPrimaryKeySelective} with an entity whose id
+     * {@code RunnerAssignmentDomainMapper} never populates, so the statement resolved to
+     * {@code where ID = null} and changed no row. Scope changes had never taken effect, and a
+     * narrowed scope looked applied while the runner kept receiving everything it had before.
+     *
+     * <p>Append rather than update in place: reads already take the newest row,
+     * {@code RUNNER_ASSIGNMENT} carries no unique key on {@code RUNNER_ID}, and an in-place update
+     * would first have to look up the newest row's id. Appending also leaves an audit trail.
+     *
+     * <p>Only when the value differs. {@code activate} comes down this branch on every runner restart
+     * carrying the scope through unchanged, so writing unconditionally would make this table a
+     * restart log rather than a scope history.
+     *
+     * <p>The JPA adapter does the same thing. They are two implementations of one security-relevant
+     * decision and they must not disagree about it.
+     */
+    private void appendAssignmentIfScopeChanged(Runner runner) {
+        RunnerAssignmentEntity current = fetchAssignment(runner.getId());
+        String targetType = runner.getScopeType().name();
+        Long targetId = runner.getScopeType().requiresTargetId() ? runner.getScopeTargetId() : null;
+        if (current != null
+                && targetType.equals(current.getTargetType())
+                && Objects.equals(targetId, current.getTargetId())) {
+            return;
+        }
+        runnerAssignmentEntityMbgMapper.insertSelective(runnerAssignmentDomainMapper.toEntity(runner));
+    }
+
     private RunnerAssignmentEntity fetchAssignment(Long runnerId) {
         RunnerAssignmentEntityCondition condition = new RunnerAssignmentEntityCondition();
         condition.createCriteria().andRunnerIdEqualTo(runnerId);
-        condition.setOrderByClause("assigned_at desc");
+        // id desc breaks the tie. ASSIGNED_AT is a whole-second timestamp and the mapper fills it with
+        // LocalDateTime.now(), so two rows written in the same second are indistinguishable by it.
+        condition.setOrderByClause("assigned_at desc, id desc");
         List<RunnerAssignmentEntity> assignments = runnerAssignmentEntityMbgMapper.selectByCondition(condition);
         if (assignments.isEmpty()) {
             return null;

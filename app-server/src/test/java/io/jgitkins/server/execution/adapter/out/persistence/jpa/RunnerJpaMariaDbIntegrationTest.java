@@ -133,7 +133,7 @@ class RunnerJpaMariaDbIntegrationTest {
     }
 
     @Test
-    void scopeUpdateIsANoOpUnderBothProviders() {
+    void scopeUpdateTakesEffectUnderBothProviders() {
         LocalDateTime now = LocalDateTime.now().withNano(0);
 
         Runner created = transactions.execute(status -> adapter.save(Runner.restore(
@@ -147,18 +147,49 @@ class RunnerJpaMariaDbIntegrationTest {
 
         Runner reloaded = transactions.execute(status -> adapter.findById(runnerId).orElseThrow());
         assertThat(reloaded.getScopeTargetId())
-                .as("KNOWN DEFECT, pinned rather than endorsed: the MyBatis adapter updates the "
+                .as("this assertion used to pin the defect at 900: the MyBatis adapter updated the "
                         + "assignment by a primary key its mapper never populates, so the statement "
-                        + "resolves to `where ID = null` and changes nothing. Scope updates have never "
-                        + "taken effect. This adapter reproduces that so flipping the selector stays "
-                        + "invisible; fixing it belongs in its own task, against both providers at once. "
-                        + "When that task lands, this assertion is the one that must change.")
-                .isEqualTo(900L);
+                        + "resolved to `where ID = null` and scope changes had never taken effect. "
+                        + "Both providers now append a row when the scope differs")
+                .isEqualTo(901L);
 
         assertThat(jdbc.queryForObject(
                 "select count(*) from RUNNER_ASSIGNMENT where RUNNER_ID = ?", Integer.class, runnerId))
-                .as("and no second assignment row is written either -- the update branch writes no "
-                        + "assignment at all")
+                .as("one row for the create, one for the change")
+                .isEqualTo(2);
+
+        // Both writes land in the same second, so ASSIGNED_AT cannot order them -- the column is a
+        // whole-second timestamp. Reading 901 above is what proves the id tiebreak is doing the work;
+        // without it the winner is whichever row the engine returns first.
+        assertThat(jdbc.queryForObject(
+                "select count(distinct ASSIGNED_AT) from RUNNER_ASSIGNMENT where RUNNER_ID = ?",
+                Integer.class, runnerId))
+                .as("if these ever land in different seconds the tiebreak stops being exercised here "
+                        + "and this test quietly weakens")
+                .isEqualTo(1);
+    }
+
+    @Test
+    void reSavingTheSameScopeWritesNoRow() {
+        LocalDateTime now = LocalDateTime.now().withNano(0);
+
+        Runner created = transactions.execute(status -> adapter.save(Runner.restore(
+                null, token + "-idempotent", "same scope twice", RunnerStatus.ONLINE,
+                RunnerScopeType.REPOSITORY, 910L, null, null, now)));
+        Long runnerId = created.getId();
+
+        // What activate does on every runner restart: save the aggregate back with its scope
+        // unchanged. Appending unconditionally would turn RUNNER_ASSIGNMENT into a restart log.
+        transactions.executeWithoutResult(status -> adapter.save(Runner.restore(
+                runnerId, token + "-idempotent", "same scope twice", RunnerStatus.ONLINE,
+                RunnerScopeType.REPOSITORY, 910L, null, null, now)));
+        transactions.executeWithoutResult(status -> adapter.save(Runner.restore(
+                runnerId, token + "-idempotent", "same scope twice", RunnerStatus.ONLINE,
+                RunnerScopeType.REPOSITORY, 910L, null, null, now)));
+
+        assertThat(jdbc.queryForObject(
+                "select count(*) from RUNNER_ASSIGNMENT where RUNNER_ID = ?", Integer.class, runnerId))
+                .as("three saves, one scope: the two that changed nothing must write nothing")
                 .isEqualTo(1);
     }
 }

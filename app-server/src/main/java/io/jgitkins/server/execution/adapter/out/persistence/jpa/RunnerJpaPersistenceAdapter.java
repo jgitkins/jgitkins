@@ -8,6 +8,7 @@ import io.jgitkins.server.execution.domain.vo.RunnerScopeType;
 import io.jgitkins.server.execution.domain.vo.RunnerStatus;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,16 +20,14 @@ import org.springframework.transaction.annotation.Transactional;
  * scope. The effective scope is the newest assignment by {@code ASSIGNED_AT}, because
  * {@code RUNNER_ASSIGNMENT} has no unique key on {@code RUNNER_ID} and rows accumulate.
  *
- * <p><strong>Known defect, preserved deliberately.</strong> On the update branch, the MyBatis adapter
- * calls {@code updateByPrimaryKeySelective} with an assignment entity whose id was never populated —
- * {@code RunnerAssignmentDomainMapper.toEntity} does not map it — so the statement resolves to
- * {@code where ID = null} and updates nothing. Changing a runner's scope therefore has no effect today.
- * This adapter reproduces that no-op rather than fixing it, because the selector's contract is that
- * flipping it changes nothing observable: a JPA path that silently started honouring scope changes
- * would make the two providers disagree about a security-relevant decision, which is worse than the bug.
- * The fix belongs in its own task, against both providers at once. See
- * {@code RunnerJpaMariaDbIntegrationTest#scopeUpdateIsANoOpUnderBothProviders}, which pins the current
- * behaviour and says so.
+ * <p><strong>The scope-update defect is fixed, in both providers at once.</strong> The MyBatis
+ * adapter called {@code updateByPrimaryKeySelective} with an assignment entity whose id
+ * {@code RunnerAssignmentDomainMapper} never populates, so the statement resolved to
+ * {@code where ID = null} and changed nothing -- a runner's scope could not be changed, and
+ * narrowing one for isolation looked applied while the runner kept receiving everything. This
+ * adapter reproduced the no-op so that flipping the selector stayed invisible. Both now append a new
+ * assignment row when the scope differs from the newest one, which is what the read path was already
+ * shaped for. See {@code RunnerJpaMariaDbIntegrationTest#scopeUpdateTakesEffectUnderBothProviders}.
  */
 @RequiredArgsConstructor
 public class RunnerJpaPersistenceAdapter implements RunnerRepository {
@@ -47,8 +46,7 @@ public class RunnerJpaPersistenceAdapter implements RunnerRepository {
             }
 
             RunnerJpaEntity saved = runnerJpaRepository.save(toEntity(runner, runner.getId()));
-            // Intentionally not written: see the class javadoc. The MyBatis path issues an update
-            // against a null assignment id and changes no row, so writing one here would diverge.
+            appendAssignmentIfScopeChanged(runner, saved.getId());
             return restoreRunner(saved);
         } catch (Exception e) {
             throw persistence("Database operation failed during save runner", e);
@@ -95,9 +93,35 @@ public class RunnerJpaPersistenceAdapter implements RunnerRepository {
         }
     }
 
+    /**
+     * Records a new effective scope, and only a new one.
+     *
+     * <p>Append rather than update in place: reads already take the newest row by
+     * {@code ASSIGNED_AT}, {@code RUNNER_ASSIGNMENT} carries no unique key on {@code RUNNER_ID}, and
+     * an in-place update would first have to look up the newest row's id -- a query that does not
+     * exist. Appending also leaves an audit trail of scope changes.
+     *
+     * <p>Only when the value differs. {@code activate} goes down this branch on every runner restart
+     * and carries the scope through unchanged, so writing unconditionally would turn this table into
+     * a restart log: unbounded growth, and a scope history in which almost no row is a scope change.
+     */
+    private void appendAssignmentIfScopeChanged(Runner runner, Long runnerId) {
+        RunnerAssignmentJpaEntity current = runnerAssignmentJpaRepository
+                .findFirstByRunnerIdOrderByAssignedAtDescIdDesc(runnerId)
+                .orElse(null);
+        String targetType = runner.getScopeType().name();
+        Long targetId = runner.getScopeType().requiresTargetId() ? runner.getScopeTargetId() : null;
+        if (current != null
+                && targetType.equals(current.getTargetType())
+                && Objects.equals(targetId, current.getTargetId())) {
+            return;
+        }
+        runnerAssignmentJpaRepository.save(toAssignmentEntity(runner, runnerId));
+    }
+
     private Runner restoreRunner(RunnerJpaEntity entity) {
         RunnerAssignmentJpaEntity assignment = runnerAssignmentJpaRepository
-                .findFirstByRunnerIdOrderByAssignedAtDesc(entity.getId())
+                .findFirstByRunnerIdOrderByAssignedAtDescIdDesc(entity.getId())
                 .orElse(null);
         // A runner with no assignment row is GLOBAL, not an error. That is the MyBatis fallback and it
         // is load-bearing: a runner created before assignments existed must still dispatch.
