@@ -12,19 +12,19 @@ import io.jgitkins.server.shared.domain.exception.InvalidIdentifierException;
 
 @Getter
 @EqualsAndHashCode
-public final class OwnerId {
+public final class OrganizeOwnerId {
 
     private final Long value;
 
-    private OwnerId(Long value) {
+    private OrganizeOwnerId(Long value) {
         if (value == null || value <= 0) {
-            throw new InvalidIdentifierException("OwnerId must be a positive value");
+            throw new InvalidIdentifierException("OrganizeOwnerId must be a positive value");
         }
         this.value = value;
     }
 
-    public static OwnerId of(Long value) {
-        return new OwnerId(value);
+    public static OrganizeOwnerId of(Long value) {
+        return new OrganizeOwnerId(value);
     }
 
     @Override

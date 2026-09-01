@@ -25,11 +25,11 @@ public class RepositoryValidator {
     public void validateCreation(Long requesterUserId, OwnerType ownerType, Long organizeId,
                                  RepositoryName repositoryName) {
         validateOwnership(requesterUserId, ownerType, organizeId);
-        OwnerId ownerId = resolveOwnerId(requesterUserId, ownerType, organizeId);
+        RepositoryOwnerId ownerId = resolveOwnerId(requesterUserId, ownerType, organizeId);
         validateRepositoryNameUnique(ownerType, ownerId, repositoryName);
     }
 
-    public void validateRepositoryNameUnique(OwnerType ownerType, OwnerId ownerId, RepositoryName name) {
+    public void validateRepositoryNameUnique(OwnerType ownerType, RepositoryOwnerId ownerId, RepositoryName name) {
         repositoryRepository.findByOwnerAndName(ownerType, ownerId, name)
                 .ifPresent(existing -> {
                     throw new RepositoryAlreadyExistsException(
@@ -82,10 +82,10 @@ public class RepositoryValidator {
         }
     }
 
-    private OwnerId resolveOwnerId(Long requesterUserId, OwnerType ownerType, Long organizeId) {
+    private RepositoryOwnerId resolveOwnerId(Long requesterUserId, OwnerType ownerType, Long organizeId) {
         if (ownerType == OwnerType.ORGANIZATION) {
-            return OwnerId.of(organizeId);
+            return RepositoryOwnerId.of(organizeId);
         }
-        return OwnerId.of(requireRequesterId(requesterUserId));
+        return RepositoryOwnerId.of(requireRequesterId(requesterUserId));
     }
 }

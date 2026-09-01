@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.jgitkins.server.collaboration.domain.aggregate.Organize;
 import io.jgitkins.server.collaboration.domain.event.OrganizeCreatedEvent;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeName;
-import io.jgitkins.server.collaboration.domain.vo.OwnerId;
+import io.jgitkins.server.collaboration.domain.vo.OrganizeOwnerId;
 import io.jgitkins.server.collaboration.adapter.out.persistence.support.OrganizeDomainMapper;
 import io.jgitkins.server.collaboration.adapter.out.persistence.mapper.OrganizeEntityMbgMapper;
 import java.time.Instant;
@@ -66,7 +66,7 @@ class OrganizePersistenceAdapterIntegrationTest {
         Organize organize = Organize.createWithoutEvent(
                 null,
                 OrganizeName.from("integration-org"),
-                OwnerId.of(7L),
+                OrganizeOwnerId.of(7L),
                 "description",
                 LocalDateTime.of(2026, 8, 18, 9, 0));
 

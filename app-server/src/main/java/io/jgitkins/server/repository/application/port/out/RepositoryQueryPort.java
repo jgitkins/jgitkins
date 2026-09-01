@@ -1,6 +1,6 @@
 package io.jgitkins.server.repository.application.port.out;
 
-import io.jgitkins.server.shared.domain.model.vo.OwnerId;
+import io.jgitkins.server.shared.domain.model.vo.RepositoryOwnerId;
 import io.jgitkins.server.shared.domain.model.vo.OwnerType;
 import io.jgitkins.server.repository.application.contract.result.RepositoryResult;
 import java.util.List;
@@ -16,5 +16,5 @@ public interface RepositoryQueryPort {
 
     List<RepositoryResult> loadUserRepositories(String username, Long requesterId);
 
-    long countByOwner(OwnerType ownerType, OwnerId ownerId);
+    long countByOwner(OwnerType ownerType, RepositoryOwnerId ownerId);
 }

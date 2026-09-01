@@ -2,7 +2,7 @@ package io.jgitkins.server.shared.domain;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import io.jgitkins.server.collaboration.domain.vo.OwnerId;
+import io.jgitkins.server.collaboration.domain.vo.OrganizeOwnerId;
 import io.jgitkins.server.repository.domain.vo.RepositoryId;
 import io.jgitkins.server.repository.domain.vo.RepositoryMemberUserId;
 import io.jgitkins.server.shared.domain.exception.InvalidIdentifierException;
@@ -26,9 +26,9 @@ class IdentifierInvariantTest {
 
     @Test
     void ownerIdRejectsNonPositiveWithAMappedException() {
-        assertThatThrownBy(() -> OwnerId.of(null)).isInstanceOf(InvalidIdentifierException.class);
-        assertThatThrownBy(() -> OwnerId.of(0L)).isInstanceOf(InvalidIdentifierException.class);
-        assertThatThrownBy(() -> OwnerId.of(-1L)).isInstanceOf(InvalidIdentifierException.class);
+        assertThatThrownBy(() -> OrganizeOwnerId.of(null)).isInstanceOf(InvalidIdentifierException.class);
+        assertThatThrownBy(() -> OrganizeOwnerId.of(0L)).isInstanceOf(InvalidIdentifierException.class);
+        assertThatThrownBy(() -> OrganizeOwnerId.of(-1L)).isInstanceOf(InvalidIdentifierException.class);
     }
 
     @Test

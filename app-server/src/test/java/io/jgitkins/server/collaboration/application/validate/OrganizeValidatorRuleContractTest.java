@@ -15,7 +15,7 @@ import io.jgitkins.server.collaboration.domain.repository.OrganizeRepository;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeId;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeMemberRole;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeName;
-import io.jgitkins.server.collaboration.domain.vo.OwnerId;
+import io.jgitkins.server.collaboration.domain.vo.OrganizeOwnerId;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -29,7 +29,7 @@ class OrganizeValidatorRuleContractTest {
     @Mock OrganizeMembershipQueryPort organizeMembershipQueryPort;
 
     private final Organize organize = Organize.reconstruct(
-            OrganizeId.of(10L), OrganizeName.from("team"), "description", OwnerId.of(7L),
+            OrganizeId.of(10L), OrganizeName.from("team"), "description", OrganizeOwnerId.of(7L),
             LocalDateTime.now(), LocalDateTime.now());
 
     @Test

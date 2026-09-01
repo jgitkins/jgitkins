@@ -8,7 +8,7 @@ import io.jgitkins.server.collaboration.domain.vo.MemberUserId;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeId;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeMemberRole;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeName;
-import io.jgitkins.server.collaboration.domain.vo.OwnerId;
+import io.jgitkins.server.collaboration.domain.vo.OrganizeOwnerId;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -37,7 +37,7 @@ class OrganizeJpaMappingTest {
         OrganizeJpaPersistenceAdapter organizeAdapter = new OrganizeJpaPersistenceAdapter(organizeJpaRepository);
 
         Organize organize = Organize.createWithoutEvent(
-                OrganizeId.of(11L), OrganizeName.from("acme"), OwnerId.of(7L), "the description", now);
+                OrganizeId.of(11L), OrganizeName.from("acme"), OrganizeOwnerId.of(7L), "the description", now);
         Mockito.when(organizeJpaRepository.save(Mockito.any()))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 

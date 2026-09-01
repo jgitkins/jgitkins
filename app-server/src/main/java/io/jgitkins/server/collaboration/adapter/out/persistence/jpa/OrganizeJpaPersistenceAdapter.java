@@ -7,7 +7,7 @@ import io.jgitkins.server.collaboration.domain.aggregate.Organize;
 import io.jgitkins.server.collaboration.domain.repository.OrganizeRepository;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeId;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeName;
-import io.jgitkins.server.collaboration.domain.vo.OwnerId;
+import io.jgitkins.server.collaboration.domain.vo.OrganizeOwnerId;
 import io.jgitkins.server.common.infrastructure.error.InfrastructureErrorCode;
 import io.jgitkins.server.common.infrastructure.exception.InfrastructureException;
 import java.util.List;
@@ -144,7 +144,7 @@ public class OrganizeJpaPersistenceAdapter implements OrganizePersistence {
                 entity.getId() != null ? OrganizeId.of(entity.getId()) : null,
                 OrganizeName.from(entity.getName()),
                 entity.getDescription(),
-                entity.getOwnerId() != null ? OwnerId.of(entity.getOwnerId()) : null,
+                entity.getOwnerId() != null ? OrganizeOwnerId.of(entity.getOwnerId()) : null,
                 entity.getCreatedAt(),
                 entity.getUpdatedAt());
     }

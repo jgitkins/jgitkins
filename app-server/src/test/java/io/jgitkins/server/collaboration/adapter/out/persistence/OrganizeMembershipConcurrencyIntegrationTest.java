@@ -88,7 +88,7 @@ class OrganizeMembershipConcurrencyIntegrationTest {
         transactionTemplate.executeWithoutResult(status -> {
             var saved = organizeRepository.save(io.jgitkins.server.collaboration.domain.aggregate.Organize.createWithoutEvent(
                     null, io.jgitkins.server.collaboration.domain.vo.OrganizeName.from("race"),
-                    io.jgitkins.server.collaboration.domain.vo.OwnerId.of(7L), "description", java.time.LocalDateTime.now()));
+                    io.jgitkins.server.collaboration.domain.vo.OrganizeOwnerId.of(7L), "description", java.time.LocalDateTime.now()));
             organizeId = saved.getId().getValue();
             memberRepository.save(OrganizeMember.create(saved.getId(), MemberUserId.of(7L), OrganizeMemberRole.OWNER, null));
             memberRepository.save(OrganizeMember.create(saved.getId(), MemberUserId.of(8L), OrganizeMemberRole.OWNER, null));

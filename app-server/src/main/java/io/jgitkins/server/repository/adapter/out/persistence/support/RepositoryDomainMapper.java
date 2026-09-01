@@ -2,7 +2,7 @@ package io.jgitkins.server.repository.adapter.out.persistence.support;
 
 import io.jgitkins.server.repository.domain.aggregate.Repository;
 import io.jgitkins.server.shared.domain.model.vo.BranchName;
-import io.jgitkins.server.shared.domain.model.vo.OwnerId;
+import io.jgitkins.server.shared.domain.model.vo.RepositoryOwnerId;
 import io.jgitkins.server.shared.domain.model.vo.OwnerType;
 import io.jgitkins.server.repository.domain.vo.RepositoryId;
 import io.jgitkins.server.repository.domain.vo.RepositoryName;
@@ -34,7 +34,7 @@ public interface RepositoryDomainMapper {
 
     default Repository toDomain(RepositoryEntity entity) {
         OwnerType ownerType = OwnerType.from(entity.getOwnerType());
-        OwnerId ownerId = entity.getOwnerId() != null ? OwnerId.of(entity.getOwnerId()) : null;
+        RepositoryOwnerId ownerId = entity.getOwnerId() != null ? RepositoryOwnerId.of(entity.getOwnerId()) : null;
         return Repository.rehydrate(
                 RepositoryId.of(entity.getId()),
                 ownerType,

@@ -13,7 +13,7 @@ import io.jgitkins.core.common.exception.JgitkinsException;
 import io.jgitkins.server.repository.domain.aggregate.Repository;
 import io.jgitkins.server.repository.domain.model.vo.InitialCommitOptions;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeId;
-import io.jgitkins.server.shared.domain.model.vo.OwnerId;
+import io.jgitkins.server.shared.domain.model.vo.RepositoryOwnerId;
 import io.jgitkins.server.shared.domain.model.vo.OwnerType;
 import io.jgitkins.server.repository.domain.vo.RepositoryId;
 import io.jgitkins.server.repository.domain.vo.RepositoryName;
@@ -115,9 +115,9 @@ class RepositoryManagementServiceTest {
         Repository saved = org.mockito.Mockito.mock(Repository.class);
         RepositoryResult result = new RepositoryResult(100L, null, "sample-repo", null, null, null, null, null, null, null, null, false, null, null, null);
 
-        when(repositoryRepository.findByOwnerAndName(OwnerType.USER, OwnerId.of(7L), RepositoryName.from("sample-repo")))
+        when(repositoryRepository.findByOwnerAndName(OwnerType.USER, RepositoryOwnerId.of(7L), RepositoryName.from("sample-repo")))
                 .thenReturn(Optional.empty());
-        when(repositoryNamespaceResolver.resolve(OwnerType.USER, OwnerId.of(7L))).thenReturn("alice");
+        when(repositoryNamespaceResolver.resolve(OwnerType.USER, RepositoryOwnerId.of(7L))).thenReturn("alice");
         when(repositoryRepository.save(any(Repository.class))).thenReturn(saved);
         when(repositoryProvisioner.provision(any(Repository.class), any(InitialCommitOptions.class))).thenReturn(saved);
         when(repositoryApplicationMapper.toDto(saved)).thenReturn(result);

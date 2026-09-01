@@ -10,7 +10,7 @@ import static org.mockito.Mockito.verify;
 import io.jgitkins.server.collaboration.domain.aggregate.Organize;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeId;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeName;
-import io.jgitkins.server.collaboration.domain.vo.OwnerId;
+import io.jgitkins.server.collaboration.domain.vo.OrganizeOwnerId;
 import io.jgitkins.server.shared.domain.event.DomainEvent;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -36,7 +36,7 @@ public class CollaborationSpringDomainEventPublisherTransactionTest {
         return Organize.create(
                         OrganizeId.of(organizeId),
                         OrganizeName.from(name),
-                        OwnerId.of(7L),
+                        OrganizeOwnerId.of(7L),
                         "Core Team",
                         LocalDateTime.of(2026, 8, 14, 9, 0),
                         Instant.parse("2026-08-14T00:00:00Z"))

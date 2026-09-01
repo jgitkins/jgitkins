@@ -17,7 +17,7 @@ import io.jgitkins.server.repository.domain.vo.RepositoryName;
 import io.jgitkins.server.repository.domain.vo.RepositoryPath;
 import io.jgitkins.server.repository.domain.vo.RepositoryVisibility;
 import io.jgitkins.server.shared.domain.model.vo.BranchName;
-import io.jgitkins.server.shared.domain.model.vo.OwnerId;
+import io.jgitkins.server.shared.domain.model.vo.RepositoryOwnerId;
 import io.jgitkins.server.shared.domain.model.vo.OwnerType;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -87,7 +87,7 @@ class RepositoryNotFoundMessageParityTest {
                 .orElseThrow(RepositoryNotFoundException::new));
 
         Repository privateRepository = Repository.rehydrate(
-                RepositoryId.of(REPOSITORY_ID), OwnerType.USER, OwnerId.of(1L),
+                RepositoryId.of(REPOSITORY_ID), OwnerType.USER, RepositoryOwnerId.of(1L),
                 RepositoryName.from("repo"), RepositoryPath.from("repo"), BranchName.of("main"),
                 RepositoryVisibility.PRIVATE, null, "/alice/repo.git", null, null, null, null);
         when(accessService.resolvePermission(privateRepository, STRANGER_ID))

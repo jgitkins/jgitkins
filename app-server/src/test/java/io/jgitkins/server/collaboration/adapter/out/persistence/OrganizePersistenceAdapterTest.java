@@ -9,7 +9,7 @@ import static org.mockito.Mockito.when;
 import io.jgitkins.server.collaboration.domain.aggregate.Organize;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeId;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeName;
-import io.jgitkins.server.collaboration.domain.vo.OwnerId;
+import io.jgitkins.server.collaboration.domain.vo.OrganizeOwnerId;
 import io.jgitkins.server.collaboration.adapter.out.persistence.support.OrganizeDomainMapper;
 import io.jgitkins.server.collaboration.adapter.out.persistence.mapper.OrganizeEntityMbgMapper;
 import io.jgitkins.server.collaboration.adapter.out.persistence.model.OrganizeEntity;
@@ -42,7 +42,7 @@ class OrganizePersistenceAdapterTest {
         Organize organize = Organize.create(
                 null,
                 OrganizeName.from("alpha_team"),
-                OwnerId.of(3L),
+                OrganizeOwnerId.of(3L),
                 "desc",
                 LocalDateTime.of(2026, 1, 1, 10, 0),
                 java.time.Instant.parse("2026-01-01T10:00:00Z"));
@@ -51,7 +51,7 @@ class OrganizePersistenceAdapterTest {
                 OrganizeId.of(10L),
                 OrganizeName.from("alpha_team"),
                 "desc",
-                OwnerId.of(3L),
+                OrganizeOwnerId.of(3L),
                 LocalDateTime.of(2026, 1, 1, 10, 0),
                 LocalDateTime.of(2026, 1, 1, 10, 0));
 
@@ -94,7 +94,7 @@ class OrganizePersistenceAdapterTest {
                 OrganizeId.of(10L),
                 OrganizeName.from("alpha_team"),
                 "desc",
-                OwnerId.of(3L),
+                OrganizeOwnerId.of(3L),
                 LocalDateTime.of(2026, 1, 1, 10, 0),
                 LocalDateTime.of(2026, 1, 1, 10, 0));
 

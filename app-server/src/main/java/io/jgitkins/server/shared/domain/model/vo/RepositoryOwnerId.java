@@ -5,18 +5,18 @@ import lombok.Getter;
 
 @Getter
 @EqualsAndHashCode
-public class OwnerId {
+public class RepositoryOwnerId {
     private final Long value;
 
-    private OwnerId(Long value) {
+    private RepositoryOwnerId(Long value) {
         if (value == null || value <= 0) {
-            throw new IllegalArgumentException("OwnerId must be a positive value");
+            throw new IllegalArgumentException("RepositoryOwnerId must be a positive value");
         }
         this.value = value;
     }
 
-    public static OwnerId of(Long value) {
-        return new OwnerId(value);
+    public static RepositoryOwnerId of(Long value) {
+        return new RepositoryOwnerId(value);
     }
 
     @Override
