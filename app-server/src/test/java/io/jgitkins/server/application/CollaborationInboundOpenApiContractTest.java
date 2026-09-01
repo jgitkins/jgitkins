@@ -20,6 +20,22 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assumptions;
 import org.springframework.web.client.RestTemplate;
 
+/**
+ * Compares the generated OpenAPI document against a committed baseline, against a RUNNING server.
+ *
+ * <p><strong>The {@code assumeTrue} below is the last one in this module, and it is deliberately not
+ * task 2.103's business.</strong> That task replaced the MariaDB reachability assumptions -- sixteen
+ * classes that skipped when nothing was listening on 127.0.0.1:53306 -- with the Testcontainers
+ * singleton in {@code JpaMariaDbTestSupport}, which calls {@code container.start()} unconditionally
+ * and has no fallback: no Docker means those classes error, not skip. MariaDB-gated skips are at zero.
+ *
+ * <p>This one gates on {@code -Dopenapi.base-url} instead, and what it needs is not a database but an
+ * app-server already serving {@code /v3/api-docs} on a known port. Removing the skip would mean
+ * booting and holding a server for every {@code ./gradlew test}, which is a different decision with a
+ * different cost, so it keeps the skip and says so here rather than being counted as leftover work.
+ *
+ * <p>To run it: {@code ./gradlew :app-server:test -Dopenapi.base-url=http://127.0.0.1:18080}.
+ */
 class CollaborationInboundOpenApiContractTest {
 
     private static final List<String> AFFECTED_PATHS = List.of(
