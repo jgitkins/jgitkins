@@ -62,13 +62,21 @@ class RepositoryJpaTransactionTest {
         transactions = new TransactionTemplate(new JpaTransactionManager(emf));
         repositoryAdapter = new RepositoryJpaPersistenceAdapter(
                 JpaMariaDbTestSupport.repository(emf, RepositoryJpaRepository.class),
-                JpaMariaDbTestSupport.repository(emf,
-                        io.jgitkins.server.identity.access.adapter.out.persistence.jpa.UserJpaRepository.class),
-                JpaMariaDbTestSupport.repository(emf,
-                        io.jgitkins.server.collaboration.adapter.out.persistence.jpa.OrganizeJpaRepository.class),
-                JpaMariaDbTestSupport.repository(emf,
-                        io.jgitkins.server.collaboration.adapter.out.persistence.jpa
-                                .OrganizeMemberJpaRepository.class),
+                new io.jgitkins.server.repository.adapter.out.acl.UserNamespaceAclAdapter(
+                        new io.jgitkins.server.identity.access.adapter.out.persistence.jpa
+                                .UserJpaPersistenceAdapter(JpaMariaDbTestSupport.repository(emf,
+                                io.jgitkins.server.identity.access.adapter.out.persistence.jpa
+                                        .UserJpaRepository.class))),
+                new io.jgitkins.server.repository.adapter.out.acl.OrganizationNamespaceAclAdapter(
+                        new io.jgitkins.server.collaboration.adapter.out.persistence.jpa
+                                .OrganizeJpaPersistenceAdapter(JpaMariaDbTestSupport.repository(emf,
+                                io.jgitkins.server.collaboration.adapter.out.persistence.jpa
+                                        .OrganizeJpaRepository.class))),
+                new io.jgitkins.server.repository.adapter.out.acl.OrganizationMembershipAclAdapter(
+                        new io.jgitkins.server.collaboration.adapter.out.persistence.jpa
+                                .OrganizeMemberJpaPersistenceAdapter(JpaMariaDbTestSupport.repository(emf,
+                                io.jgitkins.server.collaboration.adapter.out.persistence.jpa
+                                        .OrganizeMemberJpaRepository.class))),
                 new CloneUrlBuilder(new RepositoryEndpointPort() {
                     @Override
                     public String restScheme() {

@@ -2,6 +2,12 @@ package io.jgitkins.server.repository.adapter.out.persistence.jpa;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.jgitkins.server.collaboration.adapter.out.persistence.jpa.OrganizeJpaPersistenceAdapter;
+import io.jgitkins.server.collaboration.adapter.out.persistence.jpa.OrganizeMemberJpaPersistenceAdapter;
+import io.jgitkins.server.identity.access.adapter.out.persistence.jpa.UserJpaPersistenceAdapter;
+import io.jgitkins.server.repository.adapter.out.acl.OrganizationMembershipAclAdapter;
+import io.jgitkins.server.repository.adapter.out.acl.OrganizationNamespaceAclAdapter;
+import io.jgitkins.server.repository.adapter.out.acl.UserNamespaceAclAdapter;
 import io.jgitkins.server.collaboration.adapter.out.persistence.jpa.OrganizeJpaEntity;
 import io.jgitkins.server.collaboration.adapter.out.persistence.jpa.OrganizeJpaRepository;
 import io.jgitkins.server.collaboration.adapter.out.persistence.jpa.OrganizeMemberJpaEntity;
@@ -93,7 +99,12 @@ class RepositoryJpaMariaDbIntegrationTest {
         });
 
         repositoryAdapter = new RepositoryJpaPersistenceAdapter(
-                repositories, users, organizations, organizationMembers, cloneUrlBuilder);
+                repositories,
+                new UserNamespaceAclAdapter(new UserJpaPersistenceAdapter(users)),
+                new OrganizationNamespaceAclAdapter(new OrganizeJpaPersistenceAdapter(organizations)),
+                new OrganizationMembershipAclAdapter(
+                        new OrganizeMemberJpaPersistenceAdapter(organizationMembers)),
+                cloneUrlBuilder);
         memberAdapter = new RepositoryMemberJpaPersistenceAdapter(members);
         branchWriteAdapter = new BranchJpaRepositoryAdapter(branches);
         branchQueryAdapter = new BranchJpaQueryAdapter(branches);

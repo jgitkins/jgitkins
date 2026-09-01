@@ -3,15 +3,12 @@ package io.jgitkins.server.repository.adapter.out.persistence.jpa;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import io.jgitkins.server.collaboration.adapter.out.persistence.jpa.OrganizeJpaRepository;
-import io.jgitkins.server.collaboration.adapter.out.persistence.jpa.OrganizeMemberJpaRepository;
-import io.jgitkins.server.collaboration.adapter.out.persistence.mapper.OrganizeEntityMbgMapper;
-import io.jgitkins.server.collaboration.adapter.out.persistence.mapper.OrganizeMemberEntityMbgMapper;
+import io.jgitkins.server.repository.application.port.out.OrganizationMembershipPort;
+import io.jgitkins.server.repository.application.port.out.OrganizationNamespacePort;
+import io.jgitkins.server.repository.application.port.out.UserNamespacePort;
 import io.jgitkins.server.common.infrastructure.config.PersistenceImplementation;
 import io.jgitkins.server.common.infrastructure.config.PersistenceImplementationSelector;
 import io.jgitkins.server.common.infrastructure.exception.InvalidPersistenceSelectorException;
-import io.jgitkins.server.identity.access.adapter.out.persistence.jpa.UserJpaRepository;
-import io.jgitkins.server.identity.access.adapter.out.persistence.mapper.UserEntityMbgMapper;
 import io.jgitkins.server.repository.adapter.out.persistence.RepositoryMemberPersistenceAdapter;
 import io.jgitkins.server.repository.adapter.out.persistence.RepositoryPersistenceAdapter;
 import io.jgitkins.server.repository.adapter.out.persistence.query.BranchQueryAdapter;
@@ -101,16 +98,6 @@ class RepositoryJpaSelectorTest {
 
     static class Stubs {
         @Bean
-        OrganizeEntityMbgMapper organizeEntityMbgMapper() {
-            return Mockito.mock(OrganizeEntityMbgMapper.class);
-        }
-
-        @Bean
-        OrganizeMemberEntityMbgMapper organizeMemberEntityMbgMapper() {
-            return Mockito.mock(OrganizeMemberEntityMbgMapper.class);
-        }
-
-        @Bean
         RepositoryEntityMbgMapper repositoryEntityMbgMapper() {
             return Mockito.mock(RepositoryEntityMbgMapper.class);
         }
@@ -123,11 +110,6 @@ class RepositoryJpaSelectorTest {
         @Bean
         BranchEntityMbgMapper branchEntityMbgMapper() {
             return Mockito.mock(BranchEntityMbgMapper.class);
-        }
-
-        @Bean
-        UserEntityMbgMapper userEntityMbgMapper() {
-            return Mockito.mock(UserEntityMbgMapper.class);
         }
 
         @Bean
@@ -160,19 +142,23 @@ class RepositoryJpaSelectorTest {
             return Mockito.mock(BranchJpaRepository.class);
         }
 
+        // Three ports where six of another context's mappers and repositories used to be. The slice no
+        // longer has to know that identity and collaboration exist, let alone which provider they run
+        // on, which is the observable half of the decoupling: this configuration used to fail to start
+        // without OrganizeEntityMbgMapper on the classpath.
         @Bean
-        UserJpaRepository userJpaRepository() {
-            return Mockito.mock(UserJpaRepository.class);
+        UserNamespacePort userNamespacePort() {
+            return Mockito.mock(UserNamespacePort.class);
         }
 
         @Bean
-        OrganizeJpaRepository organizeJpaRepository() {
-            return Mockito.mock(OrganizeJpaRepository.class);
+        OrganizationNamespacePort organizationNamespacePort() {
+            return Mockito.mock(OrganizationNamespacePort.class);
         }
 
         @Bean
-        OrganizeMemberJpaRepository organizeMemberJpaRepository() {
-            return Mockito.mock(OrganizeMemberJpaRepository.class);
+        OrganizationMembershipPort organizationMembershipPort() {
+            return Mockito.mock(OrganizationMembershipPort.class);
         }
 
         @Bean

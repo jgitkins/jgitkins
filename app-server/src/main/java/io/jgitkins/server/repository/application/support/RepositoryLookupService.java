@@ -80,6 +80,16 @@ public class RepositoryLookupService {
                 RepositoryPath.from(repoName));
     }
 
+    /**
+     * Belt and braces since the port took over the rule.
+     *
+     * <p>{@code OrganizationNamespacePort} now says an unusable name is empty rather than an
+     * exception, and {@code OrganizationNamespaceAclAdapter} implements that with
+     * {@code OrganizeName.isValid} -- covered by {@code OrganizationNamespaceAclAdapterTest}. This
+     * catch was the only thing standing between a URL-typed namespace and a 500 before that, and it
+     * is kept because the port is an interface: an implementation that forgets the rule should still
+     * produce a 404 here rather than a 500, and the cost of keeping it is five lines.
+     */
     private Optional<Long> findOrganizationByNamespace(String namespace) {
         try {
             return organizationNamespacePort.findOrganizationIdByName(namespace);

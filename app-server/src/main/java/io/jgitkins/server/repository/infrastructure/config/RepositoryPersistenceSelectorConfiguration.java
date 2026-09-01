@@ -1,13 +1,7 @@
 package io.jgitkins.server.repository.infrastructure.config;
 
-import io.jgitkins.server.collaboration.adapter.out.persistence.jpa.OrganizeJpaRepository;
-import io.jgitkins.server.collaboration.adapter.out.persistence.jpa.OrganizeMemberJpaRepository;
-import io.jgitkins.server.collaboration.adapter.out.persistence.mapper.OrganizeEntityMbgMapper;
-import io.jgitkins.server.collaboration.adapter.out.persistence.mapper.OrganizeMemberEntityMbgMapper;
 import io.jgitkins.server.common.infrastructure.config.PersistenceImplementation;
 import io.jgitkins.server.common.infrastructure.config.PersistenceImplementationSelector;
-import io.jgitkins.server.identity.access.adapter.out.persistence.jpa.UserJpaRepository;
-import io.jgitkins.server.identity.access.adapter.out.persistence.mapper.UserEntityMbgMapper;
 import io.jgitkins.server.repository.adapter.out.persistence.RepositoryMemberPersistenceAdapter;
 import io.jgitkins.server.repository.adapter.out.persistence.RepositoryPersistence;
 import io.jgitkins.server.repository.adapter.out.persistence.RepositoryPersistenceAdapter;
@@ -21,6 +15,9 @@ import io.jgitkins.server.repository.adapter.out.persistence.jpa.RepositoryMembe
 import io.jgitkins.server.repository.adapter.out.persistence.query.BranchQueryAdapter;
 import io.jgitkins.server.repository.adapter.out.persistence.repository.BranchRepositoryAdapter;
 import io.jgitkins.server.repository.application.port.out.BranchQueryPort;
+import io.jgitkins.server.repository.application.port.out.OrganizationMembershipPort;
+import io.jgitkins.server.repository.application.port.out.OrganizationNamespacePort;
+import io.jgitkins.server.repository.application.port.out.UserNamespacePort;
 import io.jgitkins.server.repository.application.port.out.RepositoryMemberPersistencePort;
 import io.jgitkins.server.repository.application.support.CloneUrlBuilder;
 import io.jgitkins.server.repository.domain.repository.BranchRepository;
@@ -69,25 +66,34 @@ public class RepositoryPersistenceSelectorConfiguration {
                 PersistenceImplementationSelector.resolve(PROPERTY_NAME, environment.getProperty(PROPERTY_NAME)));
     }
 
+    /**
+     * Both adapters take the same three cross-context ports, and neither takes another context's
+     * repositories any more.
+     *
+     * <p>This method used to name {@code OrganizeEntityMbgMapper}, {@code OrganizeJpaRepository},
+     * {@code UserEntityMbgMapper} and three more, because the two adapters read {@code USER} and
+     * {@code ORGANIZE_MEMBER} directly. That made the repository context's composition root depend on
+     * which provider identity and collaboration were built on -- and it handed each adapter the
+     * matching provider, so a JPA repository adapter kept reading collaboration's data through JPA
+     * after collaboration was switched to MyBatis. The ports resolve to whichever provider each
+     * owning context selected, which is the only answer that stays correct under a partial migration.
+     */
     @Bean
     RepositoryPersistence repositoryPersistence(
             RepositoryPersistenceSelection selection,
-            OrganizeEntityMbgMapper organizeEntityMbgMapper,
-            OrganizeMemberEntityMbgMapper organizeMemberEntityMbgMapper,
             RepositoryEntityMbgMapper repositoryEntityMbgMapper,
-            UserEntityMbgMapper userEntityMbgMapper,
             RepositoryDomainMapper repositoryDomainMapper,
             RepositoryJpaRepository repositoryJpaRepository,
-            UserJpaRepository userJpaRepository,
-            OrganizeJpaRepository organizeJpaRepository,
-            OrganizeMemberJpaRepository organizeMemberJpaRepository,
+            UserNamespacePort userNamespacePort,
+            OrganizationNamespacePort organizationNamespacePort,
+            OrganizationMembershipPort organizationMembershipPort,
             CloneUrlBuilder cloneUrlBuilder) {
         return switch (selection.implementation()) {
-            case MYBATIS -> new RepositoryPersistenceAdapter(organizeEntityMbgMapper,
-                    organizeMemberEntityMbgMapper, repositoryEntityMbgMapper, userEntityMbgMapper,
+            case MYBATIS -> new RepositoryPersistenceAdapter(userNamespacePort,
+                    organizationNamespacePort, organizationMembershipPort, repositoryEntityMbgMapper,
                     cloneUrlBuilder, repositoryDomainMapper);
-            case JPA -> new RepositoryJpaPersistenceAdapter(repositoryJpaRepository, userJpaRepository,
-                    organizeJpaRepository, organizeMemberJpaRepository, cloneUrlBuilder);
+            case JPA -> new RepositoryJpaPersistenceAdapter(repositoryJpaRepository, userNamespacePort,
+                    organizationNamespacePort, organizationMembershipPort, cloneUrlBuilder);
         };
     }
 

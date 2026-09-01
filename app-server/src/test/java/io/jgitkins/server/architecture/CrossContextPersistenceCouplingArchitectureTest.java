@@ -32,15 +32,17 @@ import org.junit.jupiter.api.Test;
  * persistence imports. A guard whose subject was renamed out from under it reports a clean tree and an
  * empty tree identically.
  *
- * <h2>Why a ceiling and not zero</h2>
+ * <h2>The ceiling is zero, and it was 19 for one commit</h2>
  *
- * <p>Nineteen imports across three files exist today, all of them in {@code repository}. Asserting
- * zero would mean this test cannot land until the refactor does, and a guard that arrives after the
- * work it guards is a guard nobody was protected by. The ceiling makes the number visible and
- * one-directional: it may shrink, and lowering it is part of removing the coupling. It may not grow.
+ * <p>This landed as a ratchet rather than a zero, because asserting zero would have meant the guard
+ * could not arrive until the refactor did, and a guard that arrives after the work it guards protected
+ * nobody. Nineteen imports across three files in {@code repository} were the starting number; the
+ * refactor that followed took them to zero and the ceiling came down with them.
  *
- * <p>{@code PUBLIC_CEILING} in {@code RouteAuthenticationContractTest} works the same way and for the
- * same reason.
+ * <p>The mechanism stays. An empty allowlist plus a zero ceiling is a rule, and the shape is still the
+ * one to use if a boundary ever has to be crossed on the way to somewhere else: raise it, name the
+ * files, lower it again. {@code PUBLIC_CEILING} in {@code RouteAuthenticationContractTest} works the
+ * same way for the same reason.
  */
 class CrossContextPersistenceCouplingArchitectureTest {
 
@@ -48,22 +50,24 @@ class CrossContextPersistenceCouplingArchitectureTest {
             List.of("collaboration", "repository", "execution", "identity/access", "change/review");
 
     /**
-     * Every file that currently reaches into another context's persistence, and how many times.
+     * Empty, and that is the point.
      *
-     * <p>Listed by name rather than counted in aggregate so that moving the coupling from one file to
-     * another is a failure rather than a wash. All three are the same refactor: {@code repository}
-     * resolving a username, an organization name, and a user's organization ids by querying
-     * {@code identity}'s and {@code collaboration}'s tables directly, when it already declares
-     * {@code UserNamespacePort}, {@code OrganizationNamespacePort} and {@code OrganizationMembershipPort}
-     * for two of those three questions and already has ACL adapters implementing them.
+     * <p>Three files were on this list when the guard landed: {@code RepositoryPersistenceAdapter},
+     * {@code RepositoryJpaPersistenceAdapter} and {@code RepositoryPersistenceSelectorConfiguration},
+     * nineteen imports between them. All three asked the same three questions -- who owns this
+     * username, which organization is this namespace, which organizations does this user belong to --
+     * about {@code USER} and {@code ORGANIZE_MEMBER}, tables that {@code identity} and
+     * {@code collaboration} own. They now ask through {@code UserNamespacePort},
+     * {@code OrganizationNamespacePort} and {@code OrganizationMembershipPort}.
+     *
+     * <p>The list stays, empty, rather than being deleted along with the entries. An empty allowlist
+     * plus a zero ceiling is a rule; deleting the mechanism would leave the next such import with
+     * nothing to fail against.
      */
-    private static final List<String> ALLOWED = List.of(
-            "repository/adapter/out/persistence/RepositoryPersistenceAdapter.java",
-            "repository/adapter/out/persistence/jpa/RepositoryJpaPersistenceAdapter.java",
-            "repository/infrastructure/config/RepositoryPersistenceSelectorConfiguration.java");
+    private static final List<String> ALLOWED = List.of();
 
-    /** May shrink, never grow. 19 when this test was written. */
-    private static final int COUPLING_CEILING = 19;
+    /** Zero, and it may not rise. It was 19 for the length of one commit. */
+    private static final int COUPLING_CEILING = 0;
 
     @Test
     void noContextReadsAnotherContextsTablesThroughItsMappers() throws IOException {
@@ -87,9 +91,9 @@ class CrossContextPersistenceCouplingArchitectureTest {
         List<Violation> violations = foreignPersistenceImports();
 
         assertThat(violations)
-                .as("foreign persistence imports may only decrease. If this fails low, lower "
-                        + "COUPLING_CEILING in the same commit -- that is how the ratchet tightens. If it "
-                        + "fails high, the import that was just added belongs behind a port.")
+                .as("no context may read another context's tables through that context's mappers. The "
+                        + "question belongs on a port owned by the context that owns the table -- see "
+                        + "OrganizeMembershipQueryPort#findOrganizeIdsByUserId for the shape.")
                 .hasSizeLessThanOrEqualTo(COUPLING_CEILING);
     }
 
@@ -103,11 +107,31 @@ class CrossContextPersistenceCouplingArchitectureTest {
 
     @Test
     void everyAllowlistedFileStillExists() {
+        // Vacuous while ALLOWED is empty, and kept for the day it is not: an allowlist entry for a
+        // deleted file is a permanent exemption that the next file at that path inherits.
         for (String allowed : ALLOWED) {
             assertThat(ArchitectureScanner.mainRoot().resolve(allowed))
                     .as("a stale allowlist entry is a permanent exemption for a file that is gone, and "
                             + "the next file to take its path inherits it")
                     .exists();
+        }
+    }
+
+    @Test
+    void theThreeFilesThatCarriedTheCouplingNowUseThePorts() throws IOException {
+        // The count reaching zero does not prove the reads survived -- deleting them would score the
+        // same. These three files must still answer the same three questions, through the ports.
+        for (String file : List.of(
+                "repository/adapter/out/persistence/RepositoryPersistenceAdapter.java",
+                "repository/adapter/out/persistence/jpa/RepositoryJpaPersistenceAdapter.java",
+                "repository/infrastructure/config/RepositoryPersistenceSelectorConfiguration.java")) {
+            String source = Files.readString(ArchitectureScanner.mainRoot().resolve(file));
+            assertThat(source)
+                    .as("%s dropped its foreign persistence imports; it must have gained the ports, not "
+                            + "lost the lookups", file)
+                    .contains("UserNamespacePort")
+                    .contains("OrganizationNamespacePort")
+                    .contains("OrganizationMembershipPort");
         }
     }
 

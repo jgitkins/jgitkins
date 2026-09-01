@@ -1,12 +1,10 @@
 package io.jgitkins.server.repository.adapter.out.persistence.jpa;
 
-import io.jgitkins.server.collaboration.adapter.out.persistence.jpa.OrganizeJpaEntity;
-import io.jgitkins.server.collaboration.adapter.out.persistence.jpa.OrganizeJpaRepository;
-import io.jgitkins.server.collaboration.adapter.out.persistence.jpa.OrganizeMemberJpaRepository;
 import io.jgitkins.server.common.infrastructure.error.InfrastructureErrorCode;
 import io.jgitkins.server.common.infrastructure.exception.InfrastructureException;
-import io.jgitkins.server.identity.access.adapter.out.persistence.jpa.UserJpaEntity;
-import io.jgitkins.server.identity.access.adapter.out.persistence.jpa.UserJpaRepository;
+import io.jgitkins.server.repository.application.port.out.OrganizationMembershipPort;
+import io.jgitkins.server.repository.application.port.out.OrganizationNamespacePort;
+import io.jgitkins.server.repository.application.port.out.UserNamespacePort;
 import io.jgitkins.server.repository.adapter.out.persistence.RepositoryPersistence;
 import io.jgitkins.server.repository.application.contract.result.RepositoryResult;
 import io.jgitkins.server.repository.application.support.CloneUrlBuilder;
@@ -49,9 +47,13 @@ public class RepositoryJpaPersistenceAdapter implements RepositoryPersistence {
     private static final String STATUS_REGISTERED = "REGISTERED";
 
     private final RepositoryJpaRepository repositoryJpaRepository;
-    private final UserJpaRepository userJpaRepository;
-    private final OrganizeJpaRepository organizeJpaRepository;
-    private final OrganizeMemberJpaRepository organizeMemberJpaRepository;
+    // Ports, not the other contexts' JPA repositories. Naming OrganizeJpaRepository here bound this
+    // adapter to collaboration's table shape AND to collaboration being on JPA -- so switching
+    // collaboration to MyBatis left this reading its data through JPA anyway. The MyBatis sibling
+    // carries the same three ports and the same reasoning.
+    private final UserNamespacePort userNamespacePort;
+    private final OrganizationNamespacePort organizationNamespacePort;
+    private final OrganizationMembershipPort organizationMembershipPort;
     private final CloneUrlBuilder cloneUrlBuilder;
 
     @Override
@@ -202,11 +204,11 @@ public class RepositoryJpaPersistenceAdapter implements RepositoryPersistence {
     @Override
     public List<RepositoryResult> loadUserRepositories(String username, Long requesterId) {
         try {
-            Optional<UserJpaEntity> user = findUserEntityByUsername(username);
-            if (user.isEmpty()) {
+            Optional<Long> owner = findUserIdByUsername(username);
+            if (owner.isEmpty()) {
                 return List.of();
             }
-            Long ownerId = user.get().getId();
+            Long ownerId = owner.get();
             boolean ownViewing = requesterId != null && requesterId.equals(ownerId);
             List<RepositoryJpaEntity> entities = ownViewing
                     ? repositoryJpaRepository.findAllByOwnerTypeAndOwnerIdOrderByUpdatedAtDesc(
@@ -236,39 +238,33 @@ public class RepositoryJpaPersistenceAdapter implements RepositoryPersistence {
     }
 
     private Optional<RepositoryJpaEntity> findUserOwnedEntity(String namespace, String repoName) {
-        return findUserEntityByUsername(namespace)
-                .flatMap(user -> repositoryJpaRepository.findFirstByOwnerTypeAndOwnerIdAndName(
-                        OwnerType.USER.name(), user.getId(), repoName));
+        return findUserIdByUsername(namespace)
+                .flatMap(userId -> repositoryJpaRepository.findFirstByOwnerTypeAndOwnerIdAndName(
+                        OwnerType.USER.name(), userId, repoName));
     }
 
     private Optional<RepositoryJpaEntity> findOrganizationOwnedEntity(String namespace, String repoName) {
-        return findOrganizationEntityByName(namespace)
-                .flatMap(organize -> repositoryJpaRepository.findFirstByOwnerTypeAndOwnerIdAndPath(
-                        OwnerType.ORGANIZATION.name(), organize.getId(), repoName));
+        return findOrganizationIdByName(namespace)
+                .flatMap(organizationId -> repositoryJpaRepository.findFirstByOwnerTypeAndOwnerIdAndPath(
+                        OwnerType.ORGANIZATION.name(), organizationId, repoName));
     }
 
-    private Optional<UserJpaEntity> findUserEntityByUsername(String username) {
+    private Optional<Long> findUserIdByUsername(String username) {
         if (username == null || username.isBlank()) {
             return Optional.empty();
         }
-        return userJpaRepository.findFirstByUsernameOrderByIdDesc(username.trim());
+        return userNamespacePort.findUserIdByUsername(username.trim());
     }
 
-    private Optional<OrganizeJpaEntity> findOrganizationEntityByName(String name) {
+    private Optional<Long> findOrganizationIdByName(String name) {
         if (name == null || name.isBlank()) {
             return Optional.empty();
         }
-        return organizeJpaRepository.findByName(name.trim());
+        return organizationNamespacePort.findOrganizationIdByName(name.trim());
     }
 
     private List<Long> findOrganizationIdsByUserId(Long requesterId) {
-        if (requesterId == null) {
-            return List.of();
-        }
-        return organizeMemberJpaRepository.findAllByUserId(requesterId).stream()
-                .map(member -> member.getOrganizeId())
-                .distinct()
-                .toList();
+        return organizationMembershipPort.findOrganizationIdsByUserId(requesterId);
     }
 
     private RepositoryJpaEntity toEntity(Repository repository) {

@@ -1,25 +1,20 @@
 package io.jgitkins.server.repository.adapter.out.persistence;
 
+import io.jgitkins.server.repository.application.port.out.OrganizationMembershipPort;
+import io.jgitkins.server.repository.application.port.out.OrganizationNamespacePort;
+import io.jgitkins.server.repository.application.port.out.UserNamespacePort;
 import io.jgitkins.server.repository.domain.aggregate.Repository;
 import io.jgitkins.server.shared.domain.model.vo.OwnerId;
 import io.jgitkins.server.shared.domain.model.vo.OwnerType;
 import io.jgitkins.server.repository.domain.vo.RepositoryId;
 import io.jgitkins.server.repository.domain.vo.RepositoryName;
 import io.jgitkins.server.repository.domain.vo.RepositoryPath;
-import io.jgitkins.server.collaboration.adapter.out.persistence.mapper.OrganizeMemberEntityMbgMapper;
 import io.jgitkins.server.common.infrastructure.error.InfrastructureErrorCode;
 import io.jgitkins.server.common.infrastructure.exception.InfrastructureException;
 import io.jgitkins.server.repository.adapter.out.persistence.support.RepositoryDomainMapper;
-import io.jgitkins.server.collaboration.adapter.out.persistence.mapper.OrganizeEntityMbgMapper;
 import io.jgitkins.server.repository.adapter.out.persistence.mapper.RepositoryEntityMbgMapper;
-import io.jgitkins.server.identity.access.adapter.out.persistence.mapper.UserEntityMbgMapper;
-import io.jgitkins.server.collaboration.adapter.out.persistence.model.OrganizeEntity;
-import io.jgitkins.server.collaboration.adapter.out.persistence.model.OrganizeEntityCondition;
-import io.jgitkins.server.collaboration.adapter.out.persistence.model.OrganizeMemberEntityCondition;
 import io.jgitkins.server.repository.adapter.out.persistence.model.RepositoryEntity;
 import io.jgitkins.server.repository.adapter.out.persistence.model.RepositoryEntityCondition;
-import io.jgitkins.server.identity.access.adapter.out.persistence.model.UserEntity;
-import io.jgitkins.server.identity.access.adapter.out.persistence.model.UserEntityCondition;
 import io.jgitkins.server.repository.application.contract.result.RepositoryResult;
 import io.jgitkins.server.repository.application.support.CloneUrlBuilder;
 import lombok.RequiredArgsConstructor;
@@ -41,10 +36,22 @@ import java.util.Optional;
 @Slf4j
 public class RepositoryPersistenceAdapter implements RepositoryPersistence {
 
-    private final OrganizeEntityMbgMapper organizeEntityMbgMapper;
-    private final OrganizeMemberEntityMbgMapper organizeMemberEntityMbgMapper;
+    // Cross-context reads go through this context's own ports, not the other contexts' mappers.
+    // These three questions -- who owns this username, which organization is this namespace, which
+    // organizations does this user belong to -- are about USER and ORGANIZE_MEMBER, tables that
+    // identity and collaboration own. Answering them here meant importing their MBG mappers, their
+    // JPA repositories and their entities, which coupled this adapter to their table shapes and let
+    // the persistence selector be configured inconsistently: an adapter naming OrganizeJpaRepository
+    // keeps reading through JPA after collaboration is switched to MyBatis.
+    //
+    // The ports and their ACL adapters already existed for two of the three; this adapter simply
+    // went around them. The third is new on OrganizeMembershipQueryPort -- the option task 2.72
+    // considered and did not take when it chose between duplicating the ORGANIZE_MEMBER mapping and
+    // reading it through collaboration's mapper.
+    private final UserNamespacePort userNamespacePort;
+    private final OrganizationNamespacePort organizationNamespacePort;
+    private final OrganizationMembershipPort organizationMembershipPort;
     private final RepositoryEntityMbgMapper repositoryEntityMbgMapper;
-    private final UserEntityMbgMapper userEntityMbgMapper;
 
     private final CloneUrlBuilder cloneUrlBuilder;
     private final RepositoryDomainMapper repositoryDomainMapper;
@@ -234,12 +241,12 @@ public class RepositoryPersistenceAdapter implements RepositoryPersistence {
     @Override
     public List<RepositoryResult> loadUserRepositories(String username, Long requesterId) {
         try {
-            Optional<UserEntity> userEntity = findUserEntityByUsername(username);
-            if (userEntity.isEmpty()) {
+            Optional<Long> owner = findUserIdByUsername(username);
+            if (owner.isEmpty()) {
                 return List.of();
             }
 
-            Long ownerId = userEntity.get().getId();
+            Long ownerId = owner.get();
             RepositoryEntityCondition condition = new RepositoryEntityCondition();
             condition.setOrderByClause("UPDATED_AT desc");
             RepositoryEntityCondition.Criteria criteria = condition.createCriteria()
@@ -284,58 +291,48 @@ public class RepositoryPersistenceAdapter implements RepositoryPersistence {
     }
 
     private Optional<RepositoryEntity> findUserOwnedEntity(String namespace, String repoName) {
-        return findUserEntityByUsername(namespace)
-                .flatMap(user -> {
+        return findUserIdByUsername(namespace)
+                .flatMap(userId -> {
                     RepositoryEntityCondition condition = new RepositoryEntityCondition();
                     condition.createCriteria()
                             .andOwnerTypeEqualTo(OwnerType.USER.name())
-                            .andOwnerIdEqualTo(user.getId())
+                            .andOwnerIdEqualTo(userId)
                             .andNameEqualTo(repoName);
                     return repositoryEntityMbgMapper.selectByConditionWithBLOBs(condition).stream().findFirst();
                 });
     }
 
     private Optional<RepositoryEntity> findOrganizationOwnedEntity(String namespace, String repoName) {
-        return findOrganizationEntityByName(namespace)
-                .flatMap(organize -> {
+        return findOrganizationIdByName(namespace)
+                .flatMap(organizationId -> {
                     RepositoryEntityCondition condition = new RepositoryEntityCondition();
                     condition.createCriteria()
                             .andOwnerTypeEqualTo(OwnerType.ORGANIZATION.name())
-                            .andOwnerIdEqualTo(organize.getId())
+                            .andOwnerIdEqualTo(organizationId)
                             .andPathEqualTo(repoName);
                     return repositoryEntityMbgMapper.selectByConditionWithBLOBs(condition).stream().findFirst();
                 });
     }
 
-    private Optional<UserEntity> findUserEntityByUsername(String username) {
+    // The blank guards stay here rather than moving into the ports. Both port implementations guard
+    // blank input themselves, so this is belt and braces -- but it also keeps the trim, and trimming
+    // before the lookup is behaviour this adapter had.
+    private Optional<Long> findUserIdByUsername(String username) {
         if (username == null || username.isBlank()) {
             return Optional.empty();
         }
-        UserEntityCondition condition = new UserEntityCondition();
-        condition.createCriteria().andUsernameEqualTo(username.trim());
-        return userEntityMbgMapper.selectByCondition(condition).stream().findFirst();
+        return userNamespacePort.findUserIdByUsername(username.trim());
     }
 
-    private Optional<OrganizeEntity> findOrganizationEntityByName(String name) {
+    private Optional<Long> findOrganizationIdByName(String name) {
         if (name == null || name.isBlank()) {
             return Optional.empty();
         }
-        OrganizeEntityCondition condition = new OrganizeEntityCondition();
-        condition.createCriteria().andNameEqualTo(name.trim());
-        return organizeEntityMbgMapper.selectByCondition(condition).stream().findFirst();
+        return organizationNamespacePort.findOrganizationIdByName(name.trim());
     }
 
     private List<Long> findOrganizationIdsByUserId(Long requesterId) {
-        if (requesterId == null) {
-            return List.of();
-        }
-        OrganizeMemberEntityCondition condition = new OrganizeMemberEntityCondition();
-        condition.createCriteria().andUserIdEqualTo(requesterId);
-        return organizeMemberEntityMbgMapper.selectByCondition(condition)
-                .stream()
-                .map(member -> member.getOrganizeId())
-                .distinct()
-                .toList();
+        return organizationMembershipPort.findOrganizationIdsByUserId(requesterId);
     }
 
     private RepositoryResult toResult(RepositoryEntity entity) {
