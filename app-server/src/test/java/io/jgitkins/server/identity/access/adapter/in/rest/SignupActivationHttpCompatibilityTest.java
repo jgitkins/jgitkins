@@ -12,7 +12,7 @@ import io.jgitkins.server.common.presentation.advice.mapper.CompositeErrorHttpSt
 import io.jgitkins.server.common.presentation.advice.mapper.DomainErrorHttpStatusMapper;
 import io.jgitkins.server.common.presentation.advice.mapper.InfrastructureErrorHttpStatusMapper;
 import io.jgitkins.server.common.presentation.advice.mapper.PresentationErrorHttpStatusMapper;
-import io.jgitkins.server.identity.access.application.exception.OrganizeAlreadyExistsException;
+import io.jgitkins.server.identity.access.application.exception.NamespaceAlreadyTakenException;
 import io.jgitkins.server.identity.access.application.exception.UserNotFoundException;
 import io.jgitkins.server.identity.access.application.exception.UsernameAlreadyExistsException;
 import io.jgitkins.server.identity.access.application.port.in.SignupUseCase;
@@ -97,7 +97,7 @@ class SignupActivationHttpCompatibilityTest {
 
     @Test
     void namespaceCollisionReturnsApplicationContract() throws Exception {
-        doThrow(new OrganizeAlreadyExistsException()).when(signupUseCase).activate(42L, "new_name");
+        doThrow(new NamespaceAlreadyTakenException()).when(signupUseCase).activate(42L, "new_name");
         perform("new_name").andExpect(status().isConflict())
                 .andExpect(jsonPath("$.error.code").value("ORG-409"))
                 .andExpect(jsonPath("$.error.message").value("Namespace already exists"))
