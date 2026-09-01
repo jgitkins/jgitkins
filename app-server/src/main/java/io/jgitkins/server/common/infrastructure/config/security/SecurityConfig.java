@@ -11,6 +11,7 @@ import io.jgitkins.server.identity.access.application.service.JwtAuthService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -105,6 +106,14 @@ public class SecurityConfig {
         // No securityMatcher: this is the catch-all, and it must stay last.
         http.authorizeHttpRequests(auth -> auth
                 .requestMatchers(PublicApiRoutes.matchers()).permitAll()
+                // Registering a runner hands the caller an authentication token, and deleting one
+                // takes an operational asset away from whoever depends on it. "Any logged-in user"
+                // is not the right answer to either, and authenticated() would be exactly that.
+                // Nobody holds ROLE_RUNNER_ADMIN yet -- OAuthLoginService issues ROLE_USER and
+                // nothing else -- so both routes are closed until task 2.89 decides who gets it.
+                // That is deliberate: app-web calls neither, and app-runner calls only /activate.
+                .requestMatchers(HttpMethod.POST, "/api/runners").hasRole("RUNNER_ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/runners/{runnerId}").hasRole("RUNNER_ADMIN")
                 .anyRequest().authenticated());
         // Anonymous is on because authorizeHttpRequests needs it. Without the anonymous token there
         // is no Authentication object on an unauthenticated request, and the rules above cannot tell

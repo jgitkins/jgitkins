@@ -109,6 +109,7 @@ class RouteAuthenticationContractTest {
     private static final Set<String> PROTECTED = new TreeSet<>(List.of(
             "DELETE /api/auth/pats/{credentialId}",
             "DELETE /api/organizes/{organizeId}",
+            "DELETE /api/runners/{runnerId}",
             "DELETE /api/organizes/{organizeId}/members/{userId}",
             "DELETE /api/repositories/{repositoryId}",
             "DELETE /api/repositories/{repositoryId}/branches/{branchName}",
@@ -121,6 +122,8 @@ class RouteAuthenticationContractTest {
             "GET /api/organizes/me",
             "GET /api/organizes/{organizeId}",
             "GET /api/repositories/users/{username}",
+            "GET /api/runners",
+            "GET /api/runners/{runnerId}",
             "GET /api/repositories/{repositoryId}",
             "GET /api/repositories/{repositoryId}/branches",
             "GET /api/repositories/{repositoryId}/branches/{branchName}",
@@ -139,23 +142,10 @@ class RouteAuthenticationContractTest {
             "POST /api/repositories/{repositoryId}/branches",
             "POST /api/repositories/{repositoryId}/files",
             "POST /api/repositories/{repositoryId}/members",
+            "POST /api/runners",
             "POST /api/signup/activate",
             "POST /repositories/{namespace}/{repoName}/merge",
             "POST /repositories/{namespace}/{repoName}/pull-requests"));
-
-    /**
-     * Runner routes, deliberately unclassified.
-     *
-     * <p>Runner work is paused, and 2.126 (a fail-open scope check) has to land before these can be
-     * judged: classifying them now would bake in an answer nobody has decided. They are excluded from
-     * both sets rather than quietly listed as public, so the exclusion is visible.
-     */
-    private static final Set<String> RUNNER_DEFERRED = Set.of(
-            "GET /api/runners",
-            "POST /api/runners",
-            "GET /api/runners/{runnerId}",
-            "DELETE /api/runners/{runnerId}",
-            "POST /api/runners/activate");
 
     /** Writes that legitimately precede authentication. Any other write on PUBLIC is a defect. */
     private static final Set<String> PUBLIC_WRITES_ALLOWED = Set.of(
@@ -190,7 +180,6 @@ class RouteAuthenticationContractTest {
         Set<String> actual = inventory();
         Set<String> declared = new TreeSet<>(PUBLIC);
         declared.addAll(PROTECTED);
-        declared.addAll(RUNNER_DEFERRED);
 
         Set<String> unclassified = new TreeSet<>(actual);
         unclassified.removeAll(declared);
@@ -260,7 +249,6 @@ class RouteAuthenticationContractTest {
     @Test
     void everyProtectedRouteRefusesAnAnonymousCallerBeforeTheHandlerRuns() {
         Set<String> declaredProtected = new TreeSet<>(PROTECTED);
-        declaredProtected.addAll(RUNNER_DEFERRED);
         declaredProtected.removeAll(PUBLIC);
 
         List<String> leaked = new ArrayList<>();
