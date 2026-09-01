@@ -1,11 +1,9 @@
 package io.jgitkins.server.repository.adapter.in.rest.mapper;
 
 import io.jgitkins.server.repository.application.contract.command.RepositoryCreateCommand;
-import io.jgitkins.server.repository.application.contract.command.UpdateRepositoryCommand;
 import io.jgitkins.server.shared.domain.model.vo.OwnerType;
 import io.jgitkins.server.repository.domain.vo.RepositoryVisibility;
 import io.jgitkins.server.repository.adapter.in.rest.dto.request.RepositoryCreateRequest;
-import io.jgitkins.server.repository.adapter.in.rest.dto.request.RepositoryUpdateRequest;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -18,8 +16,6 @@ public interface RepositoryRequestMapper {
     @Mapping(target = "visibility", expression = "java(toVisibility(request.visibility()))")
     @Mapping(target = "requesterUserId", source = "requesterUserId")
     RepositoryCreateCommand toCommand(Long requesterUserId, RepositoryCreateRequest request);
-
-    UpdateRepositoryCommand toUpdateCommand(RepositoryUpdateRequest request);
 
     default OwnerType toOwnerType(String ownerType) {
         return ownerType == null ? null : OwnerType.from(ownerType);

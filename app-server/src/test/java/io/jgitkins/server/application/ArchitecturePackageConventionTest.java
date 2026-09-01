@@ -53,7 +53,6 @@ import io.jgitkins.server.collaboration.adapter.in.rest.OrganizeController;
 import io.jgitkins.server.collaboration.adapter.in.rest.OrganizeMemberController;
 import io.jgitkins.server.collaboration.adapter.in.rest.dto.request.OrganizeCreationRequest;
 import io.jgitkins.server.collaboration.adapter.in.rest.dto.request.OrganizeMemberAddRequest;
-import io.jgitkins.server.collaboration.adapter.in.rest.dto.request.OrganizeUpdateRequest;
 import io.jgitkins.server.collaboration.adapter.in.rest.mapper.OrganizeMemberRequestMapper;
 import io.jgitkins.server.collaboration.adapter.in.rest.mapper.OrganizeRequestMapper;
 import io.jgitkins.server.identity.access.adapter.in.rest.SignupController;
@@ -304,8 +303,6 @@ class ArchitecturePackageConventionTest {
                 OrganizeCreationRequest.class.getPackageName());
         assertEquals("io.jgitkins.server.collaboration.adapter.in.rest.dto.request",
                 OrganizeMemberAddRequest.class.getPackageName());
-        assertEquals("io.jgitkins.server.collaboration.adapter.in.rest.dto.request",
-                OrganizeUpdateRequest.class.getPackageName());
         assertEquals("io.jgitkins.server.collaboration.adapter.in.rest.mapper",
                 OrganizeRequestMapper.class.getPackageName());
         assertEquals("io.jgitkins.server.collaboration.adapter.in.rest.mapper",
