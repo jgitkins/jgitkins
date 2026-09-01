@@ -14,6 +14,18 @@
 --
 -- Idempotent: safe to run twice. MariaDB has no CREATE INDEX IF NOT EXISTS, hence the lookup.
 --
+-- Connect to the right schema first. The lookup is scoped by DATABASE(), so running this on a
+-- connection with no database selected, or the wrong one, finds no index and then fails on CREATE
+-- INDEX against a table that is not there. ddl.sql declares `USE JGITKINS`, uppercase, so:
+--   mariadb -u<user> -p JGITKINS < 2026-09-01-runner-assignment-index.sql
+-- It fails loudly rather than silently in that case, which is the behaviour to keep.
+--
+-- Verified against mariadb:11.4 on 2026-09-01, seeded with the pre-index ddl.sql: first run creates
+-- the index, second and third exit 0 and leave it alone, DROP INDEX rolls it back, and a fourth run
+-- creates it again. EXPLAIN on `where RUNNER_ID = ? order by ASSIGNED_AT desc, ID desc limit 1` then
+-- reports type=ref key=IX_RUNNER_ASSIGNMENT_RUNNER rows=1 with no filesort, so the index serves the
+-- sort and not just the lookup.
+--
 -- Rollback: DROP INDEX IX_RUNNER_ASSIGNMENT_RUNNER ON RUNNER_ASSIGNMENT;
 -- Independent of the code -- it runs correctly with or without this index, only slower.
 
