@@ -1,4 +1,4 @@
-package io.jgitkins.server.collaboration.application.dto.result;
+package io.jgitkins.server.collaboration.application.contract.result;
 
 import java.time.LocalDateTime;
 

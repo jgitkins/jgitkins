@@ -3,7 +3,7 @@ package io.jgitkins.server.change.review.application.service;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import io.jgitkins.server.change.review.application.dto.result.PullRequestDetailResult;
+import io.jgitkins.server.change.review.application.contract.result.PullRequestDetailResult;
 import io.jgitkins.server.change.review.application.exception.RepositoryReferenceNotFoundException;
 import io.jgitkins.server.change.review.application.mapper.PullRequestDetailMapper;
 import io.jgitkins.server.change.review.application.port.out.RepositoryReadAccessPort;

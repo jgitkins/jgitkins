@@ -2,8 +2,8 @@ package io.jgitkins.server.collaboration.adapter.in.rest;
 
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.Valid;
-import io.jgitkins.server.collaboration.application.dto.command.OrganizeCreationCommand;
-import io.jgitkins.server.collaboration.application.dto.result.OrganizeCreationResult;
+import io.jgitkins.server.collaboration.application.contract.command.OrganizeCreationCommand;
+import io.jgitkins.server.collaboration.application.contract.result.OrganizeCreationResult;
 import io.jgitkins.server.collaboration.application.port.in.OrganizeCreationUseCase;
 import io.jgitkins.server.collaboration.application.port.in.OrganizeDeletionUseCase;
 import io.jgitkins.server.collaboration.application.port.in.OrganizeLoadUseCase;

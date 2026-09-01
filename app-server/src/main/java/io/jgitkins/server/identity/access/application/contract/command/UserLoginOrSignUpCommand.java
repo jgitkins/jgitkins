@@ -1,4 +1,4 @@
-package io.jgitkins.server.identity.access.application.dto.command;
+package io.jgitkins.server.identity.access.application.contract.command;
 
 public record UserLoginOrSignUpCommand(
         String providerName,

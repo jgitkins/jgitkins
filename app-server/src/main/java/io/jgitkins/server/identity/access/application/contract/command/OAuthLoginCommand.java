@@ -1,4 +1,4 @@
-package io.jgitkins.server.identity.access.application.dto.command;
+package io.jgitkins.server.identity.access.application.contract.command;
 
 /**
  * What the application needs to log someone in: a provider, and that provider's id token.

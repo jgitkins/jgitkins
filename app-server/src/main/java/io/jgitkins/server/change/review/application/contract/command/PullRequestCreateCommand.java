@@ -1,4 +1,4 @@
-package io.jgitkins.server.change.review.application.dto.command;
+package io.jgitkins.server.change.review.application.contract.command;
 
 public record PullRequestCreateCommand(
         String namespace,

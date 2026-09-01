@@ -3,8 +3,8 @@ package io.jgitkins.server.change.review.adapter.out.git;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import io.jgitkins.server.change.review.application.dto.command.MergeRequest;
-import io.jgitkins.server.change.review.application.dto.result.MergeResult;
+import io.jgitkins.server.change.review.application.contract.command.MergeRequest;
+import io.jgitkins.server.change.review.application.contract.result.MergeResult;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;

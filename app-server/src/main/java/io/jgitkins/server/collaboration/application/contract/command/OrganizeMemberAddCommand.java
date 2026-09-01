@@ -1,4 +1,4 @@
-package io.jgitkins.server.collaboration.application.dto.command;
+package io.jgitkins.server.collaboration.application.contract.command;
 
 import io.jgitkins.server.collaboration.domain.vo.OrganizeMemberRole;
 

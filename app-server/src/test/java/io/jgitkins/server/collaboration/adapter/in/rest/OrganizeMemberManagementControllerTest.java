@@ -11,14 +11,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.jgitkins.server.collaboration.application.dto.result.OrganizeMemberSummary;
+import io.jgitkins.server.collaboration.application.contract.result.OrganizeMemberSummary;
 import io.jgitkins.server.collaboration.application.port.in.OrganizeMemberAddUseCase;
 import io.jgitkins.server.collaboration.application.port.in.OrganizeMemberQueryUseCase;
 import io.jgitkins.server.collaboration.application.port.in.OrganizeMemberRemoveUseCase;
 import io.jgitkins.server.collaboration.adapter.in.rest.OrganizeMemberManagementController;
 import io.jgitkins.server.collaboration.adapter.in.rest.dto.request.OrganizeMemberAddRequest;
 import io.jgitkins.server.collaboration.adapter.in.rest.mapper.OrganizeMemberRequestMapper;
-import io.jgitkins.server.collaboration.application.dto.command.OrganizeMemberAddCommand;
+import io.jgitkins.server.collaboration.application.contract.command.OrganizeMemberAddCommand;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeMemberRole;
 import io.jgitkins.server.common.presentation.advice.GlobalExceptionHandler;
 import io.jgitkins.server.support.PermissiveSliceSecurityConfig;

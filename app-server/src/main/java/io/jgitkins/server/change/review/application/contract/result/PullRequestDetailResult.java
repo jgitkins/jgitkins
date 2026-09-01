@@ -1,4 +1,4 @@
-package io.jgitkins.server.change.review.application.dto.result;
+package io.jgitkins.server.change.review.application.contract.result;
 
 import io.jgitkins.server.change.review.domain.model.changegraph.MergeabilityAssessment;
 import io.jgitkins.server.change.review.domain.model.BranchHeadSnapshot;

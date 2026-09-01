@@ -8,8 +8,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.ArgumentMatchers.any;
 
-import io.jgitkins.server.change.review.application.dto.command.MergeRequest;
-import io.jgitkins.server.change.review.application.dto.result.MergeResult;
+import io.jgitkins.server.change.review.application.contract.command.MergeRequest;
+import io.jgitkins.server.change.review.application.contract.result.MergeResult;
 import io.jgitkins.server.change.review.application.port.out.MergePort;
 import io.jgitkins.server.change.review.application.port.out.RepositoryWriteAccessPort;
 import io.jgitkins.server.shared.application.error.ApplicationErrorCode;

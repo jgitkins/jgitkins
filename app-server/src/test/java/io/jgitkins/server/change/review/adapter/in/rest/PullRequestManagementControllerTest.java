@@ -11,9 +11,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.jgitkins.server.change.review.application.dto.command.PullRequestCreateCommand;
-import io.jgitkins.server.change.review.application.dto.result.PullRequestDetailResult;
-import io.jgitkins.server.change.review.application.dto.result.PullRequestResult;
+import io.jgitkins.server.change.review.application.contract.command.PullRequestCreateCommand;
+import io.jgitkins.server.change.review.application.contract.result.PullRequestDetailResult;
+import io.jgitkins.server.change.review.application.contract.result.PullRequestResult;
 import io.jgitkins.server.change.review.application.exception.RepositoryReferenceNotFoundException;
 import io.jgitkins.server.change.review.application.port.in.CreatePullRequestUseCase;
 import io.jgitkins.server.change.review.application.port.in.GetPullRequestDetailUseCase;

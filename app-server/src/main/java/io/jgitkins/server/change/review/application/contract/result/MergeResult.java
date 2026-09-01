@@ -1,4 +1,4 @@
-package io.jgitkins.server.change.review.application.dto.result;
+package io.jgitkins.server.change.review.application.contract.result;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

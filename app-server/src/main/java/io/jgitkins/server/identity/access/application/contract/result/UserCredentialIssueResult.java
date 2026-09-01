@@ -1,4 +1,4 @@
-package io.jgitkins.server.identity.access.application.dto.result;
+package io.jgitkins.server.identity.access.application.contract.result;
 
 public record UserCredentialIssueResult(
         Long credentialId,

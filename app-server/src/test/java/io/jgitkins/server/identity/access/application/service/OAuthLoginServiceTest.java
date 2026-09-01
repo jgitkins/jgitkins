@@ -5,10 +5,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import io.jgitkins.server.identity.access.application.dto.command.OAuthLoginCommand;
-import io.jgitkins.server.identity.access.application.dto.command.UserLoginOrSignUpCommand;
-import io.jgitkins.server.identity.access.application.dto.result.OAuthLoginResult;
-import io.jgitkins.server.identity.access.application.dto.result.VerifiedOAuthIdentity;
+import io.jgitkins.server.identity.access.application.contract.command.OAuthLoginCommand;
+import io.jgitkins.server.identity.access.application.contract.command.UserLoginOrSignUpCommand;
+import io.jgitkins.server.identity.access.application.contract.result.OAuthLoginResult;
+import io.jgitkins.server.identity.access.application.contract.result.VerifiedOAuthIdentity;
 import io.jgitkins.server.identity.access.application.port.out.OAuthIdTokenVerifierPort;
 import io.jgitkins.server.identity.access.application.port.out.TokenIssuerPort;
 import io.jgitkins.server.identity.access.application.support.UserService;

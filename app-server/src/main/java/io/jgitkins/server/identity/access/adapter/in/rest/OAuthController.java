@@ -1,8 +1,8 @@
 package io.jgitkins.server.identity.access.adapter.in.rest;
 
 import jakarta.validation.Valid;
-import io.jgitkins.server.identity.access.application.dto.command.OAuthLoginCommand;
-import io.jgitkins.server.identity.access.application.dto.result.OAuthLoginResult;
+import io.jgitkins.server.identity.access.application.contract.command.OAuthLoginCommand;
+import io.jgitkins.server.identity.access.application.contract.result.OAuthLoginResult;
 import io.jgitkins.server.identity.access.application.port.in.OAuthLoginUseCase;
 import io.jgitkins.core.web.api.response.ApiResponse;
 import io.jgitkins.server.identity.access.adapter.in.rest.dto.request.OAuthLoginRequest;
