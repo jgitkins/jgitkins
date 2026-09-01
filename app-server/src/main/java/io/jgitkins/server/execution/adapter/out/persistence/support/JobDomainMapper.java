@@ -25,6 +25,15 @@ import java.util.List;
 @Mapper(componentModel = "spring", unmappedTargetPolicy = org.mapstruct.ReportingPolicy.IGNORE)
 public interface JobDomainMapper {
 
+    /**
+     * Declared by hand because {@code @Slf4j} does not apply here.
+     *
+     * <p>Lombok generates a {@code private static final} field, which an interface cannot hold -- every
+     * interface field is implicitly {@code public static final}. So this is the one logger in
+     * app-server's main sources that is not Lombok-generated, and it is a language constraint rather
+     * than an oversight. If this mapper ever becomes an abstract class, {@code @Slf4j} applies and this
+     * line goes.
+     */
     Logger LOG = LoggerFactory.getLogger(JobDomainMapper.class);
 
     @Mapping(target = "id", ignore = true)
