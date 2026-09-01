@@ -118,6 +118,17 @@ final class ArchitectureScanner {
     private ArchitectureScanner() {
     }
 
+    /**
+     * The file's source with comments removed, for assertions that are not category scans.
+     *
+     * <p>Exists so a guard outside {@link #scan} cannot accidentally match the javadoc that explains a
+     * rule instead of the code that follows it -- which is how deleting an explanation becomes the
+     * cheapest way to go green.
+     */
+    static String withoutComments(Path file) throws IOException {
+        return stripComments(Files.readString(file));
+    }
+
     /** Scans one file and returns every (category, line) hit, comments removed first. */
     static List<Violation> scan(Path file, List<Category> categories) throws IOException {
         List<Violation> violations = new ArrayList<>();

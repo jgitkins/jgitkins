@@ -94,17 +94,24 @@ class CrossContextPersistenceCouplingArchitectureTest {
     void theThreeFilesThatCarriedTheCouplingNowUseThePorts() throws IOException {
         // The count reaching zero does not prove the reads survived -- deleting them would score the
         // same. These three files must still answer the same three questions, through the ports.
+        //
+        // Matched on comment-stripped source, and on an import plus a use. A raw substring check passed
+        // on the javadoc that explains the ports, so a field deletion leaving the prose behind stayed
+        // green -- the pitfall ArchitectureScanner#stripComments exists for.
         for (String file : List.of(
                 "repository/adapter/out/persistence/RepositoryPersistenceAdapter.java",
                 "repository/adapter/out/persistence/jpa/RepositoryJpaPersistenceAdapter.java",
                 "repository/infrastructure/config/RepositoryPersistenceSelectorConfiguration.java")) {
-            String source = Files.readString(ArchitectureScanner.mainRoot().resolve(file));
-            assertThat(source)
-                    .as("%s dropped its foreign persistence imports; it must have gained the ports, not "
-                            + "lost the lookups", file)
-                    .contains("UserNamespacePort")
-                    .contains("OrganizationNamespacePort")
-                    .contains("OrganizationMembershipPort");
+            String source = ArchitectureScanner.withoutComments(
+                    ArchitectureScanner.mainRoot().resolve(file));
+            for (String port : List.of(
+                    "UserNamespacePort", "OrganizationNamespacePort", "OrganizationMembershipPort")) {
+                assertThat(source)
+                        .as("%s dropped its foreign persistence imports; it must have gained %s in code, "
+                                + "not only in prose", file, port)
+                        .contains("import io.jgitkins.server.repository.application.port.out." + port + ";")
+                        .contains(Character.toLowerCase(port.charAt(0)) + port.substring(1));
+            }
         }
     }
 

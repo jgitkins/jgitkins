@@ -77,7 +77,7 @@ final class DeniedRequestLog {
     }
 
     /**
-     * {@code JwtAuthenticationFilter:58} calls {@code commence(request, response, null)} on a rejected
+     * {@code JwtAuthenticationFilter#doFilterInternal} calls {@code commence(request, response, null)} on a rejected
      * bearer token -- the most security-relevant 401 there is -- so null is a real input here, not a
      * defensive nicety.
      */

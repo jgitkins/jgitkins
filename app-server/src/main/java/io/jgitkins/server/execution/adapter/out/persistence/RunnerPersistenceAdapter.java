@@ -178,7 +178,13 @@ public class RunnerPersistenceAdapter implements RunnerRepository {
         condition.createCriteria().andRunnerIdEqualTo(runnerId);
         // id desc breaks the tie. ASSIGNED_AT is a whole-second timestamp and the mapper fills it with
         // LocalDateTime.now(), so two rows written in the same second are indistinguishable by it.
-        condition.setOrderByClause("assigned_at desc, id desc");
+        //
+        // limit 1 in the order-by string is this file's existing idiom (findByToken above) and it is
+        // load-bearing now: MBG emits `order by ${orderByClause}` and nothing else, so without it this
+        // selected every assignment row for the runner and discarded all but the first in Java. The JPA
+        // sibling emits LIMIT 1 through findFirst..., so the two providers were fetching different
+        // amounts for the same question.
+        condition.setOrderByClause("assigned_at desc, id desc limit 1");
         List<RunnerAssignmentEntity> assignments = runnerAssignmentEntityMbgMapper.selectByCondition(condition);
         if (assignments.isEmpty()) {
             return null;

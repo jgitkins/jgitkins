@@ -74,8 +74,8 @@ class RunnerScopeUpdateMariaDbTest {
     @AfterEach
     void tearDown() {
         jdbc.update("delete a from RUNNER_ASSIGNMENT a join RUNNER r on r.ID = a.RUNNER_ID"
-                + " where r.TOKEN like ?", "mybatis-scope-%");
-        jdbc.update("delete from RUNNER where TOKEN like ?", "mybatis-scope-%");
+                + " where r.TOKEN like ?", token + "%");
+        jdbc.update("delete from RUNNER where TOKEN like ?", token + "%");
     }
 
     @Test
@@ -117,6 +117,20 @@ class RunnerScopeUpdateMariaDbTest {
                 .as("the MyBatis adapter must honour a scope change, not answer 900 because its "
                         + "update resolved to `where ID = null`")
                 .isEqualTo(901L);
+
+        // The same two guards the JPA counterpart carries. Without the first, an implementation that
+        // overwrote in place would pass; without the second, the id tiebreak stops being exercised the
+        // moment the two writes straddle a second boundary, and nothing says so.
+        assertThat(jdbc.queryForObject(
+                "select count(*) from RUNNER_ASSIGNMENT where RUNNER_ID = ?", Integer.class, runnerId))
+                .as("one row for the create, one for the change")
+                .isEqualTo(2);
+        assertThat(jdbc.queryForObject(
+                "select count(distinct ASSIGNED_AT) from RUNNER_ASSIGNMENT where RUNNER_ID = ?",
+                Integer.class, runnerId))
+                .as("if these ever land in different seconds the tiebreak stops being exercised here "
+                        + "and this test quietly weakens")
+                .isEqualTo(1);
     }
 
     @Test

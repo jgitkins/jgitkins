@@ -15,7 +15,8 @@ import org.springframework.security.web.AuthenticationEntryPoint;
  * Answers an unauthenticated request, and says so in the log.
  *
  * <p>Reached two ways: as the api chain's {@code authenticationEntryPoint}
- * ({@code SecurityConfig:142}) and directly from {@code JwtAuthenticationFilter:58} when a bearer
+ * ({@code SecurityConfig#apiSecurityFilterChain}) and directly from
+ * {@code JwtAuthenticationFilter#doFilterInternal} when a bearer
  * token is rejected. Logging here rather than at either call site covers both.
  */
 @Slf4j

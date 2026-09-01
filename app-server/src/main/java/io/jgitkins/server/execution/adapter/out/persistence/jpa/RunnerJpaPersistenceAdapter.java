@@ -27,7 +27,10 @@ import org.springframework.transaction.annotation.Transactional;
  * narrowing one for isolation looked applied while the runner kept receiving everything. This
  * adapter reproduced the no-op so that flipping the selector stayed invisible. Both now append a new
  * assignment row when the scope differs from the newest one, which is what the read path was already
- * shaped for. See {@code RunnerJpaMariaDbIntegrationTest#scopeUpdateTakesEffectUnderBothProviders}.
+ * shaped for. Covered per provider, in the class that
+ * builds that provider: {@code RunnerJpaMariaDbIntegrationTest#scopeUpdateTakesEffect} and
+ * {@code RunnerScopeUpdateMariaDbTest#scopeUpdateTakesEffect}. No single method proves both -- a name
+ * that says "under both providers" while constructing one is what this replaced.
  */
 @RequiredArgsConstructor
 public class RunnerJpaPersistenceAdapter implements RunnerRepository {

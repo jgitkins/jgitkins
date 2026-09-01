@@ -24,7 +24,7 @@ public interface OrganizeMemberJpaRepository extends JpaRepository<OrganizeMembe
      * {@code OrganizeMembershipQueryPort#findOrganizeIdsByUserId} now, and the caller only ever wanted
      * the ids -- loading ROLE and JOINED_AT to discard them was work the query can skip.
      */
-    @Query("select m.organizeId from OrganizeMemberJpaEntity m where m.userId = :userId")
+    @Query("select distinct m.organizeId from OrganizeMemberJpaEntity m where m.userId = :userId")
     List<Long> findOrganizeIdsByUserId(@Param("userId") Long userId);
 
     /** Counts owners without loading the rows, matching the MyBatis count query. */

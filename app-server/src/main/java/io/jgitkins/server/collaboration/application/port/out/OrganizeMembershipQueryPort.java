@@ -11,13 +11,10 @@ public interface OrganizeMembershipQueryPort {
     /**
      * Every organization the user belongs to, by id.
      *
-     * <p>Exists because {@code repository} needs it to build a visibility filter, and
-     * {@code ORGANIZE_MEMBER} belongs to this context. Task 2.72 faced the same need and chose
-     * between two options -- duplicate the {@code ORGANIZE_MEMBER} mapping inside {@code repository},
-     * or let {@code repository} read this table through this context's mapper -- and took the second,
-     * recording the choice on {@code OrganizeMemberJpaRepository#findAllByUserId} as keeping "the
-     * coupling where it already was". This method is the third option: the question is answered by
-     * the context that owns the table, and the caller learns ids and nothing else.
+     * <p>Exists because {@code repository} needs it to build a visibility filter and
+     * {@code ORGANIZE_MEMBER} belongs to this context. Task 2.72 let {@code repository} read this
+     * table through this context's mapper instead; the question is answered here now, and the caller
+     * learns ids and nothing else.
      *
      * <p>Ids, not memberships. The caller filters repositories by owner and has no business with a
      * role, a join date, or a membership entity whose invariants this context enforces.

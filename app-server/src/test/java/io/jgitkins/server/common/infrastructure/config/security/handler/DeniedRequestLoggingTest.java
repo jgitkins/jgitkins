@@ -107,7 +107,12 @@ class DeniedRequestLoggingTest {
         accessDenied.handle(get("POST", "/api/runners"), new MockHttpServletResponse(),
                 new AccessDeniedException("Access Denied"));
 
-        assertThat(only(forbidden).getFormattedMessage())
+        ILoggingEvent event = only(forbidden);
+        assertThat(event.getLevel())
+                .as("the 403 line needs the same level guard as the 401 one -- it is the rarer and more "
+                        + "informative of the two, so its disappearance would be the less noticed")
+                .isEqualTo(Level.WARN);
+        assertThat(event.getFormattedMessage())
                 .as("a 403 means a real user was refused, and which user is the point of the line")
                 .contains("POST")
                 .contains("/api/runners")
@@ -154,6 +159,28 @@ class DeniedRequestLoggingTest {
         assertThat(only(unauthorized).getFormattedMessage())
                 .as("callers put credentials in query strings, and this line is meant to be safe at WARN")
                 .doesNotContain("SECRET");
+    }
+
+    @Test
+    void anEmptySecurityContextReadsAsNoRequesterRatherThanBlankOrNull() throws Exception {
+        SecurityContextHolder.clearContext();
+
+        entryPoint.commence(get("GET", "/api/users"), new MockHttpServletResponse(), null);
+
+        assertThat(only(unauthorized).getFormattedMessage())
+                .as("no credential and no anonymous token is its own diagnosis, distinct from anonymous")
+                .contains("requester=none");
+    }
+
+    @Test
+    void aVeryLongPathIsTruncatedRatherThanFillingTheLine() throws Exception {
+        entryPoint.commence(get("GET", "/api/" + "x".repeat(4000)), new MockHttpServletResponse(), null);
+
+        String message = only(unauthorized).getFormattedMessage();
+        assertThat(message)
+                .as("the path is caller input, so one request must not be able to fill a log line")
+                .contains("...")
+                .hasSizeLessThan(400);
     }
 
     @Test

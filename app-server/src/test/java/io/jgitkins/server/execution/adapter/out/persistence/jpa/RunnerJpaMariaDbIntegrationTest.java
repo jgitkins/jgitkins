@@ -133,7 +133,7 @@ class RunnerJpaMariaDbIntegrationTest {
     }
 
     @Test
-    void scopeUpdateTakesEffectUnderBothProviders() {
+    void scopeUpdateTakesEffect() {
         LocalDateTime now = LocalDateTime.now().withNano(0);
 
         Runner created = transactions.execute(status -> adapter.save(Runner.restore(
