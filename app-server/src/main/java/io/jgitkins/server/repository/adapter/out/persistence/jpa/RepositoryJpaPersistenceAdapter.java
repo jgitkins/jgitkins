@@ -291,7 +291,10 @@ public class RepositoryJpaPersistenceAdapter implements RepositoryPersistence {
         return Repository.rehydrate(
                 RepositoryId.of(entity.getId()),
                 OwnerType.from(entity.getOwnerType()),
-                entity.getOwnerId() != null ? RepositoryOwnerId.of(entity.getOwnerId()) : null,
+                entity.getOwnerId() != null
+                        ? RepositoryOwnerId.fromStoredValue(
+                                entity.getOwnerId(), "REPOSITORY id=" + entity.getId())
+                        : null,
                 RepositoryName.from(entity.getName()),
                 RepositoryPath.from(entity.getPath()),
                 BranchName.of(entity.getDefaultBranch()),

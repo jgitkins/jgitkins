@@ -34,7 +34,9 @@ public interface RepositoryDomainMapper {
 
     default Repository toDomain(RepositoryEntity entity) {
         OwnerType ownerType = OwnerType.from(entity.getOwnerType());
-        RepositoryOwnerId ownerId = entity.getOwnerId() != null ? RepositoryOwnerId.of(entity.getOwnerId()) : null;
+        RepositoryOwnerId ownerId = entity.getOwnerId() != null
+                ? RepositoryOwnerId.fromStoredValue(entity.getOwnerId(), "REPOSITORY id=" + entity.getId())
+                : null;
         return Repository.rehydrate(
                 RepositoryId.of(entity.getId()),
                 ownerType,
