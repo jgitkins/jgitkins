@@ -44,6 +44,35 @@ class InfrastructureAllowlistArchitectureTest {
                     + "is a separate decision about where filesystem access belongs and is deliberately "
                     + "not made by this task"));
 
+    /**
+     * {@code common} was outside this scan entirely, which is how {@code
+     * common/infrastructure/event/SpringDomainEventPublisher} -- a second, divergent copy of an
+     * out-port implementation that no one injected -- was able to sit there unnoticed. It is not a
+     * bounded context, so it gets its own allowlist rather than widening the one above and
+     * weakening the rule for the five contexts that ARE bounded.
+     */
+    private static final Map<String, String> COMMON_ALLOWED_LEAVES = new LinkedHashMap<>(Map.of(
+            "config",
+            "composition roots and Spring configuration -- same reason as the bounded contexts",
+            "adapter",
+            "EXCEPTION: the documented push-event bridge. The exact file is pinned by "
+                    + "InfrastructureOwnershipArchitectureTest.DOCUMENTED_COMMON_ADAPTERS, so this leaf "
+                    + "cannot quietly grow a second adapter",
+            "error",
+            "InfrastructureErrorCode and InfrastructureProblemSpec are the cross-context error "
+                    + "vocabulary the presentation advice maps onto. They belong to no single context",
+            "exception",
+            "InfrastructureException and its subtypes are the technical failure vocabulary shared by "
+                    + "the git and filesystem adapters of several contexts"));
+
+    /** Every root this gate walks. {@code common} is scanned but judged by its own allowlist. */
+    private static final List<String> SCANNED_ROOTS =
+            Stream.concat(BOUNDED_CONTEXTS.stream(), Stream.of("common")).toList();
+
+    private static Map<String, String> allowedLeavesFor(String root) {
+        return "common".equals(root) ? COMMON_ALLOWED_LEAVES : ALLOWED_LEAVES;
+    }
+
     /** Types that must never appear under {@code infrastructure} again, with what each one signals. */
     private static final Map<String, String> FORBIDDEN_SUFFIXES = new LinkedHashMap<>(Map.of(
             "MbgMapper.java", "a MyBatis mapper interface belongs to the outbound persistence adapter",
@@ -59,11 +88,12 @@ class InfrastructureAllowlistArchitectureTest {
     void infrastructureRetainsOnlyConfigurationDatasourceTransactionAndMigration() throws IOException {
         Map<String, List<String>> unexpectedLeaves = new LinkedHashMap<>();
 
-        for (String context : BOUNDED_CONTEXTS) {
+        for (String context : SCANNED_ROOTS) {
             Path infrastructure = SERVER_ROOT.resolve(context).resolve("infrastructure");
             if (!Files.isDirectory(infrastructure)) {
                 continue;
             }
+            Map<String, String> allowedLeaves = allowedLeavesFor(context);
             List<String> offending = new ArrayList<>();
             try (Stream<Path> children = Files.list(infrastructure)) {
                 for (Path child : children.sorted().toList()) {
@@ -72,7 +102,7 @@ class InfrastructureAllowlistArchitectureTest {
                         continue;
                     }
                     String leaf = child.getFileName().toString();
-                    if (ALLOWED_LEAVES.containsKey(leaf)) {
+                    if (allowedLeaves.containsKey(leaf)) {
                         continue;
                     }
                     // An empty directory is residue, not ownership. It cannot hold a violation and git
@@ -90,10 +120,12 @@ class InfrastructureAllowlistArchitectureTest {
         }
 
         assertThat(unexpectedLeaves)
-                .as("these leaves are not on the infrastructure allowlist %s. A directory with no rule "
-                        + "accumulates whatever does not obviously belong elsewhere, which is how the "
-                        + "persistence models ended up under infrastructure in the first place. Widen "
-                        + "the allowlist with a reason, or move the code.", ALLOWED_LEAVES.keySet())
+                .as("these leaves are not on the infrastructure allowlist -- %s for a bounded context, "
+                        + "%s for common. A directory with no rule accumulates whatever does not "
+                        + "obviously belong elsewhere, which is how the persistence models ended up "
+                        + "under infrastructure in the first place, and how a duplicate event publisher "
+                        + "ended up under common/infrastructure. Widen the right allowlist with a "
+                        + "reason, or move the code.", ALLOWED_LEAVES.keySet(), COMMON_ALLOWED_LEAVES.keySet())
                 .isEmpty();
     }
 
@@ -101,7 +133,7 @@ class InfrastructureAllowlistArchitectureTest {
     void noPersistenceTechnologyTypeLivesUnderInfrastructureAgain() throws IOException {
         List<String> violations = new ArrayList<>();
 
-        for (String context : BOUNDED_CONTEXTS) {
+        for (String context : SCANNED_ROOTS) {
             Path infrastructure = SERVER_ROOT.resolve(context).resolve("infrastructure");
             if (!Files.isDirectory(infrastructure)) {
                 continue;
