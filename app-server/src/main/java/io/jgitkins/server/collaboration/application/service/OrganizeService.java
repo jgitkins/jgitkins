@@ -16,11 +16,13 @@ import io.jgitkins.server.collaboration.application.port.out.OrganizeOwnedReposi
 import io.jgitkins.server.collaboration.application.validate.OrganizeValidator;
 import io.jgitkins.server.collaboration.domain.aggregate.Organize;
 import io.jgitkins.server.collaboration.domain.entity.OrganizeMember;
+import io.jgitkins.server.collaboration.domain.vo.MemberUserId;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeMemberRole;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeId;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeName;
 import io.jgitkins.server.collaboration.domain.vo.OwnerId;
 import io.jgitkins.server.collaboration.domain.repository.OrganizeRepository;
+import io.jgitkins.server.shared.domain.event.DomainEvent;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -68,11 +70,11 @@ public class OrganizeService implements OrganizeCreationUseCase,
         Organize saved = organizeRepository.save(organize);
         organizeMemberPersistencePort.save(OrganizeMember.create(
                 saved.getId(),
-                io.jgitkins.server.collaboration.domain.vo.MemberUserId.of(ownerId),
+                MemberUserId.of(ownerId),
                 OrganizeMemberRole.OWNER,
                 LocalDateTime.now()));
         saved.recordCreated(Instant.now());
-        List<io.jgitkins.server.shared.domain.event.DomainEvent> events = List.copyOf(saved.getDomainEvents());
+        List<DomainEvent> events = List.copyOf(saved.getDomainEvents());
         domainEventPublisher.publish(events);
         saved.clearDomainEvents();
         return organizeApplicationMapper.toDto(saved);
