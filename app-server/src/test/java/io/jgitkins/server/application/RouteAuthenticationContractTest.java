@@ -17,7 +17,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
+import io.jgitkins.server.common.infrastructure.config.security.InfraRoutes;
 import io.jgitkins.server.common.infrastructure.config.security.PublicApiRoutes;
+import org.springframework.boot.actuate.endpoint.web.servlet.WebMvcEndpointHandlerMapping;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 /**
@@ -284,12 +286,15 @@ class RouteAuthenticationContractTest {
     void noPublicRouteRefusesAnAnonymousCaller() {
         List<String> refused = new ArrayList<>();
         for (String route : PUBLIC) {
-            if (route.startsWith("ANY ")) {
-                // Spring's error dispatch is not reachable as a normal request.
-                continue;
-            }
             int space = route.indexOf(' ');
-            HttpMethod method = HttpMethod.valueOf(route.substring(0, space));
+            // A method-less route is called with GET rather than skipped. Skipping is how /error --
+            // the one entry that has no method -- went declared-but-never-checked: BasicErrorController
+            // maps @RequestMapping("/error"), which is why it is in the inventory at all, so it is
+            // reachable as a normal request. If it ever answers 401 every error response in the
+            // application answers 401 with it.
+            HttpMethod method = route.startsWith("ANY ")
+                    ? HttpMethod.GET
+                    : HttpMethod.valueOf(route.substring(0, space));
             String uri = concreteUri(route.substring(space + 1));
 
             int status;
@@ -335,6 +340,98 @@ class RouteAuthenticationContractTest {
                 .replace("{branch}", "main")
                 .replace("{branchName}", "main")
                 .replace("{commitHash}", "0000000000000000000000000000000000000000");
+    }
+
+    /**
+     * The half of the security configuration this test could not see.
+     *
+     * <p>{@link #handlerMapping} enumerates controller mappings, and four of the five patterns the api
+     * chain used to permit are not controller mappings: {@code /actuator/prometheus},
+     * {@code /oauth2/**}, {@code /login/**} and {@code /swagger-ui/**}. They were the lines most
+     * likely to be wrong when the default flipped and the only ones nothing checked.
+     *
+     * <p>Actuator endpoints have their own mapping, so they can be classified the same way controller
+     * routes are. Injected by type on purpose: the bean is named
+     * {@code webEndpointServletHandlerMapping}, so a {@code @Qualifier} written from the class name
+     * fails with {@code NoSuchBeanDefinitionException}.
+     */
+    @Autowired
+    private WebMvcEndpointHandlerMapping actuatorHandlerMapping;
+
+    /** Actuator endpoints the infra chain opens. Everything else actuator exposes must need a login. */
+    private static final Set<String> PUBLIC_ACTUATOR = Set.of("/actuator/prometheus");
+
+    @Test
+    void everyActuatorEndpointIsClassified() {
+        Set<String> exposed = new TreeSet<>();
+        actuatorHandlerMapping.getHandlerMethods().forEach((info, method) -> exposed.addAll(patterns(info)));
+
+        Set<String> unclassified = new TreeSet<>(exposed);
+        unclassified.removeAll(PUBLIC_ACTUATOR);
+        unclassified.removeIf(pattern -> InfraRoutes.PATTERNS.contains(pattern));
+
+        List<String> served = new ArrayList<>();
+        for (String pattern : unclassified) {
+            // health/** is a family, not a path. Its parent is checked; the children answer the same
+            // way because the same chain rule decides them.
+            String uri = pattern.replace("/**", "");
+            int status = statusOf(HttpMethod.GET, uri);
+            if (status != 401 && status != 404) {
+                served.add(pattern + " -> " + status);
+            }
+        }
+
+        assertThat(served)
+                .as("management.endpoints.web.exposure.include is a list someone edits without "
+                        + "thinking about the security chain. An endpoint that is exposed and not on "
+                        + "PUBLIC_ACTUATOR must need a login; answering anything else means adding a "
+                        + "name to that property quietly published it")
+                .isEmpty();
+    }
+
+    /**
+     * Concrete URIs, written out here rather than derived from {@link InfraRoutes#PATTERNS}.
+     *
+     * <p>The first version of this test looped over {@code PATTERNS} and asserted each one was not
+     * refused. Deleting an entry from {@code PATTERNS} then deleted its own check, so the guard could
+     * not catch the failure it exists for -- confirmed by removing {@code /oauth2/**} and watching the
+     * suite stay green. A guard that iterates the list it validates validates nothing.
+     *
+     * <p>Each entry is a real request something makes: the authorization redirect app-web sends a
+     * browser to, the callback the provider redirects back to, the page the docs link opens, and the
+     * path a metrics scraper polls.
+     */
+    private static final List<String> INFRA_ENTRY_POINTS = List.of(
+            "/oauth2/authorization/google",
+            "/login/oauth2/code/google",
+            "/swagger-ui/index.html",
+            "/actuator/prometheus");
+
+    @Test
+    void theInfraChainDoesNotRefuseThePathsItOwns() {
+        List<String> refused = new ArrayList<>();
+        for (String uri : INFRA_ENTRY_POINTS) {
+            int status = statusOf(HttpMethod.GET, uri);
+            if (status == 401 || status == 403) {
+                refused.add(uri + " -> " + status);
+            }
+        }
+
+        assertThat(refused)
+                .as("these paths are on their own chain precisely because the api chain's default no "
+                        + "longer lets anything through. A 401 here means the infra chain does not "
+                        + "match a path it should own, and the OAuth login or the docs are "
+                        + "unreachable. A 404 is fine -- that is downstream of the chain")
+                .isEmpty();
+    }
+
+    private int statusOf(HttpMethod method, String uri) {
+        try {
+            return mockMvc.perform(MockMvcRequestBuilders.request(method, uri))
+                    .andReturn().getResponse().getStatus();
+        } catch (Exception e) {
+            return -1;
+        }
     }
 
     private Set<String> inventory() {
