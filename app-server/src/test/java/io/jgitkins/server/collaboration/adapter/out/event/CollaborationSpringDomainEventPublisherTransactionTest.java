@@ -3,6 +3,7 @@ package io.jgitkins.server.collaboration.adapter.out.event;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
@@ -12,14 +13,15 @@ import io.jgitkins.server.collaboration.domain.vo.OrganizeName;
 import io.jgitkins.server.collaboration.domain.vo.OwnerId;
 import io.jgitkins.server.shared.domain.event.DomainEvent;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
 public class CollaborationSpringDomainEventPublisherTransactionTest {
@@ -28,6 +30,19 @@ public class CollaborationSpringDomainEventPublisherTransactionTest {
     private JdbcTemplate jdbcTemplate;
     private TransactionTemplate transactionTemplate;
     private DomainEvent event;
+    private DomainEvent otherEvent;
+
+    private static DomainEvent eventFor(long organizeId, String name) {
+        return Organize.create(
+                        OrganizeId.of(organizeId),
+                        OrganizeName.from(name),
+                        OwnerId.of(7L),
+                        "Core Team",
+                        LocalDateTime.of(2026, 8, 14, 9, 0),
+                        Instant.parse("2026-08-14T00:00:00Z"))
+                .getDomainEvents()
+                .get(0);
+    }
 
     @BeforeEach
     void setUp() {
@@ -38,15 +53,9 @@ public class CollaborationSpringDomainEventPublisherTransactionTest {
         jdbcTemplate = new JdbcTemplate(dataSource);
         jdbcTemplate.execute("create table organize_test (id bigint primary key)");
         transactionTemplate = new TransactionTemplate(new DataSourceTransactionManager(dataSource));
-        applicationEventPublisher = org.mockito.Mockito.mock(ApplicationEventPublisher.class);
-        event = Organize.create(
-                OrganizeId.of(10L),
-                OrganizeName.from("core-team"),
-                OwnerId.of(7L),
-                "Core Team",
-                java.time.LocalDateTime.of(2026, 8, 14, 9, 0),
-                Instant.parse("2026-08-14T00:00:00Z"))
-                .getDomainEvents().get(0);
+        applicationEventPublisher = mock(ApplicationEventPublisher.class);
+        event = eventFor(10L, "core-team");
+        otherEvent = eventFor(11L, "platform-team");
     }
 
     @Test
@@ -94,6 +103,28 @@ public class CollaborationSpringDomainEventPublisherTransactionTest {
             return null;
         }));
 
+        assertEquals(1, jdbcTemplate.queryForObject("select count(*) from organize_test", Integer.class));
+    }
+
+    /**
+     * Delivery is isolated per event. The commit already happened, so one listener blowing up
+     * must not decide whether the events queued behind it are ever seen.
+     */
+    @Test
+    void publish_deliversRemainingEventsWhenAnEarlierOneFails() {
+        CollaborationSpringDomainEventPublisher publisher =
+                new CollaborationSpringDomainEventPublisher(applicationEventPublisher);
+        doThrow(new IllegalStateException("listener failed"))
+                .when(applicationEventPublisher).publishEvent(event);
+
+        assertDoesNotThrow(() -> transactionTemplate.execute(status -> {
+            jdbcTemplate.update("insert into organize_test(id) values (1)");
+            publisher.publish(List.of(event, otherEvent));
+            return null;
+        }));
+
+        verify(applicationEventPublisher).publishEvent(event);
+        verify(applicationEventPublisher).publishEvent(otherEvent);
         assertEquals(1, jdbcTemplate.queryForObject("select count(*) from organize_test", Integer.class));
     }
 }
