@@ -87,14 +87,28 @@ class OAuth2SessionPrincipalResolutionTest {
         }
     }
 
+    /**
+     * The claim in this class's name, now stated directly.
+     *
+     * <p>An {@code OAuth2AuthenticationToken} reports itself authenticated, so before task 2.133 the
+     * only way to show it did not count was indirect: the route answered 200 with a null requester.
+     * With the api chain defaulting to {@code authenticated()} the same session gets a 401, which is
+     * the assertion this test always wanted to make.
+     *
+     * <p>What produces the 401 is {@code JwtAuthenticationFilter} clearing the context on a request
+     * with no Bearer header. That is the boundary worth pinning: app-web holds the OAuth session,
+     * app-server accepts the JWT it exchanges that session for, and a session presented directly to
+     * app-server authenticates nothing.
+     */
     @Test
     void oauthSessionCallerIsTreatedAsUnauthenticatedWhereNoTableIsNeeded() throws Exception {
         OAuth2AuthenticationToken session = oauthSession();
         for (String route : SCHEMA_FREE_ROUTES) {
             MvcResult result = mockMvc.perform(get(route).with(authentication(session))).andReturn();
             assertThat(result.getResponse().getStatus())
-                    .as("an OAuth-session caller without a Bearer token reads %s as anonymous", route)
-                    .isEqualTo(200);
+                    .as("an OAuth-session caller without a Bearer token must not authenticate against "
+                            + "%s -- JwtAuthenticationFilter clears the context and the chain refuses", route)
+                    .isEqualTo(401);
         }
     }
 

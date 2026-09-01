@@ -158,7 +158,11 @@ class RouteAuthenticationContractTest {
             "POST /api/runners/activate");
 
     /** Writes that legitimately precede authentication. Any other write on PUBLIC is a defect. */
-    private static final Set<String> PUBLIC_WRITES_ALLOWED = Set.of("POST /api/auth/oauth/login");
+    private static final Set<String> PUBLIC_WRITES_ALLOWED = Set.of(
+            "POST /api/auth/oauth/login",
+            // A runner presents its own token in the body. It cannot hold a JWT, so requiring one
+            // would mean no runner ever comes online. Same reason as the OAuth login above.
+            "POST /api/runners/activate");
 
     /**
      * A ceiling on how much of the API may be public.
@@ -172,7 +176,7 @@ class RouteAuthenticationContractTest {
      * assertion only bites once the slack runs out, and by then four routes went public without
      * anyone deciding they should.
      */
-    private static final int PUBLIC_CEILING = 14;
+    private static final int PUBLIC_CEILING = 15;
 
     @Autowired
     @Qualifier("requestMappingHandlerMapping")
@@ -238,6 +242,54 @@ class RouteAuthenticationContractTest {
                 .as("PUBLIC has grown past its ceiling. Raising PUBLIC_CEILING is fine when the "
                         + "growth is real; doing it without noticing is how this test stops testing")
                 .hasSizeLessThanOrEqualTo(PUBLIC_CEILING);
+    }
+
+    /**
+     * The assertion the flip exists to make possible.
+     *
+     * <p>Every route that is not declared public must refuse an anonymous caller, and it must refuse
+     * it <em>before the handler runs</em>. 401 is the chain saying no. 404 is a route that resolves
+     * the resource first and hides its existence, which is also a refusal.
+     *
+     * <p><strong>500 is the interesting part.</strong> This context runs on a schema-less H2, so a
+     * request that gets past the chain dies on a missing table -- measured: 9 of the 13 reachable
+     * PUBLIC routes answer 500 here. "Not 500" is therefore evidence the request never reached the
+     * domain, which is a stronger statement than the status code alone. A protected route that
+     * answers 500 to an anonymous caller is a protected route the chain let through.
+     */
+    @Test
+    void everyProtectedRouteRefusesAnAnonymousCallerBeforeTheHandlerRuns() {
+        Set<String> declaredProtected = new TreeSet<>(PROTECTED);
+        declaredProtected.addAll(RUNNER_DEFERRED);
+        declaredProtected.removeAll(PUBLIC);
+
+        List<String> leaked = new ArrayList<>();
+        for (String route : declaredProtected) {
+            int space = route.indexOf(' ');
+            HttpMethod method = route.startsWith("ANY ")
+                    ? HttpMethod.GET
+                    : HttpMethod.valueOf(route.substring(0, space));
+            String uri = concreteUri(route.substring(space + 1));
+
+            int status;
+            try {
+                status = mockMvc.perform(MockMvcRequestBuilders.request(method, uri))
+                        .andReturn().getResponse().getStatus();
+            } catch (Exception e) {
+                leaked.add(route + " -> threw " + e.getClass().getSimpleName());
+                continue;
+            }
+            if (status != 401 && status != 404) {
+                leaked.add(route + " -> " + status);
+            }
+        }
+
+        assertThat(leaked)
+                .as("a protected route answered an anonymous caller with something other than 401 or "
+                        + "404. A 500 means the request reached the domain, so the chain did not "
+                        + "refuse it; a 200 or 400 means it was served or validated. Either way the "
+                        + "route is not protected, whatever this file declares")
+                .isEmpty();
     }
 
     @Test

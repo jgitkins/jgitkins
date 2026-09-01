@@ -105,23 +105,29 @@ public class SecurityConfig {
         // No securityMatcher: this is the catch-all, and it must stay last.
         http.authorizeHttpRequests(auth -> auth
                 .requestMatchers(PublicApiRoutes.matchers()).permitAll()
-                .anyRequest().permitAll());
-        // Anonymous is disabled, and the reason it was disabled has since been removed.
+                .anyRequest().authenticated());
+        // Anonymous is on because authorizeHttpRequests needs it. Without the anonymous token there
+        // is no Authentication object on an unauthenticated request, and the rules above cannot tell
+        // "nobody is logged in" from "this route is open to everyone".
         //
-        // AnonymousAuthenticationFilter sets the principal to the String "anonymousUser". The routes
-        // that read a requester used @AuthenticationPrincipal(expression = "username"), which SpEL
-        // evaluated against that String unguarded, so every anonymous-allowed read answered 500 with
-        // SpelEvaluationException EL1008E. Task 2.88 deleted the expression: @CurrentUser carries no
-        // expression, and AuthenticationPrincipalArgumentResolver returns null for a principal that is
-        // not an AuthenticatedUser. So that failure class no longer exists.
+        // It was off for a real reason that has since been removed. AnonymousAuthenticationFilter
+        // sets the principal to the String "anonymousUser"; the routes that read a requester used
+        // @AuthenticationPrincipal(expression = "username"), and SpEL evaluated that expression
+        // against the String unguarded, so every anonymous-allowed read answered 500 with
+        // SpelEvaluationException EL1008E. Task 2.88 (8fc4ad0) deleted the expression -- @CurrentUser
+        // carries none, and AuthenticationPrincipalArgumentResolver returns null for a principal that
+        // is not an AuthenticatedUser.
         //
-        // It stays off only because nothing on this chain needs it while every rule here is permitAll
-        // and authorization is decided in the controllers. Task 2.133 turns it back on as part of
-        // flipping the default to authenticated() -- authorizeHttpRequests cannot distinguish
-        // anonymous from unauthenticated without the anonymous token. Whoever does that should know
-        // the EL1008E blocker is already gone and check the getName consumers under an anonymous
-        // token rather than re-deriving this from the comment that used to stand here.
-        http.anonymous(anonymous -> anonymous.disable());
+        // The two consumers that parse Authentication#getName() were checked against the anonymous
+        // token before turning this back on, because null-vs-throw is the whole question here:
+        //   CurrentUserSecurityAdapter:20   Long.valueOf("anonymousUser") -> NumberFormatException,
+        //                                   caught, Optional.empty(). Safe.
+        //   PushEventRequestAdapter:37-46   parseUserId catches the same exception. Safe, but it
+        //                                   logs a WARN and then :29 retries via getRemoteUser() and
+        //                                   logs another. Two warn lines per anonymous request on
+        //                                   that path -- noisy, not broken. If the log volume
+        //                                   matters, skip the warn when the name is "anonymousUser".
+        http.anonymous(Customizer.withDefaults());
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         http.exceptionHandling(ex -> ex
                 .authenticationEntryPoint(apiAnauthorizeHandler)

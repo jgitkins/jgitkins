@@ -30,6 +30,24 @@ import org.springframework.test.web.servlet.MvcResult;
  * <p>The assertion is deliberately about argument resolution rather than about status codes: the test
  * context runs on an empty H2, so the data-dependent routes still answer 500 from a missing table. That
  * is environmental. What must never come back is a failure that happens before the controller is called.
+ *
+ * <h2>Retargeted when the default flipped</h2>
+ *
+ * <p>The original list was the {@code orElse(null)} requester sites, most of which are protected. Task
+ * 2.133 made the api chain refuse an anonymous caller on those before the handler runs, so asking them
+ * about argument resolution stopped asking anything -- the resolver is never reached, and the test
+ * would have gone quietly vacuous rather than red.
+ *
+ * <p>The list is now the public routes that read a requester, which are the only places an anonymous
+ * caller still reaches {@code @CurrentUser} at all. That is a smaller surface than before and it is the
+ * whole of the surface that remains: the fix under test only has somewhere to fail where the chain
+ * lets an anonymous request through.
+ *
+ * <p>The companion assertion that an anonymous caller gets a 200 where no table is needed is gone. Both
+ * routes it used ({@code /api/organizes/me}, {@code /api/internal/organizes}) are protected now, and no
+ * public route is both schema-free and requester-reading. "The chain does not refuse a public route" is
+ * asserted by {@code RouteAuthenticationContractTest#noPublicRouteRefusesAnAnonymousCaller}, over the
+ * full public list rather than two entries.
  */
 // The gRPC server autoconfigurations are excluded, matching OutboundAdapterSpringContextTest.
 // @AutoConfigureMockMvc gives this class its own context cache key, so a second application context
@@ -49,21 +67,16 @@ import org.springframework.test.web.servlet.MvcResult;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 class AnonymousPrincipalResolutionTest {
 
-    /** Reads whose contract allows an anonymous caller — the {@code orElse(null)} requester sites. */
+    /**
+     * Public routes that read a requester — where an anonymous caller still reaches
+     * {@code @CurrentUser}, and so the only places the defect under test could return.
+     */
     private static final List<String> ANONYMOUS_ALLOWED_READS = List.of(
-            "/api/organizes/me",
+            "/api/organizes",
             "/api/repositories",
-            "/api/repositories/1",
-            "/api/repositories/users/someone",
             "/api/repositories/1/overview",
-            "/api/internal/organizes",
-            "/api/internal/repositories/users/someone",
+            "/api/organizes/1/members",
             "/api/internal/repositories/ns/repo/overview");
-
-    /** Routes among the above that need no table, so anonymous access is observable end to end. */
-    private static final List<String> SCHEMA_FREE_READS = List.of(
-            "/api/organizes/me",
-            "/api/internal/organizes");
 
     @Autowired
     private MockMvc mockMvc;
@@ -79,12 +92,15 @@ class AnonymousPrincipalResolutionTest {
     }
 
     @Test
-    void anonymousCallerGetsASuccessfulResponseWhereNoTableIsNeeded() throws Exception {
-        for (String route : SCHEMA_FREE_READS) {
-            MvcResult result = mockMvc.perform(get(route)).andReturn();
-            assertThat(result.getResponse().getStatus())
-                    .as("anonymous read %s", route)
-                    .isEqualTo(200);
+    void anonymousCallerReachesTheHandlerOnAPublicRoute() throws Exception {
+        // Not a duplicate of the contract test's public-route check: that one asserts the chain does
+        // not refuse. This one asserts the request got past argument resolution too, which on an empty
+        // H2 shows up as the domain's own failure rather than a 401 or a resolver exception.
+        for (String route : ANONYMOUS_ALLOWED_READS) {
+            int status = mockMvc.perform(get(route)).andReturn().getResponse().getStatus();
+            assertThat(status)
+                    .as("anonymous read %s must reach the handler, not be refused by the chain", route)
+                    .isNotIn(401, 403);
         }
     }
 

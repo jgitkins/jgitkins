@@ -4,16 +4,21 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
+import io.jgitkins.server.identity.access.application.port.out.TokenIssuerPort;
 import java.util.List;
 import java.util.Map;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.http.HttpHeaders;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 /**
  * Proves the boundary constraints added by task 2.94 actually reject, against the real filter chain
@@ -27,6 +32,25 @@ import org.springframework.test.web.servlet.MvcResult;
  * <p>Asserted as "not 500" rather than "exactly 400" for the routes whose handlers need data: this
  * context runs on an empty H2, so a request that gets past validation fails on a missing table. The
  * distinction that matters is whether the request was refused at the boundary or reached the domain.
+ *
+ * <h2>Why every request here carries a Bearer token</h2>
+ *
+ * <p>Task 2.133 flipped the api chain's default to {@code authenticated()}. On a protected route the
+ * chain now answers 401 <em>before</em> the validator runs, so an unauthenticated request can no
+ * longer observe boundary validation at all -- these tests all went red with 401 the moment the
+ * default flipped, not because validation broke but because they never reached it.
+ *
+ * <p>That ordering is correct and worth stating: on a protected route, 401 pre-empts 400, 404 and
+ * 405. An anonymous caller does not get to learn which of its other mistakes the server would have
+ * objected to, or whether the path it typed exists. The boundary guarantees this class protects are
+ * therefore guarantees for <em>authenticated</em> callers, which is what the token below makes
+ * observable.
+ *
+ * <p>The token is issued through {@code TokenIssuerPort} and presented as a real
+ * {@code Authorization: Bearer} header, so {@code JwtAuthenticationFilter} runs for real.
+ * Putting an {@code Authentication} straight into {@code SecurityContextHolder} would not work here:
+ * this class runs the real filter chain, and {@code SecurityContextHolderFilter} replaces the context
+ * at the start of every request. {@code /api/auth/oauth/login} is public and ignores the header.
  */
 @SpringBootTest(properties = {
         "spring.autoconfigure.exclude="
@@ -74,10 +98,28 @@ class BoundaryValidationTest {
                     "field", "idToken"));
 
     @Autowired
-    private MockMvc mockMvc;
+    private WebApplicationContext context;
 
     @Autowired
-    private io.jgitkins.server.identity.access.application.port.out.TokenIssuerPort tokenIssuerPort;
+    private TokenIssuerPort tokenIssuerPort;
+
+    private MockMvc mockMvc;
+
+    /**
+     * Built here rather than injected so every request carries the Bearer token by default.
+     *
+     * <p>{@code defaultRequest} only supplies headers the individual request has not already set, so
+     * the one test that issues its own token keeps it and nothing is sent twice.
+     */
+    @BeforeEach
+    void authenticateEveryRequest() {
+        String token = tokenIssuerPort.issueToken(1L, List.of("ROLE_USER"));
+        mockMvc = MockMvcBuilders.webAppContextSetup(context)
+                .apply(org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers
+                        .springSecurity())
+                .defaultRequest(get("/").header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
+                .build();
+    }
 
     @Test
     void everyConstrainedFieldIsRefusedAtTheBoundary() throws Exception {

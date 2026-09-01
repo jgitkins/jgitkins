@@ -55,6 +55,11 @@ public final class PublicApiRoutes {
     public static final List<Route> ROUTES = List.of(
             // Authenticating. The caller has no token yet, so these cannot require one.
             new Route(HttpMethod.POST, "/api/auth/oauth/login"),
+            // A runner authenticates with the token in its own request body -- it can never hold a
+            // JWT. Same class as the OAuth login above, and app-runner's only call to app-server
+            // (EndpointPaths:9). Public from the same commit that flips the default, so the flip
+            // never locks a runner out of the endpoint it needs to come online.
+            new Route(HttpMethod.POST, "/api/runners/activate"),
 
             // /explore, logged out.
             new Route(HttpMethod.GET, "/api/organizes"),
