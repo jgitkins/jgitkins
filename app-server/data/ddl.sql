@@ -227,7 +227,8 @@ CREATE TABLE `RUNNER_ASSIGNMENT` (
   `TARGET_TYPE` varchar(32) NOT NULL,
   `TARGET_ID` bigint(20) DEFAULT NULL,
   `ASSIGNED_AT` timestamp NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`ID`)
+  PRIMARY KEY (`ID`),
+  KEY `IX_RUNNER_ASSIGNMENT_RUNNER` (`RUNNER_ID`,`ASSIGNED_AT`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
