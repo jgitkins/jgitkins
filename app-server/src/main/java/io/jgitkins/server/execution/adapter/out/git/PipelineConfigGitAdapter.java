@@ -6,6 +6,7 @@ import io.jgitkins.server.execution.application.port.out.PipelineConfigPort;
 import io.jgitkins.server.common.infrastructure.exception.FileLoadFailedException;
 import io.jgitkins.server.common.infrastructure.exception.InfrastructureException;
 import io.jgitkins.server.repository.infrastructure.support.RepositoryResolver;
+import lombok.RequiredArgsConstructor;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -21,16 +22,15 @@ import org.springframework.stereotype.Component;
 import org.yaml.snakeyaml.Yaml;
 
 @Component
+@RequiredArgsConstructor
 public class PipelineConfigGitAdapter implements PipelineConfigPort {
 
     private static final String CONFIG_PATH = ".jgitkins/ci.yml";
 
     private final RepositoryResolver repositoryResolver;
+    // Initialized here, so @RequiredArgsConstructor leaves it out of the generated constructor --
+    // Lombok takes only final fields that are not assigned at their declaration.
     private final Yaml yaml = new Yaml();
-
-    public PipelineConfigGitAdapter(RepositoryResolver repositoryResolver) {
-        this.repositoryResolver = repositoryResolver;
-    }
 
     @Override
     public PipelineConfig read(String namespace, String repoName, String commitHash) {

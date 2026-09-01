@@ -1,7 +1,9 @@
 package io.jgitkins.server.common.infrastructure.error;
 
 import io.jgitkins.core.common.problem.ProblemSpec;
+import lombok.Getter;
 
+@Getter
 public enum InfrastructureProblemSpec implements ProblemSpec<InfrastructureErrorCode> {
     BRANCH_CREATE_FAILED(InfrastructureErrorCode.JGIT_OPERATION_FAILED, "JGIT-500-BRANCH-CREATE", "Branch creation failed", "jgit.branchCreateFailed"),
     BRANCH_DELETE_FAILED(InfrastructureErrorCode.JGIT_OPERATION_FAILED, "JGIT-500-BRANCH-DELETE", "Branch deletion failed", "jgit.branchDeleteFailed"),
@@ -29,23 +31,4 @@ public enum InfrastructureProblemSpec implements ProblemSpec<InfrastructureError
         this.messageKey = messageKey;
     }
 
-    @Override
-    public InfrastructureErrorCode getErrorCode() {
-        return errorCode;
-    }
-
-    @Override
-    public String getCode() {
-        return code;
-    }
-
-    @Override
-    public String getDefaultMessage() {
-        return defaultMessage;
-    }
-
-    @Override
-    public String getMessageKey() {
-        return messageKey;
-    }
 }

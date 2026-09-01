@@ -1,7 +1,9 @@
 package io.jgitkins.server.shared.application.error;
 
 import io.jgitkins.core.common.problem.ProblemSpec;
+import lombok.Getter;
 
+@Getter
 public enum ApplicationProblemSpec implements ProblemSpec<ApplicationErrorCode> {
     UNAUTHENTICATED(ApplicationErrorCode.UNAUTHENTICATED, "AUTH-001", "Authentication required", "auth.required"),
     /**
@@ -56,23 +58,4 @@ public enum ApplicationProblemSpec implements ProblemSpec<ApplicationErrorCode> 
         this.messageKey = messageKey;
     }
 
-    @Override
-    public ApplicationErrorCode getErrorCode() {
-        return errorCode;
-    }
-
-    @Override
-    public String getCode() {
-        return code;
-    }
-
-    @Override
-    public String getDefaultMessage() {
-        return defaultMessage;
-    }
-
-    @Override
-    public String getMessageKey() {
-        return messageKey;
-    }
 }

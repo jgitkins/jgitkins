@@ -1,7 +1,9 @@
 package io.jgitkins.server.common.presentation.error;
 
 import io.jgitkins.core.common.problem.ProblemSpec;
+import lombok.Getter;
 
+@Getter
 public enum PresentationProblemSpec implements ProblemSpec<PresentationErrorCode> {
     UNAUTHORIZED(PresentationErrorCode.UNAUTHORIZED, "REQ-401", "Unauthorized", "request.unauthorized"),
     NOT_FOUND(PresentationErrorCode.NOT_FOUND, "REQ-404", "Resource not found", "request.notFound"),
@@ -21,23 +23,4 @@ public enum PresentationProblemSpec implements ProblemSpec<PresentationErrorCode
         this.messageKey = messageKey;
     }
 
-    @Override
-    public PresentationErrorCode getErrorCode() {
-        return errorCode;
-    }
-
-    @Override
-    public String getCode() {
-        return code;
-    }
-
-    @Override
-    public String getDefaultMessage() {
-        return defaultMessage;
-    }
-
-    @Override
-    public String getMessageKey() {
-        return messageKey;
-    }
 }

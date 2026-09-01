@@ -1,5 +1,8 @@
 package io.jgitkins.server.repository.application.port.out.exception;
 
+import lombok.Getter;
+
+@Getter
 public class GitSourceBranchRefMissingException extends GitPortException {
 
     private final String branchName;
@@ -14,7 +17,4 @@ public class GitSourceBranchRefMissingException extends GitPortException {
         this.branchName = branchName;
     }
 
-    public String getBranchName() {
-        return branchName;
-    }
 }

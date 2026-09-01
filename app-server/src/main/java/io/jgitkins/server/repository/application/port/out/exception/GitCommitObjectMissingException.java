@@ -1,5 +1,8 @@
 package io.jgitkins.server.repository.application.port.out.exception;
 
+import lombok.Getter;
+
+@Getter
 public class GitCommitObjectMissingException extends GitPortException {
 
     private final String commitHash;
@@ -14,7 +17,4 @@ public class GitCommitObjectMissingException extends GitPortException {
         this.commitHash = commitHash;
     }
 
-    public String getCommitHash() {
-        return commitHash;
-    }
 }

@@ -1,7 +1,9 @@
 package io.jgitkins.server.shared.application.error;
 
 import io.jgitkins.core.common.error.ErrorCode;
+import lombok.Getter;
 
+@Getter
 public enum ApplicationErrorCode implements ErrorCode {
     UNAUTHENTICATED("UNAUTHENTICATED", "Authentication required"),
     ACCESS_DENIED("ACCESS_DENIED", "Access denied"),
@@ -26,13 +28,4 @@ public enum ApplicationErrorCode implements ErrorCode {
         this.defaultMessage = defaultMessage;
     }
 
-    @Override
-    public String getCode() {
-        return code;
-    }
-
-    @Override
-    public String getDefaultMessage() {
-        return defaultMessage;
-    }
 }

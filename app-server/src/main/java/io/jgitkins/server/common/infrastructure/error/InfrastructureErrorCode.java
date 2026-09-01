@@ -1,7 +1,9 @@
 package io.jgitkins.server.common.infrastructure.error;
 
 import io.jgitkins.core.common.error.ErrorCode;
+import lombok.Getter;
 
+@Getter
 public enum InfrastructureErrorCode implements ErrorCode {
     INTERNAL_ERROR("INTERNAL_ERROR", "Infrastructure internal error"),
     PERSISTENCE_OPERATION_FAILED("PERSISTENCE_OPERATION_FAILED", "Persistence operation failed"),
@@ -16,13 +18,4 @@ public enum InfrastructureErrorCode implements ErrorCode {
         this.defaultMessage = defaultMessage;
     }
 
-    @Override
-    public String getCode() {
-        return code;
-    }
-
-    @Override
-    public String getDefaultMessage() {
-        return defaultMessage;
-    }
 }
