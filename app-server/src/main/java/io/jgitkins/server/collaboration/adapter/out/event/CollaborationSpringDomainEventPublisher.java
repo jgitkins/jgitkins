@@ -4,8 +4,7 @@ import io.jgitkins.server.collaboration.application.port.out.DomainEventPublishe
 import io.jgitkins.server.shared.domain.event.DomainEvent;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.support.TransactionSynchronization;
@@ -38,11 +37,11 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
  * <p>Each call registers its own synchronization. Do not call this in a loop inside one
  * transaction; see the deferred-deletion note in TODOS.md.
  */
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class CollaborationSpringDomainEventPublisher implements DomainEventPublisher {
 
-    private static final Logger log = LoggerFactory.getLogger(CollaborationSpringDomainEventPublisher.class);
     private final ApplicationEventPublisher applicationEventPublisher;
 
     @Override
