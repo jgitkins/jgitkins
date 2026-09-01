@@ -420,13 +420,32 @@ class ArchitecturePackageConventionTest {
         assertEquals(1, Files.readAllLines(fixture).stream()
                 .filter(line -> line.contains("import io.jgitkins.server.collaboration.domain.aggregate.Organize;")).count());
     }
+    /**
+     * The legacy package is gone, and this test now says so instead of scanning for it.
+     *
+     * <p>It used to assert that {@code repository/infrastructure} imports nothing from
+     * {@code io.jgitkins.server.infrastructure.persistence.*}. That package no longer exists --
+     * collaboration's persistence moved to {@code collaboration.adapter.out.persistence.*} -- so the
+     * assertion was scanning for a string that cannot appear, and it reported a clean tree while
+     * {@code RepositoryPersistenceSelectorConfiguration} accumulated six foreign persistence imports
+     * under the very root it was watching. A guard whose subject was renamed out from under it cannot
+     * tell a clean tree from an empty one.
+     *
+     * <p>What it was for is now enforced against the packages that actually exist, by
+     * {@code CrossContextPersistenceCouplingArchitectureTest}. What remains here is the one thing that
+     * assertion cannot express: that the old layout is really gone, so nothing can quietly move back
+     * to it. Asserting absence of the directory is not vacuous the way scanning for its imports was --
+     * if it ever returns, this fails.
+     */
     @Test
-    void repositoryInfrastructureSources_doNotImportLegacyOrganizeInfrastructurePackages() throws IOException {
-        Path repositoryInfrastructureRoot = resolveExistingPath(
-                "src/main/java/io/jgitkins/server/repository/infrastructure",
-                "app-server/src/main/java/io/jgitkins/server/repository/infrastructure");
-        assertNoImports(repositoryInfrastructureRoot, "import io.jgitkins.server.infrastructure.persistence.mapper.Organize");
-        assertNoImports(repositoryInfrastructureRoot, "import io.jgitkins.server.infrastructure.persistence.model.Organize");
+    void theLegacyTopLevelInfrastructurePersistencePackageIsGone() {
+        Path legacyRoot = Path.of("app-server/src/main/java/io/jgitkins/server/infrastructure");
+        Path legacyRootLocal = Path.of("src/main/java/io/jgitkins/server/infrastructure");
+
+        assertFalse(Files.exists(legacyRoot) || Files.exists(legacyRootLocal),
+                "io.jgitkins.server.infrastructure is the pre-context layout. Its return would put "
+                        + "persistence back outside the contexts that own it, and the import scan this "
+                        + "test replaced would once again be the thing watching for it.");
     }
 
     @Test
