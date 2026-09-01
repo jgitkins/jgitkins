@@ -62,6 +62,7 @@ import io.jgitkins.server.identity.access.adapter.in.rest.UserCredentialControll
 import io.jgitkins.server.collaboration.adapter.in.web.WebOrganizeController;
 import io.jgitkins.server.repository.adapter.in.web.WebRepositoryController;
 import io.jgitkins.core.web.api.response.ApiResponse;
+import io.jgitkins.server.architecture.ControllerInventory;
 import io.jgitkins.server.change.review.adapter.in.rest.PullRequestController;
 import io.jgitkins.server.repository.application.service.BranchLoadService;
 import io.jgitkins.server.repository.application.service.BranchManagementService;
@@ -266,28 +267,15 @@ class ArchitecturePackageConventionTest {
         });
     }
 
+    /**
+     * The controller list moved to {@link ControllerInventory}, which
+     * {@code ControllerAllowlistCompletenessTest} holds against the source tree. It used to be an
+     * inline {@code List.of} here, and nothing asserted it was complete -- {@code MergeController}
+     * was in it twice, short form and fully qualified, so nineteen entries named eighteen classes.
+     */
     @Test
     void restAndWebApiControllers_returnApiResponseEnvelope() {
-        List<Class<?>> controllerClasses = List.of(
-                AdminUserController.class,
-                MergeController.class,
-                OAuthController.class,
-                OrganizeController.class,
-                OrganizeMemberController.class,
-                SignupController.class,
-                UserController.class,
-                UserCredentialController.class,
-                PullRequestController.class,
-                io.jgitkins.server.change.review.adapter.in.rest.MergeController.class,
-                WebOrganizeController.class,
-                WebRepositoryController.class,
-                RunnerController.class,
-                BranchController.class,
-                RepositoryCommitController.class,
-                RepositoryContentController.class,
-                RepositoryFileController.class,
-                RepositoryManagementController.class,
-                RepositoryMemberController.class);
+        List<Class<?>> controllerClasses = ControllerInventory.ALL;
 
         controllerClasses.stream()
                 .flatMap(controllerClass -> Stream.of(controllerClass.getDeclaredMethods()))

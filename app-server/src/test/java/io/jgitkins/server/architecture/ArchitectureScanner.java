@@ -115,6 +115,22 @@ final class ArchitectureScanner {
                     + "\\w+(\\.\\w+)*\\.adapter\\.out\\.persistence\\."),
             "reaching into another context's persistence couples this one to that one's table shape");
 
+    /**
+     * A Spring MVC controller declaration. Unlike every other category here this one is not a breach --
+     * it is an inventory, used by {@link ControllerAllowlistCompletenessTest} to prove that the
+     * hand-written list in {@code ArchitecturePackageConventionTest} names every controller that exists.
+     *
+     * <p><strong>Anchored on both ends, and that is the whole point.</strong> The scanner matches with
+     * {@code find()}, so an unanchored {@code @RestController} also matches inside
+     * {@code @RestControllerAdvice} -- which {@code GlobalExceptionHandler} carries. Requiring an
+     * argument list or end-of-line after the name excludes the advice annotations without naming them,
+     * so a future advice class does not need a hand-maintained exception. Same reason every category
+     * above anchors with {@code ^import\s+}.
+     */
+    static final Category CONTROLLER = new Category("CONTROLLER",
+            Pattern.compile("^@(Rest)?Controller\\s*(\\(|$)"),
+            "inventory only: a controller declaration the allowlist must name");
+
     private ArchitectureScanner() {
     }
 
