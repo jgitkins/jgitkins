@@ -16,54 +16,27 @@ import org.junit.jupiter.api.Test;
 /**
  * No context may read another context's tables through that context's own mappers.
  *
- * <p>{@link CrossContextAclContractArchitectureTest} forbids holding a foreign <em>aggregate</em>, and
- * its reasoning is that owning another context's invariants and lifecycle makes the two inseparable.
- * That rule left a hole exactly one package wide. A generated MBG mapper and a JPA entity are not
- * aggregates -- they have no invariants at all -- so importing them never tripped the guard, while the
- * coupling they create is worse: it is to the other context's <em>table shape</em>, and the other
- * context can no longer change its own storage without breaking this one.
+ * <p>{@link CrossContextAclContractArchitectureTest} forbids holding a foreign <em>aggregate</em>. That
+ * left a hole one package wide: an MBG mapper and a JPA entity are not aggregates, so importing them
+ * never tripped it, while the coupling is to the other context's table shape.
  *
- * <p>The hole was not theoretical.
- * {@code ArchitecturePackageConventionTest#repositoryInfrastructureSources_doNotImportLegacyOrganizeInfrastructurePackages}
- * was written to watch for precisely this, against {@code io.jgitkins.server.infrastructure.persistence.*}.
- * That package no longer exists -- collaboration's persistence moved to
- * {@code collaboration.adapter.out.persistence.*} -- so the assertion has been passing over a
- * directory that cannot contain what it looks for, while the file it guards accumulated six foreign
- * persistence imports. A guard whose subject was renamed out from under it reports a clean tree and an
- * empty tree identically.
+ * <p>The guard that should have caught it had stopped working.
+ * {@code ArchitecturePackageConventionTest} scanned {@code repository/infrastructure} for imports of
+ * {@code io.jgitkins.server.infrastructure.persistence.*}, a package that no longer exists -- so it
+ * reported clean while the file under its own root took on six foreign persistence imports. An import
+ * scan whose subject is renamed away cannot tell a clean tree from an empty one.
  *
- * <h2>The ceiling is zero, and it was 19 for one commit</h2>
- *
- * <p>This landed as a ratchet rather than a zero, because asserting zero would have meant the guard
- * could not arrive until the refactor did, and a guard that arrives after the work it guards protected
- * nobody. Nineteen imports across three files in {@code repository} were the starting number; the
- * refactor that followed took them to zero and the ceiling came down with them.
- *
- * <p>The mechanism stays. An empty allowlist plus a zero ceiling is a rule, and the shape is still the
- * one to use if a boundary ever has to be crossed on the way to somewhere else: raise it, name the
- * files, lower it again. {@code PUBLIC_CEILING} in {@code RouteAuthenticationContractTest} works the
- * same way for the same reason.
+ * <p>Landed as a ratchet at 19, not a zero: a guard that arrives after the work it guards protected
+ * nobody. The refactor took it to zero and the ceiling came with it. The mechanism stays for the next
+ * boundary that has to be crossed on the way somewhere -- raise it, name the files, lower it again.
+ * {@code PUBLIC_CEILING} in {@code RouteAuthenticationContractTest} works the same way.
  */
 class CrossContextPersistenceCouplingArchitectureTest {
 
     private static final List<String> CONTEXTS =
             List.of("collaboration", "repository", "execution", "identity/access", "change/review");
 
-    /**
-     * Empty, and that is the point.
-     *
-     * <p>Three files were on this list when the guard landed: {@code RepositoryPersistenceAdapter},
-     * {@code RepositoryJpaPersistenceAdapter} and {@code RepositoryPersistenceSelectorConfiguration},
-     * nineteen imports between them. All three asked the same three questions -- who owns this
-     * username, which organization is this namespace, which organizations does this user belong to --
-     * about {@code USER} and {@code ORGANIZE_MEMBER}, tables that {@code identity} and
-     * {@code collaboration} own. They now ask through {@code UserNamespacePort},
-     * {@code OrganizationNamespacePort} and {@code OrganizationMembershipPort}.
-     *
-     * <p>The list stays, empty, rather than being deleted along with the entries. An empty allowlist
-     * plus a zero ceiling is a rule; deleting the mechanism would leave the next such import with
-     * nothing to fail against.
-     */
+    /** Empty. Kept rather than deleted: an empty allowlist plus a zero ceiling is still the rule. */
     private static final List<String> ALLOWED = List.of();
 
     /** Zero, and it may not rise. It was 19 for the length of one commit. */

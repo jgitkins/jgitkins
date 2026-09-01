@@ -24,22 +24,14 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 /**
  * {@code findOrganizeIdsByUserId} must answer the same thing under both providers.
  *
- * <p>The port is new, and it decides a visibility filter: {@code repository} uses it to choose which
- * organization-owned repositories a requester may see. Two implementations of one such decision that
- * can disagree is the shape this repository has been bitten by twice already -- a route guard that
- * enumerated half the chain (41af03d), and a test named {@code UnderBothProviders} that constructed
- * one of them (b5a7fcb). The existing coverage would have repeated it: {@code loadVisibleRepositories}
- * is exercised against real MariaDB only through {@code RepositoryJpaMariaDbIntegrationTest}, so the
- * MyBatis half of this port had no test at all.
+ * <p>The port decides a visibility filter -- which organization-owned repositories a requester sees --
+ * and the two implementations differ in mechanism: JPA projects the column, MyBatis reads rows through
+ * the generated mapper. So both are asked the same question over one database, and the assertion is
+ * that their answers are equal as well as correct.
  *
- * <p>Both adapters are built over one database and asked the same question, and the assertion is that
- * their answers are equal as well as correct. Asserting only correctness twice would let a shared
- * misreading of the schema pass; asserting equality alone would let both be wrong together, so this
- * does both.
- *
- * <p>Runs against real MariaDB via {@link JpaMariaDbTestSupport} rather than the suite's H2, because
- * the question is a read against {@code ORGANIZE_MEMBER} as {@code ddl.sql} declares it -- including
- * {@code UK_ORGANIZE_MEMBER_USER}, which is why neither implementation can return a duplicate.
+ * <p>Without this the MyBatis half had no test: {@code loadVisibleRepositories} is exercised against
+ * real MariaDB only through {@code RepositoryJpaMariaDbIntegrationTest}. One provider tested and both
+ * claimed is the shape behind 41af03d and b5a7fcb.
  */
 class OrganizeIdsByUserBothProvidersMariaDbTest {
 

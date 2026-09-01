@@ -22,7 +22,14 @@ public interface OrganizeMembershipQueryPort {
      * <p>Ids, not memberships. The caller filters repositories by owner and has no business with a
      * role, a join date, or a membership entity whose invariants this context enforces.
      *
-     * <p>Empty for a null user, and for a user in no organization. Neither is an error.
+     * <p>Empty for a null user, and for a user in no organization. Neither is an error --
+     * {@code repository} calls this with the requester id, and an anonymous requester is null.
+     *
+     * <p>No duplicates, guaranteed by {@code UK_ORGANIZE_MEMBER_USER (ORGANIZE_ID, USER_ID)}: one
+     * row per pair. The JPA implementation projects the column; the MyBatis one reads rows through the
+     * generated mapper and keeps its {@code distinct()}, because adding a hand-written select to a
+     * generated mapper is not worth it for a list bounded by the organizations one person belongs to.
+     * The two are asserted to agree in {@code OrganizeIdsByUserBothProvidersMariaDbTest}.
      */
     List<Long> findOrganizeIdsByUserId(Long userId);
 }

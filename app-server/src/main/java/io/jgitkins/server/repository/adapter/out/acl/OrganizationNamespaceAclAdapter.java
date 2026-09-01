@@ -10,16 +10,9 @@ import org.springframework.stereotype.Component;
 /**
  * Translates a URL namespace into a collaboration organization id.
  *
- * <p>The validity check is the contract, not a precaution. {@code OrganizeName.from} throws on
- * anything outside {@code [A-Za-z0-9_-]+}, and the argument here is a path segment a client typed, so
- * without the check every unusable namespace becomes a 500 where the caller wanted a 404.
- * {@code OrganizeName.isValid} exists for exactly this: asking whether a string could be a name,
- * without constructing one.
- *
- * <p>Answering it here rather than in each caller is the point. Before this, only
- * {@code RepositoryLookupService} knew to catch the exception, and the two persistence adapters that
- * needed the same lookup went around the port to collaboration's mapper instead -- which is how the
- * guard stayed in one place by keeping the port unused.
+ * <p>The validity check is the contract, not a precaution: {@code OrganizeName.from} throws outside
+ * {@code [A-Za-z0-9_-]+} and the argument is a path segment a client typed, so without it an unusable
+ * namespace is a 500 rather than a 404. Pinned by {@code OrganizationNamespaceAclAdapterTest}.
  */
 @Component
 @RequiredArgsConstructor

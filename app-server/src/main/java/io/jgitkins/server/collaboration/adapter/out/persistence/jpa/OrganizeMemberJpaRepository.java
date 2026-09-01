@@ -17,12 +17,15 @@ public interface OrganizeMemberJpaRepository extends JpaRepository<OrganizeMembe
     List<OrganizeMemberJpaEntity> findAllByOrganizeId(Long organizeId);
 
     /**
-     * Added for task 2.72: the repository context resolves a requester's organization ids to build
-     * its visibility filter. The MyBatis path did the same read through the shared
-     * {@code OrganizeMemberEntityMbgMapper}, so this keeps the coupling where it already was rather
-     * than introducing a second mapping of {@code ORGANIZE_MEMBER} in another context.
+     * The organization ids a user belongs to, as ids.
+     *
+     * <p>Was {@code findAllByUserId} returning entities, added for task 2.72 so the repository context
+     * could resolve a requester's organization ids by reading this table directly. It answers
+     * {@code OrganizeMembershipQueryPort#findOrganizeIdsByUserId} now, and the caller only ever wanted
+     * the ids -- loading ROLE and JOINED_AT to discard them was work the query can skip.
      */
-    List<OrganizeMemberJpaEntity> findAllByUserId(Long userId);
+    @Query("select m.organizeId from OrganizeMemberJpaEntity m where m.userId = :userId")
+    List<Long> findOrganizeIdsByUserId(@Param("userId") Long userId);
 
     /** Counts owners without loading the rows, matching the MyBatis count query. */
     @Query("select count(m) from OrganizeMemberJpaEntity m where m.organizeId = :organizeId and m.role = :role")

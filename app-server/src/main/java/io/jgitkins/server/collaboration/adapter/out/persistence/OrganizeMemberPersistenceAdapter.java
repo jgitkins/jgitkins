@@ -47,10 +47,6 @@ public class OrganizeMemberPersistenceAdapter implements OrganizeMemberPersisten
             return organizeMemberMapper.selectByCondition(condition).stream()
                     .map(OrganizeMemberEntity::getOrganizeId)
                     .filter(java.util.Objects::nonNull)
-                    // Defensive, and unobservable: UK_ORGANIZE_MEMBER_USER (ORGANIZE_ID, USER_ID)
-                    // makes one row per pair, so there is nothing for distinct to collapse. Kept
-                    // because both repository adapters had it before this port existed, and dropping
-                    // it would be a silent bet on that key staying.
                     .distinct()
                     .toList();
         } catch (Exception e) {

@@ -100,25 +100,15 @@ final class ArchitectureScanner {
     /**
      * A foreign bounded context's <em>persistence</em> package.
      *
-     * <p>The sibling rule {@link #FORBIDDEN_FOREIGN_AGGREGATE} forbids holding another context's
-     * aggregate, on the grounds that it makes one context own invariants it does not enforce. Reaching
-     * into another context's persistence adapter is the same failure with less protection: a generated
-     * MBG mapper or a JPA entity carries no invariants at all, so the coupling is to the other
-     * context's <em>table shape</em>, and that context can no longer change its own storage without
-     * breaking this one.
+     * <p>{@link #FORBIDDEN_FOREIGN_AGGREGATE} forbids holding another context's aggregate. This is the
+     * same failure with less protection: an MBG mapper or a JPA entity has no invariants at all, so the
+     * coupling is to the other context's table shape. It also entangles the persistence selector -- an
+     * adapter naming {@code OrganizeJpaRepository} keeps reading through JPA after collaboration moves
+     * to MyBatis.
      *
-     * <p>It also entangles the persistence selector. An adapter that names
-     * {@code OrganizeJpaRepository} keeps reading collaboration's data through JPA even after
-     * collaboration is switched to MyBatis, so the two contexts can be configured to disagree about
-     * which provider owns a table.
-     *
-     * <p>Not excluded for {@code adapter/out/acl} the way the aggregate rule is. An ACL translates
-     * through the other context's application port -- that is what the four adapters in
-     * {@code repository/adapter/out/acl} already do -- and none of them needs a foreign mapper. There
-     * is no layer where this import is the right answer, so there is no directory to exempt.
-     *
-     * <p>Own-context imports match this pattern too, so ownership is decided at the call site, where
-     * the owner is known. Same shape as the aggregate rule.
+     * <p>No directory is exempt, not even {@code adapter/out/acl}: an ACL translates through the other
+     * context's application port. Own-context imports match the pattern too, so ownership is decided at
+     * the call site.
      */
     static final Category FORBIDDEN_FOREIGN_PERSISTENCE = new Category("FORBIDDEN_FOREIGN_PERSISTENCE",
             Pattern.compile("^import\\s+io\\.jgitkins\\.server\\.(?!shared\\.)"

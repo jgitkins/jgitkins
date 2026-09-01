@@ -36,18 +36,8 @@ import java.util.Optional;
 @Slf4j
 public class RepositoryPersistenceAdapter implements RepositoryPersistence {
 
-    // Cross-context reads go through this context's own ports, not the other contexts' mappers.
-    // These three questions -- who owns this username, which organization is this namespace, which
-    // organizations does this user belong to -- are about USER and ORGANIZE_MEMBER, tables that
-    // identity and collaboration own. Answering them here meant importing their MBG mappers, their
-    // JPA repositories and their entities, which coupled this adapter to their table shapes and let
-    // the persistence selector be configured inconsistently: an adapter naming OrganizeJpaRepository
-    // keeps reading through JPA after collaboration is switched to MyBatis.
-    //
-    // The ports and their ACL adapters already existed for two of the three; this adapter simply
-    // went around them. The third is new on OrganizeMembershipQueryPort -- the option task 2.72
-    // considered and did not take when it chose between duplicating the ORGANIZE_MEMBER mapping and
-    // reading it through collaboration's mapper.
+    // USER and ORGANIZE_MEMBER belong to identity and collaboration, so this adapter asks through
+    // ports instead of importing their mappers and entities. See CrossContextPersistenceCouplingArchitectureTest.
     private final UserNamespacePort userNamespacePort;
     private final OrganizationNamespacePort organizationNamespacePort;
     private final OrganizationMembershipPort organizationMembershipPort;
@@ -208,6 +198,9 @@ public class RepositoryPersistenceAdapter implements RepositoryPersistence {
 
     @Override
     public List<RepositoryResult> loadVisibleRepositories(Long requesterId) {
+        // Before the try, so the catch below cannot relabel a collaboration failure. Safe to call
+        // unconditionally: the port answers empty for a null requester.
+        List<Long> organizeIds = findOrganizationIdsByUserId(requesterId);
         try {
             RepositoryEntityCondition condition = new RepositoryEntityCondition();
             condition.setDistinct(true);
@@ -220,7 +213,6 @@ public class RepositoryPersistenceAdapter implements RepositoryPersistence {
                         .andOwnerTypeEqualTo(OwnerType.USER.name())
                         .andOwnerIdEqualTo(requesterId);
 
-                List<Long> organizeIds = findOrganizationIdsByUserId(requesterId);
                 if (!organizeIds.isEmpty()) {
                     condition.or()
                             .andOwnerTypeEqualTo(OwnerType.ORGANIZATION.name())
@@ -331,6 +323,15 @@ public class RepositoryPersistenceAdapter implements RepositoryPersistence {
         return organizationNamespacePort.findOrganizationIdByName(name.trim());
     }
 
+    /**
+     * Outside the caller's try block on purpose.
+     *
+     * <p>Its only caller invokes it before opening its try block. {@code loadVisibleRepositories}
+     * relabels anything that escapes as "failed during load visible repositories", which was accurate
+     * while every query in it was this adapter's own. A failure in here is collaboration's, and
+     * rewrapping would put a repository-shaped message in front of a collaboration-shaped cause. The
+     * port's own InfrastructureException already names what failed.
+     */
     private List<Long> findOrganizationIdsByUserId(Long requesterId) {
         return organizationMembershipPort.findOrganizationIdsByUserId(requesterId);
     }

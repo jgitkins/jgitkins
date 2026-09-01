@@ -67,16 +67,10 @@ public class RepositoryPersistenceSelectorConfiguration {
     }
 
     /**
-     * Both adapters take the same three cross-context ports, and neither takes another context's
-     * repositories any more.
-     *
-     * <p>This method used to name {@code OrganizeEntityMbgMapper}, {@code OrganizeJpaRepository},
-     * {@code UserEntityMbgMapper} and three more, because the two adapters read {@code USER} and
-     * {@code ORGANIZE_MEMBER} directly. That made the repository context's composition root depend on
-     * which provider identity and collaboration were built on -- and it handed each adapter the
-     * matching provider, so a JPA repository adapter kept reading collaboration's data through JPA
-     * after collaboration was switched to MyBatis. The ports resolve to whichever provider each
-     * owning context selected, which is the only answer that stays correct under a partial migration.
+     * Both adapters take the same three cross-context ports and neither takes another context's
+     * repositories. This used to name six of identity's and collaboration's mappers and repositories,
+     * which made this composition root depend on which provider those contexts run on. The ports
+     * resolve to whichever provider each owning context selected.
      */
     @Bean
     RepositoryPersistence repositoryPersistence(

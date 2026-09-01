@@ -20,15 +20,12 @@ import org.junit.jupiter.params.provider.ValueSource;
 /**
  * A namespace that cannot be an organization name is "no organization", not an error.
  *
- * <p>The argument is a path segment a client typed. {@code OrganizeName.from} throws on anything
- * outside {@code [A-Za-z0-9_-]+}, so without the {@code isValid} check every unusable namespace
- * reaches the caller as an exception rather than an empty result -- a 500 where a 404 belongs, for a
- * URL anyone can type. That is the shape 529ff34 had to fix elsewhere, and it is the one real
- * behavioural risk in routing the two repository persistence adapters through this port: they used to
- * run a raw {@code where NAME = ?} that simply matched nothing.
+ * <p>{@code OrganizeName.from} throws outside {@code [A-Za-z0-9_-]+} and the argument is a path segment
+ * a client typed, so an unguarded call answers 500 where 404 belongs. That is the one real behavioural
+ * risk in routing the two repository persistence adapters through this port -- they used to run a raw
+ * {@code where NAME = ?} that simply matched nothing.
  *
- * <p>These tests exist because removing the guard broke nothing. The suite passed with it deleted,
- * measured, which meant the contract this refactor depends on was asserted nowhere.
+ * <p>These tests exist because deleting the guard broke nothing: measured, the suite passed without it.
  */
 class OrganizationNamespaceAclAdapterTest {
 

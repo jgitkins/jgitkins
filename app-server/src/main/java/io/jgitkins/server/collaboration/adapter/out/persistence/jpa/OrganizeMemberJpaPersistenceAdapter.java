@@ -121,15 +121,7 @@ public class OrganizeMemberJpaPersistenceAdapter implements OrganizeMemberPersis
             if (userId == null) {
                 return List.of();
             }
-            return organizeMemberJpaRepository.findAllByUserId(userId).stream()
-                    .map(OrganizeMemberJpaEntity::getOrganizeId)
-                    .filter(java.util.Objects::nonNull)
-                    // Defensive, and unobservable: UK_ORGANIZE_MEMBER_USER (ORGANIZE_ID, USER_ID)
-                    // makes one row per pair, so there is nothing for distinct to collapse. Kept
-                    // because both repository adapters had it before this port existed, and dropping
-                    // it would be a silent bet on that key staying.
-                    .distinct()
-                    .toList();
+            return organizeMemberJpaRepository.findOrganizeIdsByUserId(userId);
         } catch (Exception e) {
             throw new InfrastructureException(InfrastructureErrorCode.PERSISTENCE_OPERATION_FAILED,
                     "Database operation failed during find organize ids by user", e);

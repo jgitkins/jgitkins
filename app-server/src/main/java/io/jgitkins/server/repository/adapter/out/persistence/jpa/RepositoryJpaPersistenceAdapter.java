@@ -47,10 +47,8 @@ public class RepositoryJpaPersistenceAdapter implements RepositoryPersistence {
     private static final String STATUS_REGISTERED = "REGISTERED";
 
     private final RepositoryJpaRepository repositoryJpaRepository;
-    // Ports, not the other contexts' JPA repositories. Naming OrganizeJpaRepository here bound this
-    // adapter to collaboration's table shape AND to collaboration being on JPA -- so switching
-    // collaboration to MyBatis left this reading its data through JPA anyway. The MyBatis sibling
-    // carries the same three ports and the same reasoning.
+    // Ports, not the other contexts' JPA repositories: naming OrganizeJpaRepository bound this to
+    // collaboration's table shape and to collaboration being on JPA. Same three ports as the MyBatis sibling.
     private final UserNamespacePort userNamespacePort;
     private final OrganizationNamespacePort organizationNamespacePort;
     private final OrganizationMembershipPort organizationMembershipPort;
@@ -182,12 +180,14 @@ public class RepositoryJpaPersistenceAdapter implements RepositoryPersistence {
 
     @Override
     public List<RepositoryResult> loadVisibleRepositories(Long requesterId) {
+        // Before the try, so the catch below cannot relabel a collaboration failure as this adapter's.
+        // Safe to call unconditionally: the port answers empty for a null requester.
+        List<Long> organizeIds = findOrganizationIdsByUserId(requesterId);
         try {
             List<RepositoryJpaEntity> entities;
             if (requesterId == null) {
                 entities = repositoryJpaRepository.findVisibleToAnonymous(PUBLIC_VISIBILITY);
             } else {
-                List<Long> organizeIds = findOrganizationIdsByUserId(requesterId);
                 entities = organizeIds.isEmpty()
                         ? repositoryJpaRepository.findVisibleToUser(
                                 PUBLIC_VISIBILITY, OwnerType.USER.name(), requesterId)
