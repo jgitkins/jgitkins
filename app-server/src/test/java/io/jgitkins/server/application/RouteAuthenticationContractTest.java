@@ -3,7 +3,6 @@ package io.jgitkins.server.application;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -18,6 +17,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
+import io.jgitkins.server.common.infrastructure.config.security.PublicApiRoutes;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 /**
@@ -83,37 +83,16 @@ class RouteAuthenticationContractTest {
     /**
      * Routes the security chain must let an anonymous caller through.
      *
-     * <p>Ordered by why they are here, not alphabetically, because the reason is the reviewable part.
+     * <p>Read from {@link PublicApiRoutes}, the same list {@code SecurityConfig} builds its matchers
+     * from. It used to be a second literal here, and nothing checked that the two agreed -- a route
+     * the chain permitted could be missing from this declaration, or the reverse, and both stayed
+     * green. One list means that class of drift cannot happen.
+     *
+     * <p><strong>{@code PublicApiRoutes} is today's fact, not today's aspiration.</strong> Each entry
+     * is there because a page app-web serves to a logged-out visitor calls it, or because it is how a
+     * caller authenticates in the first place. The reasons live next to the entries in that class.
      */
-    private static final Set<String> PUBLIC = new LinkedHashSet<>(List.of(
-            // Authenticating. The caller has no token yet, so these cannot require one.
-            "POST /api/auth/oauth/login",
-
-            // /explore, logged out.
-            "GET /api/organizes",
-            "GET /api/repositories",
-            "GET /api/users",
-
-            // /{namespace} and /{namespace}/-/**, logged out. Organization member lists are here
-            // because ORGANIZE has no VISIBILITY column while REPOSITORY does: organizations carry no
-            // privacy concept, so there is nothing to scope the list by.
-            "GET /api/organizes/{organizeId}/members",
-
-            // /{namespace}/{repoName} and /tree/**, logged out. Each of these authorizes the
-            // repository itself in the handler; being here only means the chain does not refuse them.
-            "GET /api/internal/repositories/{namespace}/{repoName}/overview",
-            "GET /api/repositories/{repositoryId}/overview",
-            "GET /api/repositories/{namespace}/{repoName}/refs/{branch}/tree",
-
-            // /{namespace}/{repoName}/find-files/index, logged out.
-            "GET /repositories/{namespace}/{repoName}/files/index",
-
-            // Framework and documentation. Spring's error dispatch has no principal by definition.
-            "ANY /error",
-            "GET /swagger-ui.html",
-            "GET /v3/api-docs",
-            "GET /v3/api-docs.yaml",
-            "GET /v3/api-docs/swagger-config"));
+    private static final Set<String> PUBLIC = PublicApiRoutes.contractStrings();
 
     /**
      * Routes that must require authentication.

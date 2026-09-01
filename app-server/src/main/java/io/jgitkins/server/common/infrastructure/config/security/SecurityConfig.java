@@ -65,17 +65,46 @@ public class SecurityConfig {
         return http.build();
     }
 
+    /**
+     * The framework surfaces no controller serves.
+     *
+     * <p>Split out of the api chain so that the api chain's public list contains exactly the set the
+     * route-classification guard can see. {@code RouteAuthenticationContractTest} enumerates
+     * {@code RequestMappingHandlerMapping}; these four patterns are not in it, so while they lived in
+     * the api chain's {@code requestMatchers} they were the part of the security configuration most
+     * likely to be wrong and least likely to be caught.
+     *
+     * <p>{@code oauth2Login} and {@code oauth2Client} come with them. They install the filters that
+     * serve {@code /oauth2/**} and the {@code /login/oauth2/code/{registrationId}} callback, and a
+     * filter configured on a chain that does not match its own paths never runs. That path is not
+     * exercised in the deployed topology -- browsers reach app-web -- but moving the paths without
+     * the filters would turn working-but-unused code into silently broken code.
+     *
+     * <p>{@link InfraRoutes#MATCHER} is not optional. Without it this chain matches everything and
+     * the api chain below never sees a request.
+     */
     @Bean
     @Order(2)
+    SecurityFilterChain infraSecurityFilterChain(HttpSecurity http,
+                                                 OAuth2LoginSuccessHandler successHandler) throws Exception {
+        http.securityMatcher(InfraRoutes.MATCHER);
+        http.csrf(csrf -> csrf.disable());
+        http.authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
+        http.oauth2Login(oauth2 -> oauth2.successHandler(successHandler));
+        http.oauth2Client(Customizer.withDefaults());
+        return http.build();
+    }
+
+    @Bean
+    @Order(3)
     SecurityFilterChain apiSecurityFilterChain(HttpSecurity http,
-                                               OAuth2LoginSuccessHandler successHandler,
                                                JwtAuthenticationFilter jwtAuthenticationFilter,
                                                ApiAnauthorizeHandler apiAnauthorizeHandler,
                                                ApiAccessDeniedHandler apiAccessDeniedHandler) throws Exception {
         http.csrf(csrf -> csrf.disable());
+        // No securityMatcher: this is the catch-all, and it must stay last.
         http.authorizeHttpRequests(auth -> auth
-                .requestMatchers("/oauth2/**", "/login/**", "/swagger-ui/**", "/actuator/prometheus", "/v3/api-docs/**")
-                .permitAll()
+                .requestMatchers(PublicApiRoutes.matchers()).permitAll()
                 .anyRequest().permitAll());
         // Anonymous is disabled, and the reason it was disabled has since been removed.
         //
@@ -93,8 +122,6 @@ public class SecurityConfig {
         // the EL1008E blocker is already gone and check the getName consumers under an anonymous
         // token rather than re-deriving this from the comment that used to stand here.
         http.anonymous(anonymous -> anonymous.disable());
-        http.oauth2Login(oauth2 -> oauth2.successHandler(successHandler));
-        http.oauth2Client(Customizer.withDefaults());
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         http.exceptionHandling(ex -> ex
                 .authenticationEntryPoint(apiAnauthorizeHandler)
