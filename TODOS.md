@@ -69,3 +69,21 @@ allowlist 자체가 필요 없어진다 — 2.107 이 스캔으로 바꾸려는 
 **선후**: 의존성은 없지만 패키지·이름 통일 클러스터(2.107/2.101/2.129/2.131/2.132) 랜딩
 뒤가 자연스럽다. 2.107 이 컨트롤러 목록을 하나로 모은 뒤여야 이전 대상이 명확해진다.
 설계 근거: `~/.gstack/projects/jgitkins/hrk-refactor-package-naming-design-20260901-dto-to-contract-cluster.md`.
+
+## ArchitectureScanner 의 Violation 은 이제 위반만 담지 않는다
+
+**현재**: `ArchitectureScanner` 의 상수는 `FORBIDDEN_*` 열넷과 `CONTROLLER` 하나다. 앞의 열넷은
+금지된 import 를 찾고, `CONTROLLER` 는 2.107 이 추가한 것으로 금지가 아니라 **인벤토리**다 —
+`ControllerAllowlistCompletenessTest` 가 "디스크에 있는 컨트롤러 집합"을 얻는 데 쓴다.
+
+**문제**: `Category` 의 javadoc 은 "A forbidden category" 라 적혀 있고 결과 타입은 `Violation`
+이다. `CONTROLLER` 로 스캔하면 위반이 아닌 것이 `Violation` 으로 18개 나온다. 각 자리에
+javadoc 을 달아 설명해뒀지만, 설명이 필요하다는 것 자체가 이름이 안 맞는다는 뜻이다.
+
+**지금 안 한 이유**: `Violation` → `Match`/`Finding` 개명은 `architecture/` 아래 테스트 6개를
+건드린다. 그 파일들은 main 에서 다른 에이전트가 같은 시기에 작업 중이었고, 이 클러스터는
+충돌을 피하려고 "`ArchitectureScanner` 는 추가만" 규칙을 지켰다.
+
+**시작점**: `Violation` 을 중립적인 이름으로 바꾸고, `Category` javadoc 을 "금지" 대신
+"패턴과 그 의미"로 다시 쓴다. 소비자 6개는 전부 카테고리를 명시적으로 나열하므로
+기계적 개명이고 컴파일러가 누락을 잡는다.
