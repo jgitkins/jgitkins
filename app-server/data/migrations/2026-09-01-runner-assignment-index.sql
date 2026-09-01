@@ -12,7 +12,13 @@
 -- loads (app-server/build.gradle, jgitkins.test.ddl), so editing it reaches fresh databases and the
 -- test suite and nothing else. An existing database needs this run by hand.
 --
--- Idempotent: safe to run twice. MariaDB has no CREATE INDEX IF NOT EXISTS, hence the lookup.
+-- Idempotent when run serially: MariaDB has no CREATE INDEX IF NOT EXISTS, hence the lookup. The
+-- lookup is check-then-act, so two concurrent runs both see 0 and the loser fails with ER_DUP_KEYNAME
+-- (1061). That failure is safe to ignore; do not run this concurrently and it will not happen.
+--
+-- The final SELECT echoes the schema it ran against. The lookup is scoped by DATABASE(), and a schema
+-- that also has a RUNNER_ASSIGNMENT table -- a staging copy on the same server, a restored snapshot --
+-- would be indexed successfully and silently. Read the echo, do not assume.
 --
 -- Connect to the right schema first. The lookup is scoped by DATABASE(), so running this on a
 -- connection with no database selected, or the wrong one, finds no index and then fails on CREATE
@@ -28,6 +34,14 @@
 --
 -- Rollback: DROP INDEX IX_RUNNER_ASSIGNMENT_RUNNER ON RUNNER_ASSIGNMENT;
 -- Independent of the code -- it runs correctly with or without this index, only slower.
+--
+-- One hazard the index rollback does not carry but the CODE rollback does: reverting b5a7fcb after any
+-- runner has two assignment rows drops the ID tiebreak, and two rows written in the same whole second
+-- then order arbitrarily -- the effective scope becomes nondeterministic between reads rather than
+-- merely stale. Collapse history first if you ever go back:
+--   delete a from RUNNER_ASSIGNMENT a
+--     join (select RUNNER_ID, max(ID) keep_id from RUNNER_ASSIGNMENT group by RUNNER_ID) k
+--       on a.RUNNER_ID = k.RUNNER_ID and a.ID <> k.keep_id;
 
 SET @exists := (
     SELECT COUNT(*) FROM information_schema.STATISTICS
@@ -42,3 +56,12 @@ SET @sql := IF(@exists = 0,
 PREPARE stmt FROM @sql;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
+
+-- Say what was done and where. A silent success against the wrong schema is the one failure mode the
+-- idempotency guard cannot distinguish from the real thing.
+SELECT DATABASE() AS applied_to_schema,
+       @exists     AS index_existed_before,
+       (SELECT COUNT(*) FROM information_schema.STATISTICS
+         WHERE TABLE_SCHEMA = DATABASE()
+           AND TABLE_NAME = 'RUNNER_ASSIGNMENT'
+           AND INDEX_NAME = 'IX_RUNNER_ASSIGNMENT_RUNNER') AS index_columns_now;

@@ -170,6 +170,48 @@ class RunnerJpaMariaDbIntegrationTest {
     }
 
     @Test
+    void narrowingToGlobalDropsTheStaleTargetAndStaysIdempotent() {
+        LocalDateTime now = LocalDateTime.now().withNano(0);
+
+        Runner created = transactions.execute(status -> adapter.save(Runner.restore(
+                null, token + "-to-global", "to global", RunnerStatus.ONLINE,
+                RunnerScopeType.REPOSITORY, 930L, null, null, now)));
+        Long runnerId = created.getId();
+
+        // scopeTargetId is deliberately left at 930 while the type becomes GLOBAL. Every other scope
+        // test in this class uses REPOSITORY with a matching target, so the normalization the whole
+        // idempotency comparison rests on -- requiresTargetId() ? scopeTargetId : null -- had no test:
+        // deleting the guard on either the write or the compare left the suite green.
+        transactions.executeWithoutResult(status -> adapter.save(Runner.restore(
+                runnerId, token + "-to-global", "to global", RunnerStatus.ONLINE,
+                RunnerScopeType.GLOBAL, 930L, null, null, now)));
+
+        assertThat(jdbc.queryForMap(
+                "select TARGET_TYPE, TARGET_ID from RUNNER_ASSIGNMENT where RUNNER_ID = ?"
+                        + " order by ASSIGNED_AT desc, ID desc limit 1", runnerId))
+                .as("a GLOBAL scope has no target, and writing the caller's stale value would let it "
+                        + "leak into a scope that must ignore it")
+                .containsEntry("TARGET_TYPE", "GLOBAL")
+                .containsEntry("TARGET_ID", null);
+
+        Runner reloaded = transactions.execute(status -> adapter.findById(runnerId).orElseThrow());
+        assertThat(reloaded.getScopeType()).isEqualTo(RunnerScopeType.GLOBAL);
+        assertThat(reloaded.getScopeTargetId()).isNull();
+
+        // The idempotency half: the comparison must normalize the same way the write does, or a GLOBAL
+        // runner carrying a stale target appends on every restart -- the restart log both adapters'
+        // javadoc claims to prevent.
+        transactions.executeWithoutResult(status -> adapter.save(Runner.restore(
+                runnerId, token + "-to-global", "to global", RunnerStatus.ONLINE,
+                RunnerScopeType.GLOBAL, 930L, null, null, now)));
+
+        assertThat(jdbc.queryForObject(
+                "select count(*) from RUNNER_ASSIGNMENT where RUNNER_ID = ?", Integer.class, runnerId))
+                .as("one row for the create, one for the narrowing, and nothing for the re-save")
+                .isEqualTo(2);
+    }
+
+    @Test
     void reSavingTheSameScopeWritesNoRow() {
         LocalDateTime now = LocalDateTime.now().withNano(0);
 

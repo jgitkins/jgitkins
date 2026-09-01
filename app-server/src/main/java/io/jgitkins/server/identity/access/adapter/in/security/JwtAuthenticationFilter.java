@@ -25,12 +25,28 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtAuthService jwtAuthService;
     private final ApiAnauthorizeHandler apiAnauthorizeHandler;
 
+    /**
+     * {@code /actuator/} is deliberately absent.
+     *
+     * <p>It used to be listed, which made two endpoints unreachable by anyone rather than protected.
+     * {@code management.endpoints.web.exposure.include} publishes health, info and prometheus;
+     * {@code InfraRoutes} opens only prometheus, so health and info fall to the api chain and take
+     * {@code authenticated()} after 8eb64b5. Skipping this filter for them meant no credential could
+     * ever be established, so they answered 401 to an operator holding a valid JWT -- fail-closed, but
+     * a brick rather than a lock, and {@code everyActuatorEndpointIsClassified} could not tell the two
+     * apart because it only ever called them anonymously.
+     *
+     * <p>Prometheus is unaffected either way: the infra chain matches it at {@code @Order(2)} and
+     * permits it, and an anonymous request here clears the context and continues regardless.
+     *
+     * <p>The remaining four are on the infra chain or are permitted api routes, and they authenticate
+     * by mechanisms this filter does not serve -- an authorization-code redirect, a static docs asset.
+     */
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getRequestURI();
         return path != null && (path.startsWith("/oauth2/") || path.startsWith("/login/")
-                || path.startsWith("/swagger-ui/") || path.startsWith("/v3/api-docs/")
-                || path.startsWith("/actuator/"));
+                || path.startsWith("/swagger-ui/") || path.startsWith("/v3/api-docs/"));
     }
 
     @Override

@@ -9,8 +9,10 @@ import java.util.TreeSet;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import io.jgitkins.server.identity.access.application.port.out.TokenIssuerPort;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
@@ -358,6 +360,9 @@ class RouteAuthenticationContractTest {
     @Autowired
     private WebMvcEndpointHandlerMapping actuatorHandlerMapping;
 
+    @Autowired
+    private TokenIssuerPort tokenIssuerPort;
+
     /** Actuator endpoints the infra chain opens. Everything else actuator exposes must need a login. */
     private static final Set<String> PUBLIC_ACTUATOR = Set.of("/actuator/prometheus");
 
@@ -366,9 +371,18 @@ class RouteAuthenticationContractTest {
         Set<String> exposed = new TreeSet<>();
         actuatorHandlerMapping.getHandlerMethods().forEach((info, method) -> exposed.addAll(patterns(info)));
 
+        // PUBLIC_ACTUATOR is the hand-written allowlist and the only thing that exempts an endpoint.
+        // This used to also removeIf(InfraRoutes.PATTERNS::contains), which let the act of publishing an
+        // endpoint delete its own check -- the self-referential defect this file warns about thirty
+        // lines below ("a guard that iterates the list it validates validates nothing"). The two lists
+        // must agree, so that is asserted instead of one silencing the other.
+        assertThat(PUBLIC_ACTUATOR)
+                .as("an actuator path may only be anonymous by being opened on the infra chain; "
+                        + "PUBLIC_ACTUATOR listing one that InfraRoutes does not open is a lie")
+                .allSatisfy(pattern -> assertThat(InfraRoutes.PATTERNS).contains(pattern));
+
         Set<String> unclassified = new TreeSet<>(exposed);
         unclassified.removeAll(PUBLIC_ACTUATOR);
-        unclassified.removeIf(pattern -> InfraRoutes.PATTERNS.contains(pattern));
 
         List<String> served = new ArrayList<>();
         for (String pattern : unclassified) {
@@ -386,6 +400,46 @@ class RouteAuthenticationContractTest {
                         + "thinking about the security chain. An endpoint that is exposed and not on "
                         + "PUBLIC_ACTUATOR must need a login; answering anything else means adding a "
                         + "name to that property quietly published it")
+                .isEmpty();
+    }
+
+    @Test
+    void aProtectedActuatorEndpointIsReachableByAnAuthenticatedCaller() {
+        // The test above only ever calls anonymously, so it cannot tell "needs a login" from "no login
+        // can ever work" -- both answer 401. That second state is what the api chain's flip plus
+        // /actuator/ in JwtAuthenticationFilter#shouldNotFilter produced: the filter was skipped, so no
+        // credential could be established and health and info refused an operator holding a valid JWT.
+        Set<String> exposed = new TreeSet<>();
+        actuatorHandlerMapping.getHandlerMethods().forEach((info, method) -> exposed.addAll(patterns(info)));
+        assertThat(exposed)
+                .as("nothing to check means this guard is vacuous, not passing -- the actuator mapping "
+                        + "must expose at least the endpoints application.yml publishes")
+                .isNotEmpty();
+
+        String token = tokenIssuerPort.issueToken(1L, List.of("ROLE_USER"));
+        List<String> unreachable = new ArrayList<>();
+        for (String pattern : exposed) {
+            if (PUBLIC_ACTUATOR.contains(pattern)) {
+                continue;
+            }
+            String uri = pattern.replace("/**", "");
+            int status;
+            try {
+                status = mockMvc.perform(MockMvcRequestBuilders.get(uri)
+                                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
+                        .andReturn().getResponse().getStatus();
+            } catch (Exception e) {
+                status = -1;
+            }
+            if (status == 401 || status == 403 || status == -1) {
+                unreachable.add(pattern + " -> " + status);
+            }
+        }
+
+        assertThat(unreachable)
+                .as("an exposed actuator endpoint that refuses a valid token is not protected, it is "
+                        + "unreachable. Either let a credential reach it or stop publishing it in "
+                        + "management.endpoints.web.exposure.include -- 401 to everyone is neither")
                 .isEmpty();
     }
 
