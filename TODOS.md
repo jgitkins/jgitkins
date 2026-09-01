@@ -30,3 +30,12 @@ transactional outbox 는 전제가 아니다.
 
 설계 근거: `~/.gstack/projects/jgitkins/hrk-main-design-20260828-three-verified-p0s.md`
 의 "T1 후속 — 배치/지연 삭제 검토" 절.
+
+**이벤트 발행 제약 (2026-09-01 eng review).** 스위퍼가 한 트랜잭션에서 조직 여러
+개를 처리하면서 도메인 이벤트를 발행할 계획이라면, `DomainEventPublisher.publish()`
+를 루프 안에서 부르지 말 것. `CollaborationSpringDomainEventPublisher` 는 호출마다
+새 `TransactionSynchronization` 을 등록하고 각각이 자기 이벤트 스냅샷을 커밋까지
+붙들기 때문에, N번 호출하면 N개의 동기화 객체와 N개의 리스트가 쌓인다. 배치가
+필요해지는 시점에 트랜잭션당 1회 등록 + 버퍼 누적으로 바꾸거나, 이벤트를 모아
+한 번만 넘길 것. 오늘은 호출자가 `OrganizeService` 하나뿐이라 도달 불가능한
+경로이므로 미리 고치지 않는다.
