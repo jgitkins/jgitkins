@@ -25,7 +25,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Tag(name = "Organize Management")
 @RequestMapping("/api/organizes")
-public class OrganizeController {
+public class OrganizeManagementController {
 
     private final OrganizeCreationUseCase organizeCreationUseCase;
     private final OrganizeLoadUseCase organizeLoadUseCase;

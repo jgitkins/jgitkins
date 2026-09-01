@@ -94,7 +94,7 @@ class ChangeReviewBoundedContextArchitectureTest {
         assertThat(Files.exists(MAIN.resolve("io/jgitkins/server/change/review/application/port/out/RepositoryReferencePort.java"))).isTrue();
         assertThat(Files.exists(MAIN.resolve("io/jgitkins/server/change/review/application/port/out/BranchHeadPort.java"))).isTrue();
         assertThat(Files.exists(MAIN.resolve("io/jgitkins/server/change/review/application/port/out/MergePort.java"))).isTrue();
-        assertThat(Files.exists(MAIN.resolve("io/jgitkins/server/change/review/adapter/in/rest/PullRequestController.java"))).isTrue();
+        assertThat(Files.exists(MAIN.resolve("io/jgitkins/server/change/review/adapter/in/rest/PullRequestManagementController.java"))).isTrue();
         assertThat(Files.exists(MAIN.resolve("io/jgitkins/server/change/review/adapter/in/rest/MergeController.java"))).isTrue();
     }
 

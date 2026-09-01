@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @Tag(name = "User Credentials")
 @RequestMapping("/api/auth")
-public class UserCredentialController {
+public class UserCredentialManagementController {
 
     private final UserCredentialIssueUseCase userCredentialIssueUseCase;
     private final UserCredentialQueryUseCase userCredentialQueryUseCase;

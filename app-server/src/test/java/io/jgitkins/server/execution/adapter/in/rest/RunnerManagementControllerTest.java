@@ -44,7 +44,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 @ExtendWith(MockitoExtension.class)
-class RunnerControllerTest {
+class RunnerManagementControllerTest {
 
     @Mock
     private RunnerRegisterUseCase runnerRegisterUseCase;
@@ -70,7 +70,7 @@ class RunnerControllerTest {
     @BeforeEach
     void setUp() {
         CompositeErrorHttpStatusMapper statusMapper = ErrorStatusMappingTestConfig.realMapper();
-        RunnerController controller = new RunnerController(
+        RunnerManagementController controller = new RunnerManagementController(
                 runnerRegisterUseCase,
                 runnerLoadUseCase,
                 runnerDeleteUseCase,

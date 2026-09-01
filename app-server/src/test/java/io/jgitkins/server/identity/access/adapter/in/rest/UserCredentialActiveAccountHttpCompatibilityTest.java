@@ -36,7 +36,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-@WebMvcTest(UserCredentialController.class)
+@WebMvcTest(UserCredentialManagementController.class)
 @AutoConfigureMockMvc(addFilters = false)
 @Import({GlobalExceptionHandler.class, ErrorStatusMappingTestConfig.class,
         UserCredentialActiveAccountHttpCompatibilityTest.StatusMapperConfiguration.class})

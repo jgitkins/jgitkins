@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @Tag(name = "Runner Management", description = "Runner registration and lifecycle APIs")
 @RequestMapping({"/api/runners"})
-public class RunnerController {
+public class RunnerManagementController {
 
     private final RunnerRegisterUseCase runnerRegisterUseCase;
     private final RunnerLoadUseCase runnerLoadUseCase;

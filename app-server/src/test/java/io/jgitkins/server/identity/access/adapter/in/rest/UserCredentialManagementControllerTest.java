@@ -29,7 +29,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 @ExtendWith(MockitoExtension.class)
-class UserCredentialControllerTest {
+class UserCredentialManagementControllerTest {
 
     @Mock
     private UserCredentialIssueUseCase userCredentialIssueUseCase;
@@ -45,7 +45,7 @@ class UserCredentialControllerTest {
 
     @BeforeEach
     void setUp() {
-        UserCredentialController controller = new UserCredentialController(
+        UserCredentialManagementController controller = new UserCredentialManagementController(
                 userCredentialIssueUseCase,
                 userCredentialQueryUseCase,
                 userCredentialRevokeUseCase

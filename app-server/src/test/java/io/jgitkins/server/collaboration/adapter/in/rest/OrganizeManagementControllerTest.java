@@ -17,7 +17,7 @@ import io.jgitkins.server.collaboration.application.dto.result.OrganizeCreationR
 import io.jgitkins.server.collaboration.application.port.in.OrganizeCreationUseCase;
 import io.jgitkins.server.collaboration.application.port.in.OrganizeDeletionUseCase;
 import io.jgitkins.server.collaboration.application.port.in.OrganizeLoadUseCase;
-import io.jgitkins.server.collaboration.adapter.in.rest.OrganizeController;
+import io.jgitkins.server.collaboration.adapter.in.rest.OrganizeManagementController;
 import io.jgitkins.server.collaboration.adapter.in.rest.dto.request.OrganizeCreationRequest;
 import io.jgitkins.server.collaboration.adapter.in.rest.mapper.OrganizeRequestMapper;
 import io.jgitkins.server.common.presentation.advice.GlobalExceptionHandler;
@@ -35,7 +35,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
-@WebMvcTest(OrganizeController.class)
+@WebMvcTest(OrganizeManagementController.class)
 // addFilters = false because this is a controller slice test: it authenticates by seeding
 // SecurityContextHolder, which JwtAuthenticationFilter now clears on a request without a Bearer
 // header. The real chain is covered by AnonymousPrincipalResolutionTest and
@@ -44,7 +44,7 @@ import org.springframework.test.web.servlet.MockMvc;
 @WithMockUser(username = "7")
 @Import({GlobalExceptionHandler.class, PermissiveSliceSecurityConfig.class,
         ErrorStatusMappingTestConfig.class})
-class OrganizeControllerTest {
+class OrganizeManagementControllerTest {
 
     @BeforeEach
     void authenticate() {

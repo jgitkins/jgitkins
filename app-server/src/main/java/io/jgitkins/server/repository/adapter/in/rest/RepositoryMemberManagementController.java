@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @Tag(name = "Repository Members")
 @RequestMapping("/api/repositories/{repositoryId}/members")
-public class RepositoryMemberController {
+public class RepositoryMemberManagementController {
 
     private final RepositoryMemberManagementUseCase repositoryMemberManagementUseCase;
     private final RepositoryMemberLoadUseCase repositoryMemberLoadUseCase;

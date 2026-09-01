@@ -1,22 +1,22 @@
 package io.jgitkins.server.architecture;
 
 import io.jgitkins.server.change.review.adapter.in.rest.MergeController;
-import io.jgitkins.server.change.review.adapter.in.rest.PullRequestController;
-import io.jgitkins.server.collaboration.adapter.in.rest.OrganizeController;
-import io.jgitkins.server.collaboration.adapter.in.rest.OrganizeMemberController;
+import io.jgitkins.server.change.review.adapter.in.rest.PullRequestManagementController;
+import io.jgitkins.server.collaboration.adapter.in.rest.OrganizeManagementController;
+import io.jgitkins.server.collaboration.adapter.in.rest.OrganizeMemberManagementController;
 import io.jgitkins.server.collaboration.adapter.in.web.WebOrganizeController;
-import io.jgitkins.server.execution.adapter.in.rest.RunnerController;
+import io.jgitkins.server.execution.adapter.in.rest.RunnerManagementController;
 import io.jgitkins.server.identity.access.adapter.in.rest.AdminUserController;
 import io.jgitkins.server.identity.access.adapter.in.rest.OAuthController;
 import io.jgitkins.server.identity.access.adapter.in.rest.SignupController;
 import io.jgitkins.server.identity.access.adapter.in.rest.UserController;
-import io.jgitkins.server.identity.access.adapter.in.rest.UserCredentialController;
-import io.jgitkins.server.repository.adapter.in.rest.BranchController;
+import io.jgitkins.server.identity.access.adapter.in.rest.UserCredentialManagementController;
+import io.jgitkins.server.repository.adapter.in.rest.BranchManagementController;
 import io.jgitkins.server.repository.adapter.in.rest.RepositoryCommitController;
 import io.jgitkins.server.repository.adapter.in.rest.RepositoryContentController;
 import io.jgitkins.server.repository.adapter.in.rest.RepositoryFileController;
 import io.jgitkins.server.repository.adapter.in.rest.RepositoryManagementController;
-import io.jgitkins.server.repository.adapter.in.rest.RepositoryMemberController;
+import io.jgitkins.server.repository.adapter.in.rest.RepositoryMemberManagementController;
 import io.jgitkins.server.repository.adapter.in.web.WebRepositoryController;
 import java.util.List;
 
@@ -43,21 +43,21 @@ public final class ControllerInventory {
 
     public static final List<Class<?>> ALL = List.of(
             AdminUserController.class,
-            BranchController.class,
+            BranchManagementController.class,
             MergeController.class,
             OAuthController.class,
-            OrganizeController.class,
-            OrganizeMemberController.class,
-            PullRequestController.class,
+            OrganizeManagementController.class,
+            OrganizeMemberManagementController.class,
+            PullRequestManagementController.class,
             RepositoryCommitController.class,
             RepositoryContentController.class,
             RepositoryFileController.class,
             RepositoryManagementController.class,
-            RepositoryMemberController.class,
-            RunnerController.class,
+            RepositoryMemberManagementController.class,
+            RunnerManagementController.class,
             SignupController.class,
             UserController.class,
-            UserCredentialController.class,
+            UserCredentialManagementController.class,
             WebOrganizeController.class,
             WebRepositoryController.class);
 }

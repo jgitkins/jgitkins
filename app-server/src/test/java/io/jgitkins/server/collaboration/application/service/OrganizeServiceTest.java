@@ -139,7 +139,7 @@ class OrganizeServiceTest {
      * Task 2.95 moved this answer. The service used to throw OrganizeAccessDeniedException for a null
      * requester, which is a 403 saying "not allowed" about a value that is simply not an identifier.
      * OwnerId.of now rejects it with a mapped domain exception, and the "authenticated user required"
-     * answer belongs to the adapter, where OrganizeController gives it as a 401.
+     * answer belongs to the adapter, where OrganizeManagementController gives it as a 401.
      *
      * <p>What the service loses is the distinction between "no requester" and "invalid requester id".
      * Over HTTP that costs nothing: the controller rejects an absent principal before the command is

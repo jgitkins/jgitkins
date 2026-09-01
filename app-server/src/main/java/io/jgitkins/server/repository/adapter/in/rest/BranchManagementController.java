@@ -26,7 +26,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/api/repositories/{repositoryId}/branches")
 @Tag(name = "Branch Management", description = "브랜치 조회/생성/삭제")
-public class BranchController {
+public class BranchManagementController {
 
     private final BranchLoadUseCase branchLoadUseCase;
     private final BranchManagementUseCase branchManagementUseCase;

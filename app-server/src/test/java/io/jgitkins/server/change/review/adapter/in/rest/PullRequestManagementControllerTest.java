@@ -36,7 +36,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 @ExtendWith(MockitoExtension.class)
-class PullRequestControllerTest {
+class PullRequestManagementControllerTest {
 
     @Mock
     private CreatePullRequestUseCase createPullRequestUseCase;
@@ -50,7 +50,7 @@ class PullRequestControllerTest {
 
     @BeforeEach
     void setUp() {
-        PullRequestController controller = new PullRequestController(createPullRequestUseCase,
+        PullRequestManagementController controller = new PullRequestManagementController(createPullRequestUseCase,
                 getPullRequestDetailUseCase);
         this.mockMvc = MockMvcBuilders.standaloneSetup(controller)
                 // standaloneSetup wires no Spring Security, so @AuthenticationPrincipal has no

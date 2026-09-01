@@ -37,10 +37,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-@WebMvcTest(BranchController.class)
+@WebMvcTest(BranchManagementController.class)
 @Import({ErrorStatusMappingTestConfig.class})
 @AutoConfigureMockMvc(addFilters = false)
-class BranchControllerTest {
+class BranchManagementControllerTest {
 
     @BeforeEach
     void authenticateRequester() {

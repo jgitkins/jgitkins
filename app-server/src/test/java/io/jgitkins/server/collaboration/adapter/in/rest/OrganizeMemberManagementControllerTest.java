@@ -15,7 +15,7 @@ import io.jgitkins.server.collaboration.application.dto.result.OrganizeMemberSum
 import io.jgitkins.server.collaboration.application.port.in.OrganizeMemberAddUseCase;
 import io.jgitkins.server.collaboration.application.port.in.OrganizeMemberQueryUseCase;
 import io.jgitkins.server.collaboration.application.port.in.OrganizeMemberRemoveUseCase;
-import io.jgitkins.server.collaboration.adapter.in.rest.OrganizeMemberController;
+import io.jgitkins.server.collaboration.adapter.in.rest.OrganizeMemberManagementController;
 import io.jgitkins.server.collaboration.adapter.in.rest.dto.request.OrganizeMemberAddRequest;
 import io.jgitkins.server.collaboration.adapter.in.rest.mapper.OrganizeMemberRequestMapper;
 import io.jgitkins.server.collaboration.application.dto.command.OrganizeMemberAddCommand;
@@ -35,7 +35,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-@WebMvcTest(OrganizeMemberController.class)
+@WebMvcTest(OrganizeMemberManagementController.class)
 // addFilters = false because this is a controller slice test: it authenticates by seeding
 // SecurityContextHolder, which JwtAuthenticationFilter now clears on a request without a Bearer
 // header. The real chain is covered by AnonymousPrincipalResolutionTest and
@@ -43,7 +43,7 @@ import org.springframework.test.web.servlet.MockMvc;
 @AutoConfigureMockMvc(addFilters = false)
 @Import({GlobalExceptionHandler.class, PermissiveSliceSecurityConfig.class,
         ErrorStatusMappingTestConfig.class})
-class OrganizeMemberControllerTest {
+class OrganizeMemberManagementControllerTest {
 
     @BeforeEach
     void authenticate() {
@@ -130,7 +130,7 @@ class OrganizeMemberControllerTest {
         mockMvc.perform(post("/api/organizes/1/members")
                         .with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication(
                                 new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(
-                                        new io.jgitkins.server.collaboration.adapter.in.rest.OrganizeMemberControllerTest.NullUsernamePrincipal(), null, java.util.List.of())))
+                                        new io.jgitkins.server.collaboration.adapter.in.rest.OrganizeMemberManagementControllerTest.NullUsernamePrincipal(), null, java.util.List.of())))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {"userId":2,"role":"MEMBER"}

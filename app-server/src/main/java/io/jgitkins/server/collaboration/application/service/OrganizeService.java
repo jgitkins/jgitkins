@@ -52,7 +52,7 @@ public class OrganizeService implements OrganizeCreationUseCase,
         OrganizeName name = OrganizeName.from(command.name());
         // No null guard on the requester here. OwnerId.of below rejects null and non-positive with a
         // mapped domain exception, and the "authenticated user required" answer belongs to the adapter,
-        // which OrganizeController gives as a 401. Keeping a copy here answered 403 for the same
+        // which OrganizeManagementController gives as a 401. Keeping a copy here answered 403 for the same
         // condition and could only disagree with it.
         Long ownerId = command.requesterUserId();
 

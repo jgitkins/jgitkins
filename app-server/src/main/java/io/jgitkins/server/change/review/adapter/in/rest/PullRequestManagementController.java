@@ -30,7 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @Tag(name = "Pull Request", description = "변경검토")
 @RequestMapping("/repositories/{namespace}/{repoName}/pull-requests")
-public class PullRequestController {
+public class PullRequestManagementController {
 
     private final CreatePullRequestUseCase createPullRequestUseCase;
     private final GetPullRequestDetailUseCase getPullRequestDetailUseCase;

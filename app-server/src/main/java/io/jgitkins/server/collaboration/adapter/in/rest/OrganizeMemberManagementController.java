@@ -29,7 +29,7 @@ import io.jgitkins.server.shared.application.security.CurrentUser;
 @RequiredArgsConstructor
 @Tag(name = "Organize Members")
 @RequestMapping("/api/organizes/{organizeId}/members")
-public class OrganizeMemberController {
+public class OrganizeMemberManagementController {
 
     private final OrganizeMemberAddUseCase organizeMemberAddUseCase;
     private final OrganizeMemberQueryUseCase organizeMemberQueryUseCase;
