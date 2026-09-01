@@ -1,60 +1,89 @@
-name: app-web-release
+# DISABLED 2026-09-01. Everything below is commented out, deliberately.
+#
+# This workflow existed to guard the live deployment that `develop` pushed to. That target is torn
+# down: the 2026-09-01 deploy run reached `appleboy/scp-action` and timed out against the host, and
+# the three release jobs had already pushed images to a public registry before getting there. With
+# nothing to protect, an automatic run is cost without a return.
+#
+# HOW TO TURN IT BACK ON
+#   1. Uncomment everything below this block (strip the leading "# " from each line).
+#   2. In `verify.yml`, decide the `on:` block. `workflow_dispatch:` alone was the state before this;
+#      `push: [main]` is the addition that makes it automatic. NOT `pull_request` unless PRs are
+#      actually in use -- this repository had opened zero in its first 227 commits.
+#   3. Before relying on it, fix two things that were measured and never fixed:
+#      - `core-web/` is absent from SERVER_PATTERN, and app-server imports io.jgitkins.core.web in
+#        21 files. A core-web change sets server=false, so app-server is not even compiled.
+#      - `gradlew`, `gradle/`, and `.github/scripts/` match no pattern, so changing any of them
+#        skips all three module jobs and the run reports success having tested nothing.
+#      - `deploy.yml` carries the same two holes.
+#   4. If `push:` is used, pair it with `cancel-in-progress: ${{ github.event_name != 'push' }}`.
+#      As written, `cancel-in-progress: true` plus a per-push incremental diff means a push arriving
+#      during a live run cancels it, and the next run diffs only its own range -- the cancelled
+#      commits are never examined by anything, and a cancelled run shows grey, not red. Observed
+#      push rate peaks at 52 commits in one day.
+#
+# NOTE: `develop`'s copies of these files are separate. They still carry `push: [develop]`, and
+# develop's `deploy.yml` has no `*-verify` in `needs:` at all. Commenting these out does not touch
+# them -- GitHub runs the workflow file that exists on the pushed branch.
 
-on:
-  workflow_call:
-
-permissions:
-  contents: read
-  packages: write
-
-env:
-  REGISTRY: ghcr.io
-
-jobs:
-  release:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: docker/setup-buildx-action@v3
-      - uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      - uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: ./app-web/Dockerfile
-          push: true
-          platforms: linux/arm64
-          tags: |
-            ${{ env.REGISTRY }}/${{ github.repository_owner }}/jgitkins-app-web:${{ github.sha }}
-            ${{ env.REGISTRY }}/${{ github.repository_owner }}/jgitkins-app-web:latest
-      - uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.SSH_HOST_ALZAR }}
-          username: ${{ secrets.SSH_USER_ALZAR }}
-          key: ${{ secrets.SSH_KEY_ALZAR }}
-          port: ${{ secrets.SSH_PORT || 22 }}
-          source: app-web/docker-compose-config/apps/docker-compose.yml
-          target: ${{ secrets.MONO_DEPLOY_PATH_WEB }}
-          strip_components: 3
-      - uses: appleboy/ssh-action@v1.0.3
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          host: ${{ secrets.SSH_HOST_ALZAR }}
-          username: ${{ secrets.SSH_USER_ALZAR }}
-          key: ${{ secrets.SSH_KEY_ALZAR }}
-          port: ${{ secrets.SSH_PORT || 22 }}
-          envs: GITHUB_ACTOR,GITHUB_TOKEN,REGISTRY
-          script: |
-            set -e
-            export PATH=/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin
-            export COMPOSE_PROJECT_NAME=jgitkins-app-web
-            echo "${GITHUB_TOKEN}" | docker login "${REGISTRY}" -u "${GITHUB_ACTOR}" --password-stdin
-            cd "${{ secrets.MONO_DEPLOY_PATH_WEB }}"
-            docker-compose -f docker-compose.yml down --remove-orphans || true
-            docker-compose -f docker-compose.yml pull jgitkins-app-web
-            docker-compose -f docker-compose.yml up -d --force-recreate jgitkins-app-web
-            docker image prune -f
+# name: app-web-release
+#
+# on:
+#   workflow_call:
+#
+# permissions:
+#   contents: read
+#   packages: write
+#
+# env:
+#   REGISTRY: ghcr.io
+#
+# jobs:
+#   release:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v4
+#       - uses: docker/setup-buildx-action@v3
+#       - uses: docker/login-action@v3
+#         with:
+#           registry: ${{ env.REGISTRY }}
+#           username: ${{ github.actor }}
+#           password: ${{ secrets.GITHUB_TOKEN }}
+#       - uses: docker/build-push-action@v6
+#         with:
+#           context: .
+#           file: ./app-web/Dockerfile
+#           push: true
+#           platforms: linux/arm64
+#           tags: |
+#             ${{ env.REGISTRY }}/${{ github.repository_owner }}/jgitkins-app-web:${{ github.sha }}
+#             ${{ env.REGISTRY }}/${{ github.repository_owner }}/jgitkins-app-web:latest
+#       - uses: appleboy/scp-action@v0.1.7
+#         with:
+#           host: ${{ secrets.SSH_HOST_ALZAR }}
+#           username: ${{ secrets.SSH_USER_ALZAR }}
+#           key: ${{ secrets.SSH_KEY_ALZAR }}
+#           port: ${{ secrets.SSH_PORT || 22 }}
+#           source: app-web/docker-compose-config/apps/docker-compose.yml
+#           target: ${{ secrets.MONO_DEPLOY_PATH_WEB }}
+#           strip_components: 3
+#       - uses: appleboy/ssh-action@v1.0.3
+#         env:
+#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#         with:
+#           host: ${{ secrets.SSH_HOST_ALZAR }}
+#           username: ${{ secrets.SSH_USER_ALZAR }}
+#           key: ${{ secrets.SSH_KEY_ALZAR }}
+#           port: ${{ secrets.SSH_PORT || 22 }}
+#           envs: GITHUB_ACTOR,GITHUB_TOKEN,REGISTRY
+#           script: |
+#             set -e
+#             export PATH=/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin
+#             export COMPOSE_PROJECT_NAME=jgitkins-app-web
+#             echo "${GITHUB_TOKEN}" | docker login "${REGISTRY}" -u "${GITHUB_ACTOR}" --password-stdin
+#             cd "${{ secrets.MONO_DEPLOY_PATH_WEB }}"
+#             docker-compose -f docker-compose.yml down --remove-orphans || true
+#             docker-compose -f docker-compose.yml pull jgitkins-app-web
+#             docker-compose -f docker-compose.yml up -d --force-recreate jgitkins-app-web
+#             docker image prune -f
+#

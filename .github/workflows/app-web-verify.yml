@@ -1,21 +1,50 @@
-name: app-web-verify
+# DISABLED 2026-09-01. Everything below is commented out, deliberately.
+#
+# This workflow existed to guard the live deployment that `develop` pushed to. That target is torn
+# down: the 2026-09-01 deploy run reached `appleboy/scp-action` and timed out against the host, and
+# the three release jobs had already pushed images to a public registry before getting there. With
+# nothing to protect, an automatic run is cost without a return.
+#
+# HOW TO TURN IT BACK ON
+#   1. Uncomment everything below this block (strip the leading "# " from each line).
+#   2. In `verify.yml`, decide the `on:` block. `workflow_dispatch:` alone was the state before this;
+#      `push: [main]` is the addition that makes it automatic. NOT `pull_request` unless PRs are
+#      actually in use -- this repository had opened zero in its first 227 commits.
+#   3. Before relying on it, fix two things that were measured and never fixed:
+#      - `core-web/` is absent from SERVER_PATTERN, and app-server imports io.jgitkins.core.web in
+#        21 files. A core-web change sets server=false, so app-server is not even compiled.
+#      - `gradlew`, `gradle/`, and `.github/scripts/` match no pattern, so changing any of them
+#        skips all three module jobs and the run reports success having tested nothing.
+#      - `deploy.yml` carries the same two holes.
+#   4. If `push:` is used, pair it with `cancel-in-progress: ${{ github.event_name != 'push' }}`.
+#      As written, `cancel-in-progress: true` plus a per-push incremental diff means a push arriving
+#      during a live run cancels it, and the next run diffs only its own range -- the cancelled
+#      commits are never examined by anything, and a cancelled run shows grey, not red. Observed
+#      push rate peaks at 52 commits in one day.
+#
+# NOTE: `develop`'s copies of these files are separate. They still carry `push: [develop]`, and
+# develop's `deploy.yml` has no `*-verify` in `needs:` at all. Commenting these out does not touch
+# them -- GitHub runs the workflow file that exists on the pushed branch.
 
-on:
-  workflow_call:
-
-permissions:
-  contents: read
-
-jobs:
-  verify:
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: "17"
-          cache: gradle
-      - run: chmod +x ./gradlew
-      - run: ./gradlew :app-web:clean :app-web:test :app-web:bootJar
+# name: app-web-verify
+#
+# on:
+#   workflow_call:
+#
+# permissions:
+#   contents: read
+#
+# jobs:
+#   verify:
+#     runs-on: ubuntu-latest
+#     timeout-minutes: 20
+#     steps:
+#       - uses: actions/checkout@v4
+#       - uses: actions/setup-java@v4
+#         with:
+#           distribution: temurin
+#           java-version: "17"
+#           cache: gradle
+#       - run: chmod +x ./gradlew
+#       - run: ./gradlew :app-web:clean :app-web:test :app-web:bootJar
+#

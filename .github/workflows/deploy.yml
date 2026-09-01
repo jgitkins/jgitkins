@@ -1,76 +1,105 @@
-name: deploy
+# DISABLED 2026-09-01. Everything below is commented out, deliberately.
+#
+# This workflow existed to guard the live deployment that `develop` pushed to. That target is torn
+# down: the 2026-09-01 deploy run reached `appleboy/scp-action` and timed out against the host, and
+# the three release jobs had already pushed images to a public registry before getting there. With
+# nothing to protect, an automatic run is cost without a return.
+#
+# HOW TO TURN IT BACK ON
+#   1. Uncomment everything below this block (strip the leading "# " from each line).
+#   2. In `verify.yml`, decide the `on:` block. `workflow_dispatch:` alone was the state before this;
+#      `push: [main]` is the addition that makes it automatic. NOT `pull_request` unless PRs are
+#      actually in use -- this repository had opened zero in its first 227 commits.
+#   3. Before relying on it, fix two things that were measured and never fixed:
+#      - `core-web/` is absent from SERVER_PATTERN, and app-server imports io.jgitkins.core.web in
+#        21 files. A core-web change sets server=false, so app-server is not even compiled.
+#      - `gradlew`, `gradle/`, and `.github/scripts/` match no pattern, so changing any of them
+#        skips all three module jobs and the run reports success having tested nothing.
+#      - `deploy.yml` carries the same two holes.
+#   4. If `push:` is used, pair it with `cancel-in-progress: ${{ github.event_name != 'push' }}`.
+#      As written, `cancel-in-progress: true` plus a per-push incremental diff means a push arriving
+#      during a live run cancels it, and the next run diffs only its own range -- the cancelled
+#      commits are never examined by anything, and a cancelled run shows grey, not red. Observed
+#      push rate peaks at 52 commits in one day.
+#
+# NOTE: `develop`'s copies of these files are separate. They still carry `push: [develop]`, and
+# develop's `deploy.yml` has no `*-verify` in `needs:` at all. Commenting these out does not touch
+# them -- GitHub runs the workflow file that exists on the pushed branch.
 
-# Deploy is manual, and only manual. It does not share verify's triggers: an
-# app-*-release.yml run scp's a compose file to a live host and recreates the
-# service there, so a `pull_request` trigger would deploy every PR opened from a
-# branch in this repository -- those runs receive secrets. `push: [develop]` is
-# not carried over either; develop's last commit is 2026-04-02 and every branch
-# since has been cut from main, so that trigger has not fired in five months.
-# Moving deploy to `push: [main]` is a separate decision from installing the
-# verify gate and is not made here.
-on:
-  workflow_dispatch:
-
-permissions:
-  contents: read
-  packages: write
-
-concurrency:
-  group: deploy-${{ github.ref }}
-  cancel-in-progress: true
-
-jobs:
-  detect:
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    outputs:
-      server: ${{ steps.filter.outputs.server }}
-      web: ${{ steps.filter.outputs.web }}
-      runner: ${{ steps.filter.outputs.runner }}
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - id: filter
-        shell: bash
-        env:
-          EVENT_BEFORE: ${{ github.event.before }}
-          SERVER_PATTERN: '^(app-server/|core-common/|core-security/|core-persistence/|core-grpc/|settings\.gradle$|\.github/workflows/deploy\.yml$|\.github/workflows/app-server-release\.yml$|\.github/workflows/app-server-verify\.yml$)'
-          WEB_PATTERN: '^(app-web/|core-common/|core-web/|core-security/|settings\.gradle$|\.github/workflows/deploy\.yml$|\.github/workflows/app-web-release\.yml$|\.github/workflows/app-web-verify\.yml$)'
-          RUNNER_PATTERN: '^(app-runner/|core-common/|core-grpc/|settings\.gradle$|\.github/workflows/deploy\.yml$|\.github/workflows/app-runner-release\.yml$|\.github/workflows/app-runner-verify\.yml$)'
-        run: |
-          bash .github/scripts/detect-changed-modules.sh
-
-  server-verify:
-    needs: detect
-    if: needs.detect.outputs.server == 'true'
-    uses: ./.github/workflows/app-server-verify.yml
-
-  web-verify:
-    needs: detect
-    if: needs.detect.outputs.web == 'true'
-    uses: ./.github/workflows/app-web-verify.yml
-
-  runner-verify:
-    needs: detect
-    if: needs.detect.outputs.runner == 'true'
-    uses: ./.github/workflows/app-runner-verify.yml
-
-  server:
-    needs: [detect, server-verify]
-    if: needs.detect.outputs.server == 'true'
-    uses: ./.github/workflows/app-server-release.yml
-    secrets: inherit
-
-  web:
-    needs: [detect, web-verify]
-    if: needs.detect.outputs.web == 'true'
-    uses: ./.github/workflows/app-web-release.yml
-    secrets: inherit
-
-  runner:
-    needs: [detect, runner-verify]
-    if: needs.detect.outputs.runner == 'true'
-    uses: ./.github/workflows/app-runner-release.yml
-    secrets: inherit
+# name: deploy
+#
+# # Deploy is manual, and only manual. It does not share verify's triggers: an
+# # app-*-release.yml run scp's a compose file to a live host and recreates the
+# # service there, so a `pull_request` trigger would deploy every PR opened from a
+# # branch in this repository -- those runs receive secrets. `push: [develop]` is
+# # not carried over either; develop's last commit is 2026-04-02 and every branch
+# # since has been cut from main, so that trigger has not fired in five months.
+# # Moving deploy to `push: [main]` is a separate decision from installing the
+# # verify gate and is not made here.
+# on:
+#   workflow_dispatch:
+#
+# permissions:
+#   contents: read
+#   packages: write
+#
+# concurrency:
+#   group: deploy-${{ github.ref }}
+#   cancel-in-progress: true
+#
+# jobs:
+#   detect:
+#     runs-on: ubuntu-latest
+#     timeout-minutes: 10
+#     outputs:
+#       server: ${{ steps.filter.outputs.server }}
+#       web: ${{ steps.filter.outputs.web }}
+#       runner: ${{ steps.filter.outputs.runner }}
+#     steps:
+#       - uses: actions/checkout@v4
+#         with:
+#           fetch-depth: 0
+#
+#       - id: filter
+#         shell: bash
+#         env:
+#           EVENT_BEFORE: ${{ github.event.before }}
+#           SERVER_PATTERN: '^(app-server/|core-common/|core-security/|core-persistence/|core-grpc/|settings\.gradle$|\.github/workflows/deploy\.yml$|\.github/workflows/app-server-release\.yml$|\.github/workflows/app-server-verify\.yml$)'
+#           WEB_PATTERN: '^(app-web/|core-common/|core-web/|core-security/|settings\.gradle$|\.github/workflows/deploy\.yml$|\.github/workflows/app-web-release\.yml$|\.github/workflows/app-web-verify\.yml$)'
+#           RUNNER_PATTERN: '^(app-runner/|core-common/|core-grpc/|settings\.gradle$|\.github/workflows/deploy\.yml$|\.github/workflows/app-runner-release\.yml$|\.github/workflows/app-runner-verify\.yml$)'
+#         run: |
+#           bash .github/scripts/detect-changed-modules.sh
+#
+#   server-verify:
+#     needs: detect
+#     if: needs.detect.outputs.server == 'true'
+#     uses: ./.github/workflows/app-server-verify.yml
+#
+#   web-verify:
+#     needs: detect
+#     if: needs.detect.outputs.web == 'true'
+#     uses: ./.github/workflows/app-web-verify.yml
+#
+#   runner-verify:
+#     needs: detect
+#     if: needs.detect.outputs.runner == 'true'
+#     uses: ./.github/workflows/app-runner-verify.yml
+#
+#   server:
+#     needs: [detect, server-verify]
+#     if: needs.detect.outputs.server == 'true'
+#     uses: ./.github/workflows/app-server-release.yml
+#     secrets: inherit
+#
+#   web:
+#     needs: [detect, web-verify]
+#     if: needs.detect.outputs.web == 'true'
+#     uses: ./.github/workflows/app-web-release.yml
+#     secrets: inherit
+#
+#   runner:
+#     needs: [detect, runner-verify]
+#     if: needs.detect.outputs.runner == 'true'
+#     uses: ./.github/workflows/app-runner-release.yml
+#     secrets: inherit
+#
