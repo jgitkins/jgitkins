@@ -1247,7 +1247,7 @@
             "id": 126,
             "title": "[security][execution][app-server] 런너 스코프 변경이 fail-open 으로 무효화된다 — 두 provider 를 동시에 고쳐야 한다",
             "description": "RunnerJpaPersistenceAdapter 의 클래스 javadoc 이 'Known defect, preserved deliberately' 로 사실을 적어놨다: MyBatis 어댑터가 updateByPrimaryKeySelective 를 호출하는데 RunnerAssignmentDomainMapper.toEntity 가 id 를 채우지 않아 문장이 where ID = null 로 해석되고 아무 행도 갱신되지 않는다. 런너의 스코프 변경은 한 번도 반영된 적이 없다. JPA 어댑터는 두 provider 가 보안 관련 판단을 서로 다르게 하지 않도록 이 no-op 을 의도적으로 재현한다. RunnerJpaMariaDbIntegrationTest 의 scopeUpdateIsANoOpUnderBothProviders 가 현재 동작을 고정하며 '수정이 들어오면 바꿔야 할 단정은 바로 이것' 이라고 실패 메시지에 적어놨다. 격리 목적으로 런너 스코프를 좁히면 성공한 것처럼 보이고 실제로는 반영되지 않는다 — 권한 판단이 fail-open 이다. javadoc 이 명시하듯 '이 수정은 자체 task 에서, 두 provider 를 동시에' 해야 한다. 선행 결정: 최신 assignment 행을 제자리 수정할지, 새 행을 append 할지.",
-            "status": "pending",
+            "status": "done",
             "dependencies": [],
             "priority": "high",
             "details": "RunnerJpaPersistenceAdapter 의 클래스 javadoc 이 'Known defect, preserved deliberately' 로 사실을 적어놨다: MyBatis 어댑터가 updateByPrimaryKeySelective 를 호출하는데 RunnerAssignmentDomainMapper.toEntity 가 id 를 채우지 않아 문장이 where ID = null 로 해석되고 아무 행도 갱신되지 않는다. 런너의 스코프 변경은 한 번도 반영된 적이 없다. JPA 어댑터는 두 provider 가 보안 관련 판단을 서로 다르게 하지 않도록 이 no-op 을 의도적으로 재현한다. RunnerJpaMariaDbIntegrationTest 의 scopeUpdateIsANoOpUnderBothProviders 가 현재 동작을 고정하며 '수정이 들어오면 바꿔야 할 단정은 바로 이것' 이라고 실패 메시지에 적어놨다. 격리 목적으로 런너 스코프를 좁히면 성공한 것처럼 보이고 실제로는 반영되지 않는다 — 권한 판단이 fail-open 이다. javadoc 이 명시하듯 '이 수정은 자체 task 에서, 두 provider 를 동시에' 해야 한다. 선행 결정: 최신 assignment 행을 제자리 수정할지, 새 행을 append 할지.",
