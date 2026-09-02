@@ -7,7 +7,7 @@ import io.jgitkins.server.collaboration.domain.event.OrganizeCreatedEvent;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeName;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeOwnerId;
 import io.jgitkins.server.collaboration.adapter.out.persistence.support.OrganizeDomainMapper;
-import io.jgitkins.server.collaboration.adapter.out.persistence.mapper.OrganizeEntityMbgMapper;
+import io.jgitkins.server.collaboration.adapter.out.persistence.translator.OrganizeEntityMbgMapper;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import javax.sql.DataSource;

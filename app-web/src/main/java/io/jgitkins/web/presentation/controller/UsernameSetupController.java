@@ -1,7 +1,7 @@
 package io.jgitkins.web.presentation.controller;
 
 import io.jgitkins.web.application.port.in.facade.UserOnboardingFacadeUseCase;
-import io.jgitkins.web.presentation.dto.UsernameSetupForm;
+import io.jgitkins.web.presentation.contract.UsernameSetupForm;
 import io.jgitkins.web.presentation.support.UserOnboardingViewSupport;
 import lombok.RequiredArgsConstructor;
 import jakarta.servlet.http.HttpServletRequest;

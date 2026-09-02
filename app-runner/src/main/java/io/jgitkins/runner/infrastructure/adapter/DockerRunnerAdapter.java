@@ -3,7 +3,7 @@ package io.jgitkins.runner.infrastructure.adapter;
 import com.github.dockerjava.api.async.ResultCallback;
 import com.github.dockerjava.api.model.Bind;
 import com.github.dockerjava.api.model.Frame;
-import io.jgitkins.runner.application.dto.JobRunContext;
+import io.jgitkins.runner.application.contract.JobRunContext;
 import io.jgitkins.runner.application.port.out.JobRunnerPort;
 import io.jgitkins.runner.infrastructure.docker.DockerBindBuilder;
 import io.jgitkins.runner.infrastructure.docker.DockerContainerLifecycle;

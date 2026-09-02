@@ -2,7 +2,7 @@ package io.jgitkins.server.execution.application.service;
 
 import io.jgitkins.server.execution.application.contract.result.RunnerDetailResult;
 import io.jgitkins.server.execution.application.exception.RunnerNotFoundException;
-import io.jgitkins.server.execution.application.mapper.RunnerApplicationMapper;
+import io.jgitkins.server.execution.application.translator.RunnerApplicationMapper;
 import io.jgitkins.server.execution.application.port.in.RunnerLoadUseCase;
 import io.jgitkins.server.execution.domain.aggregate.Runner;
 import io.jgitkins.server.execution.domain.repository.RunnerRepository;

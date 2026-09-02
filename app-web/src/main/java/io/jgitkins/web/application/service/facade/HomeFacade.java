@@ -1,7 +1,7 @@
 package io.jgitkins.web.application.service.facade;
 
-import io.jgitkins.web.application.dto.HomeDashboardSummary;
-import io.jgitkins.web.application.dto.DashboardSummary;
+import io.jgitkins.web.application.contract.HomeDashboardSummary;
+import io.jgitkins.web.application.contract.DashboardSummary;
 import io.jgitkins.web.application.port.in.facade.DashboardFacadeUseCase;
 import io.jgitkins.web.application.port.in.facade.HomeFacadeUseCase;
 import io.jgitkins.web.presentation.support.SessionSupport;

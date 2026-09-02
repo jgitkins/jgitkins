@@ -1,6 +1,6 @@
 package io.jgitkins.web.application.port.in;
 
-import io.jgitkins.web.application.dto.DashboardData;
+import io.jgitkins.web.application.contract.DashboardData;
 
 public interface DashboardUseCase {
 

@@ -1,6 +1,6 @@
 package io.jgitkins.web.presentation.controller;
 
-import io.jgitkins.web.application.dto.ExploreSummary;
+import io.jgitkins.web.application.contract.ExploreSummary;
 import io.jgitkins.web.application.port.in.facade.ExploreFacadeUseCase;
 import io.jgitkins.web.presentation.support.ExploreViewSupport;
 import lombok.RequiredArgsConstructor;

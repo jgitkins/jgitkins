@@ -9,14 +9,14 @@ import io.jgitkins.server.collaboration.adapter.out.persistence.jpa.OrganizeJpaP
 import io.jgitkins.server.collaboration.adapter.out.persistence.jpa.OrganizeJpaRepository;
 import io.jgitkins.server.collaboration.adapter.out.persistence.jpa.OrganizeMemberJpaPersistenceAdapter;
 import io.jgitkins.server.collaboration.adapter.out.persistence.jpa.OrganizeMemberJpaRepository;
-import io.jgitkins.server.collaboration.adapter.out.persistence.mapper.OrganizeEntityMbgMapper;
-import io.jgitkins.server.collaboration.adapter.out.persistence.mapper.OrganizeMemberEntityMbgMapper;
+import io.jgitkins.server.collaboration.adapter.out.persistence.translator.OrganizeEntityMbgMapper;
+import io.jgitkins.server.collaboration.adapter.out.persistence.translator.OrganizeMemberEntityMbgMapper;
 import io.jgitkins.server.collaboration.adapter.out.persistence.support.OrganizeDomainMapper;
 import io.jgitkins.server.collaboration.adapter.out.persistence.support.OrganizeMemberDomainMapper;
 import io.jgitkins.server.identity.access.adapter.out.persistence.UserPersistenceAdapter;
 import io.jgitkins.server.identity.access.adapter.out.persistence.jpa.UserJpaPersistenceAdapter;
 import io.jgitkins.server.identity.access.adapter.out.persistence.jpa.UserJpaRepository;
-import io.jgitkins.server.identity.access.adapter.out.persistence.mapper.UserEntityMbgMapper;
+import io.jgitkins.server.identity.access.adapter.out.persistence.translator.UserEntityMbgMapper;
 import io.jgitkins.server.identity.access.adapter.out.persistence.support.UserDomainMapper;
 import io.jgitkins.server.persistence.jpa.JpaMariaDbTestSupport;
 import io.jgitkins.server.repository.adapter.out.acl.OrganizationMembershipAclAdapter;
@@ -24,7 +24,7 @@ import io.jgitkins.server.repository.adapter.out.acl.OrganizationNamespaceAclAda
 import io.jgitkins.server.repository.adapter.out.acl.UserNamespaceAclAdapter;
 import io.jgitkins.server.repository.adapter.out.persistence.jpa.RepositoryJpaPersistenceAdapter;
 import io.jgitkins.server.repository.adapter.out.persistence.jpa.RepositoryJpaRepository;
-import io.jgitkins.server.repository.adapter.out.persistence.mapper.RepositoryEntityMbgMapper;
+import io.jgitkins.server.repository.adapter.out.persistence.translator.RepositoryEntityMbgMapper;
 import io.jgitkins.server.repository.adapter.out.persistence.support.RepositoryDomainMapper;
 import io.jgitkins.server.repository.application.contract.result.RepositoryResult;
 import io.jgitkins.server.repository.application.port.out.RepositoryEndpointPort;

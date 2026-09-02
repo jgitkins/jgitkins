@@ -1,7 +1,7 @@
 package io.jgitkins.web.application.port.in;
 
-import io.jgitkins.web.application.dto.RepositoryDetailData;
-import io.jgitkins.web.application.dto.RepositoryFileIndexEntry;
+import io.jgitkins.web.application.contract.RepositoryDetailData;
+import io.jgitkins.web.application.contract.RepositoryFileIndexEntry;
 import java.util.List;
 
 public interface RepositoryDetailUseCase {

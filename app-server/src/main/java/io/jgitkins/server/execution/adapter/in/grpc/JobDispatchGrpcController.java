@@ -3,7 +3,7 @@ package io.jgitkins.server.execution.adapter.in.grpc;
 import io.grpc.stub.StreamObserver;
 import io.jgitkins.server.execution.application.port.in.JobDispatchUseCase;
 import io.jgitkins.server.execution.application.port.in.JobResultReportUseCase;
-import io.jgitkins.server.execution.adapter.in.grpc.mapper.JobDispatchGrpcMapper;
+import io.jgitkins.server.execution.adapter.in.grpc.translator.JobDispatchGrpcMapper;
 import io.jgitkins.server.grpc.JobDispatchRequest;
 import io.jgitkins.server.grpc.JobDispatchResponse;
 import io.jgitkins.server.grpc.JobDispatchServiceGrpc;

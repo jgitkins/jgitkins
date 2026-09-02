@@ -1,8 +1,8 @@
 package io.jgitkins.web.application.service;
 
-import io.jgitkins.web.application.dto.OrganizeFetchResult;
-import io.jgitkins.web.application.dto.RepositoryCreateRequest;
-import io.jgitkins.web.application.dto.RepositoryCreateResult;
+import io.jgitkins.web.application.contract.OrganizeFetchResult;
+import io.jgitkins.web.application.contract.RepositoryCreateRequest;
+import io.jgitkins.web.application.contract.RepositoryCreateResult;
 import io.jgitkins.web.application.port.in.RepositoryCreateUseCase;
 import io.jgitkins.web.application.port.out.OrganizePort;
 import io.jgitkins.web.application.port.out.RepositoryPort;

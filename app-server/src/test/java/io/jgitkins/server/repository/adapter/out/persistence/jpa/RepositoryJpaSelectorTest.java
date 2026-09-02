@@ -25,9 +25,9 @@ import io.jgitkins.server.repository.infrastructure.config.RepositoryPersistence
 import io.jgitkins.server.repository.adapter.out.persistence.support.BranchDomainMapper;
 import io.jgitkins.server.repository.adapter.out.persistence.support.RepositoryDomainMapper;
 import io.jgitkins.server.repository.adapter.out.persistence.support.RepositoryMemberDomainMapper;
-import io.jgitkins.server.repository.adapter.out.persistence.mapper.BranchEntityMbgMapper;
-import io.jgitkins.server.repository.adapter.out.persistence.mapper.RepositoryEntityMbgMapper;
-import io.jgitkins.server.repository.adapter.out.persistence.mapper.RepositoryMemberEntityMbgMapper;
+import io.jgitkins.server.repository.adapter.out.persistence.translator.BranchEntityMbgMapper;
+import io.jgitkins.server.repository.adapter.out.persistence.translator.RepositoryEntityMbgMapper;
+import io.jgitkins.server.repository.adapter.out.persistence.translator.RepositoryMemberEntityMbgMapper;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;

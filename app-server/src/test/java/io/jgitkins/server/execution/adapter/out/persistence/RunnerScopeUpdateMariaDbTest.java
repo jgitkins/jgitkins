@@ -2,8 +2,8 @@ package io.jgitkins.server.execution.adapter.out.persistence;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.jgitkins.server.execution.adapter.out.persistence.mapper.RunnerAssignmentEntityMbgMapper;
-import io.jgitkins.server.execution.adapter.out.persistence.mapper.RunnerEntityMbgMapper;
+import io.jgitkins.server.execution.adapter.out.persistence.translator.RunnerAssignmentEntityMbgMapper;
+import io.jgitkins.server.execution.adapter.out.persistence.translator.RunnerEntityMbgMapper;
 import io.jgitkins.server.execution.adapter.out.persistence.support.RunnerAssignmentDomainMapper;
 import io.jgitkins.server.execution.adapter.out.persistence.support.RunnerDomainMapper;
 import io.jgitkins.server.execution.domain.aggregate.Runner;

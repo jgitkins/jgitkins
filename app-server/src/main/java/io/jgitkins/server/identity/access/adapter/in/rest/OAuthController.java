@@ -5,8 +5,8 @@ import io.jgitkins.server.identity.access.application.contract.command.OAuthLogi
 import io.jgitkins.server.identity.access.application.contract.result.OAuthLoginResult;
 import io.jgitkins.server.identity.access.application.port.in.OAuthLoginUseCase;
 import io.jgitkins.core.web.api.response.ApiResponse;
-import io.jgitkins.server.identity.access.adapter.in.rest.dto.request.OAuthLoginRequest;
-import io.jgitkins.server.identity.access.adapter.in.rest.mapper.OAuthRequestMapper;
+import io.jgitkins.server.identity.access.adapter.in.rest.contract.request.OAuthLoginRequest;
+import io.jgitkins.server.identity.access.adapter.in.rest.translator.OAuthRequestMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

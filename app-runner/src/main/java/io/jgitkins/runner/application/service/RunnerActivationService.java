@@ -1,7 +1,7 @@
 package io.jgitkins.runner.application.service;
 
-import io.jgitkins.runner.application.dto.RunnerActivateResult;
-import io.jgitkins.runner.application.mapper.RunnerActivateResultMapper;
+import io.jgitkins.runner.application.contract.RunnerActivateResult;
+import io.jgitkins.runner.application.translator.RunnerActivateResultMapper;
 import io.jgitkins.runner.application.port.in.RunnerActivationUseCase;
 import io.jgitkins.runner.application.port.out.RunnerActivatePort;
 import io.jgitkins.runner.application.port.out.RunnerConfigurationPort;

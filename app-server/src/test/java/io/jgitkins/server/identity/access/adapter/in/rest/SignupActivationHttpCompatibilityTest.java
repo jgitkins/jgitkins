@@ -7,11 +7,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import io.jgitkins.server.common.presentation.advice.GlobalExceptionHandler;
-import io.jgitkins.server.common.presentation.advice.mapper.ApplicationErrorHttpStatusMapper;
-import io.jgitkins.server.common.presentation.advice.mapper.CompositeErrorHttpStatusMapper;
-import io.jgitkins.server.common.presentation.advice.mapper.DomainErrorHttpStatusMapper;
-import io.jgitkins.server.common.presentation.advice.mapper.InfrastructureErrorHttpStatusMapper;
-import io.jgitkins.server.common.presentation.advice.mapper.PresentationErrorHttpStatusMapper;
+import io.jgitkins.server.common.presentation.advice.translator.ApplicationErrorHttpStatusMapper;
+import io.jgitkins.server.common.presentation.advice.translator.CompositeErrorHttpStatusMapper;
+import io.jgitkins.server.common.presentation.advice.translator.DomainErrorHttpStatusMapper;
+import io.jgitkins.server.common.presentation.advice.translator.InfrastructureErrorHttpStatusMapper;
+import io.jgitkins.server.common.presentation.advice.translator.PresentationErrorHttpStatusMapper;
 import io.jgitkins.server.identity.access.application.exception.NamespaceAlreadyTakenException;
 import io.jgitkins.server.identity.access.application.exception.UserNotFoundException;
 import io.jgitkins.server.identity.access.application.exception.UsernameAlreadyExistsException;

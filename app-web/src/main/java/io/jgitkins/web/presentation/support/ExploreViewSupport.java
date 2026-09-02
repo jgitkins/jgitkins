@@ -1,6 +1,6 @@
 package io.jgitkins.web.presentation.support;
 
-import io.jgitkins.web.application.dto.ExploreSummary;
+import io.jgitkins.web.application.contract.ExploreSummary;
 import org.springframework.stereotype.Component;
 import org.springframework.ui.Model;
 

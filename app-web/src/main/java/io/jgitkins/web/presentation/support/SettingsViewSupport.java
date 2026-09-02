@@ -1,7 +1,7 @@
 package io.jgitkins.web.presentation.support;
 
-import io.jgitkins.web.application.dto.UserCredentialIssueRequest;
-import io.jgitkins.web.presentation.dto.PersonalAccessTokenForm;
+import io.jgitkins.web.application.contract.UserCredentialIssueRequest;
+import io.jgitkins.web.presentation.contract.PersonalAccessTokenForm;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;

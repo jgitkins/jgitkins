@@ -12,8 +12,8 @@ import io.jgitkins.server.execution.infrastructure.config.ExecutionRunnerPersist
 import io.jgitkins.server.execution.infrastructure.config.ExecutionRunnerPersistenceSelectorConfiguration.ExecutionRunnerPersistenceSelection;
 import io.jgitkins.server.execution.adapter.out.persistence.support.RunnerAssignmentDomainMapper;
 import io.jgitkins.server.execution.adapter.out.persistence.support.RunnerDomainMapper;
-import io.jgitkins.server.execution.adapter.out.persistence.mapper.RunnerAssignmentEntityMbgMapper;
-import io.jgitkins.server.execution.adapter.out.persistence.mapper.RunnerEntityMbgMapper;
+import io.jgitkins.server.execution.adapter.out.persistence.translator.RunnerAssignmentEntityMbgMapper;
+import io.jgitkins.server.execution.adapter.out.persistence.translator.RunnerEntityMbgMapper;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;

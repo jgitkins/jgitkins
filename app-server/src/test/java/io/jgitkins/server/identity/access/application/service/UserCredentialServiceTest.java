@@ -13,7 +13,7 @@ import static org.mockito.Mockito.when;
 import io.jgitkins.server.identity.access.application.contract.command.UserCredentialIssueCommand;
 import io.jgitkins.server.identity.access.application.contract.result.UserCredentialIssueResult;
 import io.jgitkins.server.identity.access.application.contract.result.UserCredentialSummary;
-import io.jgitkins.server.identity.access.application.mapper.UserCredentialApplicationMapper;
+import io.jgitkins.server.identity.access.application.translator.UserCredentialApplicationMapper;
 import io.jgitkins.server.identity.access.application.port.out.ActiveAccountPolicyPort;
 import io.jgitkins.server.identity.access.application.exception.UserNotFoundException;
 import io.jgitkins.server.shared.application.error.ApplicationProblemSpec;

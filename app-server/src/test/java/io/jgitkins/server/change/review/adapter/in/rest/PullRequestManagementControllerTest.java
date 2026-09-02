@@ -18,7 +18,7 @@ import io.jgitkins.server.change.review.application.exception.RepositoryReferenc
 import io.jgitkins.server.change.review.application.port.in.CreatePullRequestUseCase;
 import io.jgitkins.server.change.review.application.port.in.GetPullRequestDetailUseCase;
 import io.jgitkins.server.common.presentation.advice.GlobalExceptionHandler;
-import io.jgitkins.server.change.review.adapter.in.rest.dto.request.PullRequestCreateRequest;
+import io.jgitkins.server.change.review.adapter.in.rest.contract.request.PullRequestCreateRequest;
 import io.jgitkins.server.change.review.domain.model.BranchHeadSnapshot;
 import io.jgitkins.server.change.review.domain.model.PullRequestStatus;
 import io.jgitkins.server.change.review.domain.model.TargetDrift;

@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import io.jgitkins.server.repository.application.contract.result.FileEntry;
-import io.jgitkins.server.repository.adapter.in.rest.dto.response.FileIndexEntry;
+import io.jgitkins.server.repository.adapter.in.rest.contract.response.FileIndexEntry;
 import io.jgitkins.server.repository.application.port.in.FileLoadUseCase;
 import io.jgitkins.core.web.api.response.ApiResponse;
 import org.springframework.http.ResponseEntity;

@@ -12,7 +12,7 @@ import io.jgitkins.server.execution.application.contract.result.RunnerRuntimeCon
 import io.jgitkins.server.execution.application.contract.command.RunnerRegisterCommand;
 import io.jgitkins.server.execution.application.contract.result.RunnerActivateResult;
 import io.jgitkins.server.execution.application.contract.result.RunnerRegistrationResult;
-import io.jgitkins.server.execution.application.mapper.RunnerApplicationMapper;
+import io.jgitkins.server.execution.application.translator.RunnerApplicationMapper;
 import io.jgitkins.server.execution.domain.repository.RunnerRepository;
 import io.jgitkins.server.execution.application.support.RunnerRuntimeConfigProvider;
 import io.jgitkins.core.common.exception.JgitkinsException;

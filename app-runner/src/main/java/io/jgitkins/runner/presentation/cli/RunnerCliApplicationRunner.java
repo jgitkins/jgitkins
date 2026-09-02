@@ -1,6 +1,6 @@
 package io.jgitkins.runner.presentation.cli;
 
-import io.jgitkins.runner.application.dto.RunnerActivateResult;
+import io.jgitkins.runner.application.contract.RunnerActivateResult;
 import io.jgitkins.runner.application.exception.RunnerRegistrationException;
 import io.jgitkins.runner.application.port.in.RunnerActivationUseCase;
 import lombok.RequiredArgsConstructor;

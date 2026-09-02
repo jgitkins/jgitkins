@@ -12,9 +12,9 @@ import io.jgitkins.server.execution.application.contract.internal.RunnerDispatch
 import io.jgitkins.server.execution.domain.aggregate.Job;
 import io.jgitkins.server.execution.domain.entity.JobHistory;
 import io.jgitkins.server.execution.adapter.out.persistence.support.JobDomainMapper;
-import io.jgitkins.server.execution.adapter.out.persistence.mapper.JobDispatchQueryMapper;
-import io.jgitkins.server.execution.adapter.out.persistence.mapper.JobEntityMbgMapper;
-import io.jgitkins.server.execution.adapter.out.persistence.mapper.JobHistoryEntityMbgMapper;
+import io.jgitkins.server.execution.adapter.out.persistence.translator.JobDispatchQueryMapper;
+import io.jgitkins.server.execution.adapter.out.persistence.translator.JobEntityMbgMapper;
+import io.jgitkins.server.execution.adapter.out.persistence.translator.JobHistoryEntityMbgMapper;
 import io.jgitkins.server.execution.adapter.out.persistence.model.DispatchableJobRow;
 import io.jgitkins.server.execution.adapter.out.persistence.model.JobHistoryEntity;
 import java.time.LocalDateTime;

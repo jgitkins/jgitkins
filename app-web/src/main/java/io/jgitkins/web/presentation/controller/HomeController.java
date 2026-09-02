@@ -1,6 +1,6 @@
 package io.jgitkins.web.presentation.controller;
 
-import io.jgitkins.web.application.dto.HomeDashboardSummary;
+import io.jgitkins.web.application.contract.HomeDashboardSummary;
 import io.jgitkins.web.application.port.in.facade.HomeFacadeUseCase;
 import io.jgitkins.web.presentation.support.HomeViewSupport;
 import io.jgitkins.web.presentation.support.SecuritySupport;

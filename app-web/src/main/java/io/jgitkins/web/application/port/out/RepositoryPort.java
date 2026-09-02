@@ -1,6 +1,6 @@
 package io.jgitkins.web.application.port.out;
 
-import io.jgitkins.web.application.dto.*;
+import io.jgitkins.web.application.contract.*;
 
 import java.util.List;
 

@@ -51,13 +51,13 @@ class FinalRollbackDispositionTest {
     /** Mapper namespace must still match the interface the MyBatis adapter injects. */
     private static final Map<String, String> NAMESPACE_CONTRACT = Map.of(
             "app-server/src/main/resources/mapper/mbg/OrganizeEntityMbgMapper.xml",
-            "io.jgitkins.server.collaboration.adapter.out.persistence.mapper.OrganizeEntityMbgMapper",
+            "io.jgitkins.server.collaboration.adapter.out.persistence.translator.OrganizeEntityMbgMapper",
             "app-server/src/main/resources/mapper/mbg/JobHistoryEntityMbgMapper.xml",
-            "io.jgitkins.server.execution.adapter.out.persistence.mapper.JobHistoryEntityMbgMapper",
+            "io.jgitkins.server.execution.adapter.out.persistence.translator.JobHistoryEntityMbgMapper",
             "app-server/src/main/resources/mapper/mbg/UserEntityMbgMapper.xml",
-            "io.jgitkins.server.identity.access.adapter.out.persistence.mapper.UserEntityMbgMapper",
+            "io.jgitkins.server.identity.access.adapter.out.persistence.translator.UserEntityMbgMapper",
             "app-server/src/main/resources/mapper/custom/JobDispatchQueryMapper.xml",
-            "io.jgitkins.server.execution.adapter.out.persistence.mapper.JobDispatchQueryMapper");
+            "io.jgitkins.server.execution.adapter.out.persistence.translator.JobDispatchQueryMapper");
 
     private static final Set<String> STATEMENT_TAGS = Set.of("select", "insert", "update", "delete");
 

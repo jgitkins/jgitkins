@@ -1,7 +1,7 @@
 package io.jgitkins.runner.infrastructure.adapter;
 
 import io.jgitkins.runner.application.port.out.RunnerActivatePort;
-import io.jgitkins.runner.application.mapper.RunnerConfigurationMapper;
+import io.jgitkins.runner.application.translator.RunnerConfigurationMapper;
 import io.jgitkins.runner.domain.RunnerConfiguration;
 import io.jgitkins.runner.infrastructure.http.ActivationResult;
 import io.jgitkins.runner.infrastructure.http.RunnerActivateClient;

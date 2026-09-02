@@ -11,11 +11,11 @@ import org.springframework.context.annotation.Import;
 @SpringBootApplication
 @Import({DataSourceConfig.class, MybatisConfig.class, JpaPersistenceConfiguration.class})
 @MapperScan(basePackages = {
-    "io.jgitkins.server.collaboration.adapter.out.persistence.mapper",
-    "io.jgitkins.server.repository.adapter.out.persistence.mapper",
-    "io.jgitkins.server.execution.adapter.out.persistence.mapper",
-    "io.jgitkins.server.change.review.adapter.out.persistence.mapper",
-    "io.jgitkins.server.identity.access.adapter.out.persistence.mapper"
+    "io.jgitkins.server.collaboration.adapter.out.persistence.translator",
+    "io.jgitkins.server.repository.adapter.out.persistence.translator",
+    "io.jgitkins.server.execution.adapter.out.persistence.translator",
+    "io.jgitkins.server.change.review.adapter.out.persistence.translator",
+    "io.jgitkins.server.identity.access.adapter.out.persistence.translator"
 })
 public class JGitkinsServerApplication {
 	public static void main(String[] args) {

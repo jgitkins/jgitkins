@@ -5,7 +5,7 @@ import io.jgitkins.server.identity.access.domain.entity.UserCredential;
 import io.jgitkins.server.common.infrastructure.error.InfrastructureErrorCode;
 import io.jgitkins.server.common.infrastructure.exception.InfrastructureException;
 import io.jgitkins.server.identity.access.adapter.out.persistence.support.UserCredentialDomainMapper;
-import io.jgitkins.server.identity.access.adapter.out.persistence.mapper.UserCredentialsEntityMbgMapper;
+import io.jgitkins.server.identity.access.adapter.out.persistence.translator.UserCredentialsEntityMbgMapper;
 import io.jgitkins.server.identity.access.adapter.out.persistence.model.UserCredentialsEntity;
 import io.jgitkins.server.identity.access.adapter.out.persistence.model.UserCredentialsEntityCondition;
 import java.util.List;

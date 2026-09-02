@@ -1,16 +1,16 @@
 package io.jgitkins.web.infrastructure.adapter;
 
-import io.jgitkins.web.application.dto.BranchSummary;
-import io.jgitkins.web.application.dto.CommitSummary;
-import io.jgitkins.web.application.dto.RepositoryBranchCreateResult;
-import io.jgitkins.web.application.dto.RepositoryCreateRequest;
-import io.jgitkins.web.application.dto.RepositoryCreateResult;
-import io.jgitkins.web.application.dto.RepositoryFileEntry;
-import io.jgitkins.web.application.dto.RepositoryFileIndexEntry;
-import io.jgitkins.web.application.dto.RepositoryFileUploadRequest;
-import io.jgitkins.web.application.dto.RepositoryFileUploadResult;
-import io.jgitkins.web.application.dto.RepositoryOverviewResult;
-import io.jgitkins.web.application.dto.RepositorySummary;
+import io.jgitkins.web.application.contract.BranchSummary;
+import io.jgitkins.web.application.contract.CommitSummary;
+import io.jgitkins.web.application.contract.RepositoryBranchCreateResult;
+import io.jgitkins.web.application.contract.RepositoryCreateRequest;
+import io.jgitkins.web.application.contract.RepositoryCreateResult;
+import io.jgitkins.web.application.contract.RepositoryFileEntry;
+import io.jgitkins.web.application.contract.RepositoryFileIndexEntry;
+import io.jgitkins.web.application.contract.RepositoryFileUploadRequest;
+import io.jgitkins.web.application.contract.RepositoryFileUploadResult;
+import io.jgitkins.web.application.contract.RepositoryOverviewResult;
+import io.jgitkins.web.application.contract.RepositorySummary;
 import io.jgitkins.web.application.port.out.RepositoryPort;
 import io.jgitkins.web.infrastructure.cache.RepositoryFileIndexCacheSupport;
 import io.jgitkins.web.infrastructure.cache.RepositoryTreeCacheSupport;

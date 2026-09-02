@@ -1,8 +1,8 @@
 package io.jgitkins.web.presentation.controller;
 
-import io.jgitkins.web.application.dto.OrganizeCreateResult;
+import io.jgitkins.web.application.contract.OrganizeCreateResult;
 import io.jgitkins.web.application.port.in.facade.OrganizeCreateFacadeUseCase;
-import io.jgitkins.web.presentation.dto.OrganizeCreateForm;
+import io.jgitkins.web.presentation.contract.OrganizeCreateForm;
 import io.jgitkins.web.presentation.support.OrganizeCreateViewSupport;
 import io.jgitkins.web.presentation.support.SessionUserSupport;
 import jakarta.validation.Valid;

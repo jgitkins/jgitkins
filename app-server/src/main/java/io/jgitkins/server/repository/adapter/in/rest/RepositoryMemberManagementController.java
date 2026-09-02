@@ -10,7 +10,7 @@ import io.jgitkins.server.repository.application.contract.result.RepositoryMembe
 import io.jgitkins.server.repository.application.port.in.RepositoryMemberLoadUseCase;
 import io.jgitkins.server.repository.application.port.in.RepositoryMemberManagementUseCase;
 import io.jgitkins.core.web.api.response.ApiResponse;
-import io.jgitkins.server.repository.adapter.in.rest.dto.request.RepositoryMemberAddRequest;
+import io.jgitkins.server.repository.adapter.in.rest.contract.request.RepositoryMemberAddRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

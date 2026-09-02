@@ -1,11 +1,11 @@
 package io.jgitkins.web.application.service.facade;
 
-import io.jgitkins.web.application.dto.CommitSummary;
-import io.jgitkins.web.application.dto.DashboardData;
-import io.jgitkins.web.application.dto.DashboardFeedItem;
-import io.jgitkins.web.application.dto.DashboardRepoItem;
-import io.jgitkins.web.application.dto.DashboardSummary;
-import io.jgitkins.web.application.dto.RepositoryCommits;
+import io.jgitkins.web.application.contract.CommitSummary;
+import io.jgitkins.web.application.contract.DashboardData;
+import io.jgitkins.web.application.contract.DashboardFeedItem;
+import io.jgitkins.web.application.contract.DashboardRepoItem;
+import io.jgitkins.web.application.contract.DashboardSummary;
+import io.jgitkins.web.application.contract.RepositoryCommits;
 import io.jgitkins.web.application.port.in.DashboardUseCase;
 import io.jgitkins.web.application.port.in.facade.DashboardFacadeUseCase;
 import io.jgitkins.web.infrastructure.config.JgitkinsWebProperties;

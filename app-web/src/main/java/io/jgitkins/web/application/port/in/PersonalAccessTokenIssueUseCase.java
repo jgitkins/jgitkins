@@ -1,7 +1,7 @@
 package io.jgitkins.web.application.port.in;
 
-import io.jgitkins.web.application.dto.UserCredentialIssueRequest;
-import io.jgitkins.web.application.dto.UserCredentialIssueResult;
+import io.jgitkins.web.application.contract.UserCredentialIssueRequest;
+import io.jgitkins.web.application.contract.UserCredentialIssueResult;
 
 public interface PersonalAccessTokenIssueUseCase {
 	UserCredentialIssueResult issueToken(UserCredentialIssueRequest request);

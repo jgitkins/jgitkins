@@ -1,6 +1,6 @@
 package io.jgitkins.web.presentation.support;
 
-import io.jgitkins.web.application.dto.HomeDashboardSummary;
+import io.jgitkins.web.application.contract.HomeDashboardSummary;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.ui.Model;

@@ -17,9 +17,9 @@ import io.jgitkins.server.identity.access.application.port.out.UserIdentityPersi
 import io.jgitkins.server.identity.access.adapter.out.persistence.support.UserCredentialDomainMapper;
 import io.jgitkins.server.identity.access.adapter.out.persistence.support.UserDomainMapper;
 import io.jgitkins.server.identity.access.adapter.out.persistence.support.UserIdentityDomainMapper;
-import io.jgitkins.server.identity.access.adapter.out.persistence.mapper.UserCredentialsEntityMbgMapper;
-import io.jgitkins.server.identity.access.adapter.out.persistence.mapper.UserEntityMbgMapper;
-import io.jgitkins.server.identity.access.adapter.out.persistence.mapper.UserIdentitiesEntityMbgMapper;
+import io.jgitkins.server.identity.access.adapter.out.persistence.translator.UserCredentialsEntityMbgMapper;
+import io.jgitkins.server.identity.access.adapter.out.persistence.translator.UserEntityMbgMapper;
+import io.jgitkins.server.identity.access.adapter.out.persistence.translator.UserIdentitiesEntityMbgMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;

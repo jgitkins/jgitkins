@@ -2,7 +2,7 @@ package io.jgitkins.web.infrastructure.cache;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.jgitkins.web.application.dto.RepositoryFileEntry;
+import io.jgitkins.web.application.contract.RepositoryFileEntry;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Base64;

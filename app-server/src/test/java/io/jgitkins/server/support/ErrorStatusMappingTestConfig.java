@@ -1,11 +1,11 @@
 package io.jgitkins.server.support;
 
-import io.jgitkins.server.common.presentation.advice.mapper.ApplicationErrorHttpStatusMapper;
-import io.jgitkins.server.common.presentation.advice.mapper.CompositeErrorHttpStatusMapper;
-import io.jgitkins.server.common.presentation.advice.mapper.DomainErrorHttpStatusMapper;
-import io.jgitkins.server.common.presentation.advice.mapper.ErrorHttpStatusMapper;
-import io.jgitkins.server.common.presentation.advice.mapper.InfrastructureErrorHttpStatusMapper;
-import io.jgitkins.server.common.presentation.advice.mapper.PresentationErrorHttpStatusMapper;
+import io.jgitkins.server.common.presentation.advice.translator.ApplicationErrorHttpStatusMapper;
+import io.jgitkins.server.common.presentation.advice.translator.CompositeErrorHttpStatusMapper;
+import io.jgitkins.server.common.presentation.advice.translator.DomainErrorHttpStatusMapper;
+import io.jgitkins.server.common.presentation.advice.translator.ErrorHttpStatusMapper;
+import io.jgitkins.server.common.presentation.advice.translator.InfrastructureErrorHttpStatusMapper;
+import io.jgitkins.server.common.presentation.advice.translator.PresentationErrorHttpStatusMapper;
 import java.util.List;
 import org.springframework.context.annotation.Import;
 

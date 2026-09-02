@@ -11,7 +11,7 @@ import io.jgitkins.server.collaboration.domain.vo.OrganizeId;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeName;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeOwnerId;
 import io.jgitkins.server.collaboration.adapter.out.persistence.support.OrganizeDomainMapper;
-import io.jgitkins.server.collaboration.adapter.out.persistence.mapper.OrganizeEntityMbgMapper;
+import io.jgitkins.server.collaboration.adapter.out.persistence.translator.OrganizeEntityMbgMapper;
 import io.jgitkins.server.collaboration.adapter.out.persistence.model.OrganizeEntity;
 import io.jgitkins.server.collaboration.adapter.out.persistence.model.OrganizeEntityCondition;
 

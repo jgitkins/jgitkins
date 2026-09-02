@@ -1,6 +1,6 @@
 package io.jgitkins.web.application.service.support;
 
-import io.jgitkins.web.application.dto.RepositoryFileIndexEntry;
+import io.jgitkins.web.application.contract.RepositoryFileIndexEntry;
 import java.util.Comparator;
 import java.util.List;
 import org.springframework.stereotype.Component;

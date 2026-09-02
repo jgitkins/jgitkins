@@ -1,12 +1,12 @@
 package io.jgitkins.runner.application.service;
 
-import io.jgitkins.runner.application.mapper.JobResultStatusMapper;
+import io.jgitkins.runner.application.translator.JobResultStatusMapper;
 import io.jgitkins.runner.application.port.in.RunnerJobUseCase;
 import io.jgitkins.runner.application.port.out.JobFetchPort;
 import io.jgitkins.runner.application.port.out.JobResultReportPort;
 import io.jgitkins.runner.application.port.out.JobRunnerPort;
 import io.jgitkins.runner.application.port.out.RepositorySyncPort;
-import io.jgitkins.runner.application.dto.JobRunContext;
+import io.jgitkins.runner.application.contract.JobRunContext;
 import io.jgitkins.runner.domain.RunnerConfiguration;
 import io.jgitkins.server.grpc.JobPayload;
 import io.jgitkins.server.grpc.JobResultStatus;

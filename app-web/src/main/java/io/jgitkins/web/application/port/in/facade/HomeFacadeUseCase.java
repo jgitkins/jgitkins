@@ -1,6 +1,6 @@
 package io.jgitkins.web.application.port.in.facade;
 
-import io.jgitkins.web.application.dto.HomeDashboardSummary;
+import io.jgitkins.web.application.contract.HomeDashboardSummary;
 import org.springframework.security.core.Authentication;
 import jakarta.servlet.http.HttpServletRequest;
 

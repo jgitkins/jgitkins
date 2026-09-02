@@ -13,8 +13,8 @@ import io.jgitkins.server.identity.access.application.contract.result.OAuthLogin
 import io.jgitkins.server.identity.access.application.port.in.OAuthLoginUseCase;
 import io.jgitkins.server.identity.access.domain.aggregate.User;
 import io.jgitkins.server.identity.access.domain.vo.UserStatus;
-import io.jgitkins.server.identity.access.adapter.in.rest.dto.request.OAuthLoginRequest;
-import io.jgitkins.server.identity.access.adapter.in.rest.mapper.OAuthRequestMapper;
+import io.jgitkins.server.identity.access.adapter.in.rest.contract.request.OAuthLoginRequest;
+import io.jgitkins.server.identity.access.adapter.in.rest.translator.OAuthRequestMapper;
 import io.jgitkins.server.support.ErrorStatusMappingTestConfig;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.Test;

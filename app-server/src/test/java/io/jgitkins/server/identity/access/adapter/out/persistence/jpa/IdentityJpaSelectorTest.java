@@ -17,9 +17,9 @@ import io.jgitkins.server.identity.access.infrastructure.config.IdentityPersiste
 import io.jgitkins.server.identity.access.adapter.out.persistence.support.UserCredentialDomainMapper;
 import io.jgitkins.server.identity.access.adapter.out.persistence.support.UserDomainMapper;
 import io.jgitkins.server.identity.access.adapter.out.persistence.support.UserIdentityDomainMapper;
-import io.jgitkins.server.identity.access.adapter.out.persistence.mapper.UserCredentialsEntityMbgMapper;
-import io.jgitkins.server.identity.access.adapter.out.persistence.mapper.UserEntityMbgMapper;
-import io.jgitkins.server.identity.access.adapter.out.persistence.mapper.UserIdentitiesEntityMbgMapper;
+import io.jgitkins.server.identity.access.adapter.out.persistence.translator.UserCredentialsEntityMbgMapper;
+import io.jgitkins.server.identity.access.adapter.out.persistence.translator.UserEntityMbgMapper;
+import io.jgitkins.server.identity.access.adapter.out.persistence.translator.UserIdentitiesEntityMbgMapper;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;

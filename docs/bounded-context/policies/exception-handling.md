@@ -18,7 +18,7 @@
 
 - `core-common/src/main/java/io/jgitkins/core/common/exception/JgitkinsException.java`
 - `app-server/src/main/java/io/jgitkins/server/common/presentation/advice/GlobalExceptionHandler.java`
-- `app-server/src/main/java/io/jgitkins/server/common/presentation/advice/mapper/*`
+- `app-server/src/main/java/io/jgitkins/server/common/presentation/advice/translator/*`
 - `core-web/src/main/java/io/jgitkins/core/web/api/response/ApiResponse.java`
 - `core-web/src/main/java/io/jgitkins/core/web/api/response/ApiError.java`
 

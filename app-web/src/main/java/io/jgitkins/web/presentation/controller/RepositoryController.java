@@ -1,12 +1,12 @@
 package io.jgitkins.web.presentation.controller;
 
-import io.jgitkins.web.application.dto.RepositoryBranchCreateResult;
-import io.jgitkins.web.application.dto.RepositoryCreateContext;
-import io.jgitkins.web.application.dto.RepositoryCreateResult;
-import io.jgitkins.web.application.dto.RepositoryDetailData;
-import io.jgitkins.web.application.dto.RepositoryFileIndexEntry;
+import io.jgitkins.web.application.contract.RepositoryBranchCreateResult;
+import io.jgitkins.web.application.contract.RepositoryCreateContext;
+import io.jgitkins.web.application.contract.RepositoryCreateResult;
+import io.jgitkins.web.application.contract.RepositoryDetailData;
+import io.jgitkins.web.application.contract.RepositoryFileIndexEntry;
 import io.jgitkins.web.application.port.in.facade.RepositoryFacadeUseCase;
-import io.jgitkins.web.presentation.dto.RepositoryCreateForm;
+import io.jgitkins.web.presentation.contract.RepositoryCreateForm;
 import io.jgitkins.web.presentation.support.RepositoryTreePathSupport;
 import io.jgitkins.web.presentation.support.RepositoryUserProfile;
 import io.jgitkins.web.presentation.support.RepositoryUserProfileResolver;

@@ -8,8 +8,8 @@ import io.jgitkins.server.execution.adapter.out.persistence.jpa.JobDispatchJpaRe
 import io.jgitkins.server.execution.adapter.out.persistence.jpa.JobHistoryJpaRepository;
 import io.jgitkins.server.execution.application.port.out.JobDispatchQueryPort;
 import io.jgitkins.server.execution.adapter.out.persistence.support.JobDomainMapper;
-import io.jgitkins.server.execution.adapter.out.persistence.mapper.JobDispatchQueryMapper;
-import io.jgitkins.server.execution.adapter.out.persistence.mapper.JobHistoryEntityMbgMapper;
+import io.jgitkins.server.execution.adapter.out.persistence.translator.JobDispatchQueryMapper;
+import io.jgitkins.server.execution.adapter.out.persistence.translator.JobHistoryEntityMbgMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;

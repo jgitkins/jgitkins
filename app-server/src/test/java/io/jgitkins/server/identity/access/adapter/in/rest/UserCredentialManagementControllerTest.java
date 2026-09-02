@@ -16,7 +16,7 @@ import io.jgitkins.server.identity.access.application.contract.result.UserCreden
 import io.jgitkins.server.identity.access.application.port.in.UserCredentialIssueUseCase;
 import io.jgitkins.server.identity.access.application.port.in.UserCredentialQueryUseCase;
 import io.jgitkins.server.identity.access.application.port.in.UserCredentialRevokeUseCase;
-import io.jgitkins.server.identity.access.adapter.in.rest.dto.request.UserCredentialIssueRequest;
+import io.jgitkins.server.identity.access.adapter.in.rest.contract.request.UserCredentialIssueRequest;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;

@@ -67,20 +67,20 @@ public class InfrastructureOwnershipArchitectureTest {
             "io/jgitkins/server/repository/adapter/out/persistence/model/RepositoryMemberEntityCondition.java"
     );
     private static final Set<String> EXPECTED_PERSISTENCE_MAPPER_INTERFACES = Set.of(
-            "io/jgitkins/server/change/review/adapter/out/persistence/mapper/PullRequestEntityMbgMapper.java",
-            "io/jgitkins/server/collaboration/adapter/out/persistence/mapper/OrganizeEntityMbgMapper.java",
-            "io/jgitkins/server/collaboration/adapter/out/persistence/mapper/OrganizeMemberEntityMbgMapper.java",
-            "io/jgitkins/server/execution/adapter/out/persistence/mapper/JobDispatchQueryMapper.java",
-            "io/jgitkins/server/execution/adapter/out/persistence/mapper/JobEntityMbgMapper.java",
-            "io/jgitkins/server/execution/adapter/out/persistence/mapper/JobHistoryEntityMbgMapper.java",
-            "io/jgitkins/server/execution/adapter/out/persistence/mapper/RunnerAssignmentEntityMbgMapper.java",
-            "io/jgitkins/server/execution/adapter/out/persistence/mapper/RunnerEntityMbgMapper.java",
-            "io/jgitkins/server/identity/access/adapter/out/persistence/mapper/UserCredentialsEntityMbgMapper.java",
-            "io/jgitkins/server/identity/access/adapter/out/persistence/mapper/UserEntityMbgMapper.java",
-            "io/jgitkins/server/identity/access/adapter/out/persistence/mapper/UserIdentitiesEntityMbgMapper.java",
-            "io/jgitkins/server/repository/adapter/out/persistence/mapper/BranchEntityMbgMapper.java",
-            "io/jgitkins/server/repository/adapter/out/persistence/mapper/RepositoryEntityMbgMapper.java",
-            "io/jgitkins/server/repository/adapter/out/persistence/mapper/RepositoryMemberEntityMbgMapper.java"
+            "io/jgitkins/server/change/review/adapter/out/persistence/translator/PullRequestEntityMbgMapper.java",
+            "io/jgitkins/server/collaboration/adapter/out/persistence/translator/OrganizeEntityMbgMapper.java",
+            "io/jgitkins/server/collaboration/adapter/out/persistence/translator/OrganizeMemberEntityMbgMapper.java",
+            "io/jgitkins/server/execution/adapter/out/persistence/translator/JobDispatchQueryMapper.java",
+            "io/jgitkins/server/execution/adapter/out/persistence/translator/JobEntityMbgMapper.java",
+            "io/jgitkins/server/execution/adapter/out/persistence/translator/JobHistoryEntityMbgMapper.java",
+            "io/jgitkins/server/execution/adapter/out/persistence/translator/RunnerAssignmentEntityMbgMapper.java",
+            "io/jgitkins/server/execution/adapter/out/persistence/translator/RunnerEntityMbgMapper.java",
+            "io/jgitkins/server/identity/access/adapter/out/persistence/translator/UserCredentialsEntityMbgMapper.java",
+            "io/jgitkins/server/identity/access/adapter/out/persistence/translator/UserEntityMbgMapper.java",
+            "io/jgitkins/server/identity/access/adapter/out/persistence/translator/UserIdentitiesEntityMbgMapper.java",
+            "io/jgitkins/server/repository/adapter/out/persistence/translator/BranchEntityMbgMapper.java",
+            "io/jgitkins/server/repository/adapter/out/persistence/translator/RepositoryEntityMbgMapper.java",
+            "io/jgitkins/server/repository/adapter/out/persistence/translator/RepositoryMemberEntityMbgMapper.java"
     );
     private static final Set<String> EXPECTED_DOMAIN_MAPPER_SUPPORT = Set.of(
             "io/jgitkins/server/change/review/adapter/out/persistence/support/PullRequestDomainMapper.java",
@@ -139,7 +139,7 @@ public class InfrastructureOwnershipArchitectureTest {
     @Test
     void retainedTechnicalAssetsMatchExactCurrentAppServerInventory() throws IOException {
         assertEquals(EXPECTED_MODELS, pathsUnder("io/jgitkins/server", "adapter/out/persistence/model", ".java"));
-        assertEquals(EXPECTED_PERSISTENCE_MAPPER_INTERFACES, pathsUnder("io/jgitkins/server", "adapter/out/persistence/mapper", ".java"));
+        assertEquals(EXPECTED_PERSISTENCE_MAPPER_INTERFACES, pathsUnder("io/jgitkins/server", "adapter/out/persistence/translator", ".java"));
         assertEquals(EXPECTED_DOMAIN_MAPPER_SUPPORT, pathsUnder("io/jgitkins/server", "adapter/out/persistence/support", ".java"));
         assertEquals(EXPECTED_MBG, pathsUnder("", "", ".xml", RESOURCE_ROOT.resolve("mapper/mbg")));
         assertEquals(EXPECTED_CUSTOM, pathsUnder("", "", ".xml", RESOURCE_ROOT.resolve("mapper/custom")));

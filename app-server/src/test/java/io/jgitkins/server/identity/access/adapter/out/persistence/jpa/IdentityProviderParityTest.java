@@ -8,8 +8,8 @@ import io.jgitkins.server.identity.access.adapter.out.persistence.UserCredential
 import io.jgitkins.server.identity.access.adapter.out.persistence.UserIdentityPersistenceAdapter;
 import io.jgitkins.server.identity.access.adapter.out.persistence.support.UserCredentialDomainMapper;
 import io.jgitkins.server.identity.access.adapter.out.persistence.support.UserIdentityDomainMapper;
-import io.jgitkins.server.identity.access.adapter.out.persistence.mapper.UserCredentialsEntityMbgMapper;
-import io.jgitkins.server.identity.access.adapter.out.persistence.mapper.UserIdentitiesEntityMbgMapper;
+import io.jgitkins.server.identity.access.adapter.out.persistence.translator.UserCredentialsEntityMbgMapper;
+import io.jgitkins.server.identity.access.adapter.out.persistence.translator.UserIdentitiesEntityMbgMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;

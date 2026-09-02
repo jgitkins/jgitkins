@@ -3,7 +3,7 @@ package io.jgitkins.server.identity.access.application.service;
 import io.jgitkins.server.identity.access.application.contract.result.UserAdminDetail;
 import io.jgitkins.server.identity.access.application.contract.result.UserAdminSummary;
 import io.jgitkins.server.identity.access.application.contract.result.UserIdentitySummary;
-import io.jgitkins.server.identity.access.application.mapper.UserApplicationMapper;
+import io.jgitkins.server.identity.access.application.translator.UserApplicationMapper;
 import io.jgitkins.server.identity.access.application.port.in.AdminUserQueryUseCase;
 import io.jgitkins.server.identity.access.application.port.in.AdminUserUpdateUseCase;
 import io.jgitkins.server.identity.access.application.port.out.UserIdentityPersistencePort;

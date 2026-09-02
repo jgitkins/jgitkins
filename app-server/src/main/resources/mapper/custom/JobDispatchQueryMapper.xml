@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="io.jgitkins.server.execution.adapter.out.persistence.mapper.JobDispatchQueryMapper">
+<mapper namespace="io.jgitkins.server.execution.adapter.out.persistence.translator.JobDispatchQueryMapper">
   <resultMap id="DispatchableJobRowResultMap" type="io.jgitkins.server.execution.adapter.out.persistence.model.DispatchableJobRow">
     <constructor>
       <idArg column="JOB_ID" javaType="java.lang.Long" jdbcType="BIGINT" />

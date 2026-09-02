@@ -12,7 +12,7 @@ import io.jgitkins.server.repository.domain.vo.RepositoryPath;
 import io.jgitkins.server.common.infrastructure.error.InfrastructureErrorCode;
 import io.jgitkins.server.common.infrastructure.exception.InfrastructureException;
 import io.jgitkins.server.repository.adapter.out.persistence.support.RepositoryDomainMapper;
-import io.jgitkins.server.repository.adapter.out.persistence.mapper.RepositoryEntityMbgMapper;
+import io.jgitkins.server.repository.adapter.out.persistence.translator.RepositoryEntityMbgMapper;
 import io.jgitkins.server.repository.adapter.out.persistence.model.RepositoryEntity;
 import io.jgitkins.server.repository.adapter.out.persistence.model.RepositoryEntityCondition;
 import io.jgitkins.server.repository.application.contract.result.RepositoryResult;

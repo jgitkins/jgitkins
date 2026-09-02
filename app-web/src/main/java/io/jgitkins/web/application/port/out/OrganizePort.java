@@ -1,9 +1,9 @@
 package io.jgitkins.web.application.port.out;
 
-import io.jgitkins.web.application.dto.OrganizeCreateRequest;
-import io.jgitkins.web.application.dto.OrganizeCreateResult;
-import io.jgitkins.web.application.dto.OrganizeFetchResult;
-import io.jgitkins.web.application.dto.OrganizeMemberSummary;
+import io.jgitkins.web.application.contract.OrganizeCreateRequest;
+import io.jgitkins.web.application.contract.OrganizeCreateResult;
+import io.jgitkins.web.application.contract.OrganizeFetchResult;
+import io.jgitkins.web.application.contract.OrganizeMemberSummary;
 import java.util.List;
 
 public interface OrganizePort {

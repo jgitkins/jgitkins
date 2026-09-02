@@ -7,7 +7,7 @@ import io.jgitkins.server.identity.access.application.contract.result.UserAdminS
 import io.jgitkins.server.identity.access.application.port.in.AdminUserQueryUseCase;
 import io.jgitkins.server.identity.access.application.port.in.AdminUserUpdateUseCase;
 import io.jgitkins.core.web.api.response.ApiResponse;
-import io.jgitkins.server.identity.access.adapter.in.rest.dto.request.UserStatusUpdateRequest;
+import io.jgitkins.server.identity.access.adapter.in.rest.contract.request.UserStatusUpdateRequest;
 import io.jgitkins.server.shared.application.exception.UnauthenticatedException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

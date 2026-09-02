@@ -1,6 +1,6 @@
 package io.jgitkins.web.application.service.facade;
 
-import io.jgitkins.web.application.dto.NamespaceSummary;
+import io.jgitkins.web.application.contract.NamespaceSummary;
 import io.jgitkins.web.application.port.in.NamespaceDetailUseCase;
 import io.jgitkins.web.application.port.in.facade.NamespaceFacadeUseCase;
 import lombok.RequiredArgsConstructor;

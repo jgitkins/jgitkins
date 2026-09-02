@@ -1,6 +1,6 @@
 package io.jgitkins.server.identity.access.adapter.in.rest;
 
-import io.jgitkins.server.identity.access.adapter.in.rest.dto.request.UserUsernameUpdateRequest;
+import io.jgitkins.server.identity.access.adapter.in.rest.contract.request.UserUsernameUpdateRequest;
 import io.jgitkins.server.identity.access.application.port.in.SignupUseCase;
 import io.jgitkins.core.web.api.response.ApiResponse;
 import io.jgitkins.server.shared.application.exception.UnauthenticatedException;

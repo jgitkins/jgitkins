@@ -32,8 +32,8 @@ import io.jgitkins.server.collaboration.adapter.out.persistence.OrganizeMemberPe
 import io.jgitkins.server.collaboration.adapter.out.persistence.OrganizePersistenceAdapter;
 import io.jgitkins.server.collaboration.adapter.out.persistence.support.OrganizeDomainMapper;
 import io.jgitkins.server.collaboration.adapter.out.persistence.support.OrganizeMemberDomainMapper;
-import io.jgitkins.server.collaboration.adapter.out.persistence.mapper.OrganizeEntityMbgMapper;
-import io.jgitkins.server.collaboration.adapter.out.persistence.mapper.OrganizeMemberEntityMbgMapper;
+import io.jgitkins.server.collaboration.adapter.out.persistence.translator.OrganizeEntityMbgMapper;
+import io.jgitkins.server.collaboration.adapter.out.persistence.translator.OrganizeMemberEntityMbgMapper;
 import io.jgitkins.server.collaboration.adapter.out.persistence.model.OrganizeEntity;
 import io.jgitkins.server.collaboration.adapter.out.persistence.model.OrganizeEntityCondition;
 import io.jgitkins.server.collaboration.adapter.out.persistence.model.OrganizeMemberEntity;
@@ -51,10 +51,10 @@ import io.jgitkins.server.change.review.adapter.in.rest.MergeController;
 import io.jgitkins.server.identity.access.adapter.in.rest.OAuthController;
 import io.jgitkins.server.collaboration.adapter.in.rest.OrganizeManagementController;
 import io.jgitkins.server.collaboration.adapter.in.rest.OrganizeMemberManagementController;
-import io.jgitkins.server.collaboration.adapter.in.rest.dto.request.OrganizeCreationRequest;
-import io.jgitkins.server.collaboration.adapter.in.rest.dto.request.OrganizeMemberAddRequest;
-import io.jgitkins.server.collaboration.adapter.in.rest.mapper.OrganizeMemberRequestMapper;
-import io.jgitkins.server.collaboration.adapter.in.rest.mapper.OrganizeRequestMapper;
+import io.jgitkins.server.collaboration.adapter.in.rest.contract.request.OrganizeCreationRequest;
+import io.jgitkins.server.collaboration.adapter.in.rest.contract.request.OrganizeMemberAddRequest;
+import io.jgitkins.server.collaboration.adapter.in.rest.translator.OrganizeMemberRequestMapper;
+import io.jgitkins.server.collaboration.adapter.in.rest.translator.OrganizeRequestMapper;
 import io.jgitkins.server.identity.access.adapter.in.rest.SignupController;
 import io.jgitkins.server.identity.access.adapter.in.rest.UserController;
 import io.jgitkins.server.identity.access.adapter.in.rest.UserCredentialManagementController;
@@ -110,7 +110,7 @@ class ArchitecturePackageConventionTest {
     private static final String COLLABORATION_INFRASTRUCTURE_ADAPTER_PACKAGE = "io.jgitkins.server.collaboration.adapter.out.persistence";
     private static final String COLLABORATION_INFRASTRUCTURE_MAPPER_PACKAGE = "io.jgitkins.server.collaboration.adapter.out.persistence.support";
     private static final String COLLABORATION_INFRASTRUCTURE_PERSISTENCE_MODEL_PACKAGE = "io.jgitkins.server.collaboration.adapter.out.persistence.model";
-    private static final String COLLABORATION_INFRASTRUCTURE_PERSISTENCE_MAPPER_PACKAGE = "io.jgitkins.server.collaboration.adapter.out.persistence.mapper";
+    private static final String COLLABORATION_INFRASTRUCTURE_PERSISTENCE_MAPPER_PACKAGE = "io.jgitkins.server.collaboration.adapter.out.persistence.translator";
     private static final String IDENTITY_ACCESS_SERVICE_PACKAGE = "io.jgitkins.server.identity.access.application.service";
     private static final String IDENTITY_ACCESS_PORT_OUT_PACKAGE = "io.jgitkins.server.identity.access.application.port.out";
     @Test
@@ -299,13 +299,13 @@ class ArchitecturePackageConventionTest {
 
     @Test
     void collaborationInboundContracts_resideInExpectedPackages() {
-        assertEquals("io.jgitkins.server.collaboration.adapter.in.rest.dto.request",
+        assertEquals("io.jgitkins.server.collaboration.adapter.in.rest.contract.request",
                 OrganizeCreationRequest.class.getPackageName());
-        assertEquals("io.jgitkins.server.collaboration.adapter.in.rest.dto.request",
+        assertEquals("io.jgitkins.server.collaboration.adapter.in.rest.contract.request",
                 OrganizeMemberAddRequest.class.getPackageName());
-        assertEquals("io.jgitkins.server.collaboration.adapter.in.rest.mapper",
+        assertEquals("io.jgitkins.server.collaboration.adapter.in.rest.translator",
                 OrganizeRequestMapper.class.getPackageName());
-        assertEquals("io.jgitkins.server.collaboration.adapter.in.rest.mapper",
+        assertEquals("io.jgitkins.server.collaboration.adapter.in.rest.translator",
                 OrganizeMemberRequestMapper.class.getPackageName());
     }
 

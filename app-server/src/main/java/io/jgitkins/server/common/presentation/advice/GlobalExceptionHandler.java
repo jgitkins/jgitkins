@@ -6,7 +6,7 @@ import io.jgitkins.core.common.exception.JgitkinsException;
 import io.jgitkins.server.shared.domain.exception.DomainException;
 import io.jgitkins.server.common.infrastructure.error.InfrastructureErrorCode;
 import io.jgitkins.server.common.infrastructure.exception.InfrastructureException;
-import io.jgitkins.server.common.presentation.advice.mapper.CompositeErrorHttpStatusMapper;
+import io.jgitkins.server.common.presentation.advice.translator.CompositeErrorHttpStatusMapper;
 import io.jgitkins.core.web.api.response.ApiResponse;
 import io.jgitkins.server.common.presentation.error.PresentationErrorCode;
 import io.jgitkins.server.common.presentation.error.PresentationProblemSpec;

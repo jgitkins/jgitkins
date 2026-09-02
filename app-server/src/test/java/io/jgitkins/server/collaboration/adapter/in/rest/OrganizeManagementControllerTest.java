@@ -18,8 +18,8 @@ import io.jgitkins.server.collaboration.application.port.in.OrganizeCreationUseC
 import io.jgitkins.server.collaboration.application.port.in.OrganizeDeletionUseCase;
 import io.jgitkins.server.collaboration.application.port.in.OrganizeLoadUseCase;
 import io.jgitkins.server.collaboration.adapter.in.rest.OrganizeManagementController;
-import io.jgitkins.server.collaboration.adapter.in.rest.dto.request.OrganizeCreationRequest;
-import io.jgitkins.server.collaboration.adapter.in.rest.mapper.OrganizeRequestMapper;
+import io.jgitkins.server.collaboration.adapter.in.rest.contract.request.OrganizeCreationRequest;
+import io.jgitkins.server.collaboration.adapter.in.rest.translator.OrganizeRequestMapper;
 import io.jgitkins.server.common.presentation.advice.GlobalExceptionHandler;
 import io.jgitkins.server.support.PermissiveSliceSecurityConfig;
 import io.jgitkins.server.support.ErrorStatusMappingTestConfig;

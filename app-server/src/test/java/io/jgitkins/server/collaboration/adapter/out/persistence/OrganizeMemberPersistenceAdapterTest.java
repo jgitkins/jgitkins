@@ -10,7 +10,7 @@ import io.jgitkins.server.collaboration.domain.entity.OrganizeMember;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeId;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeMemberRole;
 import io.jgitkins.server.collaboration.adapter.out.persistence.support.OrganizeMemberDomainMapper;
-import io.jgitkins.server.collaboration.adapter.out.persistence.mapper.OrganizeMemberEntityMbgMapper;
+import io.jgitkins.server.collaboration.adapter.out.persistence.translator.OrganizeMemberEntityMbgMapper;
 import io.jgitkins.server.collaboration.adapter.out.persistence.model.OrganizeMemberEntity;
 import io.jgitkins.server.collaboration.adapter.out.persistence.model.OrganizeMemberEntityCondition;
 import io.jgitkins.server.collaboration.domain.vo.MemberUserId;

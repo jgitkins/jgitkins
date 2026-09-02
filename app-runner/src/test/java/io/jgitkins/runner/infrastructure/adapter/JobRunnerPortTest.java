@@ -1,7 +1,7 @@
 package io.jgitkins.runner.infrastructure.adapter;
 
 import com.github.dockerjava.api.DockerClient;
-import io.jgitkins.runner.application.dto.JobRunContext;
+import io.jgitkins.runner.application.contract.JobRunContext;
 import io.jgitkins.runner.application.port.out.JobRunnerPort;
 import io.jgitkins.runner.application.port.out.RepositorySyncPort;
 import org.junit.jupiter.api.Test;

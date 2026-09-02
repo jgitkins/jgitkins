@@ -1,6 +1,6 @@
 package io.jgitkins.web.application.port.in.facade;
 
-import io.jgitkins.web.application.dto.DashboardSummary;
+import io.jgitkins.web.application.contract.DashboardSummary;
 
 public interface DashboardFacadeUseCase {
 

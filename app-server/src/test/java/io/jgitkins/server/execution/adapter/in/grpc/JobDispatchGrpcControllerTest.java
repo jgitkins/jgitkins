@@ -13,7 +13,7 @@ import io.jgitkins.server.execution.application.contract.result.JobDispatchResul
 import io.jgitkins.server.execution.application.contract.result.JobResultStatus;
 import io.jgitkins.server.execution.application.port.in.JobDispatchUseCase;
 import io.jgitkins.server.execution.application.port.in.JobResultReportUseCase;
-import io.jgitkins.server.execution.adapter.in.grpc.mapper.JobDispatchGrpcMapper;
+import io.jgitkins.server.execution.adapter.in.grpc.translator.JobDispatchGrpcMapper;
 import io.jgitkins.server.grpc.JobDispatchRequest;
 import io.jgitkins.server.grpc.JobDispatchResponse;
 import io.jgitkins.server.grpc.JobPayload;

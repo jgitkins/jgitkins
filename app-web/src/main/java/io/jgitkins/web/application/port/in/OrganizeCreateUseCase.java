@@ -1,7 +1,7 @@
 package io.jgitkins.web.application.port.in;
 
-import io.jgitkins.web.application.dto.OrganizeCreateRequest;
-import io.jgitkins.web.application.dto.OrganizeCreateResult;
+import io.jgitkins.web.application.contract.OrganizeCreateRequest;
+import io.jgitkins.web.application.contract.OrganizeCreateResult;
 
 public interface OrganizeCreateUseCase {
 

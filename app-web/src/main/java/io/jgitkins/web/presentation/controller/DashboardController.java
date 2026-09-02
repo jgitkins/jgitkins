@@ -1,6 +1,6 @@
 package io.jgitkins.web.presentation.controller;
 
-import io.jgitkins.web.application.dto.DashboardSummary;
+import io.jgitkins.web.application.contract.DashboardSummary;
 import io.jgitkins.web.application.port.in.facade.DashboardFacadeUseCase;
 import io.jgitkins.web.presentation.support.SessionSupport;
 import jakarta.servlet.http.HttpServletRequest;

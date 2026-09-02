@@ -4,12 +4,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import io.jgitkins.web.application.dto.RepositoryDetailData;
-import io.jgitkins.web.application.dto.RepositoryFileEntry;
-import io.jgitkins.web.application.dto.RepositoryFileIndexEntry;
-import io.jgitkins.web.application.dto.RepositoryOverviewResult;
-import io.jgitkins.web.application.dto.RepositorySummary;
-import io.jgitkins.web.application.mapper.RepositoryDetailDataMapper;
+import io.jgitkins.web.application.contract.RepositoryDetailData;
+import io.jgitkins.web.application.contract.RepositoryFileEntry;
+import io.jgitkins.web.application.contract.RepositoryFileIndexEntry;
+import io.jgitkins.web.application.contract.RepositoryOverviewResult;
+import io.jgitkins.web.application.contract.RepositorySummary;
+import io.jgitkins.web.application.translator.RepositoryDetailDataMapper;
 import io.jgitkins.web.application.port.out.RepositoryPort;
 import io.jgitkins.web.application.service.support.RepositoryDetailDataFactory;
 import io.jgitkins.web.application.service.support.RepositoryFileSearchPolicy;

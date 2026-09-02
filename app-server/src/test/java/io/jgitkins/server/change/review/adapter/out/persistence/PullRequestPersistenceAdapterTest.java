@@ -8,7 +8,7 @@ import io.jgitkins.server.change.review.domain.model.BranchHeadSnapshot;
 import io.jgitkins.server.change.review.domain.model.vo.PullRequestId;
 import io.jgitkins.server.change.review.domain.model.vo.ReviewRepositoryId;
 import io.jgitkins.server.change.review.adapter.out.persistence.support.PullRequestDomainMapper;
-import io.jgitkins.server.change.review.adapter.out.persistence.mapper.PullRequestEntityMbgMapper;
+import io.jgitkins.server.change.review.adapter.out.persistence.translator.PullRequestEntityMbgMapper;
 import io.jgitkins.server.change.review.adapter.out.persistence.model.PullRequestEntity;
 import io.jgitkins.server.common.infrastructure.error.InfrastructureErrorCode;
 import io.jgitkins.server.common.infrastructure.exception.InfrastructureException;

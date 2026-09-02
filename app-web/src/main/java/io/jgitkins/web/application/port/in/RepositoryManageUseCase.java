@@ -1,7 +1,7 @@
 package io.jgitkins.web.application.port.in;
 
-import io.jgitkins.web.application.dto.RepositoryBranchCreateResult;
-import io.jgitkins.web.application.dto.RepositoryFileUploadResult;
+import io.jgitkins.web.application.contract.RepositoryBranchCreateResult;
+import io.jgitkins.web.application.contract.RepositoryFileUploadResult;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface RepositoryManageUseCase {

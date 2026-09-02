@@ -1,9 +1,9 @@
 package io.jgitkins.web.application.service;
 
-import io.jgitkins.web.application.dto.RepositoryBranchCreateResult;
-import io.jgitkins.web.application.dto.RepositoryFileUploadRequest;
-import io.jgitkins.web.application.dto.RepositoryFileUploadResult;
-import io.jgitkins.web.application.dto.RepositorySummary;
+import io.jgitkins.web.application.contract.RepositoryBranchCreateResult;
+import io.jgitkins.web.application.contract.RepositoryFileUploadRequest;
+import io.jgitkins.web.application.contract.RepositoryFileUploadResult;
+import io.jgitkins.web.application.contract.RepositorySummary;
 import io.jgitkins.web.application.model.RepositoryKey;
 import io.jgitkins.web.application.port.in.RepositoryManageUseCase;
 import io.jgitkins.web.application.port.out.RepositoryPort;

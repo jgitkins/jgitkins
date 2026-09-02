@@ -1,11 +1,11 @@
 package io.jgitkins.web.application.port.in.facade;
 
-import io.jgitkins.web.application.dto.RepositoryBranchCreateResult;
-import io.jgitkins.web.application.dto.RepositoryCreateContext;
-import io.jgitkins.web.application.dto.RepositoryCreateRequest;
-import io.jgitkins.web.application.dto.RepositoryCreateResult;
-import io.jgitkins.web.application.dto.RepositoryDetailData;
-import io.jgitkins.web.application.dto.RepositoryFileIndexEntry;
+import io.jgitkins.web.application.contract.RepositoryBranchCreateResult;
+import io.jgitkins.web.application.contract.RepositoryCreateContext;
+import io.jgitkins.web.application.contract.RepositoryCreateRequest;
+import io.jgitkins.web.application.contract.RepositoryCreateResult;
+import io.jgitkins.web.application.contract.RepositoryDetailData;
+import io.jgitkins.web.application.contract.RepositoryFileIndexEntry;
 import io.jgitkins.web.presentation.support.RepositoryUserProfile;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.List;

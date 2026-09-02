@@ -8,8 +8,8 @@ import io.jgitkins.server.collaboration.application.port.in.OrganizeMemberAddUse
 import io.jgitkins.server.collaboration.application.port.in.OrganizeMemberQueryUseCase;
 import io.jgitkins.server.collaboration.application.port.in.OrganizeMemberRemoveUseCase;
 import io.jgitkins.core.web.api.response.ApiResponse;
-import io.jgitkins.server.collaboration.adapter.in.rest.dto.request.OrganizeMemberAddRequest;
-import io.jgitkins.server.collaboration.adapter.in.rest.mapper.OrganizeMemberRequestMapper;
+import io.jgitkins.server.collaboration.adapter.in.rest.contract.request.OrganizeMemberAddRequest;
+import io.jgitkins.server.collaboration.adapter.in.rest.translator.OrganizeMemberRequestMapper;
 import io.jgitkins.server.shared.application.exception.UnauthenticatedException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

@@ -5,7 +5,7 @@ import static org.mockito.Mockito.*;
 
 import io.jgitkins.server.change.review.application.contract.result.PullRequestDetailResult;
 import io.jgitkins.server.change.review.application.exception.RepositoryReferenceNotFoundException;
-import io.jgitkins.server.change.review.application.mapper.PullRequestDetailMapper;
+import io.jgitkins.server.change.review.application.translator.PullRequestDetailMapper;
 import io.jgitkins.server.change.review.application.port.out.RepositoryReadAccessPort;
 import io.jgitkins.server.change.review.application.port.out.RepositoryReferencePort;
 import io.jgitkins.server.change.review.application.port.out.ReviewRepositoryReference;

@@ -17,9 +17,14 @@ import org.junit.jupiter.api.Test;
  * file re-decided it and every review re-argued it.
  *
  * <p>{@code contract} won because the layer holds the input and output of a use case, not something
- * to serialise -- and because {@code dto} is already taken one layer out, by
- * {@code adapter/in/rest/dto}, where the request and response bodies live. Two packages named
- * {@code dto} on either side of the boundary made the distinction invisible at the import.
+ * to serialise. The name is now the rule everywhere rather than a rule for this layer only: the
+ * adapter side was {@code adapter/in/rest/dto} when this guard was written and is
+ * {@code adapter/in/rest/contract} today, so {@code dto} names nothing in the tree. An earlier
+ * revision of this javadoc argued the opposite -- that the adapter keeping {@code dto} was what let
+ * a reader tell the two apart at the import. It does not hold up against the import lines
+ * themselves: {@code application.contract.command.OrganizeCreationCommand} and
+ * {@code adapter.in.rest.contract.request.OrganizeCreationRequest} are separated by the layer
+ * segment and by the leaf, in all twenty files that import both.
  *
  * <p><strong>This does not assert the contexts have identical package sets.</strong> They do not, and
  * should not: {@code policy}, {@code support} and {@code validate} appear only where a context has
@@ -75,8 +80,9 @@ class ApplicationContractPackageNamingTest {
                 .hasSize(CONTEXTS.size());
 
         assertThat(survey.stillCallingItDto())
-                .as("application/dto is the old name for this layer and collides with "
-                        + "adapter/in/rest/dto one layer out. Use application/contract.")
+                .as("application/dto is the old name for this layer. dto now names nothing in the "
+                        + "tree -- the adapter side is adapter/in/rest/contract. Use "
+                        + "application/contract.")
                 .isEmpty();
 
         assertThat(survey.missingContract())

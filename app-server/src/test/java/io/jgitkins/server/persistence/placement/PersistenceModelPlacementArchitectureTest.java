@@ -36,7 +36,7 @@ class PersistenceModelPlacementArchitectureTest {
     /** The three leaves task 2.67 moved, as {@code source leaf -> destination leaf}. */
     private static final Map<String, String> MOVED_LEAVES = new LinkedHashMap<>(Map.of(
             "infrastructure/persistence/model", "adapter/out/persistence/model",
-            "infrastructure/persistence/mapper", "adapter/out/persistence/mapper",
+            "infrastructure/persistence/mapper", "adapter/out/persistence/translator",
             "infrastructure/mapper", "adapter/out/persistence/support"));
 
     @Test

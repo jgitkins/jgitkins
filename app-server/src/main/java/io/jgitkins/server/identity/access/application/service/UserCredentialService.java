@@ -3,7 +3,7 @@ package io.jgitkins.server.identity.access.application.service;
 import io.jgitkins.server.identity.access.application.contract.command.UserCredentialIssueCommand;
 import io.jgitkins.server.identity.access.application.contract.result.UserCredentialIssueResult;
 import io.jgitkins.server.identity.access.application.contract.result.UserCredentialSummary;
-import io.jgitkins.server.identity.access.application.mapper.UserCredentialApplicationMapper;
+import io.jgitkins.server.identity.access.application.translator.UserCredentialApplicationMapper;
 
 import io.jgitkins.server.identity.access.application.port.in.UserCredentialIssueUseCase;
 import io.jgitkins.server.identity.access.application.port.in.UserCredentialQueryUseCase;

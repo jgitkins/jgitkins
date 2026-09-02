@@ -7,9 +7,9 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import io.jgitkins.web.application.dto.UserCredentialIssueResult;
+import io.jgitkins.web.application.contract.UserCredentialIssueResult;
 import io.jgitkins.web.application.port.in.facade.SettingsFacadeUseCase;
-import io.jgitkins.web.presentation.dto.PersonalAccessTokenForm;
+import io.jgitkins.web.presentation.contract.PersonalAccessTokenForm;
 import io.jgitkins.web.presentation.support.SettingsViewSupport;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

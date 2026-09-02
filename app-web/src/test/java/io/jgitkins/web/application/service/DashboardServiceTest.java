@@ -5,10 +5,10 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import io.jgitkins.web.application.dto.CommitSummary;
-import io.jgitkins.web.application.dto.DashboardData;
-import io.jgitkins.web.application.dto.OrganizeFetchResult;
-import io.jgitkins.web.application.dto.RepositorySummary;
+import io.jgitkins.web.application.contract.CommitSummary;
+import io.jgitkins.web.application.contract.DashboardData;
+import io.jgitkins.web.application.contract.OrganizeFetchResult;
+import io.jgitkins.web.application.contract.RepositorySummary;
 import io.jgitkins.web.application.port.out.OrganizePort;
 import io.jgitkins.web.application.port.out.RepositoryPort;
 import java.time.LocalDateTime;

@@ -1,7 +1,7 @@
 package io.jgitkins.web.presentation.support;
 
-import io.jgitkins.web.application.dto.OrganizeCreateRequest;
-import io.jgitkins.web.presentation.dto.OrganizeCreateForm;
+import io.jgitkins.web.application.contract.OrganizeCreateRequest;
+import io.jgitkins.web.presentation.contract.OrganizeCreateForm;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;

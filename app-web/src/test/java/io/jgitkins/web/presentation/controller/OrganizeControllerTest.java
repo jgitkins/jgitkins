@@ -6,10 +6,10 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import io.jgitkins.web.application.dto.OrganizeCreateResult;
-import io.jgitkins.web.application.dto.OrganizeSummary;
+import io.jgitkins.web.application.contract.OrganizeCreateResult;
+import io.jgitkins.web.application.contract.OrganizeSummary;
 import io.jgitkins.web.application.port.in.facade.OrganizeCreateFacadeUseCase;
-import io.jgitkins.web.presentation.dto.OrganizeCreateForm;
+import io.jgitkins.web.presentation.contract.OrganizeCreateForm;
 import io.jgitkins.web.presentation.support.OrganizeCreateViewSupport;
 import io.jgitkins.web.presentation.support.SessionUserSupport;
 import java.util.Optional;

@@ -13,7 +13,7 @@ import static org.mockito.Mockito.when;
 import io.jgitkins.server.collaboration.application.contract.command.OrganizeCreationCommand;
 import io.jgitkins.server.collaboration.application.contract.result.OrganizeCreationResult;
 import io.jgitkins.server.collaboration.application.exception.OrganizeAccessDeniedException;
-import io.jgitkins.server.collaboration.application.mapper.OrganizeApplicationMapper;
+import io.jgitkins.server.collaboration.application.translator.OrganizeApplicationMapper;
 import io.jgitkins.server.collaboration.application.service.OrganizeService;
 import io.jgitkins.server.collaboration.application.port.out.DomainEventPublisher;
 import io.jgitkins.server.collaboration.application.port.out.OrganizeMemberPersistencePort;

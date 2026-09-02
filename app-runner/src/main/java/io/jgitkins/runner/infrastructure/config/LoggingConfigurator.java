@@ -63,7 +63,7 @@ public class LoggingConfigurator implements ApplicationListener<ApplicationEnvir
         setLogger(loggerContext, "jdbc.sqlonly", Level.WARN);
         setLogger(loggerContext, "jdbc.resultsettable", Level.WARN);
         setLogger(loggerContext, "jdbc.sqltiming", Level.WARN);
-        setLogger(loggerContext, "io.jgitkins.runner.infrastructure.persistence.mapper", Level.WARN);
+        setLogger(loggerContext, "io.jgitkins.runner.infrastructure.persistence.translator", Level.WARN);
     }
 
     private void configureProfileLoggers(LoggerContext loggerContext, boolean isLocal) {

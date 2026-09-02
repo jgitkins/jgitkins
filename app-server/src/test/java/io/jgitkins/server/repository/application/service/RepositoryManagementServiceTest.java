@@ -2,7 +2,7 @@ package io.jgitkins.server.repository.application.service;
 
 import io.jgitkins.server.repository.application.contract.command.RepositoryCreateCommand;
 import io.jgitkins.server.repository.application.contract.result.RepositoryResult;
-import io.jgitkins.server.repository.application.mapper.RepositoryApplicationMapper;
+import io.jgitkins.server.repository.application.translator.RepositoryApplicationMapper;
 import io.jgitkins.server.repository.application.port.out.OrganizationMembershipPort;
 import io.jgitkins.server.repository.application.port.out.RepositoryActorPort;
 import io.jgitkins.server.repository.application.support.ownership.RepositoryOwnershipPolicy;

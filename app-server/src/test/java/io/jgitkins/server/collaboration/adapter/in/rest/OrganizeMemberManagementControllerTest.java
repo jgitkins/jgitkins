@@ -16,8 +16,8 @@ import io.jgitkins.server.collaboration.application.port.in.OrganizeMemberAddUse
 import io.jgitkins.server.collaboration.application.port.in.OrganizeMemberQueryUseCase;
 import io.jgitkins.server.collaboration.application.port.in.OrganizeMemberRemoveUseCase;
 import io.jgitkins.server.collaboration.adapter.in.rest.OrganizeMemberManagementController;
-import io.jgitkins.server.collaboration.adapter.in.rest.dto.request.OrganizeMemberAddRequest;
-import io.jgitkins.server.collaboration.adapter.in.rest.mapper.OrganizeMemberRequestMapper;
+import io.jgitkins.server.collaboration.adapter.in.rest.contract.request.OrganizeMemberAddRequest;
+import io.jgitkins.server.collaboration.adapter.in.rest.translator.OrganizeMemberRequestMapper;
 import io.jgitkins.server.collaboration.application.contract.command.OrganizeMemberAddCommand;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeMemberRole;
 import io.jgitkins.server.common.presentation.advice.GlobalExceptionHandler;

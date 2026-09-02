@@ -11,7 +11,7 @@ import io.jgitkins.server.identity.access.application.exception.AdminPrivilegeRe
 import io.jgitkins.server.shared.application.exception.UnauthenticatedException;
 import io.jgitkins.server.identity.access.application.contract.result.UserAdminDetail;
 import io.jgitkins.server.identity.access.application.contract.result.UserAdminSummary;
-import io.jgitkins.server.identity.access.application.mapper.UserApplicationMapper;
+import io.jgitkins.server.identity.access.application.translator.UserApplicationMapper;
 import io.jgitkins.server.identity.access.application.port.out.UserIdentityPersistencePort;
 import io.jgitkins.server.identity.access.application.port.out.UserQueryPort;
 import io.jgitkins.server.identity.access.domain.aggregate.User;

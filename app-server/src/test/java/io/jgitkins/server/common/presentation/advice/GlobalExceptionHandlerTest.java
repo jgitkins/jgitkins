@@ -8,7 +8,7 @@ import io.jgitkins.server.shared.domain.error.DomainProblemSpec;
 import io.jgitkins.server.shared.domain.exception.DomainException;
 import io.jgitkins.server.common.infrastructure.error.InfrastructureErrorCode;
 import io.jgitkins.server.common.infrastructure.exception.InfrastructureException;
-import io.jgitkins.server.common.presentation.advice.mapper.*;
+import io.jgitkins.server.common.presentation.advice.translator.*;
 import io.jgitkins.server.common.presentation.error.PresentationProblemSpec;
 import io.jgitkins.server.common.presentation.exception.PresentationException;
 import org.junit.jupiter.api.BeforeEach;

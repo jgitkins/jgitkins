@@ -116,9 +116,9 @@ public class LoggingConfigurator implements ApplicationListener<ApplicationEnvir
         setLogger(loggerContext, "jdbc.sqlonly", Level.WARN);
         setLogger(loggerContext, "jdbc.resultsettable", Level.WARN);
         setLogger(loggerContext, "jdbc.sqltiming", Level.WARN);
-        setLogger(loggerContext, "io.jgitkins.server.repository.adapter.out.persistence.mapper", Level.WARN);
-        setLogger(loggerContext, "io.jgitkins.server.execution.adapter.out.persistence.mapper", Level.WARN);
-        setLogger(loggerContext, "io.jgitkins.server.collaboration.adapter.out.persistence.mapper", Level.WARN);
+        setLogger(loggerContext, "io.jgitkins.server.repository.adapter.out.persistence.translator", Level.WARN);
+        setLogger(loggerContext, "io.jgitkins.server.execution.adapter.out.persistence.translator", Level.WARN);
+        setLogger(loggerContext, "io.jgitkins.server.collaboration.adapter.out.persistence.translator", Level.WARN);
 
         setLogger(loggerContext, "org.springframework.cache", Level.TRACE);
         setLogger(loggerContext, "io.jgitkins", Level.DEBUG);

@@ -6,7 +6,7 @@ import static org.mockito.Mockito.when;
 
 import io.jgitkins.server.identity.access.application.contract.result.UserQueryResult;
 import io.jgitkins.server.identity.access.application.contract.result.UserSummary;
-import io.jgitkins.server.identity.access.application.mapper.UserApplicationMapper;
+import io.jgitkins.server.identity.access.application.translator.UserApplicationMapper;
 import io.jgitkins.server.identity.access.application.port.out.UserQueryPort;
 import java.time.LocalDateTime;
 import java.util.List;

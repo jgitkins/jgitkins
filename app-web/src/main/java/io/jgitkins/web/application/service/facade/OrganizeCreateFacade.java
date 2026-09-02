@@ -1,7 +1,7 @@
 package io.jgitkins.web.application.service.facade;
 
-import io.jgitkins.web.application.dto.OrganizeCreateRequest;
-import io.jgitkins.web.application.dto.OrganizeCreateResult;
+import io.jgitkins.web.application.contract.OrganizeCreateRequest;
+import io.jgitkins.web.application.contract.OrganizeCreateResult;
 import io.jgitkins.web.application.port.in.OrganizeCreateUseCase;
 import io.jgitkins.web.application.port.in.facade.OrganizeCreateFacadeUseCase;
 import lombok.RequiredArgsConstructor;

@@ -1,6 +1,6 @@
 package io.jgitkins.web.infrastructure.adapter;
 
-import io.jgitkins.web.application.dto.*;
+import io.jgitkins.web.application.contract.*;
 import io.jgitkins.web.application.port.out.AppTokenIssuePort;
 import io.jgitkins.web.application.port.out.OrganizePort;
 import io.jgitkins.web.application.port.out.RepositoryPort;

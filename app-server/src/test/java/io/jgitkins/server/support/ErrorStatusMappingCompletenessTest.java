@@ -2,7 +2,7 @@ package io.jgitkins.server.support;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.jgitkins.server.common.presentation.advice.mapper.ErrorHttpStatusMapper;
+import io.jgitkins.server.common.presentation.advice.translator.ErrorHttpStatusMapper;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -30,9 +30,9 @@ class ErrorStatusMappingCompletenessTest {
 
     @Test
     void theTestConfigCarriesEveryMapperThatExists() throws IOException {
-        Path mapperDir = Path.of("app-server/src/main/java/io/jgitkins/server/common/presentation/advice/mapper");
+        Path mapperDir = Path.of("app-server/src/main/java/io/jgitkins/server/common/presentation/advice/translator");
         if (!Files.isDirectory(mapperDir)) {
-            mapperDir = Path.of("src/main/java/io/jgitkins/server/common/presentation/advice/mapper");
+            mapperDir = Path.of("src/main/java/io/jgitkins/server/common/presentation/advice/translator");
         }
 
         Set<String> onDisk = new TreeSet<>();

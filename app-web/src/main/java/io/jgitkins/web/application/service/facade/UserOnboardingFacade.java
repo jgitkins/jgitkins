@@ -1,6 +1,6 @@
 package io.jgitkins.web.application.service.facade;
 
-import io.jgitkins.web.application.dto.UsernameUpdateResult;
+import io.jgitkins.web.application.contract.UsernameUpdateResult;
 import io.jgitkins.web.application.port.in.facade.UserOnboardingFacadeUseCase;
 import io.jgitkins.web.application.port.out.UserPort;
 import io.jgitkins.web.presentation.support.SessionSupport;

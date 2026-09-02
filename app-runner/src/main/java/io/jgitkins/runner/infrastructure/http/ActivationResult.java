@@ -1,7 +1,7 @@
 package io.jgitkins.runner.infrastructure.http;
 
-import io.jgitkins.runner.application.dto.RunnerExecutionConfigResult;
-import io.jgitkins.runner.application.dto.RunnerRuntimeConfigResult;
+import io.jgitkins.runner.application.contract.RunnerExecutionConfigResult;
+import io.jgitkins.runner.application.contract.RunnerRuntimeConfigResult;
 
 public record ActivationResult(
         RunnerRuntimeConfigResult runtimeConfig,

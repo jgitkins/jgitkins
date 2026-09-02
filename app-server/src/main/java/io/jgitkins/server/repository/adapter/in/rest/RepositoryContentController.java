@@ -5,7 +5,7 @@ import io.jgitkins.server.shared.application.security.CurrentUser;
 import io.jgitkins.server.shared.application.exception.UnauthenticatedException;
 import io.jgitkins.server.repository.application.contract.result.FileEntry;
 import io.jgitkins.server.repository.application.contract.command.FileUploadInfo;
-import io.jgitkins.server.repository.adapter.in.rest.dto.request.FileUploadRequest;
+import io.jgitkins.server.repository.adapter.in.rest.contract.request.FileUploadRequest;
 import io.jgitkins.server.repository.application.contract.internal.RepositoryKey;
 import io.jgitkins.server.repository.application.exception.RepositoryNotFoundException;
 import io.jgitkins.server.repository.application.port.in.FileTreeLoadUseCase;

@@ -9,7 +9,7 @@ import io.jgitkins.core.common.exception.JgitkinsException;
 import io.jgitkins.server.shared.application.error.ApplicationErrorCode;
 import io.jgitkins.server.execution.application.exception.RunnerNotFoundException;
 import io.jgitkins.server.execution.application.contract.result.RunnerDetailResult;
-import io.jgitkins.server.execution.application.mapper.RunnerApplicationMapper;
+import io.jgitkins.server.execution.application.translator.RunnerApplicationMapper;
 import io.jgitkins.server.execution.domain.repository.RunnerRepository;
 import io.jgitkins.server.execution.domain.aggregate.Runner;
 import io.jgitkins.server.execution.domain.vo.RunnerScopeType;

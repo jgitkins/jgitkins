@@ -14,8 +14,8 @@ import io.jgitkins.server.repository.application.port.in.BranchLoadUseCase;
 import io.jgitkins.server.repository.application.port.in.BranchManagementUseCase;
 import io.jgitkins.core.web.api.response.ApiResponse;
 import io.jgitkins.core.web.api.uri.LocationUriBuilder;
-import io.jgitkins.server.repository.adapter.in.rest.dto.request.BranchCreateRequest;
-import io.jgitkins.server.repository.adapter.in.rest.mapper.BranchRequestMapper;
+import io.jgitkins.server.repository.adapter.in.rest.contract.request.BranchCreateRequest;
+import io.jgitkins.server.repository.adapter.in.rest.translator.BranchRequestMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

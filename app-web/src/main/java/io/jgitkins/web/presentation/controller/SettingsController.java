@@ -1,8 +1,8 @@
 package io.jgitkins.web.presentation.controller;
 
-import io.jgitkins.web.application.dto.UserCredentialIssueResult;
+import io.jgitkins.web.application.contract.UserCredentialIssueResult;
 import io.jgitkins.web.application.port.in.facade.SettingsFacadeUseCase;
-import io.jgitkins.web.presentation.dto.PersonalAccessTokenForm;
+import io.jgitkins.web.presentation.contract.PersonalAccessTokenForm;
 import io.jgitkins.web.presentation.support.SettingsViewSupport;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

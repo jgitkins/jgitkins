@@ -6,10 +6,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import io.jgitkins.web.application.dto.BranchSummary;
-import io.jgitkins.web.application.dto.RepositoryBranchCreateResult;
-import io.jgitkins.web.application.dto.RepositoryFileUploadResult;
-import io.jgitkins.web.application.dto.RepositorySummary;
+import io.jgitkins.web.application.contract.BranchSummary;
+import io.jgitkins.web.application.contract.RepositoryBranchCreateResult;
+import io.jgitkins.web.application.contract.RepositoryFileUploadResult;
+import io.jgitkins.web.application.contract.RepositorySummary;
 import io.jgitkins.web.application.port.out.RepositoryPort;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;

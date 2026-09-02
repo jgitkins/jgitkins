@@ -1,9 +1,9 @@
 package io.jgitkins.web.application.service.facade;
 
-import io.jgitkins.web.application.dto.ExploreRepoSummary;
-import io.jgitkins.web.application.dto.ExploreSummary;
-import io.jgitkins.web.application.dto.OrganizeSummary;
-import io.jgitkins.web.application.dto.RepositorySummary;
+import io.jgitkins.web.application.contract.ExploreRepoSummary;
+import io.jgitkins.web.application.contract.ExploreSummary;
+import io.jgitkins.web.application.contract.OrganizeSummary;
+import io.jgitkins.web.application.contract.RepositorySummary;
 import io.jgitkins.web.application.model.RepositoryKey;
 import io.jgitkins.web.application.port.in.facade.ExploreFacadeUseCase;
 import io.jgitkins.web.application.port.out.OrganizePort;
@@ -31,7 +31,7 @@ public class ExploreFacade implements ExploreFacadeUseCase {
 
         List<ExploreRepoSummary> repositories = null;
         List<OrganizeSummary> organizations = null;
-        List<io.jgitkins.web.application.dto.UserSummary> users = null;
+        List<io.jgitkins.web.application.contract.UserSummary> users = null;
 
         if ("repositories".equals(resolvedType)) {
             repositories = loadPublicRepositories();

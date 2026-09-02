@@ -11,7 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
-import io.jgitkins.web.application.dto.UserCredentialIssueResult;
+import io.jgitkins.web.application.contract.UserCredentialIssueResult;
 import io.jgitkins.web.application.port.in.PersonalAccessTokenIssueUseCase;
 import io.jgitkins.web.application.port.in.PersonalAccessTokenQueryUseCase;
 import org.junit.jupiter.api.Test;

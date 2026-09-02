@@ -3,7 +3,7 @@ package io.jgitkins.web.infrastructure.client;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.jgitkins.web.application.dto.*;
+import io.jgitkins.web.application.contract.*;
 import io.jgitkins.web.presentation.common.ApiError;
 import io.jgitkins.web.presentation.common.ApiResponse;
 import java.io.ByteArrayInputStream;

@@ -2,10 +2,10 @@ package io.jgitkins.runner.infrastructure.adapter;
 
 import io.jgitkins.runner.application.port.out.RunnerConfigurationPort;
 import io.jgitkins.runner.domain.RunnerConfiguration;
-import io.jgitkins.runner.infrastructure.mapper.RunnerDomainMapper;
-import io.jgitkins.runner.infrastructure.persistence.mapper.RunnerConfigEntityMbgMapper;
-import io.jgitkins.runner.infrastructure.persistence.mapper.RunnerConfigFileEntityMbgMapper;
-import io.jgitkins.runner.infrastructure.persistence.mapper.RunnerEntityMbgMapper;
+import io.jgitkins.runner.infrastructure.translator.RunnerDomainMapper;
+import io.jgitkins.runner.infrastructure.persistence.translator.RunnerConfigEntityMbgMapper;
+import io.jgitkins.runner.infrastructure.persistence.translator.RunnerConfigFileEntityMbgMapper;
+import io.jgitkins.runner.infrastructure.persistence.translator.RunnerEntityMbgMapper;
 import io.jgitkins.runner.infrastructure.persistence.model.RunnerConfigEntity;
 import io.jgitkins.runner.infrastructure.persistence.model.RunnerConfigEntityCondition;
 import io.jgitkins.runner.infrastructure.persistence.model.RunnerConfigFileEntity;

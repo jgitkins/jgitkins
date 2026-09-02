@@ -2,7 +2,7 @@ package io.jgitkins.server.collaboration.application.service;
 
 import io.jgitkins.server.collaboration.application.contract.command.OrganizeCreationCommand;
 import io.jgitkins.server.collaboration.application.contract.result.OrganizeCreationResult;
-import io.jgitkins.server.collaboration.application.mapper.OrganizeApplicationMapper;
+import io.jgitkins.server.collaboration.application.translator.OrganizeApplicationMapper;
 import io.jgitkins.server.collaboration.application.port.in.OrganizeCreationUseCase;
 import io.jgitkins.server.collaboration.application.port.in.OrganizeDeletionUseCase;
 import io.jgitkins.server.collaboration.application.port.in.OrganizeLoadUseCase;

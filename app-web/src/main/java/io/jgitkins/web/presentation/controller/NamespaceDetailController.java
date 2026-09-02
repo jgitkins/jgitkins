@@ -1,6 +1,6 @@
 package io.jgitkins.web.presentation.controller;
 
-import io.jgitkins.web.application.dto.NamespaceSummary;
+import io.jgitkins.web.application.contract.NamespaceSummary;
 import io.jgitkins.web.application.port.in.facade.NamespaceFacadeUseCase;
 import io.jgitkins.web.presentation.support.NamespaceViewSupport;
 import lombok.RequiredArgsConstructor;

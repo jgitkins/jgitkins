@@ -1,6 +1,6 @@
 package io.jgitkins.web.presentation.support;
 
-import io.jgitkins.web.application.dto.NamespaceSummary;
+import io.jgitkins.web.application.contract.NamespaceSummary;
 import org.springframework.stereotype.Component;
 import org.springframework.ui.Model;
 

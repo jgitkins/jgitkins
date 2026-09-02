@@ -8,7 +8,7 @@ import io.jgitkins.server.identity.access.domain.aggregate.User;
 import io.jgitkins.server.identity.access.domain.repository.UserRepository;
 import io.jgitkins.server.identity.access.domain.vo.UserStatus;
 import io.jgitkins.server.identity.access.adapter.out.persistence.support.UserDomainMapper;
-import io.jgitkins.server.identity.access.adapter.out.persistence.mapper.UserEntityMbgMapper;
+import io.jgitkins.server.identity.access.adapter.out.persistence.translator.UserEntityMbgMapper;
 import io.jgitkins.server.identity.access.adapter.out.persistence.model.UserEntity;
 import io.jgitkins.server.identity.access.adapter.out.persistence.model.UserEntityCondition;
 import java.util.List;

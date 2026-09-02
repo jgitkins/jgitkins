@@ -1,6 +1,6 @@
 package io.jgitkins.web.application.port.in;
 
-import io.jgitkins.web.application.dto.NamespaceSummary;
+import io.jgitkins.web.application.contract.NamespaceSummary;
 
 public interface NamespaceDetailUseCase {
 

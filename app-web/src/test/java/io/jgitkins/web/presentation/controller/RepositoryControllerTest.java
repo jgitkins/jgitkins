@@ -7,12 +7,12 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import io.jgitkins.web.application.dto.RepositoryBranchCreateResult;
-import io.jgitkins.web.application.dto.RepositoryCreateResult;
-import io.jgitkins.web.application.dto.RepositoryFileIndexEntry;
-import io.jgitkins.web.application.dto.RepositoryCreateContext;
+import io.jgitkins.web.application.contract.RepositoryBranchCreateResult;
+import io.jgitkins.web.application.contract.RepositoryCreateResult;
+import io.jgitkins.web.application.contract.RepositoryFileIndexEntry;
+import io.jgitkins.web.application.contract.RepositoryCreateContext;
 import io.jgitkins.web.application.port.in.facade.RepositoryFacadeUseCase;
-import io.jgitkins.web.presentation.dto.RepositoryCreateForm;
+import io.jgitkins.web.presentation.contract.RepositoryCreateForm;
 import io.jgitkins.web.presentation.support.RepositoryTreePathSupport;
 import io.jgitkins.web.presentation.support.RepositoryUserProfile;
 import io.jgitkins.web.presentation.support.RepositoryUserProfileResolver;
@@ -96,7 +96,7 @@ class RepositoryControllerTest {
         RedirectAttributesModelMap redirect = new RedirectAttributesModelMap();
         when(repositoryFacadeUseCase.createBranch(anyString(), anyString(), anyString(), anyString(), anyString()))
                 .thenReturn(new RepositoryBranchCreateResult(
-                        new io.jgitkins.web.application.dto.BranchSummary(1L, "feature/x", false, false, false), null));
+                        new io.jgitkins.web.application.contract.BranchSummary(1L, "feature/x", false, false, false), null));
 
         String view = controller.createBranch("team", "demo", "feature/x", "main", "src", "main", redirect);
 
@@ -108,7 +108,7 @@ class RepositoryControllerTest {
         RedirectAttributesModelMap redirect = new RedirectAttributesModelMap();
         MockMultipartFile file = new MockMultipartFile("file", "README.md", "text/markdown", "# hi".getBytes());
         when(repositoryFacadeUseCase.uploadFile(anyString(), anyString(), anyString(), anyString(), anyString(), any()))
-                .thenReturn(new io.jgitkins.web.application.dto.RepositoryCreateResult(null, "failed"));
+                .thenReturn(new io.jgitkins.web.application.contract.RepositoryCreateResult(null, "failed"));
 
         String view = controller.uploadFile("team", "demo", "main", "README.md", "add", file, "", redirect);
 

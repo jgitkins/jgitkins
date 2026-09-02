@@ -5,7 +5,7 @@ import io.jgitkins.server.change.review.adapter.out.persistence.jpa.PullRequestJ
 import io.jgitkins.server.change.review.adapter.out.persistence.jpa.PullRequestJpaRepository;
 import io.jgitkins.server.change.review.domain.repository.PullRequestRepository;
 import io.jgitkins.server.change.review.adapter.out.persistence.support.PullRequestDomainMapper;
-import io.jgitkins.server.change.review.adapter.out.persistence.mapper.PullRequestEntityMbgMapper;
+import io.jgitkins.server.change.review.adapter.out.persistence.translator.PullRequestEntityMbgMapper;
 import io.jgitkins.server.common.infrastructure.config.PersistenceImplementation;
 import io.jgitkins.server.common.infrastructure.config.PersistenceImplementationSelector;
 import org.springframework.context.annotation.Bean;

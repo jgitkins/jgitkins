@@ -1,10 +1,10 @@
 package io.jgitkins.web.application.service;
 
-import io.jgitkins.web.application.dto.RepositoryDetailData;
-import io.jgitkins.web.application.dto.RepositoryFileEntry;
-import io.jgitkins.web.application.dto.RepositoryFileIndexEntry;
-import io.jgitkins.web.application.dto.RepositoryOverviewResult;
-import io.jgitkins.web.application.dto.RepositorySummary;
+import io.jgitkins.web.application.contract.RepositoryDetailData;
+import io.jgitkins.web.application.contract.RepositoryFileEntry;
+import io.jgitkins.web.application.contract.RepositoryFileIndexEntry;
+import io.jgitkins.web.application.contract.RepositoryOverviewResult;
+import io.jgitkins.web.application.contract.RepositorySummary;
 import io.jgitkins.web.application.model.RepositoryKey;
 import io.jgitkins.web.application.port.in.RepositoryDetailUseCase;
 import io.jgitkins.web.application.port.out.RepositoryPort;

@@ -3,8 +3,8 @@
 //import io.jgitkins.runner.application.port.in.JobExecuteCommand;
 //import io.jgitkins.runner.application.port.in.JobExecuteUseCase;
 //import io.jgitkins.runner.domain.ExecutionResult;
-//import io.jgitkins.runner.presentation.dto.JobExecutionMessage;
-//import io.jgitkins.runner.presentation.mapper.JobExecutionMapper;
+//import io.jgitkins.runner.presentation.contract.JobExecutionMessage;
+//import io.jgitkins.runner.presentation.translator.JobExecutionMapper;
 //import lombok.RequiredArgsConstructor;
 //import lombok.extern.slf4j.Slf4j;
 //import org.springframework.amqp.rabbit.annotation.RabbitListener;

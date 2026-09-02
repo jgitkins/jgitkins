@@ -1,9 +1,9 @@
 package io.jgitkins.web.infrastructure.config.security.handler;
 
 import io.jgitkins.web.application.port.out.AppSessionTokenPort;
-import io.jgitkins.web.application.dto.OAuthLoginRequest;
-import io.jgitkins.web.application.dto.ServerOAuthLoginResult;
-import io.jgitkins.web.application.dto.ServerOAuthLoginResult.ServerUserProfile;
+import io.jgitkins.web.application.contract.OAuthLoginRequest;
+import io.jgitkins.web.application.contract.ServerOAuthLoginResult;
+import io.jgitkins.web.application.contract.ServerOAuthLoginResult.ServerUserProfile;
 import io.jgitkins.web.application.port.out.AppTokenIssuePort;
 import io.jgitkins.web.application.common.UserStatus;
 import io.jgitkins.web.presentation.support.SessionSupport;

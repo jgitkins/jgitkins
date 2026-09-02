@@ -9,7 +9,7 @@ import io.jgitkins.server.change.review.application.contract.result.PullRequestD
 import io.jgitkins.server.change.review.application.contract.result.PullRequestResult;
 import io.jgitkins.server.change.review.application.port.in.CreatePullRequestUseCase;
 import io.jgitkins.server.change.review.application.port.in.GetPullRequestDetailUseCase;
-import io.jgitkins.server.change.review.adapter.in.rest.dto.request.PullRequestCreateRequest;
+import io.jgitkins.server.change.review.adapter.in.rest.contract.request.PullRequestCreateRequest;
 import io.jgitkins.server.change.review.domain.model.vo.PullRequestId;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

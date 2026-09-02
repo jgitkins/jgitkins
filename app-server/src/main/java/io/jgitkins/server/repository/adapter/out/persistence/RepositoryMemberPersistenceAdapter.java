@@ -7,7 +7,7 @@ import io.jgitkins.server.repository.domain.vo.RepositoryMemberUserId;
 import io.jgitkins.server.common.infrastructure.error.InfrastructureErrorCode;
 import io.jgitkins.server.common.infrastructure.exception.InfrastructureException;
 import io.jgitkins.server.repository.adapter.out.persistence.support.RepositoryMemberDomainMapper;
-import io.jgitkins.server.repository.adapter.out.persistence.mapper.RepositoryMemberEntityMbgMapper;
+import io.jgitkins.server.repository.adapter.out.persistence.translator.RepositoryMemberEntityMbgMapper;
 import io.jgitkins.server.repository.adapter.out.persistence.model.RepositoryMemberEntity;
 import io.jgitkins.server.repository.adapter.out.persistence.model.RepositoryMemberEntityCondition;
 import java.util.Optional;

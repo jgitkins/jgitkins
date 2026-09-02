@@ -7,9 +7,9 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import io.jgitkins.web.application.dto.CommitSummary;
-import io.jgitkins.web.application.dto.RepositoryFileEntry;
-import io.jgitkins.web.application.dto.RepositoryFileIndexEntry;
+import io.jgitkins.web.application.contract.CommitSummary;
+import io.jgitkins.web.application.contract.RepositoryFileEntry;
+import io.jgitkins.web.application.contract.RepositoryFileIndexEntry;
 import io.jgitkins.web.infrastructure.cache.RepositoryFileIndexCacheSupport;
 import io.jgitkins.web.infrastructure.cache.RepositoryTreeCacheSupport;
 import java.time.LocalDateTime;

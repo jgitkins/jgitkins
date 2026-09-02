@@ -1,9 +1,9 @@
 package io.jgitkins.web.presentation.support;
 
-import io.jgitkins.web.application.dto.RepositoryCreateContext;
-import io.jgitkins.web.application.dto.RepositoryCreateRequest;
-import io.jgitkins.web.application.dto.RepositoryDetailData;
-import io.jgitkins.web.presentation.dto.RepositoryCreateForm;
+import io.jgitkins.web.application.contract.RepositoryCreateContext;
+import io.jgitkins.web.application.contract.RepositoryCreateRequest;
+import io.jgitkins.web.application.contract.RepositoryDetailData;
+import io.jgitkins.web.presentation.contract.RepositoryCreateForm;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;

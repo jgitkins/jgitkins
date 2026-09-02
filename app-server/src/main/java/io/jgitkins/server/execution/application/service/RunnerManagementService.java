@@ -5,7 +5,7 @@ import io.jgitkins.server.execution.application.contract.command.RunnerRegisterC
 import io.jgitkins.server.execution.application.contract.result.RunnerActivateResult;
 import io.jgitkins.server.execution.application.contract.result.RunnerRegistrationResult;
 import io.jgitkins.server.execution.application.exception.RunnerNotFoundException;
-import io.jgitkins.server.execution.application.mapper.RunnerApplicationMapper;
+import io.jgitkins.server.execution.application.translator.RunnerApplicationMapper;
 import io.jgitkins.server.execution.application.port.in.RunnerActivateUseCase;
 import io.jgitkins.server.execution.application.port.in.RunnerDeleteUseCase;
 import io.jgitkins.server.execution.application.port.in.RunnerRegisterUseCase;

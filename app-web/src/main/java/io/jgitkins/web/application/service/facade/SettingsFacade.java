@@ -1,8 +1,8 @@
 package io.jgitkins.web.application.service.facade;
 
-import io.jgitkins.web.application.dto.UserCredentialIssueRequest;
-import io.jgitkins.web.application.dto.UserCredentialIssueResult;
-import io.jgitkins.web.application.dto.UserCredentialSummary;
+import io.jgitkins.web.application.contract.UserCredentialIssueRequest;
+import io.jgitkins.web.application.contract.UserCredentialIssueResult;
+import io.jgitkins.web.application.contract.UserCredentialSummary;
 import io.jgitkins.web.application.port.in.PersonalAccessTokenIssueUseCase;
 import io.jgitkins.web.application.port.in.PersonalAccessTokenQueryUseCase;
 import io.jgitkins.web.application.port.in.facade.SettingsFacadeUseCase;

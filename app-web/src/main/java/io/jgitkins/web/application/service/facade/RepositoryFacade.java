@@ -1,6 +1,6 @@
 package io.jgitkins.web.application.service.facade;
 
-import io.jgitkins.web.application.dto.*;
+import io.jgitkins.web.application.contract.*;
 import io.jgitkins.web.application.port.in.RepositoryCreateUseCase;
 import io.jgitkins.web.application.port.in.RepositoryDetailUseCase;
 import io.jgitkins.web.application.port.in.RepositoryManageUseCase;

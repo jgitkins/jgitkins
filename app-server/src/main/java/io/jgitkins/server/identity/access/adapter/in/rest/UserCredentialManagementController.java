@@ -7,7 +7,7 @@ import io.jgitkins.server.identity.access.application.port.in.UserCredentialIssu
 import io.jgitkins.server.identity.access.application.port.in.UserCredentialQueryUseCase;
 import io.jgitkins.server.identity.access.application.port.in.UserCredentialRevokeUseCase;
 import io.jgitkins.core.web.api.response.ApiResponse;
-import io.jgitkins.server.identity.access.adapter.in.rest.dto.request.UserCredentialIssueRequest;
+import io.jgitkins.server.identity.access.adapter.in.rest.contract.request.UserCredentialIssueRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Positive;
