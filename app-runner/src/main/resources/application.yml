@@ -4,10 +4,6 @@ server:
   servlet:
     context-path: /
 ---
-# Mybatis 설정
-mybatis:
-  mapper-locations: classpath*:/mapper/**/*.xml
----
 # RabbitMQ Configuration
 spring:
   datasource:
@@ -21,6 +17,15 @@ spring:
       mode: always
       schema-locations: classpath:/DDL.sql
       continue-on-error: true
+  jpa:
+    # DDL.sql owns the schema and the H2 file it creates outlives the process, holding the runner's
+    # server token and settings. Hibernate must not touch it: Spring Boot picks create-drop by default
+    # for a database it considers embedded, which would drop an activated runner's tables on the next
+    # start and silently un-link it from the server. Stating none here does not depend on whether a
+    # file-backed H2 URL counts as embedded in the Boot version in use.
+    hibernate:
+      ddl-auto: none
+    open-in-view: false
 
 runner:
   runner-name: ${RUNNER_NAME:local-runner}

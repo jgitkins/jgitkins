@@ -30,12 +30,13 @@ dependencies {
 
     implementation 'org.springframework.boot:spring-boot-starter-amqp'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
-    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
     implementation 'org.springframework.boot:spring-boot-starter-json'
     implementation 'org.springframework:spring-web'
 
-    // MyBatis
-    implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.3'
+    // Persistence. The runner keeps its own configuration in a local H2 file (~/runner), which is
+    // why h2 is a runtime dependency of the application and not just of the tests. data-jpa brings
+    // starter-jdbc with it, so the separate jdbc starter went with the MyBatis one.
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     runtimeOnly 'com.h2database:h2'
 
     implementation 'org.eclipse.jgit:org.eclipse.jgit:6.9.0.202403050737-r'

@@ -3,7 +3,7 @@ package io.jgitkins.runner.infrastructure.translator;
 import io.jgitkins.runner.domain.RunnerConfiguration;
 import io.jgitkins.runner.domain.RunnerExecutionConfig;
 import io.jgitkins.runner.domain.RunnerRuntimeConfig;
-import io.jgitkins.runner.infrastructure.persistence.model.RunnerEntity;
+import io.jgitkins.runner.infrastructure.persistence.jpa.RunnerJpaEntity;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,7 +23,7 @@ public interface RunnerDomainMapper {
     String KEY_RUNNER_IMAGE = "runnerImageName";
     String KEY_JENKINS_PLUGIN = "jenkinsPluginConfig";
 
-    default RunnerConfiguration toDomain(RunnerEntity runner, Map<String, String> configMap) {
+    default RunnerConfiguration toDomain(RunnerJpaEntity runner, Map<String, String> configMap) {
         RunnerRuntimeConfig runtime = RunnerRuntimeConfig.builder()
                                                          .runnerToken(runner.getToken())
                                                          .restHost(configMap.get(KEY_REST_HOST))
@@ -50,7 +50,7 @@ public interface RunnerDomainMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "name", constant = "")
     @Mapping(target = "token", source = "runnerToken")
-    RunnerEntity toEntity(RunnerConfiguration source);
+    RunnerJpaEntity toEntity(RunnerConfiguration source);
 
     default Map<String, String> toRuntimeConfigMap(RunnerConfiguration source) {
         Map<String, String> map = new HashMap<>();
