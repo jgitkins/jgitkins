@@ -68,7 +68,7 @@ ORDER BY r.ID;
 
 -- STEP 3 -- why this cannot be fixed through the API today, and what that means for STEP 2.
 --
--- There is no scope-update endpoint. RunnerController exposes POST /api/runners, GET /api/runners,
+-- There is no scope-update endpoint. RunnerManagementController exposes POST /api/runners, GET /api/runners,
 -- GET /api/runners/{id}, DELETE /api/runners/{id}, POST /api/runners/activate, and there is no
 -- RunnerScopeUpdateUseCase -- runnerRepository.save is reached only by register (create branch) and
 -- activate (which reads the scope back from the stored row and saves it unchanged, so the append never

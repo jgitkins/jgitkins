@@ -62,7 +62,7 @@
 
 #### Owner
 
-Repository 소유 주체다. 현재는 `User` 또는 `Organization`이며 `OwnerType + OwnerId`로 표현한다.
+Repository 소유 주체다. 현재는 `User` 또는 `Organization`이며 `OwnerType + RepositoryOwnerId`로 표현한다.
 
 #### Repository Initialization
 
@@ -92,7 +92,7 @@ Repository가 직접 소유하거나 결정하는 값은 다음과 같다.
 
 - `RepositoryId`
 - `OwnerType`
-- `OwnerId`
+- `RepositoryOwnerId`
 - `RepositoryName`
 - `RepositoryPath`
 - `BranchName` as default branch
@@ -154,7 +154,7 @@ server/domain/repository/
 - `RepositoryPath`
 - `BranchName`
 - `OwnerType`
-- `OwnerId`
+- `RepositoryOwnerId`
 - `RepositoryVisibility`
 
 #### Repository State

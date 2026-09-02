@@ -19,7 +19,7 @@ classDiagram
         <<Aggregate Root>>
         +RepositoryId id
         +OwnerType ownerType
-        +OwnerId ownerId
+        +RepositoryOwnerId ownerId
         +RepositoryName name
         +RepositoryPath path
         +BranchName defaultBranch
@@ -73,7 +73,7 @@ classDiagram
         <<Value Object>>
     }
 
-    class OwnerId {
+    class RepositoryOwnerId {
         <<Value Object>>
     }
 
@@ -90,7 +90,7 @@ classDiagram
     Repository *-- BranchName
     Repository *-- RepositoryVisibility
     Repository *-- OwnerType
-    Repository *-- OwnerId
+    Repository *-- RepositoryOwnerId
     Repository ..> RepositoryState : future model
     Repository --> Branch : manages
     Repository --> RepositoryMember : grants access

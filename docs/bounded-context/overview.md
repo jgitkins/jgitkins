@@ -80,7 +80,7 @@
 - 현재 분류: Aggregate Root.
 - 코드 근거: `app-server/src/main/java/io/jgitkins/server/repository/domain/aggregate/Repository.java`, `RepositoryManagementUseCase`, `RepositoryLoadUseCase`, `RepositoryManagementService`.
 - 테이블 근거: `REPOSITORY`.
-- 주요 값: `RepositoryId`, `RepositoryName`, `RepositoryPath`, `RepositoryVisibility`, `OwnerType`, `OwnerId`, `BranchName`.
+- 주요 값: `RepositoryId`, `RepositoryName`, `RepositoryPath`, `RepositoryVisibility`, `OwnerType`, `RepositoryOwnerId`, `BranchName`.
 - 메모: Git object graph 자체는 외부 상태다.
 
 ### Repository Member
