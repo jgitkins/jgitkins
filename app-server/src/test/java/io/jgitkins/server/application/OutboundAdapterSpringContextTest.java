@@ -4,6 +4,39 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import io.jgitkins.server.JGitkinsServerApplication;
 import io.jgitkins.server.identity.access.adapter.in.security.PatAuthenticationProvider;
+import io.jgitkins.server.change.review.adapter.out.persistence.jpa.PullRequestJpaPersistenceAdapter;
+import io.jgitkins.server.change.review.domain.repository.PullRequestRepository;
+import io.jgitkins.server.collaboration.adapter.out.persistence.OrganizeMemberPersistence;
+import io.jgitkins.server.collaboration.adapter.out.persistence.jpa.OrganizeJpaPersistenceAdapter;
+import io.jgitkins.server.collaboration.adapter.out.persistence.jpa.OrganizeMemberJpaPersistenceAdapter;
+import io.jgitkins.server.collaboration.application.port.out.OrganizeQueryPort;
+import io.jgitkins.server.collaboration.domain.repository.OrganizeRepository;
+import io.jgitkins.server.execution.adapter.out.persistence.jpa.JobDispatchJpaQueryAdapter;
+import io.jgitkins.server.execution.adapter.out.persistence.jpa.JobJpaRepositoryAdapter;
+import io.jgitkins.server.execution.adapter.out.persistence.jpa.RunnerJpaPersistenceAdapter;
+import io.jgitkins.server.execution.application.port.out.JobDispatchQueryPort;
+import io.jgitkins.server.execution.domain.repository.JobRepository;
+import io.jgitkins.server.execution.domain.repository.RunnerRepository;
+import io.jgitkins.server.identity.access.adapter.out.persistence.UserPersistence;
+import io.jgitkins.server.identity.access.adapter.out.persistence.jpa.UserCredentialJpaPersistenceAdapter;
+import io.jgitkins.server.identity.access.adapter.out.persistence.jpa.UserIdentityJpaPersistenceAdapter;
+import io.jgitkins.server.identity.access.adapter.out.persistence.jpa.UserJpaPersistenceAdapter;
+import io.jgitkins.server.identity.access.application.port.out.UserCredentialPersistencePort;
+import io.jgitkins.server.identity.access.application.port.out.UserIdentityPersistencePort;
+import io.jgitkins.server.identity.access.application.port.out.UserQueryPort;
+import io.jgitkins.server.identity.access.domain.repository.UserRepository;
+import io.jgitkins.server.repository.adapter.out.persistence.RepositoryPersistence;
+import io.jgitkins.server.repository.adapter.out.persistence.jpa.BranchJpaQueryAdapter;
+import io.jgitkins.server.repository.adapter.out.persistence.jpa.BranchJpaRepositoryAdapter;
+import io.jgitkins.server.repository.adapter.out.persistence.jpa.RepositoryJpaPersistenceAdapter;
+import io.jgitkins.server.repository.adapter.out.persistence.jpa.RepositoryMemberJpaPersistenceAdapter;
+import io.jgitkins.server.repository.application.port.out.BranchQueryPort;
+import io.jgitkins.server.repository.application.port.out.RepositoryMemberPersistencePort;
+import io.jgitkins.server.repository.application.port.out.RepositoryQueryPort;
+import io.jgitkins.server.repository.domain.repository.BranchRepository;
+import io.jgitkins.server.repository.domain.repository.RepositoryRepository;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import io.jgitkins.server.collaboration.adapter.out.persistence.OrganizePersistence;
 import io.jgitkins.server.execution.application.service.JobDispatchService;
 import io.jgitkins.server.repository.application.service.RepositoryOverviewService;
@@ -109,6 +142,66 @@ public class OutboundAdapterSpringContextTest {
         assertThat(applicationContext.getBeansOfType(JwtProperties.class)).hasSize(1);
         assertThat(environment.getProperty("jgitkins.security.jwt.secret")).isEqualTo("jgitkins-test-jwt-secret-256-bit-minimum");
         assertThat(environment.getProperty("jgitkins.security.jwt.ttl-seconds", Long.class)).isEqualTo(900L);
+    }
+
+    /**
+     * Every outbound persistence port resolves to exactly one bean, and it is the JPA adapter.
+     *
+     * <p>Replaces the surviving half of eight {@code *SelectorTest} classes. Their subject was which of
+     * two adapters a property selects, and that question is gone: the selector configurations are
+     * deleted and the JPA adapters are {@code @Component}s again. What is not gone is the failure the
+     * selector configurations were written to avoid in the first place -- two implementations of one
+     * port in the context, which is {@code NoUniqueBeanDefinitionException} at startup rather than a
+     * choice. Moving to a component scan is exactly the change that could reintroduce it, by an
+     * annotation on a class nobody meant to register.
+     *
+     * <p>Asserted on the domain and application ports rather than on the aggregate persistence
+     * interfaces, because the ports are what services inject: {@code OrganizePersistence} having one
+     * bean says nothing about {@code OrganizeRepository} being unambiguous if something else also
+     * implements it.
+     *
+     * <p>{@code hasSize(1)} and not {@code isNotNull}: {@code getBean} on an ambiguous type throws, but
+     * {@code @Primary} or a bean-name match would resolve it and hide a second implementation that no
+     * longer belongs in the context at all.
+     */
+    @Test
+    void everyPersistencePortHasOneImplementationAndItIsTheJpaAdapter() {
+        Map<Class<?>, Class<?>> expected = new LinkedHashMap<>();
+        expected.put(PullRequestRepository.class, PullRequestJpaPersistenceAdapter.class);
+        expected.put(OrganizeRepository.class, OrganizeJpaPersistenceAdapter.class);
+        expected.put(OrganizeQueryPort.class, OrganizeJpaPersistenceAdapter.class);
+        expected.put(OrganizeMemberPersistence.class, OrganizeMemberJpaPersistenceAdapter.class);
+        expected.put(JobRepository.class, JobJpaRepositoryAdapter.class);
+        expected.put(JobDispatchQueryPort.class, JobDispatchJpaQueryAdapter.class);
+        expected.put(RunnerRepository.class, RunnerJpaPersistenceAdapter.class);
+        expected.put(UserRepository.class, UserJpaPersistenceAdapter.class);
+        expected.put(UserQueryPort.class, UserJpaPersistenceAdapter.class);
+        expected.put(UserCredentialPersistencePort.class, UserCredentialJpaPersistenceAdapter.class);
+        expected.put(UserIdentityPersistencePort.class, UserIdentityJpaPersistenceAdapter.class);
+        expected.put(RepositoryRepository.class, RepositoryJpaPersistenceAdapter.class);
+        expected.put(RepositoryQueryPort.class, RepositoryJpaPersistenceAdapter.class);
+        expected.put(RepositoryMemberPersistencePort.class, RepositoryMemberJpaPersistenceAdapter.class);
+        expected.put(BranchRepository.class, BranchJpaRepositoryAdapter.class);
+        expected.put(BranchQueryPort.class, BranchJpaQueryAdapter.class);
+
+        expected.forEach((port, adapter) -> {
+            assertThat(applicationContext.getBeansOfType(port))
+                    .as("%s must have exactly one implementation in the context", port.getSimpleName())
+                    .hasSize(1);
+            assertThat(applicationContext.getBean(port)).isInstanceOf(adapter);
+        });
+
+        // One object behind both halves of a split interface, not two beans that happen to agree. Three
+        // candidates for RepositoryRepository once existed here, from forwarding beans added to
+        // re-expose the ports, and every injection point for it became ambiguous in production.
+        assertThat(applicationContext.getBean(RepositoryQueryPort.class))
+                .isSameAs(applicationContext.getBean(RepositoryRepository.class));
+        assertThat(applicationContext.getBean(OrganizeQueryPort.class))
+                .isSameAs(applicationContext.getBean(OrganizeRepository.class));
+        assertThat(applicationContext.getBean(UserQueryPort.class))
+                .isSameAs(applicationContext.getBean(UserRepository.class));
+        assertThat(applicationContext.getBeansOfType(RepositoryPersistence.class)).hasSize(1);
+        assertThat(applicationContext.getBeansOfType(UserPersistence.class)).hasSize(1);
     }
 
     private static int freePort() {

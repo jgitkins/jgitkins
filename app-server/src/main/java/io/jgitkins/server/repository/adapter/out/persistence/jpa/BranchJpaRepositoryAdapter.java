@@ -6,6 +6,7 @@ import io.jgitkins.server.repository.domain.entity.Branch;
 import io.jgitkins.server.repository.domain.repository.BranchRepository;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
 /**
  * JPA implementation of {@link BranchRepository}.
@@ -14,6 +15,7 @@ import lombok.RequiredArgsConstructor;
  * is the branch's identity in the domain — {@code Branch} carries no id at all — and it is what the
  * MyBatis adapter's delete-by-condition did.
  */
+@Component
 @RequiredArgsConstructor
 public class BranchJpaRepositoryAdapter implements BranchRepository {
 

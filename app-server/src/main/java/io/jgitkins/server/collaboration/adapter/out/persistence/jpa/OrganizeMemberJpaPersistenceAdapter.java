@@ -12,18 +12,21 @@ import io.jgitkins.server.common.infrastructure.exception.InfrastructureExceptio
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
 /**
  * The JPA half of the OrganizeMember reference slice.
  *
- * <p>Bound by the same selector as {@link OrganizeJpaPersistenceAdapter}, never independently. The
- * two aggregates share the owner invariant and the row lock that protects it, so a half-migrated
- * slice could hold the invariant in one store and violate it in the other.
+ * <p>Migrated together with {@link OrganizeJpaPersistenceAdapter}, never independently, and bound to
+ * it by one selector property while the choice existed. The two aggregates share the owner invariant
+ * and the row lock that protects it, so a half-migrated slice could have held the invariant in one
+ * store and violated it in the other.
  *
  * <p>{@code countOwnersByOrganizeId} counts in the database rather than loading rows and filtering
  * in memory, matching the MyBatis count query. Loading and filtering would give the same answer for
  * small memberships and quietly change complexity for large ones.
  */
+@Component
 @RequiredArgsConstructor
 public class OrganizeMemberJpaPersistenceAdapter implements OrganizeMemberPersistence {
 

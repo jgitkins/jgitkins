@@ -7,6 +7,7 @@ import io.jgitkins.server.identity.access.domain.entity.UserCredential;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
 /**
  * The JPA half of the personal-access-token credential slice.
@@ -18,6 +19,7 @@ import lombok.RequiredArgsConstructor;
  * single-user test, and let one user delete another user's token - the user id is the authorization
  * check, not a redundant filter.
  */
+@Component
 @RequiredArgsConstructor
 public class UserCredentialJpaPersistenceAdapter implements UserCredentialPersistencePort {
 

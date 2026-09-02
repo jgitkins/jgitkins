@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
 /**
  * JPA implementation of the repository-context persistence pair.
@@ -38,6 +39,7 @@ import lombok.extern.slf4j.Slf4j;
  * <p>{@code save} inserts and never updates, matching the MyBatis adapter, which called
  * {@code insertSelective} unconditionally. {@code update} is the separate port method.
  */
+@Component
 @RequiredArgsConstructor
 @Slf4j
 public class RepositoryJpaPersistenceAdapter implements RepositoryPersistence {

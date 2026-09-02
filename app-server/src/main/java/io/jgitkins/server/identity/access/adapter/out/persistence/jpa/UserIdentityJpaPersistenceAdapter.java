@@ -7,6 +7,7 @@ import io.jgitkins.server.identity.access.domain.entity.UserIdentity;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
 /**
  * The JPA half of the federated-identity slice.
@@ -15,6 +16,7 @@ import lombok.RequiredArgsConstructor;
  * local account. Both predicates are required and newest-first ordering matches MyBatis, because
  * resolving to the wrong row here logs someone into the wrong account.
  */
+@Component
 @RequiredArgsConstructor
 public class UserIdentityJpaPersistenceAdapter implements UserIdentityPersistencePort {
 

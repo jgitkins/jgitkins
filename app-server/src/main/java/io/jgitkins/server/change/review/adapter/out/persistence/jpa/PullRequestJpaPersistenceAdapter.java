@@ -13,6 +13,7 @@ import io.jgitkins.server.shared.domain.model.vo.CommitHash;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
 /**
  * JPA implementation of {@link PullRequestRepository}.
@@ -28,6 +29,7 @@ import lombok.RequiredArgsConstructor;
  * observable either way; JPA simply also clears them. Recorded because the row contents genuinely
  * differ between providers, and someone comparing two databases would otherwise think one is wrong.
  */
+@Component
 @RequiredArgsConstructor
 public class PullRequestJpaPersistenceAdapter implements PullRequestRepository {
 

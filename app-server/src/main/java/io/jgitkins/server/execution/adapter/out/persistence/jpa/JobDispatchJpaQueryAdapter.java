@@ -15,6 +15,7 @@ import io.jgitkins.server.shared.domain.model.vo.CommitHash;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -25,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
  * job could be selected and then have its history read after another dispatcher advanced it. The
  * decision would be made from a mix of two points in time.
  */
+@Component
 @RequiredArgsConstructor
 public class JobDispatchJpaQueryAdapter implements JobDispatchQueryPort {
 

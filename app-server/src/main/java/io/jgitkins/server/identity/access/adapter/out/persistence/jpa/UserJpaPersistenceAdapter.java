@@ -10,12 +10,14 @@ import io.jgitkins.server.identity.access.domain.vo.UserStatus;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
 /**
  * The JPA half of the identity user slice.
  *
  * <p>Serves the same two ports as {@code UserPersistenceAdapter} and is selected in its place when
- * the identity capability selector is {@code jpa}. Behaviour is held to the MyBatis implementation
+ * the identity capability selector was {@code jpa}, and the only one now. Behaviour is held to the
+ * MyBatis implementation
  * rather than to what JPA makes convenient:
  *
  * <ul>
@@ -30,10 +32,11 @@ import lombok.RequiredArgsConstructor;
  *       {@code UserStatus.fromNullable}, and a missing authority to {@code USER}, exactly as the
  *       MyBatis mapper does.
  *   <li>Every failure is wrapped in {@code InfrastructureException} with
- *       {@code PERSISTENCE_OPERATION_FAILED}, so callers see one error contract under either
- *       selector.
+ *       {@code PERSISTENCE_OPERATION_FAILED}, which is the error contract callers were written
+ *       against under either implementation.
  * </ul>
  */
+@Component
 @RequiredArgsConstructor
 public class UserJpaPersistenceAdapter implements UserPersistence {
 

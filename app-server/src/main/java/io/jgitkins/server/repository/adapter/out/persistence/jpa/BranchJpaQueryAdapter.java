@@ -7,7 +7,9 @@ import io.jgitkins.server.repository.application.port.out.BranchQueryPort;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
+@Component
 @RequiredArgsConstructor
 public class BranchJpaQueryAdapter implements BranchQueryPort {
 

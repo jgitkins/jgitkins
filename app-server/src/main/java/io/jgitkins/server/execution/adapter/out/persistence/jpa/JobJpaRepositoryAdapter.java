@@ -17,6 +17,7 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -33,6 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
  * held until commit, so the boundary is the guarantee, not a decoration: a lock taken and released
  * before the insert would protect nothing.
  */
+@Component
 @RequiredArgsConstructor
 @Slf4j
 public class JobJpaRepositoryAdapter implements JobRepository {

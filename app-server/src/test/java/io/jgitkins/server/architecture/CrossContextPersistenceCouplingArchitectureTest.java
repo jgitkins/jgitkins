@@ -91,17 +91,21 @@ class CrossContextPersistenceCouplingArchitectureTest {
     }
 
     @Test
-    void theThreeFilesThatCarriedTheCouplingNowUseThePorts() throws IOException {
+    void theFilesThatCarriedTheCouplingNowUseThePorts() throws IOException {
         // The count reaching zero does not prove the reads survived -- deleting them would score the
-        // same. These three files must still answer the same three questions, through the ports.
+        // same. These files must still answer the same three questions, through the ports.
         //
         // Matched on comment-stripped source, and on an import plus a use. A raw substring check passed
         // on the javadoc that explains the ports, so a field deletion leaving the prose behind stayed
         // green -- the pitfall ArchitectureScanner#stripComments exists for.
+        //
+        // Was three files. RepositoryPersistenceSelectorConfiguration was the third and is deleted: it
+        // took the three ports as parameters to hand to whichever adapter the property chose, and with
+        // one implementation there is nothing left to choose. Its coupling is gone by deletion rather
+        // than by refactoring, which the ceiling of zero already covers.
         for (String file : List.of(
                 "repository/adapter/out/persistence/RepositoryPersistenceAdapter.java",
-                "repository/adapter/out/persistence/jpa/RepositoryJpaPersistenceAdapter.java",
-                "repository/infrastructure/config/RepositoryPersistenceSelectorConfiguration.java")) {
+                "repository/adapter/out/persistence/jpa/RepositoryJpaPersistenceAdapter.java")) {
             String source = ArchitectureScanner.withoutComments(
                     ArchitectureScanner.mainRoot().resolve(file));
             for (String port : List.of(

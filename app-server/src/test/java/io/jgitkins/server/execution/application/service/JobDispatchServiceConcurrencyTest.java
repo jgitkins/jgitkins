@@ -23,7 +23,6 @@ import io.jgitkins.server.execution.domain.vo.ExecutionSystemActor;
 import io.jgitkins.server.execution.domain.vo.JobHistoryId;
 import io.jgitkins.server.execution.domain.vo.JobId;
 import io.jgitkins.server.execution.domain.vo.JobStatus;
-import io.jgitkins.server.execution.adapter.out.persistence.translator.JobHistoryEntityMbgMapper;
 import io.jgitkins.server.execution.domain.repository.JobRepository;
 
 import io.jgitkins.server.shared.domain.model.vo.BranchName;
@@ -58,13 +57,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
         "spring.datasource.hikari.maximum-pool-size=8",
         "spring.datasource.hikari.transaction-isolation=TRANSACTION_READ_COMMITTED",
         "spring.sql.init.mode=never",
-        // Pinned to MyBatis on purpose. application.yml now selects JPA for this slice, and the
-        // verify below names historyMapper.selectLatestHistoryForUpdate, so without this pin the
-        // test fails on a mock that is no longer constructed. MyBatis is still the rollback for
-        // this slice until reference-zero, so its concurrency guarantee has to stay tested. Delete
-        // this test with the MyBatis adapter, not before: the JPA equivalent is already
-        // ExecutionJpaTransactionTest#preservesCompareBeforeAppend.
-        "jgitkins.persistence.app-server.execution-job-reference.implementation=mybatis",
         "server.port=18081", "grpc.server.port=19091",
         "REST_PORT=8080", "GRPC_PORT=9090", "BARE_PATH=/tmp", "SERVICE_HOST=localhost",
         "REST_SCHEME=http", "JGITKINS_JWT_SECRET=test-secret"
@@ -76,16 +68,12 @@ class JobDispatchServiceConcurrencyTest {
     @MockBean io.jgitkins.server.execution.application.service.internal.RunnerDispatchContextResolver resolver;
     @MockBean io.jgitkins.server.execution.application.service.internal.JobDispatchResultAssembler assembler;
     @MockBean io.jgitkins.server.execution.application.port.out.CloneUrlPort cloneUrlPort;
-    @SpyBean JobHistoryEntityMbgMapper historyMapper;
     // Spied through the port, not the concrete adapter. Task 2.73 put JobRepository behind the
-    // persistence selector, so the container's bean is declared as JobRepository and there is no
-    // longer a bean whose type is JobRepositoryAdapter. Spying the concrete class silently produced a
-    // different object from the one the service injects: the doAnswer below never fired and the test
-    // failed on a latch timeout that pointed nowhere near the cause.
-    //
-    // The verify on historyMapper.selectLatestHistoryForUpdate keeps this test specific to the MyBatis
-    // provider, which is the default the selector resolves to. The JPA path's equivalent guarantee is
-    // ExecutionJpaTransactionTest#preservesCompareBeforeAppend.
+    // persistence selector, and although the selector is gone the reason survives it: spying the
+    // concrete class silently produced a different object from the one the service injects, the
+    // doAnswer below never fired, and the test failed on a latch timeout that pointed nowhere near
+    // the cause. Going through the port is also what makes this test provider-independent -- the
+    // interleaving is driven entirely by appendHistoryIfCurrent, which every implementation has.
     @SpyBean JobRepository repositoryAdapter;
     ExecutorService executor;
 
@@ -134,7 +122,6 @@ class JobDispatchServiceConcurrencyTest {
         assertThat(List.of(ra, rb).stream().filter(Optional::isEmpty)).hasSize(1);
         assertThat(new JdbcTemplate(dataSource).queryForObject("SELECT COUNT(*) FROM JOB_HISTORY WHERE JOB_ID=1", Integer.class)).isEqualTo(2);
         assertThat(new JdbcTemplate(dataSource).queryForObject("SELECT ID FROM JOB_HISTORY WHERE JOB_ID=1 AND STATUS='IN_PROGRESS'", Long.class)).isNotNull();
-        verify(historyMapper, times(2)).selectLatestHistoryForUpdate(1L);
         verify(repositoryAdapter, times(2)).appendHistoryIfCurrent(any(), any());
     }
 

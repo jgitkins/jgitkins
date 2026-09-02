@@ -13,28 +13,31 @@ import io.jgitkins.server.common.infrastructure.exception.InfrastructureExceptio
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
 /**
  * The JPA half of the Organize reference slice.
  *
- * <p>Implements the same two ports as {@code OrganizePersistenceAdapter} and is selected in its
- * place when the capability selector is set to {@code jpa}. Neither is a {@code @Component}: the
- * selector configuration constructs exactly one of them, because two component-annotated
- * implementations of {@code OrganizeRepository} would be an ambiguity error rather than a choice.
+ * <p>The only implementation of these two ports, and a {@code @Component} again. It was constructed
+ * by a selector configuration for as long as {@code OrganizePersistenceAdapter} also implemented
+ * them: two component-annotated implementations of {@code OrganizeRepository} would have been an
+ * ambiguity error rather than a choice. With one implementation the component scan is enough, and the
+ * indirection was hiding the wiring rather than describing it.
  *
  * <p>Behaviour is held to the MyBatis implementation, not to what JPA makes convenient:
  *
  * <ul>
  *   <li>{@code path} is derived from the organization name, matching {@code OrganizeDomainMapper}.
  *       The column is {@code NOT NULL UNIQUE}, so a different derivation shows up as a constraint
- *       violation under one selector and not the other.
+ *       violation here and not there.
  *   <li>{@code lockByIdForMembershipMutation} goes through the {@code PESSIMISTIC_WRITE} query and
  *       throws {@code OrganizeNotFoundException} on a missing row, both matching MyBatis.
  *   <li>Every other failure is wrapped in {@code InfrastructureException} with
- *       {@code PERSISTENCE_OPERATION_FAILED}, so callers see one error contract regardless of which
- *       implementation is wired.
+ *       {@code PERSISTENCE_OPERATION_FAILED}, which is the error contract callers were written
+ *       against under either implementation.
  * </ul>
  */
+@Component
 @RequiredArgsConstructor
 public class OrganizeJpaPersistenceAdapter implements OrganizePersistence {
 

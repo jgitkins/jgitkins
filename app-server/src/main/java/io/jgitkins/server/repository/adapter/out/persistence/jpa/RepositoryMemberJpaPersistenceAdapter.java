@@ -10,7 +10,9 @@ import io.jgitkins.server.repository.domain.vo.RepositoryMemberUserId;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
+@Component
 @RequiredArgsConstructor
 public class RepositoryMemberJpaPersistenceAdapter implements RepositoryMemberPersistencePort {
 
