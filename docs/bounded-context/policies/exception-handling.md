@@ -218,7 +218,7 @@
 - `BranchCreationValidator`
 - `ActivationValidator`
 - `RepositoryValidator`
-- 주요 JGit/MyBatis adapter
+- 주요 JGit/JPA adapter
 
 ### B. 중기 명세
 
