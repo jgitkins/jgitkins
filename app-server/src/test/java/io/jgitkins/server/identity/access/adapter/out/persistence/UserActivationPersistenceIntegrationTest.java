@@ -6,8 +6,6 @@ import io.jgitkins.server.JGitkinsServerApplication;
 import io.jgitkins.server.identity.access.domain.aggregate.User;
 import io.jgitkins.server.identity.access.domain.vo.UserStatus;
 import io.jgitkins.server.identity.access.domain.vo.Username;
-import io.jgitkins.server.identity.access.adapter.out.persistence.support.UserDomainMapper;
-import io.jgitkins.server.identity.access.adapter.out.persistence.translator.UserEntityMbgMapper;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -27,22 +25,25 @@ import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Pinned to MyBatis. It injects {@link UserPersistenceAdapter} and {@link UserEntityMbgMapper}
- * directly, so it tests that provider's activation behaviour rather than the port's, and
- * application.yml now selects JPA for the identity-access slice.
+ * Activation against a real database, through whichever provider the selector binds.
  *
- * <p>Keeping it is not inertia: MyBatis stays the rollback for this slice until reference-zero, so
- * its behaviour has to stay tested until it is deleted. But it should not be deleted blind either.
- * Three behaviours live here and the JPA side has no proven counterpart for them:
- * {@code activatesPendingUserThroughRealPersistenceAdapter},
- * {@code normalizesLegacyPendingUsernameBeforeActivation} and
- * {@code insertsSeparateUserWithGeneratedId}. The JPA reference slice covers
- * {@code persistsReferenceSliceAgainstMariaDb} and nothing about legacy username normalisation.
- * Whoever removes MyBatis owes those three a JPA equivalent first; that is the whole cost of this
- * file, written down so it is not discovered by its absence.
+ * <p>It used to inject {@link UserPersistenceAdapter} -- the MyBatis implementation -- so when
+ * application.yml selected JPA for this slice the context stopped building that bean and the class
+ * failed to initialise. The first fix pinned the slice back to mybatis, which kept the test green
+ * and left these three behaviours untested on the provider that actually runs. It injects
+ * {@link UserPersistence} now, the type the selector exposes, so it follows the live provider.
+ *
+ * <p>That matters because these three were the JPA side's real coverage gap. The JPA reference slice
+ * asserts {@code persistsReferenceSliceAgainstMariaDb} and nothing about activation:
+ * {@code normalizesLegacyPendingUsernameBeforeActivation} in particular pins the timestamps of a
+ * legacy PENDING row, which is the kind of behaviour that is only discovered missing after the old
+ * provider is gone and the rows are already wrong.
+ *
+ * <p>The MyBatis-only plumbing it also injected -- the MBG mapper and the MapStruct mapper, asserted
+ * non-null -- is gone. Those assertions checked that two beans existed, which the context failing to
+ * start already proves.
  */
-@SpringBootTest(classes = JGitkinsServerApplication.class, properties =
-        "jgitkins.persistence.app-server.identity-access-reference.implementation=mybatis")
+@SpringBootTest(classes = JGitkinsServerApplication.class)
 @ActiveProfiles("identity-access-integration")
 @Transactional
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -51,9 +52,7 @@ class UserActivationPersistenceIntegrationTest {
 
     private static Path runtimeVolume;
 
-    @Autowired private UserPersistenceAdapter adapter;
-    @Autowired private UserDomainMapper userDomainMapper;
-    @Autowired private UserEntityMbgMapper userEntityMbgMapper;
+    @Autowired private UserPersistence adapter;
     @Autowired private JdbcTemplate jdbc;
 
     @DynamicPropertySource
@@ -79,8 +78,6 @@ class UserActivationPersistenceIntegrationTest {
 
     @Test
     void activatesPendingUserThroughRealPersistenceAdapter() {
-        assertThat(userDomainMapper).isNotNull();
-        assertThat(userEntityMbgMapper).isNotNull();
 
         User pending = adapter.findById(1001L).orElseThrow();
         LocalDateTime createdAt = pending.getCreatedAt();
