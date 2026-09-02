@@ -107,3 +107,29 @@ javadoc 을 달아 설명해뒀지만, 설명이 필요하다는 것 자체가 �
 **시작점**: `Violation` 을 중립적인 이름으로 바꾸고, `Category` javadoc 을 "금지" 대신
 "패턴과 그 의미"로 다시 쓴다. 소비자 6개는 전부 카테고리를 명시적으로 나열하므로
 기계적 개명이고 컴파일러가 누락을 잡는다.
+
+## 오류 응답 문구를 Spring 의 ProblemDetail / MessageSource 로 옮기는 것 검토
+
+**현재**: `GlobalExceptionHandler` 가 예외 타입마다 `instanceof` 분기를 두고 문구를 손으로
+만든다. `@ExceptionHandler` 등록은 11개, `extractValidationMessage` 의 분기는 C묶음 이후
+6개가 된다. 저장소 전체에 `ProblemDetail` / `ResponseEntityExceptionHandler` /
+`problemdetails` 사용은 0건이고 자체 `ApiResponse` envelope 만 쓴다.
+
+**왜**: 손으로 유지하는 목록이 또 하나 생긴다는 것이 문제다. C묶음이 분기 없는 타입 세 개를
+발견했고(`ConstraintViolationException`, `MethodArgumentTypeMismatchException`,
+`MissingServletRequestParameterException` 이 전부 `instanceof` 분기 0개였다) 그래서 완전성
+가드를 붙였지만, 가드는 목록이 빠지는 것을 막을 뿐 목록 자체를 없애지 못한다. Spring 6.1 은
+`problemDetail.*` 메시지 키로 예외 타입별 문구를 해석하는 내장을 갖고 있고, 그쪽으로 가면
+분기 체인과 완전성 가드가 함께 사라진다. 국제화도 덤으로 따라온다.
+
+**지금 안 하는 이유**: `ApiResponse` envelope 이 wire 계약이고 HTTP 호환성 테스트가 그 형태를
+고정한다(`SignupActivationHttpCompatibilityTest`,
+`UserCredentialActiveAccountHttpCompatibilityTest` 등). `ProblemDetail` 로 갈아끼우는 것은
+응답 스키마 변경이라 드롭인이 아니다. 그리고 C묶음이 착지하기 전에 하면 지금 고치는 분기를
+그대로 버리게 된다.
+
+**시작점**: 예외 타입 하나만 `problemDetail.*` 키로 옮겨 두 관용구를 나란히 놓고, 그 하나에
+대해 기존 HTTP 호환성 테스트가 여전히 초록인지 본다. envelope 을 유지하면서 문구만
+`MessageSource` 에서 해석하는 중간 형태가 가능한지가 이 실험의 질문이다. 가능하다면 계약을
+깨지 않고 목록을 없앨 수 있고, 불가능하다면 이 항목은 닫는다.
+설계 근거: `~/.gstack/projects/jgitkins-jgitkins/hrk-main-plan-c-bundle-20260902-error-response-body.md`
