@@ -15,8 +15,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
  * cannot catch that -- it checks the list that was declared, so a wrong list is a consistent list.
  * Without a log line the way that reaches anyone is a user reporting it.
  *
- * <p>Both handlers log through here rather than each formatting its own line, so the two cannot drift
- * in what they record. It does not live in {@code SecurityErrorResponseWriter}, the shared path the
+ * <p>Three call sites log through here rather than each formatting its own line, so they cannot drift
+ * in what they record: the two security handlers above, and
+ * {@code GlobalExceptionHandler#handleNoHandler}, which had no log at all until it reused this -- an
+ * unmatched path was the one client mistake that left no trace. That third caller is why the class is
+ * public rather than package-private; it lives in {@code common.presentation.advice}.
+ * The line's shape is a deliberate contract, not a convenience. It does not live in {@code SecurityErrorResponseWriter}, the shared path the
  * TODO offered as the alternative: that method takes {@code (response, status, payload)} and never
  * sees the request, so it cannot name the method or the path, which is the whole point of the line.
  *
@@ -36,7 +40,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
  * {@code OidcIdTokenVerifierAdapter:61-63} left the provider name out of its log for this same class
  * of reason.
  */
-final class DeniedRequestLog {
+public final class DeniedRequestLog {
 
     /** Long enough for the deepest git route, short enough that one line cannot flood a log. */
     private static final int MAX_PATH = 256;
@@ -50,7 +54,7 @@ final class DeniedRequestLog {
      * <p>One preformatted string rather than four placeholders because both call sites must produce
      * the same shape, and a parameterised call is where that shape would drift.
      */
-    static String describe(HttpServletRequest request, Throwable reason) {
+    public static String describe(HttpServletRequest request, Throwable reason) {
         return sanitize(request.getMethod()) + " " + sanitize(request.getRequestURI())
                 + " requester=" + requester()
                 + " reason=" + reasonOf(reason);

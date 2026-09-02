@@ -203,6 +203,23 @@ class BoundaryValidationTest {
         assertThat(mockMvc.perform(get("/api/repositories/not-a-number"))
                 .andReturn().getResponse().getStatus())
                 .as("path variable type mismatch").isEqualTo(400);
+
+        // The status was right and the body was not. Spring's converter message names both Java
+        // types -- "Failed to convert value of type 'java.lang.String' to required type
+        // 'java.lang.Long'" -- and it reached the response because MethodArgumentTypeMismatchException
+        // was registered on the handler with no resolver behind it.
+        assertThat(mockMvc.perform(get("/api/repositories/not-a-number"))
+                .andReturn().getResponse().getContentAsString())
+                .as("and the body names the parameter, not the JVM class")
+                .contains("repositoryId: expected a number")
+                .doesNotContain("java.lang");
+
+        // Same shape of leak: Spring's text here carries "for method parameter type String".
+        assertThat(mockMvc.perform(get("/repositories/ns/repo/merge/check"))
+                .andReturn().getResponse().getContentAsString())
+                .as("a missing parameter names the parameter, not its method parameter type")
+                .contains("required parameter is missing")
+                .doesNotContain("method parameter type");
     }
 
     /**
@@ -220,9 +237,56 @@ class BoundaryValidationTest {
         assertThat(result.getResponse().getStatus())
                 .as("a mistyped URL is a client error")
                 .isEqualTo(404);
-        assertThat(result.getResponse().getContentAsString())
+        String body = result.getResponse().getContentAsString();
+        assertThat(body)
                 .as("and its code names the status rather than reusing REQ-400")
                 .contains("REQ-404");
+        assertThat(body)
+                .as("the body says what happened without quoting Spring, which called an API route a "
+                        + "static resource and read back the caller's own path")
+                .contains("No endpoint matches this request")
+                .doesNotContain("static resource")
+                .doesNotContain("there-is-no-such-route");
+    }
+
+    /**
+     * The two parameter-validation paths answer the same thing.
+     *
+     * <p>Spring 6.1 picks the path by annotation: a controller WITHOUT {@code @Validated} throws
+     * {@code HandlerMethodValidationException}, one WITH it goes through AOP and throws
+     * {@code ConstraintViolationException}. {@code MergeController} is the first,
+     * {@code RepositoryManagementController} the second, and the same blank path segment reaches both.
+     *
+     * <p>This is task 2.100's safety net, not this task's own requirement. 2.100 deletes the two
+     * remaining {@code @Validated} annotations, which moves those routes from one path to the other.
+     * Before both resolvers existed that move changed the response body -- one path named the field,
+     * the other reached {@code ex.getMessage()} and read out the handler method's name. With this test
+     * green the deletion is provably a no-op on the wire, which is the thing 2.100 could not
+     * demonstrate on its own.
+     */
+    @Test
+    void bothParameterValidationPathsAnswerTheSameMessage() throws Exception {
+        String token = tokenIssuerPort.issueToken(42L, List.of("ROLE_USER"));
+
+        String builtIn = mockMvc.perform(
+                        get("/repositories/{namespace}/{repoName}/merge/check", " ", "repo")
+                                .param("sourceBranch", "feature")
+                                .param("targetBranch", "main"))
+                .andReturn().getResponse().getContentAsString();
+
+        String throughAop = mockMvc.perform(
+                        get("/api/repositories/users/{username}", " ")
+                                .header("Authorization", "Bearer " + token))
+                .andReturn().getResponse().getContentAsString();
+
+        assertThat(builtIn)
+                .as("the built-in path (no @Validated) names the constraint")
+                .contains("must not be blank");
+        assertThat(throughAop)
+                .as("and the AOP path (@Validated) answers the same, rather than reaching "
+                        + "ex.getMessage() and reading out getUserRepositories.username")
+                .contains("must not be blank")
+                .doesNotContain("getUserRepositories");
     }
 
     /**
