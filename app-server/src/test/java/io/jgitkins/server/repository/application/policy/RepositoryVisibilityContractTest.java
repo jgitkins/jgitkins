@@ -16,7 +16,7 @@ import io.jgitkins.server.repository.domain.vo.RepositoryName;
 import io.jgitkins.server.repository.domain.vo.RepositoryPath;
 import io.jgitkins.server.repository.domain.vo.RepositoryVisibility;
 import io.jgitkins.server.shared.domain.model.vo.BranchName;
-import io.jgitkins.server.shared.domain.model.vo.OwnerId;
+import io.jgitkins.server.shared.domain.model.vo.RepositoryOwnerId;
 import io.jgitkins.server.shared.domain.model.vo.OwnerType;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -88,7 +88,7 @@ class RepositoryVisibilityContractTest {
 
     private static Repository repository(RepositoryVisibility visibility) {
         return Repository.rehydrate(
-                RepositoryId.of(1L), OwnerType.ORGANIZATION, OwnerId.of(42L),
+                RepositoryId.of(1L), OwnerType.ORGANIZATION, RepositoryOwnerId.of(42L),
                 RepositoryName.from("repo"), RepositoryPath.from("repo"), BranchName.of("main"),
                 visibility, null, "/org/repo.git", null, null, null, null);
     }

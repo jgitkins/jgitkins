@@ -4,7 +4,7 @@ import io.jgitkins.server.shared.domain.aggregate.AbstractAggregateRoot;
 import io.jgitkins.server.repository.domain.event.RepositorySynchronizedEvent;
 import io.jgitkins.server.shared.domain.model.vo.BranchName;
 
-import io.jgitkins.server.shared.domain.model.vo.OwnerId;
+import io.jgitkins.server.shared.domain.model.vo.RepositoryOwnerId;
 import io.jgitkins.server.shared.domain.model.vo.OwnerType;
 import io.jgitkins.server.repository.domain.vo.RepositoryId;
 import io.jgitkins.server.repository.domain.vo.RepositoryName;
@@ -22,7 +22,7 @@ public class Repository extends AbstractAggregateRoot<RepositoryId> {
 
     private final RepositoryId id;
     private final OwnerType ownerType;
-    private final OwnerId ownerId;
+    private final RepositoryOwnerId ownerId;
     private final RepositoryName name;
     private final RepositoryPath path;
     private final BranchName defaultBranch;
@@ -38,7 +38,7 @@ public class Repository extends AbstractAggregateRoot<RepositoryId> {
 
     private Repository(RepositoryId id,
                        OwnerType ownerType,
-                       OwnerId ownerId,
+                       RepositoryOwnerId ownerId,
                        RepositoryName name,
                        RepositoryPath path,
                        BranchName defaultBranch,
@@ -69,7 +69,7 @@ public class Repository extends AbstractAggregateRoot<RepositoryId> {
     }
 
     public static Repository create(OwnerType ownerType,
-                                    OwnerId ownerId,
+                                    RepositoryOwnerId ownerId,
                                     RepositoryName name,
                                     RepositoryPath path,
                                     BranchName defaultBranch,
@@ -147,7 +147,7 @@ public class Repository extends AbstractAggregateRoot<RepositoryId> {
     // internal factory method (entity to domain)
     public static Repository rehydrate(RepositoryId repositoryId,
                                        OwnerType ownerType,
-                                       OwnerId ownerId,
+                                       RepositoryOwnerId ownerId,
                                        RepositoryName name,
                                        RepositoryPath path,
                                        BranchName defaultBranch,

@@ -116,8 +116,8 @@ public class InfrastructureOwnershipArchitectureTest {
     );
     private static final Map<String, Set<String>> ALLOWED_COMMON_IMPORTS = Map.of(
             "common/infrastructure/config/security/handler/OAuth2LoginSuccessHandler.java", Set.of(
-                    "io.jgitkins.server.identity.access.application.dto.command.OAuthLoginCommand",
-                    "io.jgitkins.server.identity.access.application.dto.result.OAuthLoginResult",
+                    "io.jgitkins.server.identity.access.application.contract.command.OAuthLoginCommand",
+                    "io.jgitkins.server.identity.access.application.contract.result.OAuthLoginResult",
                     "io.jgitkins.server.identity.access.application.port.in.OAuthLoginUseCase"),
             "common/infrastructure/config/security/SecurityConfig.java", Set.of(
                     "io.jgitkins.server.identity.access.application.port.in.OAuthLoginUseCase",

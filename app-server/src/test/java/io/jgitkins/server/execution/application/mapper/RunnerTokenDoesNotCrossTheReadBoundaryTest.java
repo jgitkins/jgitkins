@@ -17,7 +17,7 @@ import org.mapstruct.factory.Mappers;
  * read result.
  *
  * <p>GET /api/runners and GET /api/runners/{id} took no principal and returned RunnerResponse with a
- * token field. That value is what RunnerController#activateRunner consumes, so an unauthenticated
+ * token field. That value is what RunnerManagementController#activateRunner consumes, so an unauthenticated
  * read was enough to become a runner and start receiving dispatched jobs.
  *
  * <p>This tests the MAPPING, not the response shape. Asserting that $.data.token does not exist

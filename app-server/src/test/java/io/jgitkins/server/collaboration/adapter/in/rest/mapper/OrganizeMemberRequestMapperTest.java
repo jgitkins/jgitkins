@@ -3,7 +3,7 @@ package io.jgitkins.server.collaboration.adapter.in.rest.mapper;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.jgitkins.server.collaboration.adapter.in.rest.dto.request.OrganizeMemberAddRequest;
-import io.jgitkins.server.collaboration.application.dto.command.OrganizeMemberAddCommand;
+import io.jgitkins.server.collaboration.application.contract.command.OrganizeMemberAddCommand;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeMemberRole;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;

@@ -1,6 +1,6 @@
 package io.jgitkins.server.identity.access.adapter.out.security;
 
-import io.jgitkins.server.identity.access.application.dto.result.JwtAuthenticationResult;
+import io.jgitkins.server.identity.access.application.contract.result.JwtAuthenticationResult;
 import io.jgitkins.server.identity.access.infrastructure.config.security.JwtProperties;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

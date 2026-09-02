@@ -1,6 +1,6 @@
 package io.jgitkins.server.collaboration.application.port.in;
 
-import io.jgitkins.server.collaboration.application.dto.command.OrganizeMemberAddCommand;
+import io.jgitkins.server.collaboration.application.contract.command.OrganizeMemberAddCommand;
 
 public interface OrganizeMemberAddUseCase {
 

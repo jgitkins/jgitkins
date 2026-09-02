@@ -45,36 +45,36 @@ import io.jgitkins.server.execution.application.service.PushEventHandleService;
 import io.jgitkins.server.repository.application.service.RepositoryFileService;
 import io.jgitkins.server.identity.access.application.service.UserCredentialService;
 import io.jgitkins.server.identity.access.application.service.UserProfileService;
-import io.jgitkins.server.execution.adapter.in.rest.RunnerController;
+import io.jgitkins.server.execution.adapter.in.rest.RunnerManagementController;
 import io.jgitkins.server.identity.access.adapter.in.rest.AdminUserController;
 import io.jgitkins.server.change.review.adapter.in.rest.MergeController;
 import io.jgitkins.server.identity.access.adapter.in.rest.OAuthController;
-import io.jgitkins.server.collaboration.adapter.in.rest.OrganizeController;
-import io.jgitkins.server.collaboration.adapter.in.rest.OrganizeMemberController;
+import io.jgitkins.server.collaboration.adapter.in.rest.OrganizeManagementController;
+import io.jgitkins.server.collaboration.adapter.in.rest.OrganizeMemberManagementController;
 import io.jgitkins.server.collaboration.adapter.in.rest.dto.request.OrganizeCreationRequest;
 import io.jgitkins.server.collaboration.adapter.in.rest.dto.request.OrganizeMemberAddRequest;
-import io.jgitkins.server.collaboration.adapter.in.rest.dto.request.OrganizeUpdateRequest;
 import io.jgitkins.server.collaboration.adapter.in.rest.mapper.OrganizeMemberRequestMapper;
 import io.jgitkins.server.collaboration.adapter.in.rest.mapper.OrganizeRequestMapper;
 import io.jgitkins.server.identity.access.adapter.in.rest.SignupController;
 import io.jgitkins.server.identity.access.adapter.in.rest.UserController;
-import io.jgitkins.server.identity.access.adapter.in.rest.UserCredentialController;
+import io.jgitkins.server.identity.access.adapter.in.rest.UserCredentialManagementController;
 import io.jgitkins.server.collaboration.adapter.in.web.WebOrganizeController;
 import io.jgitkins.server.repository.adapter.in.web.WebRepositoryController;
 import io.jgitkins.core.web.api.response.ApiResponse;
-import io.jgitkins.server.change.review.adapter.in.rest.PullRequestController;
+import io.jgitkins.server.architecture.ControllerInventory;
+import io.jgitkins.server.change.review.adapter.in.rest.PullRequestManagementController;
 import io.jgitkins.server.repository.application.service.BranchLoadService;
 import io.jgitkins.server.repository.application.service.BranchManagementService;
 import io.jgitkins.server.repository.application.service.RepositoryLoadService;
 import io.jgitkins.server.repository.application.service.RepositoryManagementService;
 import io.jgitkins.server.repository.application.service.RepositoryMemberService;
 import io.jgitkins.server.repository.application.service.RepositoryOverviewService;
-import io.jgitkins.server.repository.adapter.in.rest.BranchController;
+import io.jgitkins.server.repository.adapter.in.rest.BranchManagementController;
 import io.jgitkins.server.repository.adapter.in.rest.RepositoryCommitController;
 import io.jgitkins.server.repository.adapter.in.rest.RepositoryContentController;
 import io.jgitkins.server.repository.adapter.in.rest.RepositoryFileController;
 import io.jgitkins.server.repository.adapter.in.rest.RepositoryManagementController;
-import io.jgitkins.server.repository.adapter.in.rest.RepositoryMemberController;
+import io.jgitkins.server.repository.adapter.in.rest.RepositoryMemberManagementController;
 import io.jgitkins.server.repository.application.support.branch.BranchFactory;
 import io.jgitkins.server.repository.application.support.RepositoryAccessibilityService;
 import io.jgitkins.server.shared.application.support.RepositoryNamespaceResolver;
@@ -266,28 +266,15 @@ class ArchitecturePackageConventionTest {
         });
     }
 
+    /**
+     * The controller list moved to {@link ControllerInventory}, which
+     * {@code ControllerAllowlistCompletenessTest} holds against the source tree. It used to be an
+     * inline {@code List.of} here, and nothing asserted it was complete -- {@code MergeController}
+     * was in it twice, short form and fully qualified, so nineteen entries named eighteen classes.
+     */
     @Test
     void restAndWebApiControllers_returnApiResponseEnvelope() {
-        List<Class<?>> controllerClasses = List.of(
-                AdminUserController.class,
-                MergeController.class,
-                OAuthController.class,
-                OrganizeController.class,
-                OrganizeMemberController.class,
-                SignupController.class,
-                UserController.class,
-                UserCredentialController.class,
-                PullRequestController.class,
-                io.jgitkins.server.change.review.adapter.in.rest.MergeController.class,
-                WebOrganizeController.class,
-                WebRepositoryController.class,
-                RunnerController.class,
-                BranchController.class,
-                RepositoryCommitController.class,
-                RepositoryContentController.class,
-                RepositoryFileController.class,
-                RepositoryManagementController.class,
-                RepositoryMemberController.class);
+        List<Class<?>> controllerClasses = ControllerInventory.ALL;
 
         controllerClasses.stream()
                 .flatMap(controllerClass -> Stream.of(controllerClass.getDeclaredMethods()))
@@ -298,8 +285,8 @@ class ArchitecturePackageConventionTest {
     @Test
     void collaborationControllers_resideInInboundAdapterPackages() {
         List<Class<?>> controllerClasses = List.of(
-                OrganizeController.class,
-                OrganizeMemberController.class,
+                OrganizeManagementController.class,
+                OrganizeMemberManagementController.class,
                 WebOrganizeController.class);
 
         controllerClasses.forEach(controllerClass -> {
@@ -316,8 +303,6 @@ class ArchitecturePackageConventionTest {
                 OrganizeCreationRequest.class.getPackageName());
         assertEquals("io.jgitkins.server.collaboration.adapter.in.rest.dto.request",
                 OrganizeMemberAddRequest.class.getPackageName());
-        assertEquals("io.jgitkins.server.collaboration.adapter.in.rest.dto.request",
-                OrganizeUpdateRequest.class.getPackageName());
         assertEquals("io.jgitkins.server.collaboration.adapter.in.rest.mapper",
                 OrganizeRequestMapper.class.getPackageName());
         assertEquals("io.jgitkins.server.collaboration.adapter.in.rest.mapper",
@@ -327,7 +312,7 @@ class ArchitecturePackageConventionTest {
     @Test
     void changeReviewControllers_resideInChangeReviewPresentationPackage() {
         List<Class<?>> controllerClasses = List.of(
-                PullRequestController.class,
+                PullRequestManagementController.class,
                 io.jgitkins.server.change.review.adapter.in.rest.MergeController.class);
 
         controllerClasses.forEach(controllerClass -> assertEquals(

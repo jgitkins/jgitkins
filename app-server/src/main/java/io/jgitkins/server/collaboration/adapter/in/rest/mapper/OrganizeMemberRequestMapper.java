@@ -1,7 +1,7 @@
 package io.jgitkins.server.collaboration.adapter.in.rest.mapper;
 
 import io.jgitkins.server.collaboration.adapter.in.rest.dto.request.OrganizeMemberAddRequest;
-import io.jgitkins.server.collaboration.application.dto.command.OrganizeMemberAddCommand;
+import io.jgitkins.server.collaboration.application.contract.command.OrganizeMemberAddCommand;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

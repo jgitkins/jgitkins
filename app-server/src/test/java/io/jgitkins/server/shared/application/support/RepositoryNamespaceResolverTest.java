@@ -6,7 +6,7 @@ import static org.mockito.Mockito.when;
 
 import io.jgitkins.server.collaboration.application.port.out.OrganizeQueryPort;
 import io.jgitkins.server.identity.access.application.port.out.UserQueryPort;
-import io.jgitkins.server.shared.domain.model.vo.OwnerId;
+import io.jgitkins.server.shared.domain.model.vo.RepositoryOwnerId;
 import io.jgitkins.server.shared.domain.model.vo.OwnerType;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -23,7 +23,7 @@ class RepositoryNamespaceResolverTest {
     void resolve_userOwner_usesScalarUsernameLookup() {
         when(userQueryPort.findUsernameById(7L)).thenReturn(Optional.of("alice"));
         RepositoryNamespaceResolver resolver = new RepositoryNamespaceResolver(organizePort, userQueryPort);
-        assertEquals("alice", resolver.resolve(OwnerType.USER, OwnerId.of(7L)));
+        assertEquals("alice", resolver.resolve(OwnerType.USER, RepositoryOwnerId.of(7L)));
         verify(userQueryPort).findUsernameById(7L);
     }
 }

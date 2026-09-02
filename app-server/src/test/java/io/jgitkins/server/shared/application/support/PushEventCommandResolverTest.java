@@ -8,7 +8,7 @@ import io.jgitkins.server.shared.application.command.PushEventCommand;
 import io.jgitkins.server.shared.application.command.PushHookRequest;
 import io.jgitkins.server.shared.application.exception.ApplicationException;
 import io.jgitkins.server.repository.domain.aggregate.Repository;
-import io.jgitkins.server.shared.domain.model.vo.OwnerId;
+import io.jgitkins.server.shared.domain.model.vo.RepositoryOwnerId;
 import io.jgitkins.server.shared.domain.model.vo.OwnerType;
 import io.jgitkins.server.repository.domain.vo.RepositoryId;
 import io.jgitkins.server.repository.domain.vo.RepositoryName;
@@ -96,7 +96,7 @@ class PushEventCommandResolverTest {
         return Repository.rehydrate(
                 RepositoryId.of(9L),
                 OwnerType.USER,
-                OwnerId.of(1L),
+                RepositoryOwnerId.of(1L),
                 RepositoryName.from("repo"),
                 RepositoryPath.from("repo"),
                 null,
@@ -114,7 +114,7 @@ class PushEventCommandResolverTest {
         return Repository.rehydrate(
                 RepositoryId.of(19L),
                 OwnerType.USER,
-                OwnerId.of(11L),
+                RepositoryOwnerId.of(11L),
                 RepositoryName.from("private-m2"),
                 RepositoryPath.from("private-m2"),
                 null,

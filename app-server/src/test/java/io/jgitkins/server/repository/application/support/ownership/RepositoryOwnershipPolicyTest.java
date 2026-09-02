@@ -10,7 +10,7 @@ import io.jgitkins.server.repository.domain.vo.RepositoryName;
 import io.jgitkins.server.repository.domain.vo.RepositoryPath;
 import io.jgitkins.server.repository.domain.vo.RepositoryVisibility;
 import io.jgitkins.server.shared.domain.model.vo.BranchName;
-import io.jgitkins.server.shared.domain.model.vo.OwnerId;
+import io.jgitkins.server.shared.domain.model.vo.RepositoryOwnerId;
 import io.jgitkins.server.shared.domain.model.vo.OwnerType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -70,7 +70,7 @@ class RepositoryOwnershipPolicyTest {
         return Repository.rehydrate(
                 io.jgitkins.server.repository.domain.vo.RepositoryId.of(1L),
                 OwnerType.USER,
-                OwnerId.of(7L),
+                RepositoryOwnerId.of(7L),
                 RepositoryName.from("repo"),
                 RepositoryPath.from("repo"),
                 BranchName.of("main"),

@@ -1,7 +1,7 @@
 package io.jgitkins.server.repository.domain.repository;
 
 import io.jgitkins.server.repository.domain.aggregate.Repository;
-import io.jgitkins.server.shared.domain.model.vo.OwnerId;
+import io.jgitkins.server.shared.domain.model.vo.RepositoryOwnerId;
 import io.jgitkins.server.shared.domain.model.vo.OwnerType;
 import io.jgitkins.server.repository.domain.vo.RepositoryId;
 import io.jgitkins.server.repository.domain.vo.RepositoryName;
@@ -18,9 +18,9 @@ public interface RepositoryRepository {
 
     Optional<Repository> findById(RepositoryId id);
 
-    Optional<Repository> findByOwnerAndName(OwnerType ownerType, OwnerId ownerId, RepositoryName name);
+    Optional<Repository> findByOwnerAndName(OwnerType ownerType, RepositoryOwnerId ownerId, RepositoryName name);
 
-    Optional<Repository> findByOwnerAndPath(OwnerType ownerType, OwnerId ownerId, RepositoryPath path);
+    Optional<Repository> findByOwnerAndPath(OwnerType ownerType, RepositoryOwnerId ownerId, RepositoryPath path);
 
     Optional<Repository> findByClonePath(String clonePath);
 

@@ -5,8 +5,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.jgitkins.server.collaboration.adapter.out.persistence.OrganizeMemberPersistenceAdapter;
 import io.jgitkins.server.collaboration.adapter.out.persistence.OrganizePersistenceAdapter;
-import io.jgitkins.server.collaboration.application.dto.command.OrganizeCreationCommand;
-import io.jgitkins.server.collaboration.application.dto.result.OrganizeCreationResult;
+import io.jgitkins.server.collaboration.application.contract.command.OrganizeCreationCommand;
+import io.jgitkins.server.collaboration.application.contract.result.OrganizeCreationResult;
 import io.jgitkins.server.collaboration.application.mapper.OrganizeApplicationMapper;
 import io.jgitkins.server.collaboration.application.port.out.DomainEventPublisher;
 import io.jgitkins.server.collaboration.application.port.out.OrganizeMemberPersistencePort;
@@ -15,7 +15,7 @@ import io.jgitkins.server.collaboration.domain.entity.OrganizeMember;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeId;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeMemberRole;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeName;
-import io.jgitkins.server.collaboration.domain.vo.OwnerId;
+import io.jgitkins.server.collaboration.domain.vo.OrganizeOwnerId;
 import io.jgitkins.server.collaboration.adapter.out.persistence.support.OrganizeDomainMapper;
 import io.jgitkins.server.collaboration.adapter.out.persistence.support.OrganizeMemberDomainMapper;
 import io.jgitkins.server.collaboration.adapter.out.persistence.mapper.OrganizeEntityMbgMapper;
@@ -141,7 +141,7 @@ class OrganizeCreationMembershipBootstrapTest {
     private static final class OrganizeWithoutEventFactory {
         private static io.jgitkins.server.collaboration.domain.aggregate.Organize create(String name, Long ownerId) {
             return io.jgitkins.server.collaboration.domain.aggregate.Organize.createWithoutEvent(
-                    null, OrganizeName.from(name), OwnerId.of(ownerId), "description", LocalDateTime.now());
+                    null, OrganizeName.from(name), OrganizeOwnerId.of(ownerId), "description", LocalDateTime.now());
         }
     }
 }

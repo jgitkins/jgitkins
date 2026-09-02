@@ -6,7 +6,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import io.jgitkins.server.identity.access.application.dto.result.UserSummary;
+import io.jgitkins.server.identity.access.application.contract.result.UserSummary;
 import io.jgitkins.server.identity.access.application.port.in.PublicUserQueryUseCase;
 import io.jgitkins.server.support.ErrorStatusMappingTestConfig;
 import java.time.LocalDateTime;

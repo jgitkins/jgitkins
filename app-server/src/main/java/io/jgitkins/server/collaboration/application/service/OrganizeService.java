@@ -1,7 +1,7 @@
 package io.jgitkins.server.collaboration.application.service;
 
-import io.jgitkins.server.collaboration.application.dto.command.OrganizeCreationCommand;
-import io.jgitkins.server.collaboration.application.dto.result.OrganizeCreationResult;
+import io.jgitkins.server.collaboration.application.contract.command.OrganizeCreationCommand;
+import io.jgitkins.server.collaboration.application.contract.result.OrganizeCreationResult;
 import io.jgitkins.server.collaboration.application.mapper.OrganizeApplicationMapper;
 import io.jgitkins.server.collaboration.application.port.in.OrganizeCreationUseCase;
 import io.jgitkins.server.collaboration.application.port.in.OrganizeDeletionUseCase;
@@ -20,7 +20,7 @@ import io.jgitkins.server.collaboration.domain.vo.MemberUserId;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeMemberRole;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeId;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeName;
-import io.jgitkins.server.collaboration.domain.vo.OwnerId;
+import io.jgitkins.server.collaboration.domain.vo.OrganizeOwnerId;
 import io.jgitkins.server.collaboration.domain.repository.OrganizeRepository;
 import io.jgitkins.server.shared.domain.event.DomainEvent;
 import java.time.Instant;
@@ -50,9 +50,9 @@ public class OrganizeService implements OrganizeCreationUseCase,
     public OrganizeCreationResult createOrganize(OrganizeCreationCommand command) {
         // 1. 입력 정합성 검증 (Domain VO 생성)
         OrganizeName name = OrganizeName.from(command.name());
-        // No null guard on the requester here. OwnerId.of below rejects null and non-positive with a
+        // No null guard on the requester here. OrganizeOwnerId.of below rejects null and non-positive with a
         // mapped domain exception, and the "authenticated user required" answer belongs to the adapter,
-        // which OrganizeController gives as a 401. Keeping a copy here answered 403 for the same
+        // which OrganizeManagementController gives as a 401. Keeping a copy here answered 403 for the same
         // condition and could only disagree with it.
         Long ownerId = command.requesterUserId();
 
@@ -63,7 +63,7 @@ public class OrganizeService implements OrganizeCreationUseCase,
         Organize organize = Organize.createWithoutEvent(
                 null,
                 name,
-                OwnerId.of(ownerId),
+                OrganizeOwnerId.of(ownerId),
                 command.description(),
                 LocalDateTime.now());
 

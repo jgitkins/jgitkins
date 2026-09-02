@@ -229,7 +229,7 @@ class BoundaryValidationTest {
      * A non-positive id in the path is the caller's, and must not answer 500.
      *
      * <p>The body constraints do not cover path variables, so before this an authenticated
-     * {@code POST /api/organizes/0/members} reached {@code OwnerId.of(0)} and threw
+     * {@code POST /api/organizes/0/members} reached {@code OrganizeOwnerId.of(0)} and threw
      * {@code IllegalArgumentException}, which has no handler and fell to the catch-all. Measured, not
      * assumed: the same probe unauthenticated answered 401, which is why the token is minted here.
      */

@@ -1,6 +1,6 @@
 package io.jgitkins.server.change.review.application.support;
 
-import io.jgitkins.server.change.review.application.dto.result.MergeResult;
+import io.jgitkins.server.change.review.application.contract.result.MergeResult;
 import io.jgitkins.server.change.review.application.port.out.BranchHeadPort;
 import io.jgitkins.server.change.review.application.port.out.MergePort;
 import io.jgitkins.server.change.review.application.port.out.ReviewRepositoryReference;

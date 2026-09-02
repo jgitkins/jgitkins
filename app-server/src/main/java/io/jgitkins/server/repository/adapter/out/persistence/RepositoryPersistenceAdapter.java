@@ -4,7 +4,7 @@ import io.jgitkins.server.repository.application.port.out.OrganizationMembership
 import io.jgitkins.server.repository.application.port.out.OrganizationNamespacePort;
 import io.jgitkins.server.repository.application.port.out.UserNamespacePort;
 import io.jgitkins.server.repository.domain.aggregate.Repository;
-import io.jgitkins.server.shared.domain.model.vo.OwnerId;
+import io.jgitkins.server.shared.domain.model.vo.RepositoryOwnerId;
 import io.jgitkins.server.shared.domain.model.vo.OwnerType;
 import io.jgitkins.server.repository.domain.vo.RepositoryId;
 import io.jgitkins.server.repository.domain.vo.RepositoryName;
@@ -106,7 +106,7 @@ public class RepositoryPersistenceAdapter implements RepositoryPersistence {
     }
 
     @Override
-    public Optional<Repository> findByOwnerAndPath(OwnerType ownerType, OwnerId ownerId, RepositoryPath path) {
+    public Optional<Repository> findByOwnerAndPath(OwnerType ownerType, RepositoryOwnerId ownerId, RepositoryPath path) {
         try {
             RepositoryEntityCondition condition = new RepositoryEntityCondition();
             condition.createCriteria()
@@ -154,7 +154,7 @@ public class RepositoryPersistenceAdapter implements RepositoryPersistence {
     }
 
     @Override
-    public Optional<Repository> findByOwnerAndName(OwnerType ownerType, OwnerId ownerId, RepositoryName name) {
+    public Optional<Repository> findByOwnerAndName(OwnerType ownerType, RepositoryOwnerId ownerId, RepositoryName name) {
         try {
             RepositoryEntityCondition condition = new RepositoryEntityCondition();
             condition.createCriteria()
@@ -260,7 +260,7 @@ public class RepositoryPersistenceAdapter implements RepositoryPersistence {
     }
 
     @Override
-    public long countByOwner(OwnerType ownerType, OwnerId ownerId) {
+    public long countByOwner(OwnerType ownerType, RepositoryOwnerId ownerId) {
         try {
             RepositoryEntityCondition condition = new RepositoryEntityCondition();
             condition.createCriteria()

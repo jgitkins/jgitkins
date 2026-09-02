@@ -17,7 +17,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 /**
  * Who may register, list and delete a runner.
  *
- * <p>What this closes: {@code RunnerController} had no requester at all -- not {@code @CurrentUser},
+ * <p>What this closes: {@code RunnerManagementController} had no requester at all -- not {@code @CurrentUser},
  * not a read off the request. All five of its routes answered anyone. The worst of them is
  * {@code POST /api/runners}, which returns {@code RunnerRegistrationResult.token}: an anonymous
  * caller registered a runner, received an authentication token, presented it to

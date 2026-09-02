@@ -76,7 +76,7 @@ public record AuthenticatedUser(Long userId) implements Principal {
      * That asymmetry is backwards: a drifting copy of {@code userIdOrNull} loosens nothing, and a
      * drifting copy of this changes what an unauthenticated caller is told.
      *
-     * <p>{@code OrganizeController} keeps its own, with a different message, on purpose -- see the
+     * <p>{@code OrganizeManagementController} keeps its own, with a different message, on purpose -- see the
      * comment there. It is the only exception, and it is one because a wire contract already shipped.
      */
     public static Long requireUserId(AuthenticatedUser currentUser) {

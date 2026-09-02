@@ -2,7 +2,7 @@ package io.jgitkins.server.repository.domain.aggregate;
 
 import io.jgitkins.server.repository.domain.event.RepositorySynchronizedEvent;
 import io.jgitkins.server.shared.domain.model.vo.BranchName;
-import io.jgitkins.server.shared.domain.model.vo.OwnerId;
+import io.jgitkins.server.shared.domain.model.vo.RepositoryOwnerId;
 import io.jgitkins.server.shared.domain.model.vo.OwnerType;
 import io.jgitkins.server.repository.domain.vo.RepositoryId;
 import io.jgitkins.server.repository.domain.vo.RepositoryName;
@@ -20,7 +20,7 @@ class RepositoryTest {
     void shouldCreateRepositoryWithoutProvisionedEvent() {
         Repository repository = Repository.create(
                 OwnerType.ORGANIZATION,
-                OwnerId.of(1L),
+                RepositoryOwnerId.of(1L),
                 RepositoryName.from("demo"),
                 RepositoryPath.from("demo-path"),
                 BranchName.of("main"),
@@ -45,7 +45,7 @@ class RepositoryTest {
     void shouldMarkRepositoryAsSyncedAndEmitEvent() {
         Repository repository = Repository.create(
                 OwnerType.ORGANIZATION,
-                OwnerId.of(2L),
+                RepositoryOwnerId.of(2L),
                 RepositoryName.from("demo"),
                 RepositoryPath.from("demo"),
                 BranchName.of("main"),
@@ -70,7 +70,7 @@ class RepositoryTest {
     @Test
     void shouldCopyEventsWhenAssigningIdentity() {
         Repository repository = Repository.create(OwnerType.ORGANIZATION,
-                                                  OwnerId.of(3L),
+                                                  RepositoryOwnerId.of(3L),
                                                   RepositoryName.from("demo"),
                                                   RepositoryPath.from("demo-path"),
                                                   BranchName.of("main"),

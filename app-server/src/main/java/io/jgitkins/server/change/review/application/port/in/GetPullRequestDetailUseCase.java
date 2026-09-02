@@ -1,6 +1,6 @@
 package io.jgitkins.server.change.review.application.port.in;
 
-import io.jgitkins.server.change.review.application.dto.result.PullRequestDetailResult;
+import io.jgitkins.server.change.review.application.contract.result.PullRequestDetailResult;
 import io.jgitkins.server.change.review.domain.model.vo.PullRequestId;
 import java.io.IOException;
 

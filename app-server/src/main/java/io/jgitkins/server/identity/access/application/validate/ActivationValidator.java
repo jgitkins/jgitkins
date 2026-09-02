@@ -1,6 +1,6 @@
 package io.jgitkins.server.identity.access.application.validate;
 
-import io.jgitkins.server.identity.access.application.exception.OrganizeAlreadyExistsException;
+import io.jgitkins.server.identity.access.application.exception.NamespaceAlreadyTakenException;
 import io.jgitkins.server.identity.access.application.exception.UsernameAlreadyExistsException;
 import io.jgitkins.server.identity.access.application.port.out.OrganizationNameUniquenessPort;
 import io.jgitkins.server.identity.access.application.port.out.OwnedRepositoryCountPort;
@@ -30,7 +30,7 @@ public class ActivationValidator {
 
     public void validateOrganizeNameNotTakenIfCompatible(Username requested) {
         if (!organizationNameUniquenessPort.isAvailableForUsername(requested.getValue())) {
-            throw new OrganizeAlreadyExistsException();
+            throw new NamespaceAlreadyTakenException();
         }
     }
 

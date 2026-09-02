@@ -6,7 +6,7 @@ import io.jgitkins.server.collaboration.domain.aggregate.Organize;
 import io.jgitkins.server.collaboration.domain.event.OrganizeCreatedEvent;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeId;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeName;
-import io.jgitkins.server.collaboration.domain.vo.OwnerId;
+import io.jgitkins.server.collaboration.domain.vo.OrganizeOwnerId;
 import io.jgitkins.server.shared.domain.event.DomainEvent;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -65,7 +65,7 @@ class CollaborationSpringDomainEventPublisherContextTest {
         event = Organize.create(
                         OrganizeId.of(10L),
                         OrganizeName.from("core-team"),
-                        OwnerId.of(7L),
+                        OrganizeOwnerId.of(7L),
                         "Core Team",
                         LocalDateTime.of(2026, 8, 14, 9, 0),
                         Instant.parse("2026-08-14T00:00:00Z"))

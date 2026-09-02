@@ -1,6 +1,6 @@
 package io.jgitkins.server.identity.access.adapter.in.rest;
 
-import io.jgitkins.server.identity.access.application.dto.result.UserSummary;
+import io.jgitkins.server.identity.access.application.contract.result.UserSummary;
 import io.jgitkins.server.identity.access.application.port.in.PublicUserQueryUseCase;
 import io.jgitkins.core.web.api.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;

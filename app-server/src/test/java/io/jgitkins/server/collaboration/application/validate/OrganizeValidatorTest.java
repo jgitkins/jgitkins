@@ -11,7 +11,7 @@ import io.jgitkins.server.collaboration.domain.aggregate.Organize;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeId;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeMemberRole;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeName;
-import io.jgitkins.server.collaboration.domain.vo.OwnerId;
+import io.jgitkins.server.collaboration.domain.vo.OrganizeOwnerId;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -24,7 +24,7 @@ class OrganizeValidatorTest {
     @Mock OrganizeMembershipQueryPort organizeMembershipQueryPort;
 
     private final Organize organize = Organize.reconstruct(
-            OrganizeId.of(10L), OrganizeName.from("team"), "description", OwnerId.of(7L),
+            OrganizeId.of(10L), OrganizeName.from("team"), "description", OrganizeOwnerId.of(7L),
             LocalDateTime.now(), LocalDateTime.now());
 
     @Test
@@ -63,7 +63,7 @@ class OrganizeValidatorTest {
     }
 
     private Organize organizeWithoutId() {
-        return Organize.createWithoutEvent(null, OrganizeName.from("without-id"), OwnerId.of(7L),
+        return Organize.createWithoutEvent(null, OrganizeName.from("without-id"), OrganizeOwnerId.of(7L),
                 "description", LocalDateTime.now());
     }
 }

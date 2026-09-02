@@ -3,9 +3,9 @@ package io.jgitkins.server.change.review;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.jgitkins.server.JGitkinsServerApplication;
-import io.jgitkins.server.change.review.application.dto.command.PullRequestCreateCommand;
-import io.jgitkins.server.change.review.application.dto.result.PullRequestDetailResult;
-import io.jgitkins.server.change.review.application.dto.result.PullRequestResult;
+import io.jgitkins.server.change.review.application.contract.command.PullRequestCreateCommand;
+import io.jgitkins.server.change.review.application.contract.result.PullRequestDetailResult;
+import io.jgitkins.server.change.review.application.contract.result.PullRequestResult;
 import io.jgitkins.server.change.review.application.service.PullRequestCreateService;
 import io.jgitkins.server.change.review.application.service.PullRequestQueryService;
 import io.jgitkins.server.change.review.domain.model.vo.PullRequestId;

@@ -5,7 +5,7 @@ import io.jgitkins.server.repository.application.port.out.UserNamespacePort;
 import io.jgitkins.server.repository.domain.aggregate.Repository;
 
 
-import io.jgitkins.server.shared.domain.model.vo.OwnerId;
+import io.jgitkins.server.shared.domain.model.vo.RepositoryOwnerId;
 import io.jgitkins.server.shared.domain.model.vo.OwnerType;
 import io.jgitkins.server.repository.domain.vo.RepositoryName;
 import io.jgitkins.server.repository.domain.vo.RepositoryPath;
@@ -64,7 +64,7 @@ public class RepositoryLookupService {
 
         return repositoryRepository.findByOwnerAndName(
                 OwnerType.USER,
-                OwnerId.of(userId.get()),
+                RepositoryOwnerId.of(userId.get()),
                 RepositoryName.from(repoName));
     }
 
@@ -76,7 +76,7 @@ public class RepositoryLookupService {
 
         return repositoryRepository.findByOwnerAndPath(
                 OwnerType.ORGANIZATION,
-                OwnerId.of(organizationId.get()),
+                RepositoryOwnerId.of(organizationId.get()),
                 RepositoryPath.from(repoName));
     }
 

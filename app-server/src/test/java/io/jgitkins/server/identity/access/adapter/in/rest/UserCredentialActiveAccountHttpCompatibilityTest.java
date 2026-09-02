@@ -14,8 +14,8 @@ import io.jgitkins.server.common.presentation.advice.mapper.DomainErrorHttpStatu
 import io.jgitkins.server.common.presentation.advice.mapper.InfrastructureErrorHttpStatusMapper;
 import io.jgitkins.server.common.presentation.advice.mapper.PresentationErrorHttpStatusMapper;
 import io.jgitkins.server.identity.access.application.exception.UserNotFoundException;
-import io.jgitkins.server.identity.access.application.dto.result.UserCredentialIssueResult;
-import io.jgitkins.server.identity.access.application.dto.result.UserCredentialSummary;
+import io.jgitkins.server.identity.access.application.contract.result.UserCredentialIssueResult;
+import io.jgitkins.server.identity.access.application.contract.result.UserCredentialSummary;
 import io.jgitkins.server.identity.access.application.port.in.UserCredentialIssueUseCase;
 import io.jgitkins.server.identity.access.application.port.in.UserCredentialQueryUseCase;
 import io.jgitkins.server.identity.access.application.port.in.UserCredentialRevokeUseCase;
@@ -36,7 +36,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-@WebMvcTest(UserCredentialController.class)
+@WebMvcTest(UserCredentialManagementController.class)
 @AutoConfigureMockMvc(addFilters = false)
 @Import({GlobalExceptionHandler.class, ErrorStatusMappingTestConfig.class,
         UserCredentialActiveAccountHttpCompatibilityTest.StatusMapperConfiguration.class})

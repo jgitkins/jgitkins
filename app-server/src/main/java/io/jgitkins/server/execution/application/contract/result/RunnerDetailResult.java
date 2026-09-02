@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
  *
  * <p>No token. It used to carry one, and the only consumer was the response mapper, which put it on
  * the wire: GET /api/runners answered every caller, authenticated or not, with the runner
- * authentication tokens. That token is what RunnerController#activateRunner consumes, so reading the
+ * authentication tokens. That token is what RunnerManagementController#activateRunner consumes, so reading the
  * list was enough to become a runner and start receiving dispatched jobs.
  *
  * <p>Removed from this contract rather than from the response DTO alone. A secret that stops at the

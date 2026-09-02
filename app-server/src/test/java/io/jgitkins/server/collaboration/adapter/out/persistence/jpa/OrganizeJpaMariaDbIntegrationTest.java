@@ -11,7 +11,7 @@ import io.jgitkins.server.collaboration.domain.vo.MemberUserId;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeId;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeMemberRole;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeName;
-import io.jgitkins.server.collaboration.domain.vo.OwnerId;
+import io.jgitkins.server.collaboration.domain.vo.OrganizeOwnerId;
 import jakarta.persistence.EntityManagerFactory;
 import java.time.LocalDateTime;
 import java.util.concurrent.TimeUnit;
@@ -81,7 +81,7 @@ class OrganizeJpaMariaDbIntegrationTest {
 
         Long generatedId = transactions.execute(status -> {
             Organize saved = organizeAdapter.save(Organize.createWithoutEvent(
-                    null, OrganizeName.from(path), OwnerId.of(4244L), "reference slice", now));
+                    null, OrganizeName.from(path), OrganizeOwnerId.of(4244L), "reference slice", now));
             assertThat(saved.getId())
                     .as("MariaDB assigns the identity; the adapter must return it rather than the null "
                             + "it was handed, or callers cannot address the row they just wrote")

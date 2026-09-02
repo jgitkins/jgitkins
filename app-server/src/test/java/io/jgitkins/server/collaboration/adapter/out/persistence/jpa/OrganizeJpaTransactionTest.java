@@ -10,7 +10,7 @@ import io.jgitkins.server.collaboration.domain.vo.MemberUserId;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeId;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeMemberRole;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeName;
-import io.jgitkins.server.collaboration.domain.vo.OwnerId;
+import io.jgitkins.server.collaboration.domain.vo.OrganizeOwnerId;
 import jakarta.persistence.EntityManagerFactory;
 import java.time.LocalDateTime;
 import java.util.concurrent.TimeUnit;
@@ -88,7 +88,7 @@ class OrganizeJpaTransactionTest {
 
         Long committedId = transactions.execute(status -> {
             Organize organize = organizeAdapter.save(Organize.createWithoutEvent(
-                    null, OrganizeName.from(committedPath), OwnerId.of(4246L), "bootstrap", now));
+                    null, OrganizeName.from(committedPath), OrganizeOwnerId.of(4246L), "bootstrap", now));
             memberAdapter.save(OrganizeMember.create(
                     organize.getId(), MemberUserId.of(4246L), OrganizeMemberRole.OWNER, now));
             return organize.getId().getValue();
@@ -105,7 +105,7 @@ class OrganizeJpaTransactionTest {
         String rolledBackPath = path + "-rolledback";
         assertThatThrownBy(() -> transactions.executeWithoutResult(status -> {
             Organize organize = organizeAdapter.save(Organize.createWithoutEvent(
-                    null, OrganizeName.from(rolledBackPath), OwnerId.of(4247L), "bootstrap", now));
+                    null, OrganizeName.from(rolledBackPath), OrganizeOwnerId.of(4247L), "bootstrap", now));
             memberAdapter.save(OrganizeMember.create(
                     organize.getId(), MemberUserId.of(4247L), OrganizeMemberRole.OWNER, now));
             throw new IllegalStateException("required membership write failed");

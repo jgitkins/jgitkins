@@ -10,8 +10,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import io.jgitkins.server.collaboration.application.dto.command.OrganizeCreationCommand;
-import io.jgitkins.server.collaboration.application.dto.result.OrganizeCreationResult;
+import io.jgitkins.server.collaboration.application.contract.command.OrganizeCreationCommand;
+import io.jgitkins.server.collaboration.application.contract.result.OrganizeCreationResult;
 import io.jgitkins.server.collaboration.application.exception.OrganizeAccessDeniedException;
 import io.jgitkins.server.collaboration.application.mapper.OrganizeApplicationMapper;
 import io.jgitkins.server.collaboration.application.service.OrganizeService;
@@ -28,7 +28,7 @@ import io.jgitkins.server.collaboration.application.exception.OrganizeHasReposit
 import io.jgitkins.server.collaboration.domain.vo.OrganizeId;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeMemberRole;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeName;
-import io.jgitkins.server.collaboration.domain.vo.OwnerId;
+import io.jgitkins.server.collaboration.domain.vo.OrganizeOwnerId;
 import io.jgitkins.server.collaboration.domain.vo.MemberUserId;
 import io.jgitkins.server.shared.domain.exception.InvalidIdentifierException;
 import java.time.LocalDateTime;
@@ -138,8 +138,8 @@ class OrganizeServiceTest {
     /**
      * Task 2.95 moved this answer. The service used to throw OrganizeAccessDeniedException for a null
      * requester, which is a 403 saying "not allowed" about a value that is simply not an identifier.
-     * OwnerId.of now rejects it with a mapped domain exception, and the "authenticated user required"
-     * answer belongs to the adapter, where OrganizeController gives it as a 401.
+     * OrganizeOwnerId.of now rejects it with a mapped domain exception, and the "authenticated user required"
+     * answer belongs to the adapter, where OrganizeManagementController gives it as a 401.
      *
      * <p>What the service loses is the distinction between "no requester" and "invalid requester id".
      * Over HTTP that costs nothing: the controller rejects an absent principal before the command is
@@ -317,7 +317,7 @@ class OrganizeServiceTest {
                 OrganizeId.of(id),
                 OrganizeName.from(name),
                 name + " description",
-                ownerId == null ? null : OwnerId.of(ownerId),
+                ownerId == null ? null : OrganizeOwnerId.of(ownerId),
                 now,
                 now);
     }

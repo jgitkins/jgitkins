@@ -7,7 +7,7 @@ import static org.mockito.Mockito.when;
 import io.jgitkins.server.repository.application.port.out.OrganizationMembershipPort;
 import io.jgitkins.server.repository.domain.aggregate.Repository;
 import io.jgitkins.server.shared.domain.model.vo.OwnerType;
-import io.jgitkins.server.shared.domain.model.vo.OwnerId;
+import io.jgitkins.server.shared.domain.model.vo.RepositoryOwnerId;
 import io.jgitkins.server.repository.domain.vo.RepositoryVisibility;
 import java.util.HashMap;
 import java.util.Optional;
@@ -26,7 +26,7 @@ class RepositoryAccessibilityServiceTest {
         RepositoryAccessibilityService service = new RepositoryAccessibilityService(organizationMembershipPort);
         when(repository.getVisibility()).thenReturn(RepositoryVisibility.PRIVATE);
         when(repository.getOwnerType()).thenReturn(OwnerType.ORGANIZATION);
-        when(repository.getOwnerId()).thenReturn(OwnerId.of(10L));
+        when(repository.getOwnerId()).thenReturn(RepositoryOwnerId.of(10L));
         when(organizationMembershipPort.findRoleByOrganizationIdAndUserId(10L, 7L))
                 .thenReturn(Optional.empty());
         HashMap<Long, Boolean> cache = new HashMap<>();

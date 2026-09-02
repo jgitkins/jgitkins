@@ -14,7 +14,7 @@ import io.jgitkins.server.repository.domain.vo.RepositoryName;
 import io.jgitkins.server.repository.domain.vo.RepositoryPath;
 import io.jgitkins.server.repository.domain.vo.RepositoryVisibility;
 import io.jgitkins.server.shared.domain.model.vo.BranchName;
-import io.jgitkins.server.shared.domain.model.vo.OwnerId;
+import io.jgitkins.server.shared.domain.model.vo.RepositoryOwnerId;
 import io.jgitkins.server.shared.domain.model.vo.OwnerType;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -107,7 +107,7 @@ public class RepositoryJpaPersistenceAdapter implements RepositoryPersistence {
     }
 
     @Override
-    public Optional<Repository> findByOwnerAndPath(OwnerType ownerType, OwnerId ownerId, RepositoryPath path) {
+    public Optional<Repository> findByOwnerAndPath(OwnerType ownerType, RepositoryOwnerId ownerId, RepositoryPath path) {
         try {
             return repositoryJpaRepository
                     .findFirstByOwnerTypeAndOwnerIdAndPath(ownerType.name(), ownerId.getValue(), path.getValue())
@@ -142,7 +142,7 @@ public class RepositoryJpaPersistenceAdapter implements RepositoryPersistence {
     }
 
     @Override
-    public Optional<Repository> findByOwnerAndName(OwnerType ownerType, OwnerId ownerId, RepositoryName name) {
+    public Optional<Repository> findByOwnerAndName(OwnerType ownerType, RepositoryOwnerId ownerId, RepositoryName name) {
         try {
             return repositoryJpaRepository
                     .findFirstByOwnerTypeAndOwnerIdAndName(ownerType.name(), ownerId.getValue(), name.getValue())
@@ -222,7 +222,7 @@ public class RepositoryJpaPersistenceAdapter implements RepositoryPersistence {
     }
 
     @Override
-    public long countByOwner(OwnerType ownerType, OwnerId ownerId) {
+    public long countByOwner(OwnerType ownerType, RepositoryOwnerId ownerId) {
         try {
             return repositoryJpaRepository.countByOwnerTypeAndOwnerId(ownerType.name(), ownerId.getValue());
         } catch (Exception e) {
@@ -291,7 +291,10 @@ public class RepositoryJpaPersistenceAdapter implements RepositoryPersistence {
         return Repository.rehydrate(
                 RepositoryId.of(entity.getId()),
                 OwnerType.from(entity.getOwnerType()),
-                entity.getOwnerId() != null ? OwnerId.of(entity.getOwnerId()) : null,
+                entity.getOwnerId() != null
+                        ? RepositoryOwnerId.fromStoredValue(
+                                entity.getOwnerId(), "REPOSITORY id=" + entity.getId())
+                        : null,
                 RepositoryName.from(entity.getName()),
                 RepositoryPath.from(entity.getPath()),
                 BranchName.of(entity.getDefaultBranch()),

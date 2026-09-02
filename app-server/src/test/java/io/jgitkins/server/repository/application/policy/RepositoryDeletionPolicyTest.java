@@ -21,7 +21,7 @@ import io.jgitkins.server.repository.domain.vo.RepositoryPath;
 import io.jgitkins.server.repository.domain.vo.RepositoryVisibility;
 import io.jgitkins.server.shared.application.exception.UnauthenticatedException;
 import io.jgitkins.server.shared.domain.model.vo.BranchName;
-import io.jgitkins.server.shared.domain.model.vo.OwnerId;
+import io.jgitkins.server.shared.domain.model.vo.RepositoryOwnerId;
 import io.jgitkins.server.shared.domain.model.vo.OwnerType;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -205,14 +205,14 @@ class RepositoryDeletionPolicyTest {
 
     private static Repository organizationRepository(RepositoryVisibility visibility) {
         return Repository.rehydrate(
-                RepositoryId.of(1L), OwnerType.ORGANIZATION, OwnerId.of(ORG_ID),
+                RepositoryId.of(1L), OwnerType.ORGANIZATION, RepositoryOwnerId.of(ORG_ID),
                 RepositoryName.from("repo"), RepositoryPath.from("repo"), BranchName.of("main"),
                 visibility, null, "/org/repo.git", null, null, null, null);
     }
 
     private static Repository userRepository(RepositoryVisibility visibility) {
         return Repository.rehydrate(
-                RepositoryId.of(1L), OwnerType.USER, OwnerId.of(OWNER_USER_ID),
+                RepositoryId.of(1L), OwnerType.USER, RepositoryOwnerId.of(OWNER_USER_ID),
                 RepositoryName.from("repo"), RepositoryPath.from("repo"), BranchName.of("main"),
                 visibility, null, "/alice/repo.git", null, null, null, null);
     }
