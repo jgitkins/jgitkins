@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import io.jgitkins.server.common.infrastructure.config.security.handler.ApiAnauthorizeHandler;
-import io.jgitkins.server.identity.access.application.internal.JwtAuthenticationResult;
+import io.jgitkins.server.identity.access.application.contract.external.JwtAuthenticationResult;
 import io.jgitkins.server.identity.access.application.service.JwtAuthService;
 import java.util.List;
 import java.util.Optional;

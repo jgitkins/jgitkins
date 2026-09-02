@@ -69,7 +69,7 @@ class ChangeReviewBoundedContextArchitectureTest {
         assertZeroReferences(sources, "io.jgitkins.server.repository.domain.vo.RepositoryId");
         assertZeroReferences(sources, "io.jgitkins.server.repository.domain.aggregate.Repository");
         assertZeroReferences(sources, "io.jgitkins.server.repository.domain.repository.RepositoryRepository");
-        assertZeroReferences(sources, "io.jgitkins.server.repository.application.support.RepositoryLookupService");
+        assertZeroReferences(sources, "io.jgitkins.server.repository.application.service.internal.RepositoryLookupService");
         assertZeroReferences(sources, "io.jgitkins.server.repository.application.port.out.BranchGitPort");
         assertZeroReferences(sources, "MergeGitPort");
 

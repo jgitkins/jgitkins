@@ -5,11 +5,11 @@ import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import io.jgitkins.server.repository.application.contract.result.RepositoryPermission;
+import io.jgitkins.server.repository.application.contract.RepositoryPermission;
 import io.jgitkins.server.repository.application.exception.RepositoryNotFoundException;
 import io.jgitkins.server.repository.application.port.out.OrganizationMembershipPort;
 import io.jgitkins.server.repository.application.port.out.RepositoryQueryPort;
-import io.jgitkins.server.repository.application.support.GitRepositoryAccessService;
+import io.jgitkins.server.repository.application.service.internal.GitRepositoryAccessService;
 import io.jgitkins.server.repository.domain.aggregate.Repository;
 import io.jgitkins.server.repository.domain.repository.RepositoryRepository;
 import io.jgitkins.server.repository.domain.vo.RepositoryId;
@@ -61,7 +61,7 @@ class RepositoryNotFoundMessageParityTest {
                 () -> memberPolicy.validateCanManageMembers(STRANGER_ID, REPOSITORY_ID));
 
         when(repositoryQueryPort.loadRepository(REPOSITORY_ID)).thenReturn(Optional.of(
-                new io.jgitkins.server.repository.application.contract.result.RepositoryResult(
+                new io.jgitkins.server.repository.application.contract.RepositoryResult(
                         REPOSITORY_ID, "USER", "repo", "alice/repo", "main", "PRIVATE",
                         null, 1L, null, "/alice/repo.git", null, false, null, null, null)));
         Throwable forbidden = catchThrowable(

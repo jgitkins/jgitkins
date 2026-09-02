@@ -1,6 +1,6 @@
 package io.jgitkins.server.repository.application.port.in;
 
-import io.jgitkins.server.repository.application.contract.command.FileUploadInfo;
+import io.jgitkins.server.repository.application.contract.FileUploadInfo;
 import org.springframework.web.multipart.MultipartFile;
 
 

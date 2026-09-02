@@ -1,6 +1,6 @@
 package io.jgitkins.server.execution.adapter.in.rest.translator;
 
-import io.jgitkins.server.execution.application.contract.command.RunnerRegisterCommand;
+import io.jgitkins.server.execution.application.contract.RunnerRegisterCommand;
 import io.jgitkins.server.execution.adapter.in.rest.contract.request.RunnerCreateRequest;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

@@ -4,8 +4,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-import io.jgitkins.server.execution.application.contract.command.JobResultReportCommand;
-import io.jgitkins.server.execution.application.internal.JobResultStatus;
+import io.jgitkins.server.execution.application.contract.JobResultReportCommand;
+import io.jgitkins.server.execution.application.contract.internal.JobResultStatus;
 import io.jgitkins.server.execution.domain.aggregate.Runner;
 import io.jgitkins.server.execution.domain.repository.JobRepository;
 import io.jgitkins.server.execution.domain.repository.RunnerRepository;

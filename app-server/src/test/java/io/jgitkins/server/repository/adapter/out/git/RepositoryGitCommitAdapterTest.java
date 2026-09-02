@@ -3,11 +3,10 @@ package io.jgitkins.server.repository.adapter.out.git;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import io.jgitkins.server.repository.application.internal.CommitFile;
-import io.jgitkins.server.repository.application.contract.result.CommitHistory;
+import io.jgitkins.server.repository.application.contract.external.CommitFile;
+import io.jgitkins.server.repository.application.contract.CommitHistory;
 import io.jgitkins.server.repository.infrastructure.support.RepositoryResolver;
 import io.jgitkins.server.repository.application.port.out.exception.GitCommitObjectMissingException;
-import io.jgitkins.server.repository.adapter.out.git.RepositoryGitFileAdapter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
@@ -48,7 +47,7 @@ class RepositoryGitCommitAdapterTest {
         assertThat(histories).hasSize(1);
         assertThat(histories.get(0).getMessage()).isEqualTo("initial commit");
         assertThat(fileAdapter.listTree("team", "demo", "main", ""))
-                .extracting(io.jgitkins.server.repository.application.contract.result.FileEntry::getPath)
+                .extracting(io.jgitkins.server.repository.application.contract.FileEntry::getPath)
                 .contains("README.md");
     }
 
@@ -99,7 +98,7 @@ class RepositoryGitCommitAdapterTest {
 
     private List<String> pathsOn(Fixture f, String namespace, String name) {
         return f.files().listTree(namespace, name, "main", "").stream()
-                .map(io.jgitkins.server.repository.application.contract.result.FileEntry::getPath)
+                .map(io.jgitkins.server.repository.application.contract.FileEntry::getPath)
                 .toList();
     }
 
@@ -162,10 +161,10 @@ class RepositoryGitCommitAdapterTest {
                 List.of(file("LICENSE", "MIT")));
 
         assertThat(f.files().listTree("team", "dirs", "main", "src"))
-                .extracting(io.jgitkins.server.repository.application.contract.result.FileEntry::getPath)
+                .extracting(io.jgitkins.server.repository.application.contract.FileEntry::getPath)
                 .contains("src/main.java");
         assertThat(f.files().listTree("team", "dirs", "main", "docs"))
-                .extracting(io.jgitkins.server.repository.application.contract.result.FileEntry::getPath)
+                .extracting(io.jgitkins.server.repository.application.contract.FileEntry::getPath)
                 .contains("docs/readme.md");
     }
 

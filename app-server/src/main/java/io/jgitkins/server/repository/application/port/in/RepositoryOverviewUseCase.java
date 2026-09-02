@@ -1,6 +1,6 @@
 package io.jgitkins.server.repository.application.port.in;
 
-import io.jgitkins.server.repository.application.contract.result.RepositoryOverviewResult;
+import io.jgitkins.server.repository.application.contract.RepositoryOverviewResult;
 
 public interface RepositoryOverviewUseCase {
 

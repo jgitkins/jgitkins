@@ -1,7 +1,7 @@
 package io.jgitkins.server.execution.application.translator;
 
-import io.jgitkins.server.execution.application.contract.result.RunnerDetailResult;
-import io.jgitkins.server.execution.application.contract.result.RunnerRegistrationResult;
+import io.jgitkins.server.execution.application.contract.RunnerDetailResult;
+import io.jgitkins.server.execution.application.contract.RunnerRegistrationResult;
 import io.jgitkins.server.execution.domain.aggregate.Runner;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

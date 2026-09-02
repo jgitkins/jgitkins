@@ -9,13 +9,13 @@ import static org.mockito.Mockito.when;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
-import io.jgitkins.server.repository.application.contract.command.RepositoryMemberAddCommand;
-import io.jgitkins.server.repository.application.contract.result.RepositoryResult;
+import io.jgitkins.server.repository.application.contract.RepositoryMemberAddCommand;
+import io.jgitkins.server.repository.application.contract.RepositoryResult;
 import io.jgitkins.server.repository.application.policy.RepositoryMemberManagementPolicy;
 import io.jgitkins.server.repository.application.port.out.RepositoryQueryPort;
-import io.jgitkins.server.repository.application.contract.result.RepositoryMemberSummary;
+import io.jgitkins.server.repository.application.contract.RepositoryMemberSummary;
 import io.jgitkins.server.repository.application.port.out.RepositoryMemberPersistencePort;
-import io.jgitkins.server.repository.application.support.membership.RepositoryMembershipFactory;
+import io.jgitkins.server.repository.application.service.internal.membership.RepositoryMembershipFactory;
 import io.jgitkins.server.repository.application.validate.RepositoryMemberValidator;
 import io.jgitkins.core.common.exception.JgitkinsException;
 import io.jgitkins.server.repository.domain.model.RepositoryMember;

@@ -19,7 +19,7 @@ class ExecutionBoundedContextArchitectureTest {
             "io.jgitkins.server.identity.access.domain",
             "io.jgitkins.server.repository.domain",
             "io.jgitkins.server.collaboration.domain",
-            "io.jgitkins.server.repository.application.support.CloneUrlBuilder"
+            "io.jgitkins.server.repository.application.service.internal.CloneUrlBuilder"
     };
 
     @Test

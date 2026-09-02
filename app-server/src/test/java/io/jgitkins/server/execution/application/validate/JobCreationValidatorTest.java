@@ -3,7 +3,7 @@ package io.jgitkins.server.execution.application.validate;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.jgitkins.server.shared.application.command.PushEventCommand;
-import io.jgitkins.server.execution.application.internal.JobCreationDecision;
+import io.jgitkins.server.execution.application.contract.internal.JobCreationDecision;
 import org.junit.jupiter.api.Test;
 
 class JobCreationValidatorTest {

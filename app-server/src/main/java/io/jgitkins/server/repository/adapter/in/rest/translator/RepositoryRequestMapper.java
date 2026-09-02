@@ -1,6 +1,6 @@
 package io.jgitkins.server.repository.adapter.in.rest.translator;
 
-import io.jgitkins.server.repository.application.contract.command.RepositoryCreateCommand;
+import io.jgitkins.server.repository.application.contract.RepositoryCreateCommand;
 import io.jgitkins.server.shared.domain.model.vo.OwnerType;
 import io.jgitkins.server.repository.domain.vo.RepositoryVisibility;
 import io.jgitkins.server.repository.adapter.in.rest.contract.request.RepositoryCreateRequest;

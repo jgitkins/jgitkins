@@ -1,6 +1,6 @@
 package io.jgitkins.server.identity.access.adapter.in.rest.translator;
 
-import io.jgitkins.server.identity.access.application.contract.command.OAuthLoginCommand;
+import io.jgitkins.server.identity.access.application.contract.OAuthLoginCommand;
 import io.jgitkins.server.identity.access.adapter.in.rest.contract.request.OAuthLoginRequest;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

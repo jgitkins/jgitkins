@@ -6,7 +6,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import io.jgitkins.server.repository.application.contract.result.CommitHistory;
+import io.jgitkins.server.repository.application.contract.CommitHistory;
 import io.jgitkins.server.repository.application.port.in.CommitLoadUseCase;
 import java.time.LocalDateTime;
 import java.util.List;

@@ -1,7 +1,7 @@
 package io.jgitkins.server.repository.application.port.in;
 
-import io.jgitkins.server.repository.application.contract.result.RepositoryKey;
-import io.jgitkins.server.repository.application.contract.result.RepositoryResult;
+import io.jgitkins.server.repository.application.contract.RepositoryKey;
+import io.jgitkins.server.repository.application.contract.RepositoryResult;
 
 import java.util.List;
 import java.util.Optional;

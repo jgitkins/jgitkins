@@ -1,6 +1,6 @@
 package io.jgitkins.server.repository.adapter.in.rest;
 
-import io.jgitkins.server.repository.application.contract.result.CommitHistory;
+import io.jgitkins.server.repository.application.contract.CommitHistory;
 import io.jgitkins.server.repository.application.port.in.CommitLoadUseCase;
 import io.jgitkins.core.web.api.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;

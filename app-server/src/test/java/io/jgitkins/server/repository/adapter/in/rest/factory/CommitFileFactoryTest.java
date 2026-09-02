@@ -4,9 +4,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import io.jgitkins.server.repository.application.contract.command.FileUploadInfo;
+import io.jgitkins.server.repository.application.contract.FileUploadInfo;
 import io.jgitkins.core.common.exception.JgitkinsException;
-import io.jgitkins.server.repository.adapter.in.rest.factory.CommitFileFactory;
 import io.jgitkins.server.common.infrastructure.error.InfrastructureErrorCode;
 import java.io.IOException;
 import org.junit.jupiter.api.Test;

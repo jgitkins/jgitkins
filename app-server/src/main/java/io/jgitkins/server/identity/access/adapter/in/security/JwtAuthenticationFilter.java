@@ -1,7 +1,7 @@
 package io.jgitkins.server.identity.access.adapter.in.security;
 
 import io.jgitkins.server.common.infrastructure.config.security.handler.ApiAnauthorizeHandler;
-import io.jgitkins.server.identity.access.application.internal.JwtAuthenticationResult;
+import io.jgitkins.server.identity.access.application.contract.external.JwtAuthenticationResult;
 import io.jgitkins.server.identity.access.application.service.JwtAuthService;
 import io.jgitkins.server.shared.application.security.AuthenticatedUser;
 import jakarta.servlet.FilterChain;

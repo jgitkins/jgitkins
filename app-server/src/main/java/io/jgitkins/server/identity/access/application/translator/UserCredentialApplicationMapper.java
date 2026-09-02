@@ -1,6 +1,6 @@
 package io.jgitkins.server.identity.access.application.translator;
 
-import io.jgitkins.server.identity.access.application.contract.result.UserCredentialSummary;
+import io.jgitkins.server.identity.access.application.contract.UserCredentialSummary;
 import io.jgitkins.server.identity.access.domain.entity.UserCredential;
 import org.mapstruct.Mapper;
 

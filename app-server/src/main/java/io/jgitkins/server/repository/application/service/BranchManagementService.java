@@ -1,12 +1,12 @@
 package io.jgitkins.server.repository.application.service;
 
-import io.jgitkins.server.repository.application.contract.command.BranchCreateCommand;
+import io.jgitkins.server.repository.application.contract.BranchCreateCommand;
 import io.jgitkins.server.repository.application.exception.BranchNotFoundException;
 import io.jgitkins.server.repository.application.exception.RepositoryNotFoundException;
 import io.jgitkins.server.repository.application.port.in.BranchManagementUseCase;
 import io.jgitkins.server.repository.application.port.out.BranchGitPort;
 import io.jgitkins.server.repository.application.port.out.exception.GitBranchRefMissingException;
-import io.jgitkins.server.repository.application.support.branch.BranchFactory;
+import io.jgitkins.server.repository.application.service.internal.branch.BranchFactory;
 import io.jgitkins.server.shared.application.support.RepositoryNamespaceResolver;
 import io.jgitkins.server.repository.application.validate.RepositoryAccessValidator;
 import io.jgitkins.server.repository.domain.aggregate.Repository;

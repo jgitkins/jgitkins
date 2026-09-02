@@ -1,6 +1,6 @@
 package io.jgitkins.server.repository.adapter.out.persistence.query;
 
-import io.jgitkins.server.repository.application.contract.result.BranchSearchResult;
+import io.jgitkins.server.repository.application.contract.BranchSearchResult;
 import io.jgitkins.server.repository.application.port.out.BranchQueryPort;
 import io.jgitkins.server.common.infrastructure.error.InfrastructureErrorCode;
 import io.jgitkins.server.common.infrastructure.exception.InfrastructureException;

@@ -14,8 +14,8 @@ import io.jgitkins.server.common.presentation.advice.translator.DomainErrorHttpS
 import io.jgitkins.server.common.presentation.advice.translator.InfrastructureErrorHttpStatusMapper;
 import io.jgitkins.server.common.presentation.advice.translator.PresentationErrorHttpStatusMapper;
 import io.jgitkins.server.identity.access.application.exception.UserNotFoundException;
-import io.jgitkins.server.identity.access.application.contract.result.UserCredentialIssueResult;
-import io.jgitkins.server.identity.access.application.contract.result.UserCredentialSummary;
+import io.jgitkins.server.identity.access.application.contract.UserCredentialIssueResult;
+import io.jgitkins.server.identity.access.application.contract.UserCredentialSummary;
 import io.jgitkins.server.identity.access.application.port.in.UserCredentialIssueUseCase;
 import io.jgitkins.server.identity.access.application.port.in.UserCredentialQueryUseCase;
 import io.jgitkins.server.identity.access.application.port.in.UserCredentialRevokeUseCase;

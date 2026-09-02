@@ -1,9 +1,9 @@
 package io.jgitkins.server.repository.application.service;
 
-import io.jgitkins.server.repository.application.contract.result.BranchSearchResult;
+import io.jgitkins.server.repository.application.contract.BranchSearchResult;
 import io.jgitkins.server.repository.application.exception.BranchNotFoundException;
 import io.jgitkins.server.repository.application.port.in.BranchLoadUseCase;
-import io.jgitkins.server.repository.application.contract.result.RepositoryKey;
+import io.jgitkins.server.repository.application.contract.RepositoryKey;
 import io.jgitkins.server.repository.application.exception.RepositoryNotFoundException;
 import io.jgitkins.server.repository.application.port.in.RepositoryLoadUseCase;
 import io.jgitkins.server.repository.application.port.out.BranchQueryPort;

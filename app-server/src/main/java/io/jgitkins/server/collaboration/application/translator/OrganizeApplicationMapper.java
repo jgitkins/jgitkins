@@ -1,6 +1,6 @@
 package io.jgitkins.server.collaboration.application.translator;
 
-import io.jgitkins.server.collaboration.application.contract.result.OrganizeCreationResult;
+import io.jgitkins.server.collaboration.application.contract.OrganizeCreationResult;
 import io.jgitkins.server.collaboration.domain.aggregate.Organize;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

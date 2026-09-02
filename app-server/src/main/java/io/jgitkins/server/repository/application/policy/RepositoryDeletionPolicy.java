@@ -3,7 +3,7 @@ package io.jgitkins.server.repository.application.policy;
 import io.jgitkins.server.repository.application.exception.RepositoryAccessDeniedException;
 import io.jgitkins.server.repository.application.exception.RepositoryNotFoundException;
 import io.jgitkins.server.repository.application.port.out.OrganizationMembershipPort;
-import io.jgitkins.server.repository.application.support.GitRepositoryAccessService;
+import io.jgitkins.server.repository.application.service.internal.GitRepositoryAccessService;
 import io.jgitkins.server.repository.domain.aggregate.Repository;
 import io.jgitkins.server.repository.domain.vo.OrganizationMembershipRole;
 import io.jgitkins.server.repository.domain.vo.RepositoryVisibility;
@@ -105,7 +105,7 @@ public class RepositoryDeletionPolicy {
     }
 
     /**
-     * The same rule as {@link io.jgitkins.server.repository.application.contract.result.RepositoryPermission#visibleOn},
+     * The same rule as {@link io.jgitkins.server.repository.application.contract.RepositoryPermission#visibleOn},
      * written with {@code ||} rather than calling it. The helper cannot short-circuit -- the
      * permission has to be resolved before the method can be invoked on it -- and a public
      * repository needs no membership lookup to know it is visible. Only the private branch pays.

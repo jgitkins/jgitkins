@@ -6,11 +6,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import io.jgitkins.server.identity.access.application.internal.UserQueryResult;
+import io.jgitkins.server.identity.access.application.contract.external.UserQueryResult;
 import io.jgitkins.server.identity.access.application.exception.AdminPrivilegeRequiredException;
 import io.jgitkins.server.shared.application.exception.UnauthenticatedException;
-import io.jgitkins.server.identity.access.application.contract.result.UserAdminDetail;
-import io.jgitkins.server.identity.access.application.contract.result.UserAdminSummary;
+import io.jgitkins.server.identity.access.application.contract.UserAdminDetail;
+import io.jgitkins.server.identity.access.application.contract.UserAdminSummary;
 import io.jgitkins.server.identity.access.application.translator.UserApplicationMapper;
 import io.jgitkins.server.identity.access.application.port.out.UserIdentityPersistencePort;
 import io.jgitkins.server.identity.access.application.port.out.UserQueryPort;

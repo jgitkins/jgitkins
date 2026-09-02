@@ -1,6 +1,6 @@
 package io.jgitkins.server.execution.application.port.out;
 
-import io.jgitkins.server.execution.application.internal.PipelineConfig;
+import io.jgitkins.server.execution.application.contract.external.PipelineConfig;
 
 public interface PipelineConfigPort {
 

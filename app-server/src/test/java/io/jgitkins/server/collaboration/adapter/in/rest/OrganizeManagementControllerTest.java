@@ -12,12 +12,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.securityContext;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.jgitkins.server.collaboration.application.contract.command.OrganizeCreationCommand;
-import io.jgitkins.server.collaboration.application.contract.result.OrganizeCreationResult;
+import io.jgitkins.server.collaboration.application.contract.OrganizeCreationCommand;
+import io.jgitkins.server.collaboration.application.contract.OrganizeCreationResult;
 import io.jgitkins.server.collaboration.application.port.in.OrganizeCreationUseCase;
 import io.jgitkins.server.collaboration.application.port.in.OrganizeDeletionUseCase;
 import io.jgitkins.server.collaboration.application.port.in.OrganizeLoadUseCase;
-import io.jgitkins.server.collaboration.adapter.in.rest.OrganizeManagementController;
 import io.jgitkins.server.collaboration.adapter.in.rest.contract.request.OrganizeCreationRequest;
 import io.jgitkins.server.collaboration.adapter.in.rest.translator.OrganizeRequestMapper;
 import io.jgitkins.server.common.presentation.advice.GlobalExceptionHandler;

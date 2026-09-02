@@ -1,6 +1,6 @@
 package io.jgitkins.server.collaboration.adapter.in.web;
 
-import io.jgitkins.server.collaboration.application.contract.result.OrganizeCreationResult;
+import io.jgitkins.server.collaboration.application.contract.OrganizeCreationResult;
 import io.jgitkins.server.collaboration.application.port.in.OrganizeLoadUseCase;
 import io.jgitkins.core.web.api.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;

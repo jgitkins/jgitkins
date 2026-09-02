@@ -23,8 +23,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.jgitkins.server.repository.application.contract.command.RepositoryCreateCommand;
-import io.jgitkins.server.repository.application.contract.result.RepositoryResult;
+import io.jgitkins.server.repository.application.contract.RepositoryCreateCommand;
+import io.jgitkins.server.repository.application.contract.RepositoryResult;
 import io.jgitkins.server.repository.application.port.in.RepositoryLoadUseCase;
 import io.jgitkins.server.repository.application.port.in.RepositoryManagementUseCase;
 import io.jgitkins.server.repository.application.port.in.RepositoryOverviewUseCase;
@@ -313,7 +313,7 @@ class RepositoryManagementControllerTest {
     @Test
     void getOverview_passesExplicitRequester() throws Exception {
         when(repositoryOverviewUseCase.getOverview(7L, 1L, "main")).thenReturn(
-                new io.jgitkins.server.repository.application.contract.result.RepositoryOverviewResult(
+                new io.jgitkins.server.repository.application.contract.RepositoryOverviewResult(
                         privateRepository(), java.util.List.of(), java.util.List.of(), "main", "OWNER", true));
 
         mockMvc.perform(get("/api/repositories/1/overview").param("branch", "main"))

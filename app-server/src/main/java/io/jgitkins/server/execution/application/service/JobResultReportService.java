@@ -1,7 +1,7 @@
 package io.jgitkins.server.execution.application.service;
 
-import io.jgitkins.server.execution.application.internal.JobResultStatus;
-import io.jgitkins.server.execution.application.contract.command.JobResultReportCommand;
+import io.jgitkins.server.execution.application.contract.internal.JobResultStatus;
+import io.jgitkins.server.execution.application.contract.JobResultReportCommand;
 import io.jgitkins.server.execution.application.port.in.JobResultReportUseCase;
 import io.jgitkins.server.execution.domain.aggregate.Job;
 import io.jgitkins.server.execution.domain.aggregate.Runner;

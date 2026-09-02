@@ -3,7 +3,8 @@ package io.jgitkins.server.execution.application.internal;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.Test;
-import io.jgitkins.server.execution.application.internal.JobDispatchScope;
+import io.jgitkins.server.execution.application.contract.internal.JobDispatchScope;
+import io.jgitkins.server.execution.application.contract.external.RunnerDispatchContext;
 
 class RunnerDispatchContextTest {
 

@@ -1,12 +1,12 @@
 package io.jgitkins.server.repository.application.validate;
 
-import io.jgitkins.server.repository.application.contract.result.RepositoryResult;
+import io.jgitkins.server.repository.application.contract.RepositoryResult;
 import io.jgitkins.server.repository.application.exception.RepositoryNotFoundException;
 import io.jgitkins.server.repository.application.port.in.GitRepositoryAccessUseCase;
 import io.jgitkins.server.shared.application.error.ApplicationErrorCode;
 import io.jgitkins.server.shared.application.exception.ApplicationException;
 import io.jgitkins.server.repository.domain.aggregate.Repository;
-import io.jgitkins.server.repository.application.contract.result.RepositoryPermission;
+import io.jgitkins.server.repository.application.contract.RepositoryPermission;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

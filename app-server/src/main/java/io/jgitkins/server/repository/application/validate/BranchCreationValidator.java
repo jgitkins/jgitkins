@@ -1,6 +1,6 @@
 package io.jgitkins.server.repository.application.validate;
 
-import io.jgitkins.server.repository.application.contract.command.BranchCreateCommand;
+import io.jgitkins.server.repository.application.contract.BranchCreateCommand;
 import io.jgitkins.server.repository.application.exception.BranchAlreadyExistsException;
 import io.jgitkins.server.repository.application.exception.RepositoryNotInitializedException;
 import io.jgitkins.server.repository.application.exception.SourceBranchNotFoundException;

@@ -8,11 +8,11 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import io.jgitkins.server.repository.application.contract.result.RepositoryPermission;
+import io.jgitkins.server.repository.application.contract.RepositoryPermission;
 import io.jgitkins.server.repository.application.exception.RepositoryAccessDeniedException;
 import io.jgitkins.server.repository.application.exception.RepositoryNotFoundException;
 import io.jgitkins.server.repository.application.port.out.OrganizationMembershipPort;
-import io.jgitkins.server.repository.application.support.GitRepositoryAccessService;
+import io.jgitkins.server.repository.application.service.internal.GitRepositoryAccessService;
 import io.jgitkins.server.repository.domain.aggregate.Repository;
 import io.jgitkins.server.repository.domain.vo.OrganizationMembershipRole;
 import io.jgitkins.server.repository.domain.vo.RepositoryId;

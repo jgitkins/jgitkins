@@ -1,6 +1,6 @@
 package io.jgitkins.server.identity.access.application.service;
 
-import io.jgitkins.server.identity.access.application.internal.JwtAuthenticationResult;
+import io.jgitkins.server.identity.access.application.contract.external.JwtAuthenticationResult;
 import io.jgitkins.server.identity.access.application.port.out.JwtTokenVerifierPort;
 import java.util.Optional;
 

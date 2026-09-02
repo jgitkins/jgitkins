@@ -5,8 +5,8 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import io.jgitkins.server.repository.application.contract.result.RepositoryOverviewResult;
-import io.jgitkins.server.repository.application.contract.result.RepositoryResult;
+import io.jgitkins.server.repository.application.contract.RepositoryOverviewResult;
+import io.jgitkins.server.repository.application.contract.RepositoryResult;
 import io.jgitkins.server.repository.application.port.in.RepositoryLoadUseCase;
 import io.jgitkins.server.repository.application.port.in.RepositoryOverviewUseCase;
 import io.jgitkins.server.support.TestAuthentication;

@@ -1,6 +1,6 @@
 package io.jgitkins.server.identity.access.adapter.out.security;
 
-import io.jgitkins.server.identity.access.application.internal.VerifiedOAuthIdentity;
+import io.jgitkins.server.identity.access.application.contract.external.VerifiedOAuthIdentity;
 import io.jgitkins.server.identity.access.application.exception.OAuthIdentityNotVerifiedException;
 import io.jgitkins.server.identity.access.application.exception.OAuthProviderUnavailableException;
 import io.jgitkins.server.identity.access.application.port.out.OAuthIdTokenVerifierPort;

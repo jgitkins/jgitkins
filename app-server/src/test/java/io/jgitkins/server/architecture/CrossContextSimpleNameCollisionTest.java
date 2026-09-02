@@ -13,6 +13,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
+import io.jgitkins.server.execution.application.contract.internal.JobPlan;
 
 /**
  * No two bounded contexts may declare a type with the same simple name.

@@ -1,17 +1,17 @@
 package io.jgitkins.server.repository.application.service;
 
-import io.jgitkins.server.repository.application.contract.result.FileEntry;
-import io.jgitkins.server.repository.application.contract.result.RepositoryKey;
+import io.jgitkins.server.repository.application.contract.FileEntry;
+import io.jgitkins.server.repository.application.contract.RepositoryKey;
 import io.jgitkins.server.repository.application.port.out.FileGitPort;
-import io.jgitkins.server.repository.application.contract.result.BranchSearchResult;
-import io.jgitkins.server.repository.application.contract.result.RepositoryOverviewResult;
-import io.jgitkins.server.repository.application.contract.result.RepositoryPermission;
-import io.jgitkins.server.repository.application.contract.result.RepositoryResult;
+import io.jgitkins.server.repository.application.contract.BranchSearchResult;
+import io.jgitkins.server.repository.application.contract.RepositoryOverviewResult;
+import io.jgitkins.server.repository.application.contract.RepositoryPermission;
+import io.jgitkins.server.repository.application.contract.RepositoryResult;
 import io.jgitkins.server.repository.application.exception.RepositoryNotFoundException;
 import io.jgitkins.server.repository.application.port.in.RepositoryOverviewUseCase;
 import io.jgitkins.server.repository.application.port.out.BranchQueryPort;
 import io.jgitkins.server.repository.application.port.out.RepositoryQueryPort;
-import io.jgitkins.server.repository.application.support.GitRepositoryAccessService;
+import io.jgitkins.server.repository.application.service.internal.GitRepositoryAccessService;
 import io.jgitkins.server.repository.application.validate.RepositoryAccessValidator;
 import java.util.List;
 import lombok.RequiredArgsConstructor;

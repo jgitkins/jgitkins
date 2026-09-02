@@ -1,6 +1,6 @@
 package io.jgitkins.server.repository.adapter.in.rest.contract.request;
 
-import io.jgitkins.server.repository.application.contract.command.FileUploadInfo;
+import io.jgitkins.server.repository.application.contract.FileUploadInfo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

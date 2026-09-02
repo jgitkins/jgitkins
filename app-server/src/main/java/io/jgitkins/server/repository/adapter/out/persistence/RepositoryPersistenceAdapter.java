@@ -15,8 +15,8 @@ import io.jgitkins.server.repository.adapter.out.persistence.support.RepositoryD
 import io.jgitkins.server.repository.adapter.out.persistence.translator.RepositoryEntityMbgMapper;
 import io.jgitkins.server.repository.adapter.out.persistence.model.RepositoryEntity;
 import io.jgitkins.server.repository.adapter.out.persistence.model.RepositoryEntityCondition;
-import io.jgitkins.server.repository.application.contract.result.RepositoryResult;
-import io.jgitkins.server.repository.application.support.CloneUrlBuilder;
+import io.jgitkins.server.repository.application.contract.RepositoryResult;
+import io.jgitkins.server.repository.application.service.internal.CloneUrlBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

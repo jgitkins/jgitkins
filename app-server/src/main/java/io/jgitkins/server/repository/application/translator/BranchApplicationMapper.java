@@ -1,6 +1,6 @@
 package io.jgitkins.server.repository.application.translator;
 
-import io.jgitkins.server.repository.application.contract.result.BranchSearchResult;
+import io.jgitkins.server.repository.application.contract.BranchSearchResult;
 import io.jgitkins.server.repository.domain.entity.Branch;
 import org.mapstruct.Mapper;
 

@@ -5,11 +5,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import io.jgitkins.server.repository.application.contract.result.RepositoryPermission;
+import io.jgitkins.server.repository.application.contract.RepositoryPermission;
 import io.jgitkins.server.repository.application.port.out.OrganizationMembershipPort;
 import io.jgitkins.server.repository.application.port.out.RepositoryMemberPersistencePort;
-import io.jgitkins.server.repository.application.support.GitRepositoryAccessService;
-import io.jgitkins.server.repository.application.support.RepositoryLookupService;
+import io.jgitkins.server.repository.application.service.internal.GitRepositoryAccessService;
+import io.jgitkins.server.repository.application.service.internal.RepositoryLookupService;
 import io.jgitkins.server.repository.domain.aggregate.Repository;
 import io.jgitkins.server.repository.domain.vo.RepositoryId;
 import io.jgitkins.server.repository.domain.vo.RepositoryName;

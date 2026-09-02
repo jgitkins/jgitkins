@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 import io.jgitkins.core.common.exception.JgitkinsException;
-import io.jgitkins.server.repository.application.contract.command.BranchCreateCommand;
+import io.jgitkins.server.repository.application.contract.BranchCreateCommand;
 import io.jgitkins.server.repository.domain.entity.Branch;
 import io.jgitkins.server.repository.domain.aggregate.Repository;
 import io.jgitkins.server.shared.domain.model.vo.BranchName;

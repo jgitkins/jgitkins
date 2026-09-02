@@ -22,8 +22,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.jgitkins.server.repository.application.contract.command.BranchCreateCommand;
-import io.jgitkins.server.repository.application.contract.result.BranchSearchResult;
+import io.jgitkins.server.repository.application.contract.BranchCreateCommand;
+import io.jgitkins.server.repository.application.contract.BranchSearchResult;
 import io.jgitkins.server.repository.application.port.in.BranchLoadUseCase;
 import io.jgitkins.server.repository.application.port.in.BranchManagementUseCase;
 import io.jgitkins.server.repository.adapter.in.rest.contract.request.BranchCreateRequest;

@@ -10,9 +10,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-import io.jgitkins.server.identity.access.application.contract.command.UserCredentialIssueCommand;
-import io.jgitkins.server.identity.access.application.contract.result.UserCredentialIssueResult;
-import io.jgitkins.server.identity.access.application.contract.result.UserCredentialSummary;
+import io.jgitkins.server.identity.access.application.contract.UserCredentialIssueCommand;
+import io.jgitkins.server.identity.access.application.contract.UserCredentialIssueResult;
+import io.jgitkins.server.identity.access.application.contract.UserCredentialSummary;
 import io.jgitkins.server.identity.access.application.translator.UserCredentialApplicationMapper;
 import io.jgitkins.server.identity.access.application.port.out.ActiveAccountPolicyPort;
 import io.jgitkins.server.identity.access.application.exception.UserNotFoundException;

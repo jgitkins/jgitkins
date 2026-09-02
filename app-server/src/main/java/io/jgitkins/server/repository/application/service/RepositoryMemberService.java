@@ -1,12 +1,12 @@
 package io.jgitkins.server.repository.application.service;
 
 import io.jgitkins.server.repository.application.policy.RepositoryMemberManagementPolicy;
-import io.jgitkins.server.repository.application.contract.command.RepositoryMemberAddCommand;
-import io.jgitkins.server.repository.application.contract.result.RepositoryMemberSummary;
+import io.jgitkins.server.repository.application.contract.RepositoryMemberAddCommand;
+import io.jgitkins.server.repository.application.contract.RepositoryMemberSummary;
 import io.jgitkins.server.repository.application.port.in.RepositoryMemberLoadUseCase;
 import io.jgitkins.server.repository.application.port.in.RepositoryMemberManagementUseCase;
 import io.jgitkins.server.repository.application.port.out.RepositoryMemberPersistencePort;
-import io.jgitkins.server.repository.application.support.membership.RepositoryMembershipFactory;
+import io.jgitkins.server.repository.application.service.internal.membership.RepositoryMembershipFactory;
 import io.jgitkins.server.repository.application.validate.RepositoryMemberValidator;
 import io.jgitkins.server.repository.domain.model.RepositoryMember;
 import io.jgitkins.server.repository.domain.vo.RepositoryId;

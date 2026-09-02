@@ -2,7 +2,7 @@ package io.jgitkins.server.identity.access.adapter.out.persistence;
 
 import io.jgitkins.server.common.infrastructure.error.InfrastructureErrorCode;
 import io.jgitkins.server.common.infrastructure.exception.InfrastructureException;
-import io.jgitkins.server.identity.access.application.internal.UserQueryResult;
+import io.jgitkins.server.identity.access.application.contract.external.UserQueryResult;
 import io.jgitkins.server.identity.access.application.port.out.UserQueryPort;
 import io.jgitkins.server.identity.access.domain.aggregate.User;
 import io.jgitkins.server.identity.access.domain.repository.UserRepository;

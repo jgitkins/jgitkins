@@ -1,7 +1,7 @@
 package io.jgitkins.server.repository.application.translator;
 
-import io.jgitkins.server.repository.application.contract.result.RepositoryResult;
-import io.jgitkins.server.repository.application.support.CloneUrlBuilder;
+import io.jgitkins.server.repository.application.contract.RepositoryResult;
+import io.jgitkins.server.repository.application.service.internal.CloneUrlBuilder;
 import io.jgitkins.server.repository.domain.aggregate.Repository;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

@@ -1,6 +1,6 @@
 package io.jgitkins.server.identity.access.application.port.out;
 
-import io.jgitkins.server.identity.access.application.internal.UserQueryResult;
+import io.jgitkins.server.identity.access.application.contract.external.UserQueryResult;
 import java.util.List;
 import java.util.Optional;
 

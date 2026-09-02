@@ -1,10 +1,10 @@
 package io.jgitkins.server.identity.access.application.translator;
 
-import io.jgitkins.server.identity.access.application.contract.result.UserAdminDetail;
-import io.jgitkins.server.identity.access.application.contract.result.UserAdminSummary;
-import io.jgitkins.server.identity.access.application.internal.UserIdentitySummary;
-import io.jgitkins.server.identity.access.application.contract.result.UserSummary;
-import io.jgitkins.server.identity.access.application.internal.UserQueryResult;
+import io.jgitkins.server.identity.access.application.contract.UserAdminDetail;
+import io.jgitkins.server.identity.access.application.contract.UserAdminSummary;
+import io.jgitkins.server.identity.access.application.contract.internal.UserIdentitySummary;
+import io.jgitkins.server.identity.access.application.contract.UserSummary;
+import io.jgitkins.server.identity.access.application.contract.external.UserQueryResult;
 import io.jgitkins.server.identity.access.domain.aggregate.User;
 import io.jgitkins.server.identity.access.domain.entity.UserIdentity;
 import java.util.List;

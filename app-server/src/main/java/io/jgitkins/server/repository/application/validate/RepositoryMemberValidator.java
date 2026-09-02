@@ -1,6 +1,6 @@
 package io.jgitkins.server.repository.application.validate;
 
-import io.jgitkins.server.repository.application.contract.command.RepositoryMemberAddCommand;
+import io.jgitkins.server.repository.application.contract.RepositoryMemberAddCommand;
 import io.jgitkins.server.repository.application.exception.MemberIdentifierRequiredException;
 import io.jgitkins.server.repository.application.port.out.RepositoryMemberPersistencePort;
 import io.jgitkins.server.repository.domain.vo.RepositoryId;

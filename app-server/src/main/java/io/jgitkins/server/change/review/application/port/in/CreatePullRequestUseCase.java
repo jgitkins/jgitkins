@@ -1,7 +1,7 @@
 package io.jgitkins.server.change.review.application.port.in;
 
-import io.jgitkins.server.change.review.application.contract.command.PullRequestCreateCommand;
-import io.jgitkins.server.change.review.application.contract.result.PullRequestResult;
+import io.jgitkins.server.change.review.application.contract.PullRequestCreateCommand;
+import io.jgitkins.server.change.review.application.contract.PullRequestResult;
 
 public interface CreatePullRequestUseCase {
 

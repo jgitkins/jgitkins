@@ -26,9 +26,9 @@ import io.jgitkins.server.repository.adapter.out.persistence.jpa.RepositoryJpaPe
 import io.jgitkins.server.repository.adapter.out.persistence.jpa.RepositoryJpaRepository;
 import io.jgitkins.server.repository.adapter.out.persistence.translator.RepositoryEntityMbgMapper;
 import io.jgitkins.server.repository.adapter.out.persistence.support.RepositoryDomainMapper;
-import io.jgitkins.server.repository.application.contract.result.RepositoryResult;
+import io.jgitkins.server.repository.application.contract.RepositoryResult;
 import io.jgitkins.server.repository.application.port.out.RepositoryEndpointPort;
-import io.jgitkins.server.repository.application.support.CloneUrlBuilder;
+import io.jgitkins.server.repository.application.service.internal.CloneUrlBuilder;
 import jakarta.persistence.EntityManagerFactory;
 import java.util.List;
 import java.util.Optional;

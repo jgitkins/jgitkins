@@ -1,12 +1,12 @@
 package io.jgitkins.server.repository.application.service;
 
-import io.jgitkins.server.repository.application.contract.command.RepositoryCreateCommand;
-import io.jgitkins.server.repository.application.contract.result.RepositoryResult;
+import io.jgitkins.server.repository.application.contract.RepositoryCreateCommand;
+import io.jgitkins.server.repository.application.contract.RepositoryResult;
 import io.jgitkins.server.repository.application.port.in.RepositoryManagementUseCase;
 import io.jgitkins.server.repository.application.translator.RepositoryApplicationMapper;
-import io.jgitkins.server.repository.application.internal.RepositoryCreationPlan;
-import io.jgitkins.server.repository.application.support.ownership.RepositoryOwnershipPolicy;
-import io.jgitkins.server.repository.application.support.provisioning.RepositoryProvisioner;
+import io.jgitkins.server.repository.application.contract.internal.RepositoryCreationPlan;
+import io.jgitkins.server.repository.application.service.internal.ownership.RepositoryOwnershipPolicy;
+import io.jgitkins.server.repository.application.service.internal.provisioning.RepositoryProvisioner;
 import io.jgitkins.server.repository.application.exception.RepositoryNotFoundException;
 import io.jgitkins.server.repository.domain.aggregate.Repository;
 import io.jgitkins.server.repository.domain.vo.RepositoryId;

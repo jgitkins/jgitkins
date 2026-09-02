@@ -17,7 +17,7 @@ import io.jgitkins.server.repository.application.port.out.BranchQueryPort;
 import io.jgitkins.server.repository.application.port.out.RepositoryEndpointPort;
 import io.jgitkins.server.repository.application.port.out.RepositoryMemberPersistencePort;
 import io.jgitkins.server.repository.application.port.out.RepositoryQueryPort;
-import io.jgitkins.server.repository.application.support.CloneUrlBuilder;
+import io.jgitkins.server.repository.application.service.internal.CloneUrlBuilder;
 import io.jgitkins.server.repository.domain.repository.BranchRepository;
 import io.jgitkins.server.repository.domain.repository.RepositoryRepository;
 import io.jgitkins.server.repository.infrastructure.config.RepositoryPersistenceSelectorConfiguration;

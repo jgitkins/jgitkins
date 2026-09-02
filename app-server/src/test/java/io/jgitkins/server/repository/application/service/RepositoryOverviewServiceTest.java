@@ -7,12 +7,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-import io.jgitkins.server.repository.application.contract.result.RepositoryResult;
+import io.jgitkins.server.repository.application.contract.RepositoryResult;
 import io.jgitkins.server.repository.application.exception.RepositoryNotFoundException;
 import io.jgitkins.server.repository.application.port.out.BranchQueryPort;
 import io.jgitkins.server.repository.application.port.out.FileGitPort;
 import io.jgitkins.server.repository.application.port.out.RepositoryQueryPort;
-import io.jgitkins.server.repository.application.support.GitRepositoryAccessService;
+import io.jgitkins.server.repository.application.service.internal.GitRepositoryAccessService;
 import io.jgitkins.server.repository.application.validate.RepositoryAccessValidator;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;

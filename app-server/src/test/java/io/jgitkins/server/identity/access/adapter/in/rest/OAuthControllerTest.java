@@ -8,8 +8,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.jgitkins.server.identity.access.application.contract.command.OAuthLoginCommand;
-import io.jgitkins.server.identity.access.application.contract.result.OAuthLoginResult;
+import io.jgitkins.server.identity.access.application.contract.OAuthLoginCommand;
+import io.jgitkins.server.identity.access.application.contract.OAuthLoginResult;
 import io.jgitkins.server.identity.access.application.port.in.OAuthLoginUseCase;
 import io.jgitkins.server.identity.access.domain.aggregate.User;
 import io.jgitkins.server.identity.access.domain.vo.UserStatus;

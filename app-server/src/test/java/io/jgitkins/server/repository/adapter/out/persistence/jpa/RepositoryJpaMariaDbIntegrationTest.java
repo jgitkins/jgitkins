@@ -15,9 +15,9 @@ import io.jgitkins.server.collaboration.adapter.out.persistence.jpa.OrganizeMemb
 import io.jgitkins.server.identity.access.adapter.out.persistence.jpa.UserJpaEntity;
 import io.jgitkins.server.identity.access.adapter.out.persistence.jpa.UserJpaRepository;
 import io.jgitkins.server.persistence.jpa.JpaMariaDbTestSupport;
-import io.jgitkins.server.repository.application.contract.result.RepositoryResult;
+import io.jgitkins.server.repository.application.contract.RepositoryResult;
 import io.jgitkins.server.repository.application.port.out.RepositoryEndpointPort;
-import io.jgitkins.server.repository.application.support.CloneUrlBuilder;
+import io.jgitkins.server.repository.application.service.internal.CloneUrlBuilder;
 import io.jgitkins.server.repository.domain.entity.Branch;
 import io.jgitkins.server.repository.domain.model.RepositoryMember;
 import io.jgitkins.server.repository.domain.vo.RepositoryId;

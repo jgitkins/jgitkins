@@ -6,15 +6,15 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-import io.jgitkins.server.execution.application.internal.DispatchableJob;
-import io.jgitkins.server.execution.application.internal.RunnerDispatchContext;
-import io.jgitkins.server.execution.application.contract.command.DispatchJobCommand;
-import io.jgitkins.server.execution.application.contract.result.JobDispatchResult;
+import io.jgitkins.server.execution.application.contract.external.DispatchableJob;
+import io.jgitkins.server.execution.application.contract.external.RunnerDispatchContext;
+import io.jgitkins.server.execution.application.contract.DispatchJobCommand;
+import io.jgitkins.server.execution.application.contract.JobDispatchResult;
 import io.jgitkins.server.execution.application.port.out.JobDispatchQueryPort;
 import io.jgitkins.server.execution.domain.repository.JobRepository;
 import io.jgitkins.server.execution.application.port.out.CloneUrlPort;
-import io.jgitkins.server.execution.application.support.JobDispatchResultAssembler;
-import io.jgitkins.server.execution.application.support.RunnerDispatchContextResolver;
+import io.jgitkins.server.execution.application.service.internal.JobDispatchResultAssembler;
+import io.jgitkins.server.execution.application.service.internal.RunnerDispatchContextResolver;
 import io.jgitkins.server.execution.domain.aggregate.Job;
 import io.jgitkins.server.execution.domain.aggregate.Runner;
 import io.jgitkins.server.execution.domain.entity.JobHistory;
@@ -85,7 +85,7 @@ class JobDispatchServiceTest {
     @Test
     void dispatch_returnsEmpty_whenNoDispatchableJobForRunner() {
         DispatchJobCommand command = new DispatchJobCommand("token");
-        RunnerDispatchContext runnerContext = new RunnerDispatchContext(7L, io.jgitkins.server.execution.application.internal.JobDispatchScope.GLOBAL, null);
+        RunnerDispatchContext runnerContext = new RunnerDispatchContext(7L, io.jgitkins.server.execution.application.contract.internal.JobDispatchScope.GLOBAL, null);
 
         when(runnerDispatchContextResolver.resolve("token")).thenReturn(Optional.of(runnerContext));
         when(jobDispatchQueryPort.fetchNextJob(any(RunnerDispatchContext.class))).thenReturn(Optional.empty());
@@ -101,7 +101,7 @@ class JobDispatchServiceTest {
     @Test
     void dispatch_returnsResult_whenDispatchSucceeds() {
         DispatchJobCommand command = new DispatchJobCommand("token");
-        RunnerDispatchContext runnerContext = new RunnerDispatchContext(7L, io.jgitkins.server.execution.application.internal.JobDispatchScope.GLOBAL, null);
+        RunnerDispatchContext runnerContext = new RunnerDispatchContext(7L, io.jgitkins.server.execution.application.contract.internal.JobDispatchScope.GLOBAL, null);
         DispatchableJob dispatchableJob = dispatchableJob(101L, 55L, "org/repo.git");
 
         when(runnerDispatchContextResolver.resolve("token")).thenReturn(Optional.of(runnerContext));
@@ -142,7 +142,7 @@ class JobDispatchServiceTest {
     @Test
     void dispatch_returnsEmpty_whenAnotherDispatcherAlreadySavedHistory() {
         DispatchJobCommand command = new DispatchJobCommand("token");
-        RunnerDispatchContext runnerContext = new RunnerDispatchContext(7L, io.jgitkins.server.execution.application.internal.JobDispatchScope.GLOBAL, null);
+        RunnerDispatchContext runnerContext = new RunnerDispatchContext(7L, io.jgitkins.server.execution.application.contract.internal.JobDispatchScope.GLOBAL, null);
         DispatchableJob dispatchableJob = dispatchableJob(101L, 55L, "org/repo.git");
 
         when(runnerDispatchContextResolver.resolve("token")).thenReturn(Optional.of(runnerContext));

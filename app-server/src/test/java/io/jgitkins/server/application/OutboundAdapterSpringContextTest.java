@@ -7,8 +7,8 @@ import io.jgitkins.server.identity.access.adapter.in.security.PatAuthenticationP
 import io.jgitkins.server.collaboration.adapter.out.persistence.OrganizePersistenceAdapter;
 import io.jgitkins.server.execution.application.service.JobDispatchService;
 import io.jgitkins.server.repository.application.service.RepositoryOverviewService;
-import io.jgitkins.server.repository.application.support.GitRepositoryAccessService;
-import io.jgitkins.server.repository.application.support.RepositoryLookupService;
+import io.jgitkins.server.repository.application.service.internal.GitRepositoryAccessService;
+import io.jgitkins.server.repository.application.service.internal.RepositoryLookupService;
 import io.jgitkins.server.repository.application.validate.RepositoryAccessValidator;
 import io.jgitkins.server.repository.adapter.out.acl.OrganizationMembershipAclAdapter;
 import io.jgitkins.server.execution.adapter.out.acl.RepositoryCloneUrlAclAdapter;

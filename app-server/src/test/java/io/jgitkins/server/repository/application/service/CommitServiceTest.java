@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
-import io.jgitkins.server.repository.application.contract.result.CommitHistory;
+import io.jgitkins.server.repository.application.contract.CommitHistory;
 import io.jgitkins.server.repository.application.exception.CommitNotFoundException;
 import io.jgitkins.server.repository.application.port.out.CommitGitPort;
 import io.jgitkins.server.repository.application.port.out.exception.GitCommitObjectMissingException;

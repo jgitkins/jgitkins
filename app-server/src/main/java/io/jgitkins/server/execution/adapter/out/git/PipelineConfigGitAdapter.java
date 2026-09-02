@@ -1,7 +1,7 @@
 package io.jgitkins.server.execution.adapter.out.git;
 
-import io.jgitkins.server.execution.application.internal.PipelineConfig;
-import io.jgitkins.server.execution.application.internal.PipelineRule;
+import io.jgitkins.server.execution.application.contract.external.PipelineConfig;
+import io.jgitkins.server.execution.application.contract.internal.PipelineRule;
 import io.jgitkins.server.execution.application.port.out.PipelineConfigPort;
 import io.jgitkins.server.common.infrastructure.exception.FileLoadFailedException;
 import io.jgitkins.server.common.infrastructure.exception.InfrastructureException;

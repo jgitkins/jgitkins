@@ -9,11 +9,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import io.jgitkins.server.JGitkinsServerApplication;
-import io.jgitkins.server.execution.application.contract.command.DispatchJobCommand;
-import io.jgitkins.server.execution.application.internal.DispatchableJob;
-import io.jgitkins.server.execution.application.internal.JobDispatchScope;
-import io.jgitkins.server.execution.application.internal.RunnerDispatchContext;
-import io.jgitkins.server.execution.application.contract.result.JobDispatchResult;
+import io.jgitkins.server.execution.application.contract.DispatchJobCommand;
+import io.jgitkins.server.execution.application.contract.external.DispatchableJob;
+import io.jgitkins.server.execution.application.contract.internal.JobDispatchScope;
+import io.jgitkins.server.execution.application.contract.external.RunnerDispatchContext;
+import io.jgitkins.server.execution.application.contract.JobDispatchResult;
 import io.jgitkins.server.execution.application.port.out.JobDispatchQueryPort;
 import io.jgitkins.server.execution.domain.aggregate.Job;
 import io.jgitkins.server.execution.domain.entity.JobHistory;
@@ -66,8 +66,8 @@ class JobDispatchServiceConcurrencyTest {
     @Autowired DataSource dataSource;
     @Autowired JobDispatchService service;
     @MockBean JobDispatchQueryPort queryPort;
-    @MockBean io.jgitkins.server.execution.application.support.RunnerDispatchContextResolver resolver;
-    @MockBean io.jgitkins.server.execution.application.support.JobDispatchResultAssembler assembler;
+    @MockBean io.jgitkins.server.execution.application.service.internal.RunnerDispatchContextResolver resolver;
+    @MockBean io.jgitkins.server.execution.application.service.internal.JobDispatchResultAssembler assembler;
     @MockBean io.jgitkins.server.execution.application.port.out.CloneUrlPort cloneUrlPort;
     @SpyBean JobHistoryEntityMbgMapper historyMapper;
     // Spied through the port, not the concrete adapter. Task 2.73 put JobRepository behind the

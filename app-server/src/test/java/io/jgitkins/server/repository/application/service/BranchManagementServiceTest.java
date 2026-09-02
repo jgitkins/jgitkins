@@ -8,7 +8,7 @@ import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import io.jgitkins.server.repository.application.contract.command.BranchCreateCommand;
+import io.jgitkins.server.repository.application.contract.BranchCreateCommand;
 import io.jgitkins.server.repository.application.exception.BranchAlreadyExistsException;
 import io.jgitkins.server.repository.application.exception.BranchNotFoundException;
 import io.jgitkins.server.repository.application.exception.SourceBranchNotFoundException;
@@ -16,7 +16,7 @@ import io.jgitkins.server.repository.application.port.out.BranchGitPort;
 import io.jgitkins.server.repository.application.port.out.exception.GitBranchRefAlreadyExistsException;
 import io.jgitkins.server.repository.application.port.out.exception.GitBranchRefMissingException;
 import io.jgitkins.server.repository.application.port.out.exception.GitSourceBranchRefMissingException;
-import io.jgitkins.server.repository.application.support.branch.BranchFactory;
+import io.jgitkins.server.repository.application.service.internal.branch.BranchFactory;
 import io.jgitkins.server.shared.application.support.RepositoryNamespaceResolver;
 import io.jgitkins.server.repository.application.validate.BranchCreationValidator;
 import io.jgitkins.server.repository.application.validate.RepositoryAccessValidator;

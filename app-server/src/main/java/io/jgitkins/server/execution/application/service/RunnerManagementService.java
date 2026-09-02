@@ -1,15 +1,15 @@
 package io.jgitkins.server.execution.application.service;
 
-import io.jgitkins.server.execution.application.internal.RunnerExecutionConfig;
-import io.jgitkins.server.execution.application.contract.command.RunnerRegisterCommand;
-import io.jgitkins.server.execution.application.contract.result.RunnerActivateResult;
-import io.jgitkins.server.execution.application.contract.result.RunnerRegistrationResult;
+import io.jgitkins.server.execution.application.contract.internal.RunnerExecutionConfig;
+import io.jgitkins.server.execution.application.contract.RunnerRegisterCommand;
+import io.jgitkins.server.execution.application.contract.RunnerActivateResult;
+import io.jgitkins.server.execution.application.contract.RunnerRegistrationResult;
 import io.jgitkins.server.execution.application.exception.RunnerNotFoundException;
 import io.jgitkins.server.execution.application.translator.RunnerApplicationMapper;
 import io.jgitkins.server.execution.application.port.in.RunnerActivateUseCase;
 import io.jgitkins.server.execution.application.port.in.RunnerDeleteUseCase;
 import io.jgitkins.server.execution.application.port.in.RunnerRegisterUseCase;
-import io.jgitkins.server.execution.application.support.RunnerRuntimeConfigProvider;
+import io.jgitkins.server.execution.application.service.internal.RunnerRuntimeConfigProvider;
 import io.jgitkins.server.execution.domain.aggregate.Runner;
 import io.jgitkins.server.execution.domain.repository.RunnerRepository;
 import lombok.RequiredArgsConstructor;

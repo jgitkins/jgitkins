@@ -1,6 +1,6 @@
 package io.jgitkins.server.change.review.application.translator;
 
-import io.jgitkins.server.change.review.application.contract.result.PullRequestDetailResult;
+import io.jgitkins.server.change.review.application.contract.PullRequestDetailResult;
 import io.jgitkins.server.change.review.domain.model.changegraph.MergeabilityAssessment;
 import io.jgitkins.server.change.review.domain.aggregate.PullRequest;
 import io.jgitkins.server.change.review.domain.model.BranchHeadSnapshot;

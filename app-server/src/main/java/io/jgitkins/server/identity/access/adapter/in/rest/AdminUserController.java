@@ -2,8 +2,8 @@ package io.jgitkins.server.identity.access.adapter.in.rest;
 
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.Valid;
-import io.jgitkins.server.identity.access.application.contract.result.UserAdminDetail;
-import io.jgitkins.server.identity.access.application.contract.result.UserAdminSummary;
+import io.jgitkins.server.identity.access.application.contract.UserAdminDetail;
+import io.jgitkins.server.identity.access.application.contract.UserAdminSummary;
 import io.jgitkins.server.identity.access.application.port.in.AdminUserQueryUseCase;
 import io.jgitkins.server.identity.access.application.port.in.AdminUserUpdateUseCase;
 import io.jgitkins.core.web.api.response.ApiResponse;

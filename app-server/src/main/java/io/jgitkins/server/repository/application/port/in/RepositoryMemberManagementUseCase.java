@@ -1,6 +1,6 @@
 package io.jgitkins.server.repository.application.port.in;
 
-import io.jgitkins.server.repository.application.contract.command.RepositoryMemberAddCommand;
+import io.jgitkins.server.repository.application.contract.RepositoryMemberAddCommand;
 
 public interface RepositoryMemberManagementUseCase {
     void addRepositoryMember(RepositoryMemberAddCommand command);

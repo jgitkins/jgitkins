@@ -1,7 +1,7 @@
 package io.jgitkins.server.repository.application.port.in;
 
-import io.jgitkins.server.repository.application.contract.command.RepositoryCreateCommand;
-import io.jgitkins.server.repository.application.contract.result.RepositoryResult;
+import io.jgitkins.server.repository.application.contract.RepositoryCreateCommand;
+import io.jgitkins.server.repository.application.contract.RepositoryResult;
 
 public interface RepositoryManagementUseCase {
     RepositoryResult create(RepositoryCreateCommand command);

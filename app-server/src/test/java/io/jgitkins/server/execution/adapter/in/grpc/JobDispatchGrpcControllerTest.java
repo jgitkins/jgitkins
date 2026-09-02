@@ -7,10 +7,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import io.grpc.stub.StreamObserver;
-import io.jgitkins.server.execution.application.contract.command.DispatchJobCommand;
-import io.jgitkins.server.execution.application.contract.command.JobResultReportCommand;
-import io.jgitkins.server.execution.application.contract.result.JobDispatchResult;
-import io.jgitkins.server.execution.application.internal.JobResultStatus;
+import io.jgitkins.server.execution.application.contract.DispatchJobCommand;
+import io.jgitkins.server.execution.application.contract.JobResultReportCommand;
+import io.jgitkins.server.execution.application.contract.JobDispatchResult;
+import io.jgitkins.server.execution.application.contract.internal.JobResultStatus;
 import io.jgitkins.server.execution.application.port.in.JobDispatchUseCase;
 import io.jgitkins.server.execution.application.port.in.JobResultReportUseCase;
 import io.jgitkins.server.execution.adapter.in.grpc.translator.JobDispatchGrpcMapper;
@@ -109,7 +109,7 @@ class JobDispatchGrpcControllerTest {
         JobResultReportCommand expectedCommand = new JobResultReportCommand(
                 "token",
                 101L,
-                io.jgitkins.server.execution.application.internal.JobResultStatus.SUCCESS);
+                io.jgitkins.server.execution.application.contract.internal.JobResultStatus.SUCCESS);
 
         when(jobDispatchGrpcMapper.toResultReportCommand(request)).thenReturn(expectedCommand);
 

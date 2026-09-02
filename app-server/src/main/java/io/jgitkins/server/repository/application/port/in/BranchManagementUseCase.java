@@ -1,6 +1,6 @@
 package io.jgitkins.server.repository.application.port.in;
 
-import io.jgitkins.server.repository.application.contract.command.BranchCreateCommand;
+import io.jgitkins.server.repository.application.contract.BranchCreateCommand;
 
 public interface BranchManagementUseCase {
     void createBranch(BranchCreateCommand command);

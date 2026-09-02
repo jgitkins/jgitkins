@@ -1,6 +1,6 @@
 package io.jgitkins.server.repository.application.port.in;
 
-import io.jgitkins.server.repository.application.contract.result.RepositoryMemberSummary;
+import io.jgitkins.server.repository.application.contract.RepositoryMemberSummary;
 import java.util.List;
 
 public interface RepositoryMemberLoadUseCase {

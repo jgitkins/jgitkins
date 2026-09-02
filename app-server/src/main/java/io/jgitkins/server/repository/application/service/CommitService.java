@@ -1,6 +1,6 @@
 package io.jgitkins.server.repository.application.service;
 
-import io.jgitkins.server.repository.application.contract.result.CommitHistory;
+import io.jgitkins.server.repository.application.contract.CommitHistory;
 import io.jgitkins.server.repository.application.port.in.CommitLoadUseCase;
 import io.jgitkins.server.repository.application.exception.CommitNotFoundException;
 import io.jgitkins.server.repository.application.port.out.CommitGitPort;

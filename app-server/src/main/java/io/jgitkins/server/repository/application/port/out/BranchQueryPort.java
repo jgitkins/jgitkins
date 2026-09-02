@@ -1,6 +1,6 @@
 package io.jgitkins.server.repository.application.port.out;
 
-import io.jgitkins.server.repository.application.contract.result.BranchSearchResult;
+import io.jgitkins.server.repository.application.contract.BranchSearchResult;
 import java.util.List;
 import java.util.Optional;
 

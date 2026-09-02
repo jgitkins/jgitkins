@@ -1,6 +1,6 @@
 package io.jgitkins.server.change.review.application.translator;
 
-import io.jgitkins.server.change.review.application.contract.result.PullRequestResult;
+import io.jgitkins.server.change.review.application.contract.PullRequestResult;
 import io.jgitkins.server.change.review.domain.aggregate.PullRequest;
 import org.springframework.stereotype.Component;
 

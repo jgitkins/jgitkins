@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import io.jgitkins.server.execution.application.port.out.CloneUrlPort;
 import io.jgitkins.server.execution.application.service.JobDispatchService;
-import io.jgitkins.server.repository.application.support.CloneUrlBuilder;
+import io.jgitkins.server.repository.application.service.internal.CloneUrlBuilder;
 import java.lang.reflect.Constructor;
 import org.junit.jupiter.api.Test;
 import org.springframework.stereotype.Component;

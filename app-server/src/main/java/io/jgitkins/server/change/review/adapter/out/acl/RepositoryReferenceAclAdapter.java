@@ -3,7 +3,7 @@ package io.jgitkins.server.change.review.adapter.out.acl;
 import io.jgitkins.server.change.review.application.port.out.RepositoryReferencePort;
 import io.jgitkins.server.change.review.application.port.out.ReviewRepositoryReference;
 import io.jgitkins.server.change.review.domain.model.vo.ReviewRepositoryId;
-import io.jgitkins.server.repository.application.support.RepositoryLookupService;
+import io.jgitkins.server.repository.application.service.internal.RepositoryLookupService;
 import io.jgitkins.server.repository.domain.aggregate.Repository;
 import io.jgitkins.server.repository.domain.repository.RepositoryRepository;
 import io.jgitkins.server.repository.domain.vo.RepositoryId;

@@ -3,10 +3,9 @@ package io.jgitkins.server.shared.application.change;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-import io.jgitkins.server.change.review.application.contract.result.MergeResult;
+import io.jgitkins.server.change.review.application.contract.MergeResult;
 import io.jgitkins.server.change.review.domain.model.changegraph.MergeabilityAssessment;
 import io.jgitkins.server.change.review.domain.model.changegraph.MergeabilityStatus;
-import io.jgitkins.server.shared.application.change.MergeabilityAssessmentAssembler;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 

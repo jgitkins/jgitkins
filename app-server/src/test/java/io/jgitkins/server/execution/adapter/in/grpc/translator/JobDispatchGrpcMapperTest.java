@@ -2,7 +2,7 @@ package io.jgitkins.server.execution.adapter.in.grpc.translator;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.jgitkins.server.execution.application.contract.result.JobDispatchResult;
+import io.jgitkins.server.execution.application.contract.JobDispatchResult;
 import io.jgitkins.server.grpc.JobDispatchRequest;
 import io.jgitkins.server.grpc.JobPayload;
 import io.jgitkins.server.grpc.JobResultRequest;
@@ -16,7 +16,7 @@ class JobDispatchGrpcMapperTest {
         assertThat(mapper.toDispatchCommand(JobDispatchRequest.newBuilder().setRunnerToken("token").build()).runnerToken()).isEqualTo("token");
         var command = mapper.toResultReportCommand(JobResultRequest.newBuilder().setRunnerToken("token").setJobId(7).setStatus(JobResultStatus.JOB_RESULT_FAILED).build());
         assertThat(command.jobId()).isEqualTo(7L);
-        assertThat(command.status()).isEqualTo(io.jgitkins.server.execution.application.internal.JobResultStatus.FAILED);
+        assertThat(command.status()).isEqualTo(io.jgitkins.server.execution.application.contract.internal.JobResultStatus.FAILED);
     }
     @Test void payload_preservesNineWireFieldsAndOmitsInternalTimestamp() {
         JobDispatchResult result = new JobDispatchResult(1L, 2L, 3L, 4L, 5L, "commit", "main", 8L, LocalDateTime.now(), "url");

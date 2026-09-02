@@ -1,7 +1,7 @@
 package io.jgitkins.server.repository.application.port.out;
 
-import io.jgitkins.server.repository.application.internal.CommitFile;
-import io.jgitkins.server.repository.application.contract.result.CommitHistory;
+import io.jgitkins.server.repository.application.contract.external.CommitFile;
+import io.jgitkins.server.repository.application.contract.CommitHistory;
 
 import java.util.List;
 

@@ -8,11 +8,11 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import io.jgitkins.server.shared.application.command.PushEventCommand;
-import io.jgitkins.server.execution.application.internal.JobCreationDecision;
-import io.jgitkins.server.execution.application.internal.JobPlan;
-import io.jgitkins.server.execution.application.internal.PipelineSkipReason;
+import io.jgitkins.server.execution.application.contract.internal.JobCreationDecision;
+import io.jgitkins.server.execution.application.contract.internal.JobPlan;
+import io.jgitkins.server.execution.application.contract.internal.PipelineSkipReason;
 import io.jgitkins.server.shared.application.support.change.BranchChangeRecorder;
-import io.jgitkins.server.execution.application.support.ExecutionRequestService;
+import io.jgitkins.server.execution.application.service.internal.ExecutionRequestService;
 import io.jgitkins.server.execution.application.policy.EventPolicyResolver;
 import io.jgitkins.server.execution.application.validate.JobCreationValidator;
 import org.junit.jupiter.api.Test;

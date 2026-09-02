@@ -19,7 +19,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.jgitkins.server.repository.application.contract.result.RepositoryMemberSummary;
+import io.jgitkins.server.repository.application.contract.RepositoryMemberSummary;
 import io.jgitkins.server.repository.application.port.in.RepositoryMemberLoadUseCase;
 import io.jgitkins.server.repository.application.port.in.RepositoryMemberManagementUseCase;
 import io.jgitkins.server.repository.domain.vo.RepositoryMemberRole;

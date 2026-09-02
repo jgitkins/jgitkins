@@ -1,9 +1,9 @@
 package io.jgitkins.server.execution.adapter.in.rest;
 
-import io.jgitkins.server.execution.application.contract.result.RunnerActivateResult;
-import io.jgitkins.server.execution.application.contract.result.RunnerDetailResult;
-import io.jgitkins.server.execution.application.contract.command.RunnerRegisterCommand;
-import io.jgitkins.server.execution.application.contract.result.RunnerRegistrationResult;
+import io.jgitkins.server.execution.application.contract.RunnerActivateResult;
+import io.jgitkins.server.execution.application.contract.RunnerDetailResult;
+import io.jgitkins.server.execution.application.contract.RunnerRegisterCommand;
+import io.jgitkins.server.execution.application.contract.RunnerRegistrationResult;
 import io.jgitkins.server.execution.application.port.in.RunnerActivateUseCase;
 import io.jgitkins.server.execution.application.port.in.RunnerDeleteUseCase;
 import io.jgitkins.server.execution.application.port.in.RunnerLoadUseCase;

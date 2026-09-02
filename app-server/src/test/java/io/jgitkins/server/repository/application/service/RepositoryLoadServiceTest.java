@@ -1,7 +1,7 @@
 package io.jgitkins.server.repository.application.service;
 
 import static org.mockito.Mockito.verify;
-import io.jgitkins.server.repository.application.contract.result.RepositoryResult;
+import io.jgitkins.server.repository.application.contract.RepositoryResult;
 import io.jgitkins.server.repository.application.validate.RepositoryAccessValidator;
 import io.jgitkins.server.repository.application.port.out.RepositoryQueryPort;
 import io.jgitkins.server.repository.application.port.out.UserNamespacePort;

@@ -2,7 +2,7 @@ package io.jgitkins.server.repository.architecture;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.jgitkins.server.repository.application.contract.result.RepositoryKey;
+import io.jgitkins.server.repository.application.contract.RepositoryKey;
 import io.jgitkins.server.repository.application.port.in.RepositoryLoadUseCase;
 import java.io.IOException;
 import java.lang.reflect.Method;

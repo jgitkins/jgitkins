@@ -1,6 +1,6 @@
 package io.jgitkins.server.repository.application.port.in;
 
-import io.jgitkins.server.repository.application.contract.result.FileEntry;
+import io.jgitkins.server.repository.application.contract.FileEntry;
 
 import java.io.IOException;
 import java.util.List;

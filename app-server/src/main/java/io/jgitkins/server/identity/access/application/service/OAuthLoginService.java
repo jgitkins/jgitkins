@@ -1,13 +1,13 @@
 package io.jgitkins.server.identity.access.application.service;
 
-import io.jgitkins.server.identity.access.application.contract.command.OAuthLoginCommand;
-import io.jgitkins.server.identity.access.application.internal.UserLoginOrSignUpCommand;
-import io.jgitkins.server.identity.access.application.contract.result.OAuthLoginResult;
-import io.jgitkins.server.identity.access.application.internal.VerifiedOAuthIdentity;
+import io.jgitkins.server.identity.access.application.contract.OAuthLoginCommand;
+import io.jgitkins.server.identity.access.application.contract.internal.UserLoginOrSignUpCommand;
+import io.jgitkins.server.identity.access.application.contract.OAuthLoginResult;
+import io.jgitkins.server.identity.access.application.contract.external.VerifiedOAuthIdentity;
 import io.jgitkins.server.identity.access.application.port.in.OAuthLoginUseCase;
 import io.jgitkins.server.identity.access.application.port.out.OAuthIdTokenVerifierPort;
 import io.jgitkins.server.identity.access.application.port.out.TokenIssuerPort;
-import io.jgitkins.server.identity.access.application.support.UserService;
+import io.jgitkins.server.identity.access.application.service.internal.UserService;
 import io.jgitkins.server.identity.access.domain.aggregate.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

@@ -6,7 +6,7 @@ import io.jgitkins.server.shared.application.exception.ApplicationException;
 import io.jgitkins.server.shared.application.error.ApplicationErrorCode;
 import io.jgitkins.server.repository.application.exception.RepositoryNotFoundException;
 import java.util.Optional;
-import io.jgitkins.server.repository.application.contract.result.RepositoryKey;
+import io.jgitkins.server.repository.application.contract.RepositoryKey;
 import io.jgitkins.server.support.TestAuthentication;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -18,9 +18,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.jgitkins.server.repository.application.contract.result.FileEntry;
-import io.jgitkins.server.repository.application.contract.command.FileUploadInfo;
-import io.jgitkins.server.repository.application.contract.result.RepositoryResult;
+import io.jgitkins.server.repository.application.contract.FileEntry;
+import io.jgitkins.server.repository.application.contract.FileUploadInfo;
+import io.jgitkins.server.repository.application.contract.RepositoryResult;
 import io.jgitkins.server.repository.application.port.in.FileTreeLoadUseCase;
 import io.jgitkins.server.repository.application.port.in.FileUploadUseCase;
 import io.jgitkins.server.repository.application.port.in.RepositoryLoadUseCase;

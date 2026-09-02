@@ -7,8 +7,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import io.jgitkins.server.collaboration.application.contract.command.OrganizeMemberAddCommand;
-import io.jgitkins.server.collaboration.application.contract.result.OrganizeMemberSummary;
+import io.jgitkins.server.collaboration.application.contract.OrganizeMemberAddCommand;
+import io.jgitkins.server.collaboration.application.contract.OrganizeMemberSummary;
 import io.jgitkins.server.collaboration.application.exception.OrganizeAccessDeniedException;
 import io.jgitkins.server.collaboration.application.exception.OrganizeMemberNotFoundException;
 import io.jgitkins.server.collaboration.application.port.out.OrganizeMemberPersistencePort;

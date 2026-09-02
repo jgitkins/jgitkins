@@ -3,7 +3,7 @@ package io.jgitkins.server.execution.application.service;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
-import io.jgitkins.server.execution.application.contract.command.JobCreateCommand;
+import io.jgitkins.server.execution.application.contract.JobCreateCommand;
 import io.jgitkins.server.execution.domain.repository.JobRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

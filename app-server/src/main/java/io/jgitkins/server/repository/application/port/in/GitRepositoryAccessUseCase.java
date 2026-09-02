@@ -1,9 +1,9 @@
 package io.jgitkins.server.repository.application.port.in;
 
-import io.jgitkins.server.repository.application.contract.result.RepositoryResult;
+import io.jgitkins.server.repository.application.contract.RepositoryResult;
 import io.jgitkins.server.repository.domain.aggregate.Repository;
 import io.jgitkins.server.shared.domain.model.vo.OwnerType;
-import io.jgitkins.server.repository.application.contract.result.RepositoryPermission;
+import io.jgitkins.server.repository.application.contract.RepositoryPermission;
 import java.util.Optional;
 
 public interface GitRepositoryAccessUseCase {

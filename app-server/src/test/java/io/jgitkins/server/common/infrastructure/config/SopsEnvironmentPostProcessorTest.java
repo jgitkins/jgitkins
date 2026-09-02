@@ -2,7 +2,6 @@ package io.jgitkins.server.common.infrastructure.config;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.jgitkins.server.common.infrastructure.config.SopsEnvironmentPostProcessor;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.nio.file.Files;

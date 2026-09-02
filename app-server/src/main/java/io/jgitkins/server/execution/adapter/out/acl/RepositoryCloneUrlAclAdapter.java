@@ -1,7 +1,7 @@
 package io.jgitkins.server.execution.adapter.out.acl;
 
 import io.jgitkins.server.execution.application.port.out.CloneUrlPort;
-import io.jgitkins.server.repository.application.support.CloneUrlBuilder;
+import io.jgitkins.server.repository.application.service.internal.CloneUrlBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

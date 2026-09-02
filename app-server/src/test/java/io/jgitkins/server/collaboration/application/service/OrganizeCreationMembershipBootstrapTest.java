@@ -5,8 +5,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.jgitkins.server.collaboration.adapter.out.persistence.OrganizeMemberPersistenceAdapter;
 import io.jgitkins.server.collaboration.adapter.out.persistence.OrganizePersistenceAdapter;
-import io.jgitkins.server.collaboration.application.contract.command.OrganizeCreationCommand;
-import io.jgitkins.server.collaboration.application.contract.result.OrganizeCreationResult;
+import io.jgitkins.server.collaboration.application.contract.OrganizeCreationCommand;
+import io.jgitkins.server.collaboration.application.contract.OrganizeCreationResult;
 import io.jgitkins.server.collaboration.application.translator.OrganizeApplicationMapper;
 import io.jgitkins.server.collaboration.application.port.out.DomainEventPublisher;
 import io.jgitkins.server.collaboration.application.port.out.OrganizeMemberPersistencePort;

@@ -19,7 +19,7 @@ import io.jgitkins.server.repository.application.port.out.OrganizationMembership
 import io.jgitkins.server.repository.application.port.out.OrganizationNamespacePort;
 import io.jgitkins.server.repository.application.port.out.UserNamespacePort;
 import io.jgitkins.server.repository.application.port.out.RepositoryMemberPersistencePort;
-import io.jgitkins.server.repository.application.support.CloneUrlBuilder;
+import io.jgitkins.server.repository.application.service.internal.CloneUrlBuilder;
 import io.jgitkins.server.repository.domain.repository.BranchRepository;
 import io.jgitkins.server.repository.adapter.out.persistence.support.BranchDomainMapper;
 import io.jgitkins.server.repository.adapter.out.persistence.support.RepositoryDomainMapper;

@@ -8,13 +8,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import io.jgitkins.server.shared.application.error.ApplicationErrorCode;
-import io.jgitkins.server.execution.application.internal.RunnerRuntimeConfig;
-import io.jgitkins.server.execution.application.contract.command.RunnerRegisterCommand;
-import io.jgitkins.server.execution.application.contract.result.RunnerActivateResult;
-import io.jgitkins.server.execution.application.contract.result.RunnerRegistrationResult;
+import io.jgitkins.server.execution.application.contract.internal.RunnerRuntimeConfig;
+import io.jgitkins.server.execution.application.contract.RunnerRegisterCommand;
+import io.jgitkins.server.execution.application.contract.RunnerActivateResult;
+import io.jgitkins.server.execution.application.contract.RunnerRegistrationResult;
 import io.jgitkins.server.execution.application.translator.RunnerApplicationMapper;
 import io.jgitkins.server.execution.domain.repository.RunnerRepository;
-import io.jgitkins.server.execution.application.support.RunnerRuntimeConfigProvider;
+import io.jgitkins.server.execution.application.service.internal.RunnerRuntimeConfigProvider;
 import io.jgitkins.core.common.exception.JgitkinsException;
 import io.jgitkins.server.execution.application.exception.RunnerNotFoundException;
 import io.jgitkins.server.common.infrastructure.error.InfrastructureErrorCode;

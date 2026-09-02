@@ -1,6 +1,6 @@
 package io.jgitkins.server.identity.access.application.service;
 
-import io.jgitkins.server.identity.access.application.contract.result.UserSummary;
+import io.jgitkins.server.identity.access.application.contract.UserSummary;
 import io.jgitkins.server.identity.access.application.translator.UserApplicationMapper;
 import io.jgitkins.server.identity.access.application.port.in.PublicUserQueryUseCase;
 import io.jgitkins.server.identity.access.application.port.out.UserQueryPort;

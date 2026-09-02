@@ -1,8 +1,8 @@
 package io.jgitkins.server.change.review.adapter.out.git;
 
 import io.jgitkins.server.shared.common.GitConstants;
-import io.jgitkins.server.change.review.application.contract.command.MergeRequest;
-import io.jgitkins.server.change.review.application.contract.result.MergeResult;
+import io.jgitkins.server.change.review.application.contract.MergeRequest;
+import io.jgitkins.server.change.review.application.contract.MergeResult;
 import io.jgitkins.server.change.review.application.port.out.MergePort;
 import java.io.File;
 import java.io.IOException;

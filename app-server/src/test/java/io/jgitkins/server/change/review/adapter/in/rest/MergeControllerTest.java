@@ -11,8 +11,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.jgitkins.server.change.review.application.contract.command.MergeRequest;
-import io.jgitkins.server.change.review.application.contract.result.MergeResult;
+import io.jgitkins.server.change.review.application.contract.MergeRequest;
+import io.jgitkins.server.change.review.application.contract.MergeResult;
 import io.jgitkins.server.change.review.application.exception.BranchHeadNotFoundException;
 import io.jgitkins.server.change.review.application.port.in.MergeUseCase;
 import io.jgitkins.server.change.review.application.port.in.MergeabilityCheckUseCase;

@@ -1,7 +1,7 @@
 package io.jgitkins.server.change.review.application.service;
 
-import io.jgitkins.server.change.review.application.contract.command.MergeRequest;
-import io.jgitkins.server.change.review.application.contract.result.MergeResult;
+import io.jgitkins.server.change.review.application.contract.MergeRequest;
+import io.jgitkins.server.change.review.application.contract.MergeResult;
 import io.jgitkins.server.change.review.application.port.in.MergeUseCase;
 import io.jgitkins.server.change.review.application.port.in.MergeabilityCheckUseCase;
 import io.jgitkins.server.change.review.application.port.in.MergeabilityEvaluationUseCase;
