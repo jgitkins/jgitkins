@@ -21,17 +21,16 @@ import org.springframework.transaction.annotation.Transactional;
  * scope. The effective scope is the newest assignment by {@code ASSIGNED_AT}, because
  * {@code RUNNER_ASSIGNMENT} has no unique key on {@code RUNNER_ID} and rows accumulate.
  *
- * <p><strong>The scope-update defect is fixed, in both providers at once.</strong> The MyBatis
- * adapter called {@code updateByPrimaryKeySelective} with an assignment entity whose id
- * {@code RunnerAssignmentDomainMapper} never populates, so the statement resolved to
- * {@code where ID = null} and changed nothing -- a runner's scope could not be changed, and
- * narrowing one for isolation looked applied while the runner kept receiving everything. This
- * adapter reproduced the no-op so that flipping the selector stayed invisible. Both then appended a new
- * assignment row when the scope differs from the newest one, which is what the read path was already
- * shaped for. Covered per provider, in the class that
- * builds that provider: {@code RunnerJpaMariaDbIntegrationTest#scopeUpdateTakesEffect} and
- * {@code RunnerScopeUpdateMariaDbTest#scopeUpdateTakesEffect}. No single method proves both -- a name
- * that says "under both providers" while constructing one is what this replaced.
+ * <p><strong>Scope updates append a row; they used not to change anything at all.</strong> The
+ * MyBatis adapter called {@code updateByPrimaryKeySelective} with an assignment entity whose id
+ * {@code RunnerAssignmentDomainMapper} never populated, so the statement resolved to
+ * {@code where ID = null} and wrote nothing -- a runner's scope could not be changed, and narrowing
+ * one for isolation looked applied while the runner kept receiving everything. This adapter first
+ * reproduced the no-op, so that flipping the selector stayed invisible, and both were then fixed in
+ * one change to append a new assignment row when the scope differs from the newest one, which is what
+ * the read path was already shaped for. Covered by
+ * {@code RunnerJpaMariaDbIntegrationTest#scopeUpdateTakesEffect}, against a real database, because
+ * "the update took effect" is a claim about rows.
  */
 @Component
 @RequiredArgsConstructor

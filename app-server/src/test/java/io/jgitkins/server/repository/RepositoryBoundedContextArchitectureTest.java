@@ -75,8 +75,10 @@ class RepositoryBoundedContextArchitectureTest {
                 "application/service/RepositoryMemberService.java",
                 "application/validate/RepositoryMemberValidator.java",
                 "application/service/internal/membership/RepositoryMembershipFactory.java",
-                "adapter/out/persistence/RepositoryMemberPersistenceAdapter.java",
-                "adapter/out/persistence/support/RepositoryMemberDomainMapper.java");
+                // Was the MyBatis adapter plus its MapStruct mapper. Both are deleted; the JPA adapter
+                // is the file that now holds repository's own member id at the persistence edge, and it
+                // is the one that has to keep holding it rather than reaching for identity's UserId.
+                "adapter/out/persistence/jpa/RepositoryMemberJpaPersistenceAdapter.java");
 
         for (String ownedPath : ownedPaths) {
             Path file = JAVA_ROOT.resolve(REPOSITORY_ROOT + ownedPath);

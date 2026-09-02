@@ -23,10 +23,9 @@ public interface OrganizeMembershipQueryPort {
      * {@code repository} calls this with the requester id, and an anonymous requester is null.
      *
      * <p>No duplicates, guaranteed by {@code UK_ORGANIZE_MEMBER_USER (ORGANIZE_ID, USER_ID)}: one
-     * row per pair. The JPA implementation projects the column; the MyBatis one reads rows through the
-     * generated mapper and keeps its {@code distinct()}, because adding a hand-written select to a
-     * generated mapper is not worth it for a list bounded by the organizations one person belongs to.
-     * The two are asserted to agree in {@code OrganizeIdsByUserBothProvidersMariaDbTest}.
+     * row per pair. The implementation projects the column rather than loading membership rows and
+     * mapping them. What it answers is asserted in {@code OrganizeIdsByUserMariaDbTest}, over a real
+     * database, because the uniqueness this relies on is the table's and not the code's.
      */
     List<Long> findOrganizeIdsByUserId(Long userId);
 }

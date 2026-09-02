@@ -11,8 +11,9 @@ import java.time.LocalDateTime;
  * {@code JobDispatchJpaMappingTest} asserts every getter here has a matching alias — a rename on one
  * side alone produces a null field, not an error.
  *
- * <p>It mirrors {@code DispatchableJobRow}, the MyBatis projection, field for field. The two are kept
- * separate rather than shared so neither provider's mapping constrains the other's.
+ * <p>Mirrored {@code DispatchableJobRow}, the MyBatis projection, field for field, and the two were
+ * kept separate rather than shared so that neither provider's mapping constrained the other's. Only
+ * this one is left.
  */
 public interface JobDispatchJpaProjection {
 

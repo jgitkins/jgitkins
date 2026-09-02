@@ -13,27 +13,29 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
- * The JPA foundation for the MyBatis-to-JPA migration.
+ * The application's JPA foundation, and now its only persistence foundation.
  *
- * <p>Everything here is declared rather than auto-configured, matching how this application already
- * treats persistence: {@code DataSourceConfig} builds the {@code DataSource} by hand and
- * {@code MybatisConfig} builds the {@code SqlSessionFactory} by hand. Boot's Hibernate
- * auto-configuration did not produce an {@code entityManagerFactory} in this context, and chasing
- * that condition on every future slice is worse than owning the three beans outright.
+ * <p>Everything here is declared rather than auto-configured. That began as consistency with how the
+ * application already treated persistence -- {@code DataSourceConfig} builds the {@code DataSource}
+ * by hand, and {@code MybatisConfig} built the {@code SqlSessionFactory} the same way -- and the
+ * reason that outlives MyBatis is the one that mattered: Boot's Hibernate auto-configuration did not
+ * produce an {@code entityManagerFactory} in this context, and chasing that condition is worse than
+ * owning the three beans outright.
  *
  * <p>Entity and repository discovery is scoped to {@code io.jgitkins.server}, app-server's own root.
  * Entities live under each context's {@code adapter/out/persistence/jpa} package, which keeps
  * {@code jakarta.persistence} out of the domain and application roots that Task 2.66 guards.
  *
  * <p>Schema management stays off. {@code ddl-auto} is {@code none} in {@code application.yml}: the
- * migration swaps the persistence provider, never the schema, and the tables are owned by
+ * migration swapped the persistence provider and never the schema, and the tables are owned by
  * {@code app-server/data/ddl.sql}. Letting Hibernate validate or update them would turn a provider
- * swap into a schema change.
+ * swap into a schema change, and the rows in those tables were written by a provider that is no
+ * longer here to be asked what it meant.
  *
- * <p>{@link JpaTransactionManager} becomes the single transaction manager for the application, not
- * just for JPA. It manages the same {@code DataSource} connection MyBatis uses, so a
- * {@code @Transactional} boundary keeps working identically for capabilities that have not migrated
- * yet. Boot's {@code DataSourceTransactionManager} auto-configuration is
+ * <p>{@link JpaTransactionManager} is the single transaction manager for the application. It was
+ * already the single one before MyBatis was removed, managing the same {@code DataSource} connection
+ * both providers used, which is what let a {@code @Transactional} boundary behave identically on
+ * either side of a slice's cutover. Boot's {@code DataSourceTransactionManager} auto-configuration is
  * {@code @ConditionalOnMissingBean}, so declaring this one makes it back off rather than compete.
  */
 @Configuration

@@ -2,9 +2,7 @@ package io.jgitkins.server.execution.adapter.out.persistence.jpa;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.jgitkins.server.execution.adapter.out.persistence.model.DispatchableJobRow;
 import java.lang.reflect.Method;
-import java.lang.reflect.RecordComponent;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -22,9 +20,10 @@ import org.springframework.data.jpa.repository.Query;
  * nothing to clone, and a null owner type turns every repository into a user-owned one, dropping the
  * organization id. So the agreement is asserted here, statically, where it is cheap.
  *
- * <p>The second test pins the projection against {@code DispatchableJobRow}, the MyBatis projection.
- * The two are deliberately separate types, but they must describe the same row — if one gains a field
- * the other does not, the two providers return different information for the same job.
+ * <p>A second test used to pin this projection field-for-field against {@code DispatchableJobRow},
+ * the MyBatis projection, so that a field gained on one and not the other could not make the two
+ * providers answer differently for the same job. There is one projection now and the comparison went
+ * with the other one.
  */
 class JobDispatchJpaMappingTest {
 
@@ -42,19 +41,6 @@ class JobDispatchJpaMappingTest {
         assertThat(properties)
                 .as("and every getter must have an alias, for the same reason in the other direction")
                 .containsAll(aliases);
-    }
-
-    @Test
-    void describesTheSameRowAsTheMybatisProjection() {
-        Set<String> jpa = projectionProperties();
-        Set<String> mybatis = Arrays.stream(DispatchableJobRow.class.getRecordComponents())
-                .map(RecordComponent::getName)
-                .collect(Collectors.toSet());
-
-        assertThat(jpa)
-                .as("the two providers must return the same information for the same job; a field on "
-                        + "one and not the other is a difference the selector is supposed to hide")
-                .isEqualTo(mybatis);
     }
 
     @Test

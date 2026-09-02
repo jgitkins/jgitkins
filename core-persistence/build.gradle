@@ -22,10 +22,13 @@ dependencyManagement {
 }
 
 dependencies {
-    api 'org.springframework:spring-jdbc'
-    api 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.3'
-
-    implementation 'com.zaxxer:HikariCP'
+    // Was `api spring-jdbc` plus `api mybatis-spring-boot-starter`, and the starter was what actually
+    // put spring-context and spring-boot on the compile classpath -- DataSourceConfig needs
+    // @Configuration and @ConfigurationProperties, neither of which spring-jdbc carries. Removing the
+    // starter with MyBatis broke this module's own compilation, so the transitive dependency is now
+    // named: starter-jdbc is spring-jdbc, HikariCP and the Boot context, which is exactly this
+    // module's job.
+    api 'org.springframework.boot:spring-boot-starter-jdbc'
 
     runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
     runtimeOnly 'org.bgee.log4jdbc-log4j2:log4jdbc-log4j2-jdbc4.1:1.16'

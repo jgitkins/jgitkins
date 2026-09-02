@@ -9,11 +9,6 @@ grpc:
   server:
     port: ${GRPC_PORT}
 ---
-# mybatis
-mybatis:
-  mapper-locations: classpath*:/mapper/**/*.xml
-
----
 # env
 ---
 # Spring 설정

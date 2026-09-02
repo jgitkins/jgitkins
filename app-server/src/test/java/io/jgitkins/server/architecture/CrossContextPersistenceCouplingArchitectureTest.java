@@ -99,12 +99,12 @@ class CrossContextPersistenceCouplingArchitectureTest {
         // on the javadoc that explains the ports, so a field deletion leaving the prose behind stayed
         // green -- the pitfall ArchitectureScanner#stripComments exists for.
         //
-        // Was three files. RepositoryPersistenceSelectorConfiguration was the third and is deleted: it
-        // took the three ports as parameters to hand to whichever adapter the property chose, and with
-        // one implementation there is nothing left to choose. Its coupling is gone by deletion rather
-        // than by refactoring, which the ceiling of zero already covers.
+        // Was three files, and is one. RepositoryPersistenceSelectorConfiguration took the three ports
+        // as parameters to hand to whichever adapter the property chose; RepositoryPersistenceAdapter
+        // was the MyBatis half. Both are deleted, so their coupling is gone by deletion rather than by
+        // refactoring -- which the ceiling of zero already covers, and which is why this test asserts
+        // the surviving file gained the ports rather than counting how many files there are.
         for (String file : List.of(
-                "repository/adapter/out/persistence/RepositoryPersistenceAdapter.java",
                 "repository/adapter/out/persistence/jpa/RepositoryJpaPersistenceAdapter.java")) {
             String source = ArchitectureScanner.withoutComments(
                     ArchitectureScanner.mainRoot().resolve(file));
@@ -136,14 +136,17 @@ class CrossContextPersistenceCouplingArchitectureTest {
         // The category matches any context's persistence package, so the own-context filter below is
         // load-bearing. Without it every persistence adapter in the tree would be a violation and the
         // ceiling would be meaningless.
-        Path ownAdapter = ArchitectureScanner.mainRoot()
-                .resolve("collaboration/adapter/out/persistence/OrganizePersistenceAdapter.java");
-        assertThat(ownAdapter).exists();
+        // Was OrganizePersistenceAdapter, the MyBatis one, which is deleted. The JPA adapter is the
+        // same shape of witness: a file under a context's own persistence package that imports from it.
+        String own = "collaboration/adapter/out/persistence/jpa/OrganizeJpaPersistenceAdapter.java";
+        assertThat(ArchitectureScanner.mainRoot().resolve(own))
+                .as("the witness has to exist or the filter below is asserted against nothing")
+                .exists();
 
         assertThat(foreignPersistenceImports().stream().map(v -> relative(v.file())).toList())
                 .as("collaboration's own persistence adapter imports collaboration persistence types, "
                         + "and that is not a boundary crossing")
-                .doesNotContain("collaboration/adapter/out/persistence/OrganizePersistenceAdapter.java");
+                .doesNotContain(own);
     }
 
     /** Every foreign persistence import in main, own-context imports filtered out. */

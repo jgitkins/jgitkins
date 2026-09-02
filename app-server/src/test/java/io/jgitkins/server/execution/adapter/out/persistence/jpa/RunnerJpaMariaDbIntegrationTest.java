@@ -72,6 +72,19 @@ class RunnerJpaMariaDbIntegrationTest {
                 .as("creating a runner must create its assignment row in the same call")
                 .isEqualTo(1);
 
+        // The row, not the return value. Carried over from RunnerScopeUpdateMariaDbTest, which was the
+        // MyBatis copy of this class: the create branch returns the scope the caller passed in, so a
+        // wrong row is invisible from the aggregate, and that is how it survived -- the branch mapped
+        // the assignment from a database with no assignment row yet, which answers GLOBAL. Every runner
+        // created through MyBatis was recorded as GLOBAL. Reading through findById below would catch it
+        // too, but only because this adapter has no path that answers from the argument.
+        assertThat(jdbc.queryForMap(
+                "select TARGET_TYPE, TARGET_ID from RUNNER_ASSIGNMENT where RUNNER_ID = ?", runnerId))
+                .as("a runner scoped to one repository must not be recorded as GLOBAL, which dispatches "
+                        + "everything to it")
+                .containsEntry("TARGET_TYPE", "REPOSITORY")
+                .containsEntry("TARGET_ID", 7401L);
+
         Runner byId = transactions.execute(status -> adapter.findById(runnerId).orElseThrow());
         assertThat(byId.getToken()).isEqualTo(token);
         assertThat(byId.getScopeType()).isEqualTo(RunnerScopeType.REPOSITORY);

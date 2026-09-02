@@ -12,13 +12,18 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 
 /**
- * Keeps JPA inside the outbound persistence adapter as the migration spreads.
+ * Keeps JPA inside the outbound persistence adapter.
  *
  * <p>Task 2.66 forbids {@code jakarta.persistence} under the domain and application roots. Until
- * Task 2.69 there was no JPA on the classpath, so the rule cost nothing to obey. Now there is, and
- * Tasks 2.70-2.77 add an entity set per bounded context. The cheapest way for that to go wrong is an
- * entity or a {@code LockModeType} drifting into a port signature or a domain type, at which point
- * the persistence provider becomes visible to business code and the selector can no longer swap it.
+ * Task 2.69 there was no JPA on the classpath, so the rule cost nothing to obey; tasks 2.70-2.77
+ * added an entity set per bounded context, and the cheapest way for that to go wrong is an entity or
+ * a {@code LockModeType} drifting into a port signature or a domain type.
+ *
+ * <p>The reason has outlived the selector it was written for. It used to be that a leak made the
+ * provider visible to business code and the selector could no longer swap it; there is one provider
+ * now and nothing to swap. What a leak costs today is the ability to change how a table is read
+ * without changing the code that asked -- and the next provider change, whenever it comes, starts
+ * from wherever these imports have reached by then.
  *
  * <p>Scope is deliberately the whole of {@code app-server} main source rather than one context: the
  * point is to catch the first context that gets it wrong, whichever one that is.
@@ -97,7 +102,7 @@ class PersistenceTechnologyArchitectureTest {
         assertThat(violations)
                 .as("persistence technology must stay inside the outbound persistence adapter; once a "
                         + "JPA type reaches a port or a domain class, business code depends on the "
-                        + "provider and the persistence selector can no longer swap it")
+                        + "provider and cannot be read without knowing which one")
                 .isEmpty();
     }
 

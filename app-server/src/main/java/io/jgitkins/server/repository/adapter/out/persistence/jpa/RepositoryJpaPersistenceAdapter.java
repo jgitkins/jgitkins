@@ -28,16 +28,16 @@ import org.springframework.stereotype.Component;
  * JPA implementation of the repository-context persistence pair.
  *
  * <p>The three cross-context reads — resolve a username, resolve an organization name, list a user's
- * organization ids — go through the collaboration and identity JPA repositories directly. That is the
- * coupling the MyBatis adapter already has: it injects {@code OrganizeEntityMbgMapper},
- * {@code OrganizeMemberEntityMbgMapper} and {@code UserEntityMbgMapper} from those same contexts.
- * Reproducing it keeps this task a technology swap; turning those reads into port calls is a boundary
- * change, and boundary changes belong to task 2.67, which owns the final placement rule. The context
- * guard permits it: {@code RepositoryBoundedContextArchitectureTest} forbids foreign imports under
- * {@code repository/domain}, not under the outbound adapter.
+ * organization ids — go through ports. They did not always: this adapter was first written to inject
+ * {@code OrganizeJpaRepository}, {@code OrganizeMemberJpaRepository} and {@code UserJpaRepository}
+ * directly, reproducing the coupling its MyBatis sibling had to those contexts' generated mappers, so
+ * that the migration stayed a technology swap and the boundary change could be a separate one. The
+ * boundary change happened, and {@code CrossContextPersistenceCouplingArchitectureTest} now holds the
+ * count at zero.
  *
- * <p>{@code save} inserts and never updates, matching the MyBatis adapter, which called
- * {@code insertSelective} unconditionally. {@code update} is the separate port method.
+ * <p>{@code save} inserts and never updates. That was carried over from the MyBatis adapter, which
+ * called {@code insertSelective} unconditionally, and it is still the contract: {@code update} is a
+ * separate port method and callers choose between them.
  */
 @Component
 @RequiredArgsConstructor
@@ -50,7 +50,7 @@ public class RepositoryJpaPersistenceAdapter implements RepositoryPersistence {
 
     private final RepositoryJpaRepository repositoryJpaRepository;
     // Ports, not the other contexts' JPA repositories: naming OrganizeJpaRepository bound this to
-    // collaboration's table shape and to collaboration being on JPA. Same three ports as the MyBatis sibling.
+    // collaboration's table shape and to whichever provider collaboration ran on.
     private final UserNamespacePort userNamespacePort;
     private final OrganizationNamespacePort organizationNamespacePort;
     private final OrganizationMembershipPort organizationMembershipPort;

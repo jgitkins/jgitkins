@@ -142,5 +142,10 @@ class ExecutionJpaMariaDbIntegrationTest {
                 .as("ordering is CREATED_AT ASC, ID ASC, so the sequence renumbers from the query order")
                 .containsExactly(1, 2);
         assertThat(reloaded.getHistories().get(1).getRunnerId().getValue()).isEqualTo("7303");
+        assertThat(reloaded.getHistories())
+                .as("JOB_HISTORY has no actor column, so every read has to synthesize SYSTEM; nothing "
+                        + "else would fail if the mapping started answering null")
+                .allSatisfy(history ->
+                        assertThat(history.getCreatedBy()).isEqualTo(ExecutionSystemActor.SYSTEM));
     }
 }

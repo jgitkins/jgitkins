@@ -104,9 +104,7 @@ public class LoggingConfigurator implements ApplicationListener<ApplicationEnvir
         setLogger(loggerContext, "org.springframework.jdbc.support", Level.WARN);
         setLogger(loggerContext, "org.apache", Level.INFO);
         setLogger(loggerContext, "net.sf.ehcache", Level.INFO);
-        setLogger(loggerContext, "org.apache.ibatis", Level.INFO);
         setLogger(loggerContext, "org.aspectj", Level.INFO);
-        setLogger(loggerContext, "org.mybatis.spring", Level.INFO);
         setLogger(loggerContext, "com.zaxxer.hikari", Level.INFO);
         setLogger(loggerContext, "org.hibernate", Level.INFO);
         setLogger(loggerContext, "javax.management", Level.WARN);

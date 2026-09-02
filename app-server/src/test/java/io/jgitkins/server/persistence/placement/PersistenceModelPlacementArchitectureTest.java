@@ -25,6 +25,13 @@ import org.junit.jupiter.api.Test;
  * <p>Both directions are asserted. The first test says the types are at the destination; the second says
  * the old location is gone rather than merely also populated, because a half-move leaves two homes and
  * the next author picks whichever they saw first.
+ *
+ * <p>The destination is {@code adapter/out/persistence/jpa} now, and it used to be three leaves --
+ * {@code model}, {@code translator}, {@code support} -- holding the MBG entities, the generated
+ * mappers, and the MapStruct domain mappers that bridged them. All three emptied when MyBatis was
+ * deleted, because generated code needed somewhere to be put and hand-written entities do not. A
+ * guard still pointed at them would have gone on passing while examining nothing, which is the
+ * failure this file's own second test exists to prevent in the other direction.
  */
 class PersistenceModelPlacementArchitectureTest {
 
@@ -33,33 +40,44 @@ class PersistenceModelPlacementArchitectureTest {
     private static final List<String> CONTEXTS =
             List.of("change/review", "collaboration", "execution", "identity/access", "repository");
 
-    /** The three leaves task 2.67 moved, as {@code source leaf -> destination leaf}. */
-    private static final Map<String, String> MOVED_LEAVES = new LinkedHashMap<>(Map.of(
-            "infrastructure/persistence/model", "adapter/out/persistence/model",
-            "infrastructure/persistence/mapper", "adapter/out/persistence/translator",
-            "infrastructure/mapper", "adapter/out/persistence/support"));
+    /**
+     * The three leaves task 2.67 moved out of {@code <context>/infrastructure}. Still named because
+     * the second and third tests assert these are empty, and "empty" is the claim that keeps
+     * {@code infrastructure} from becoming a second home again.
+     */
+    private static final List<String> LEGACY_LEAVES = List.of(
+            "infrastructure/persistence/model",
+            "infrastructure/persistence/mapper",
+            "infrastructure/mapper");
+
+    /**
+     * Where persistence types live now. It was three destination leaves -- {@code model} for the MBG
+     * entities, {@code translator} for the generated mappers, {@code support} for the MapStruct
+     * domain mappers -- and all three are empty since MyBatis was deleted: generated code needed
+     * somewhere to go, and hand-written JPA entities and adapters do not. Asserting the old three
+     * would now be asserting that nothing exists anywhere, which passes for the wrong reason.
+     */
+    private static final String PERSISTENCE_LEAF = "adapter/out/persistence/jpa";
 
     @Test
     void persistenceModelsResideOnlyUnderAdapterOutPersistence() throws IOException {
         Map<String, Integer> populatedDestinations = new LinkedHashMap<>();
 
         for (String context : CONTEXTS) {
-            for (String destination : MOVED_LEAVES.values()) {
-                Path leaf = SERVER_ROOT.resolve(context).resolve(destination);
-                if (Files.isDirectory(leaf)) {
-                    populatedDestinations.put(context + "/" + destination, javaFileCount(leaf));
-                }
+            Path leaf = SERVER_ROOT.resolve(context).resolve(PERSISTENCE_LEAF);
+            if (Files.isDirectory(leaf)) {
+                populatedDestinations.put(context + "/" + PERSISTENCE_LEAF, javaFileCount(leaf));
             }
         }
 
         assertThat(populatedDestinations)
-                .as("no context has any of the three destination leaves; the move did not happen, or "
-                        + "this test is looking in the wrong place")
-                .isNotEmpty();
+                .as("every context owns persistence, so every context must have this leaf; none having "
+                        + "it means this test is looking in the wrong place, not that the tree is clean")
+                .hasSize(CONTEXTS.size());
 
         assertThat(populatedDestinations.values())
-                .as("a destination leaf that exists but holds no .java file is a directory left behind "
-                        + "by a partial move: %s", populatedDestinations)
+                .as("a leaf that exists but holds no .java file is a directory left behind: %s",
+                        populatedDestinations)
                 .allSatisfy(count -> assertThat(count).isPositive());
 
         // Every mapper interface and model must be inside an adapter/out/persistence package. Checked by
@@ -102,7 +120,7 @@ class PersistenceModelPlacementArchitectureTest {
         Map<String, List<String>> leftBehind = new LinkedHashMap<>();
 
         for (String context : CONTEXTS) {
-            for (String source : MOVED_LEAVES.keySet()) {
+            for (String source : LEGACY_LEAVES) {
                 Path leaf = SERVER_ROOT.resolve(context).resolve(source);
                 if (!Files.isDirectory(leaf)) {
                     continue;

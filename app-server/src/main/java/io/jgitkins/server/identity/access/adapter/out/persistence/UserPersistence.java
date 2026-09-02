@@ -6,10 +6,10 @@ import io.jgitkins.server.identity.access.domain.repository.UserRepository;
 /**
  * The user lifecycle port and the user read port, always served by one object.
  *
- * <p>Same reason as the collaboration slice: it gives the persistence selector a single type to
- * switch on inside one {@code @Bean} method, and it records that the aggregate lifecycle and its
- * read model must not come from different providers. Splitting them would let a cutover read through
- * JPA while writing through MyBatis.
+ * <p>Same reason as the collaboration slice: introduced to give the persistence selector a single
+ * type to switch on, and kept after it because what it records is that the aggregate lifecycle and
+ * its read model must come from one object. Splitting them would let a write land in one
+ * implementation and a read come from the other inside the same request.
  */
 public interface UserPersistence extends UserRepository, UserQueryPort {
 }
