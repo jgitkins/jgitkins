@@ -1120,24 +1120,24 @@
             "id": 115,
             "title": "[api][dx][app-server] 타입 변환 예외가 JVM 내부 타입명을 응답 본문에 노출한다 — 2.99 가 같은 메서드에서 놓쳤다",
             "description": "GlobalExceptionHandler:221-226 은 HttpMessageNotReadableException 에만 고정 메시지를 주고 나머지는 return ex.getMessage() 로 떨어진다. MethodArgumentTypeMismatchException 이 같은 핸들러(:52)에 등록되어 있어 그 경로로 빠진다. GET /api/repositories/not-a-number 의 실제 응답을 확인한 결과: {\"code\":\"REQ-400\",\"message\":\"Failed to convert value of type 'java.lang.String' to required type 'java.lang.Long'; For input string: \\\"not-a-number\\\"\"}. 2.99 의 명시적 목표가 '파서 내부를 그만 노출한다' 였는데 같은 메서드 안의 같은 부류가 남았다. BoundaryValidationTest:151-153 은 이 경우에 상태 코드만 단정해서 본문을 지키지 않는다.",
-            "status": "pending",
+            "status": "in-progress",
             "dependencies": [
               "99"
             ],
             "priority": "medium",
-            "details": "GlobalExceptionHandler:221-226 은 HttpMessageNotReadableException 에만 고정 메시지를 주고 나머지는 return ex.getMessage() 로 떨어진다. MethodArgumentTypeMismatchException 이 같은 핸들러(:52)에 등록되어 있어 그 경로로 빠진다. GET /api/repositories/not-a-number 의 실제 응답을 확인한 결과: {\"code\":\"REQ-400\",\"message\":\"Failed to convert value of type 'java.lang.String' to required type 'java.lang.Long'; For input string: \\\"not-a-number\\\"\"}. 2.99 의 명시적 목표가 '파서 내부를 그만 노출한다' 였는데 같은 메서드 안의 같은 부류가 남았다. BoundaryValidationTest:151-153 은 이 경우에 상태 코드만 단정해서 본문을 지키지 않는다.",
+            "details": "GlobalExceptionHandler:221-226 은 HttpMessageNotReadableException 에만 고정 메시지를 주고 나머지는 return ex.getMessage() 로 떨어진다. MethodArgumentTypeMismatchException 이 같은 핸들러(:52)에 등록되어 있어 그 경로로 빠진다. GET /api/repositories/not-a-number 의 실제 응답을 확인한 결과: {\"code\":\"REQ-400\",\"message\":\"Failed to convert value of type 'java.lang.String' to required type 'java.lang.Long'; For input string: \\\"not-a-number\\\"\"}. 2.99 의 명시적 목표가 '파서 내부를 그만 노출한다' 였는데 같은 메서드 안의 같은 부류가 남았다. BoundaryValidationTest:151-153 은 이 경우에 상태 코드만 단정해서 본문을 지키지 않는다.\n\n[2026-09-02 착수] /plan-eng-review FULL_REVIEW 통과 후 in-progress. 리뷰가 계획을 세 곳에서 바꿨다: (1) 종단 기본값 return ex.getMessage() 를 안전한 고정 문구로 뒤집는 것이 분기 3개를 맞추는 것보다 넓게 해결한다 — 미등록/미래 타입과 blank fallback 두 곳까지 닫힌다. (2) 분기 없는 타입이 하나가 아니라 셋이다: ConstraintViolationException, MethodArgumentTypeMismatchException, MissingServletRequestParameterException 전부 instanceof 분기 0개 (grep 검증). @ExceptionHandler 완전성 가드를 함께 신설한다. (3) 검증 vehicle 을 분리한다 — GlobalExceptionHandlerTest 는 MockMvcBuilders.standaloneSetup() 이라 Spring 컨텍스트를 안 띄우고 포트 19090 을 밟지 않는다. 풀컨텍스트가 필요한 것은 ConstraintViolation, NoResourceFound, 두 경로 동등성 테스트 3건뿐이다. 계획서: ~/.gstack/projects/jgitkins-jgitkins/hrk-main-plan-c-bundle-20260902-error-response-body.md (T1~T8, critical gap 0건). 2.100 과의 관계: @Validated 가 어느 분기로 갈지 결정하므로 이 작업이 양쪽을 고치면 2.100 의 삭제가 메시지 무변경이 되고, 그 동등성 테스트가 2.100 의 증명 장치가 된다.",
             "testStrategy": "잘못된 타입의 경로변수 요청이 400 을 주되 본문에 java.lang 이나 클래스명이 없는지 단정."
           },
           {
             "id": 116,
             "title": "[api][dx][app-server] 경로변수 검증 오류가 어떤 필드가 틀렸는지 알려주지 않는다",
             "description": "GlobalExceptionHandler:188-197 의 HandlerMethodValidationException 분기는 getDefaultMessage 만 모아 붙인다. GET /api/repositories/0/members 의 실제 응답은 {\"code\":\"REQ-400\",\"message\":\"must be greater than 0\"} 로 필드명이 없다. 바로 아래 본문 분기(:213-216)는 '필드명이 없으면 어떤 메시지가 어떤 필드의 것인지 알 수 없다' 는 이유로 필드명을 붙이는데, 같은 논리가 이 분기에는 적용되지 않았다. @Positive/@NotBlank 에 커스텀 메시지가 없으므로 제약이 여럿인 라우트(RepositoryContentController:70-72 는 @NotBlank 3개 + @Positive 1개)에서는 'must not be blank; must not be blank' 가 나와 호출자가 조치할 수 없다.",
-            "status": "pending",
+            "status": "in-progress",
             "dependencies": [
               "99"
             ],
             "priority": "medium",
-            "details": "GlobalExceptionHandler:188-197 의 HandlerMethodValidationException 분기는 getDefaultMessage 만 모아 붙인다. GET /api/repositories/0/members 의 실제 응답은 {\"code\":\"REQ-400\",\"message\":\"must be greater than 0\"} 로 필드명이 없다. 바로 아래 본문 분기(:213-216)는 '필드명이 없으면 어떤 메시지가 어떤 필드의 것인지 알 수 없다' 는 이유로 필드명을 붙이는데, 같은 논리가 이 분기에는 적용되지 않았다. @Positive/@NotBlank 에 커스텀 메시지가 없으므로 제약이 여럿인 라우트(RepositoryContentController:70-72 는 @NotBlank 3개 + @Positive 1개)에서는 'must not be blank; must not be blank' 가 나와 호출자가 조치할 수 없다.",
+            "details": "GlobalExceptionHandler:188-197 의 HandlerMethodValidationException 분기는 getDefaultMessage 만 모아 붙인다. GET /api/repositories/0/members 의 실제 응답은 {\"code\":\"REQ-400\",\"message\":\"must be greater than 0\"} 로 필드명이 없다. 바로 아래 본문 분기(:213-216)는 '필드명이 없으면 어떤 메시지가 어떤 필드의 것인지 알 수 없다' 는 이유로 필드명을 붙이는데, 같은 논리가 이 분기에는 적용되지 않았다. @Positive/@NotBlank 에 커스텀 메시지가 없으므로 제약이 여럿인 라우트(RepositoryContentController:70-72 는 @NotBlank 3개 + @Positive 1개)에서는 'must not be blank; must not be blank' 가 나와 호출자가 조치할 수 없다.\n\n[2026-09-02 착수] /plan-eng-review FULL_REVIEW 통과 후 in-progress. 리뷰가 계획을 세 곳에서 바꿨다: (1) 종단 기본값 return ex.getMessage() 를 안전한 고정 문구로 뒤집는 것이 분기 3개를 맞추는 것보다 넓게 해결한다 — 미등록/미래 타입과 blank fallback 두 곳까지 닫힌다. (2) 분기 없는 타입이 하나가 아니라 셋이다: ConstraintViolationException, MethodArgumentTypeMismatchException, MissingServletRequestParameterException 전부 instanceof 분기 0개 (grep 검증). @ExceptionHandler 완전성 가드를 함께 신설한다. (3) 검증 vehicle 을 분리한다 — GlobalExceptionHandlerTest 는 MockMvcBuilders.standaloneSetup() 이라 Spring 컨텍스트를 안 띄우고 포트 19090 을 밟지 않는다. 풀컨텍스트가 필요한 것은 ConstraintViolation, NoResourceFound, 두 경로 동등성 테스트 3건뿐이다. 계획서: ~/.gstack/projects/jgitkins-jgitkins/hrk-main-plan-c-bundle-20260902-error-response-body.md (T1~T8, critical gap 0건). 2.100 과의 관계: @Validated 가 어느 분기로 갈지 결정하므로 이 작업이 양쪽을 고치면 2.100 의 삭제가 메시지 무변경이 되고, 그 동등성 테스트가 2.100 의 증명 장치가 된다.",
             "testStrategy": "제약이 여럿인 라우트에 전부 잘못된 값을 보내 각 메시지에 파라미터명이 붙는지 단정."
           },
           {
@@ -1188,12 +1188,12 @@
             "id": 121,
             "title": "[api][dx][app-server] handleNoHandler 가 요청 경로를 그대로 되돌려주고 API 라우트를 static resource 라 부른다",
             "description": "GlobalExceptionHandler:127-131 이 ex.getMessage() 를 그대로 본문에 넣는다. GET /api/nope/xyz 의 실제 응답: {\"code\":\"REQ-404\",\"message\":\"No static resource api/nope/xyz.\"}. 세 가지가 겹쳐 있다: 호출자가 준 경로가 본문에 그대로 반사되고, API 라우트를 Spring 의 정적 리소스 핸들러 이름으로 부르며, 이 클래스에서 유일하게 log 문이 없는 핸들러라 오타 URL 의 양이 보이지 않는다. BoundaryValidationTest:171-173 은 본문에 REQ-404 가 있는지만 본다. 함께: :100-112 에 javadoc 블록이 연속 두 개 있고 그중 앞의 것(NoResourceFoundException 설명)이 handleMethodNotAllowed 에 잘못 붙어 있다.",
-            "status": "pending",
+            "status": "in-progress",
             "dependencies": [
               "99"
             ],
             "priority": "low",
-            "details": "GlobalExceptionHandler:127-131 이 ex.getMessage() 를 그대로 본문에 넣는다. GET /api/nope/xyz 의 실제 응답: {\"code\":\"REQ-404\",\"message\":\"No static resource api/nope/xyz.\"}. 세 가지가 겹쳐 있다: 호출자가 준 경로가 본문에 그대로 반사되고, API 라우트를 Spring 의 정적 리소스 핸들러 이름으로 부르며, 이 클래스에서 유일하게 log 문이 없는 핸들러라 오타 URL 의 양이 보이지 않는다. BoundaryValidationTest:171-173 은 본문에 REQ-404 가 있는지만 본다. 함께: :100-112 에 javadoc 블록이 연속 두 개 있고 그중 앞의 것(NoResourceFoundException 설명)이 handleMethodNotAllowed 에 잘못 붙어 있다.",
+            "details": "GlobalExceptionHandler:127-131 이 ex.getMessage() 를 그대로 본문에 넣는다. GET /api/nope/xyz 의 실제 응답: {\"code\":\"REQ-404\",\"message\":\"No static resource api/nope/xyz.\"}. 세 가지가 겹쳐 있다: 호출자가 준 경로가 본문에 그대로 반사되고, API 라우트를 Spring 의 정적 리소스 핸들러 이름으로 부르며, 이 클래스에서 유일하게 log 문이 없는 핸들러라 오타 URL 의 양이 보이지 않는다. BoundaryValidationTest:171-173 은 본문에 REQ-404 가 있는지만 본다. 함께: :100-112 에 javadoc 블록이 연속 두 개 있고 그중 앞의 것(NoResourceFoundException 설명)이 handleMethodNotAllowed 에 잘못 붙어 있다.\n\n[2026-09-02 착수] /plan-eng-review FULL_REVIEW 통과 후 in-progress. 리뷰가 계획을 세 곳에서 바꿨다: (1) 종단 기본값 return ex.getMessage() 를 안전한 고정 문구로 뒤집는 것이 분기 3개를 맞추는 것보다 넓게 해결한다 — 미등록/미래 타입과 blank fallback 두 곳까지 닫힌다. (2) 분기 없는 타입이 하나가 아니라 셋이다: ConstraintViolationException, MethodArgumentTypeMismatchException, MissingServletRequestParameterException 전부 instanceof 분기 0개 (grep 검증). @ExceptionHandler 완전성 가드를 함께 신설한다. (3) 검증 vehicle 을 분리한다 — GlobalExceptionHandlerTest 는 MockMvcBuilders.standaloneSetup() 이라 Spring 컨텍스트를 안 띄우고 포트 19090 을 밟지 않는다. 풀컨텍스트가 필요한 것은 ConstraintViolation, NoResourceFound, 두 경로 동등성 테스트 3건뿐이다. 계획서: ~/.gstack/projects/jgitkins-jgitkins/hrk-main-plan-c-bundle-20260902-error-response-body.md (T1~T8, critical gap 0건). 2.100 과의 관계: @Validated 가 어느 분기로 갈지 결정하므로 이 작업이 양쪽을 고치면 2.100 의 삭제가 메시지 무변경이 되고, 그 동등성 테스트가 2.100 의 증명 장치가 된다.",
             "testStrategy": "존재하지 않는 경로가 고정 메시지로 404 를 주고 요청 경로가 본문에 반사되지 않는지."
           },
           {
