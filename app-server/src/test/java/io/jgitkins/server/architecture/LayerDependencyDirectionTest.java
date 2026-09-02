@@ -161,13 +161,22 @@ class LayerDependencyDirectionTest {
     }
 
     private void assertNoPath(Path root, String disallowedPathSegment) throws IOException {
+        List<Path> walked;
         try (Stream<Path> files = Files.walk(root)) {
-            boolean hasDisallowedPath = files
-                    .anyMatch(path -> path.getNameCount() > 0
-                            && path.toString().contains("/" + disallowedPathSegment + "/"));
-
-            assertFalse(hasDisallowedPath,
-                    () -> "Path must not contain segment " + disallowedPathSegment + ": " + root);
+            walked = files.toList();
         }
+
+        // Same reason as assertNoImports: an existing but empty root makes anyMatch return false
+        // and the rule report success having looked at nothing. resolveExistingPath only covers
+        // the root being absent, not the root being hollow.
+        assertFalse(walked.stream().noneMatch(path -> path.toString().endsWith(".java")),
+                () -> "No java sources under " + root + "; the rule examined nothing");
+
+        boolean hasDisallowedPath = walked.stream()
+                .anyMatch(path -> path.getNameCount() > 0
+                        && path.toString().contains("/" + disallowedPathSegment + "/"));
+
+        assertFalse(hasDisallowedPath,
+                () -> "Path must not contain segment " + disallowedPathSegment + ": " + root);
     }
 }

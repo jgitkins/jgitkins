@@ -74,7 +74,7 @@ class RepositoryBoundedContextArchitectureTest {
                 "application/port/out/RepositoryMemberPersistencePort.java",
                 "application/service/RepositoryMemberService.java",
                 "application/validate/RepositoryMemberValidator.java",
-                "application/support/membership/RepositoryMembershipFactory.java",
+                "application/service/internal/membership/RepositoryMembershipFactory.java",
                 "adapter/out/persistence/RepositoryMemberPersistenceAdapter.java",
                 "adapter/out/persistence/support/RepositoryMemberDomainMapper.java");
 

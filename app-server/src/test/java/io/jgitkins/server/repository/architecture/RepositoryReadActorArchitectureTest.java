@@ -28,8 +28,12 @@ class RepositoryReadActorArchitectureTest {
 
     private static final Path REPOSITORY_ROOT = resolveRoot();
 
+    // application/support was a fourth entry until its contents moved to
+    // application/service/internal. It is not renamed here because application/service already
+    // walks that subtree; a root that resolves to nothing is the shape of a guard that passes
+    // because it examined no files, and this repo has three of those on record.
     private static final List<String> GUARDED_ROOTS = List.of(
-            "application/service", "application/validate", "application/policy", "application/support");
+            "application/service", "application/validate", "application/policy");
 
     /** Each forbidden token, with what its presence would mean. */
     private static final Map<String, String> FORBIDDEN = Map.of(
