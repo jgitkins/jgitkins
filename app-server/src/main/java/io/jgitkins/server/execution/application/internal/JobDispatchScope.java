@@ -1,4 +1,4 @@
-package io.jgitkins.server.execution.application.contract.internal;
+package io.jgitkins.server.execution.application.internal;
 
 /**
  * Job dispatch routing scope.

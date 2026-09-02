@@ -1,4 +1,4 @@
-package io.jgitkins.server.identity.access.application.contract.result;
+package io.jgitkins.server.identity.access.application.internal;
 
 import java.time.LocalDateTime;
 

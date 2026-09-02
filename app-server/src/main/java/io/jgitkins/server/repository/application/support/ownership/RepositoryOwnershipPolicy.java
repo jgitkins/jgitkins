@@ -1,7 +1,7 @@
 package io.jgitkins.server.repository.application.support.ownership;
 
 import io.jgitkins.server.repository.application.contract.command.RepositoryCreateCommand;
-import io.jgitkins.server.repository.application.contract.internal.RepositoryCreationPlan;
+import io.jgitkins.server.repository.application.internal.RepositoryCreationPlan;
 import io.jgitkins.server.repository.application.policy.RepositoryDeletionPolicy;
 import io.jgitkins.server.repository.application.validate.RepositoryValidator;
 import io.jgitkins.server.repository.domain.aggregate.Repository;

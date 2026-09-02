@@ -1,9 +1,9 @@
 package io.jgitkins.server.identity.access.application.service;
 
 import io.jgitkins.server.identity.access.application.contract.command.OAuthLoginCommand;
-import io.jgitkins.server.identity.access.application.contract.command.UserLoginOrSignUpCommand;
+import io.jgitkins.server.identity.access.application.internal.UserLoginOrSignUpCommand;
 import io.jgitkins.server.identity.access.application.contract.result.OAuthLoginResult;
-import io.jgitkins.server.identity.access.application.contract.result.VerifiedOAuthIdentity;
+import io.jgitkins.server.identity.access.application.internal.VerifiedOAuthIdentity;
 import io.jgitkins.server.identity.access.application.port.in.OAuthLoginUseCase;
 import io.jgitkins.server.identity.access.application.port.out.OAuthIdTokenVerifierPort;
 import io.jgitkins.server.identity.access.application.port.out.TokenIssuerPort;

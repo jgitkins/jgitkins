@@ -1,7 +1,7 @@
 package io.jgitkins.server.execution.application.support;
 
-import io.jgitkins.server.execution.application.contract.internal.JobDispatchScope;
-import io.jgitkins.server.execution.application.contract.internal.RunnerDispatchContext;
+import io.jgitkins.server.execution.application.internal.JobDispatchScope;
+import io.jgitkins.server.execution.application.internal.RunnerDispatchContext;
 import io.jgitkins.server.execution.domain.aggregate.Runner;
 import io.jgitkins.server.execution.domain.repository.RunnerRepository;
 import java.util.Optional;

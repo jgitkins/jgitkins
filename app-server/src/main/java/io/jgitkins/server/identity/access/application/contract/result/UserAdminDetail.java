@@ -2,6 +2,7 @@ package io.jgitkins.server.identity.access.application.contract.result;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import io.jgitkins.server.identity.access.application.internal.UserIdentitySummary;
 
 public record UserAdminDetail(
         Long id,

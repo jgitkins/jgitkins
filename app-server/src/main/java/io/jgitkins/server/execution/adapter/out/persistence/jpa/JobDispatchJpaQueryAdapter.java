@@ -2,8 +2,8 @@ package io.jgitkins.server.execution.adapter.out.persistence.jpa;
 
 import io.jgitkins.server.common.infrastructure.error.InfrastructureErrorCode;
 import io.jgitkins.server.common.infrastructure.exception.InfrastructureException;
-import io.jgitkins.server.execution.application.contract.internal.DispatchableJob;
-import io.jgitkins.server.execution.application.contract.internal.RunnerDispatchContext;
+import io.jgitkins.server.execution.application.internal.DispatchableJob;
+import io.jgitkins.server.execution.application.internal.RunnerDispatchContext;
 import io.jgitkins.server.execution.application.port.out.JobDispatchQueryPort;
 import io.jgitkins.server.execution.domain.aggregate.Job;
 import io.jgitkins.server.execution.domain.entity.JobHistory;

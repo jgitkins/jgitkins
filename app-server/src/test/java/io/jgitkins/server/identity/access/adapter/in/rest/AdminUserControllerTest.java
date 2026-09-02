@@ -10,7 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jgitkins.server.identity.access.application.contract.result.UserAdminDetail;
 import io.jgitkins.server.identity.access.application.contract.result.UserAdminSummary;
-import io.jgitkins.server.identity.access.application.contract.result.UserIdentitySummary;
+import io.jgitkins.server.identity.access.application.internal.UserIdentitySummary;
 import io.jgitkins.server.identity.access.application.port.in.AdminUserQueryUseCase;
 import io.jgitkins.server.identity.access.application.port.in.AdminUserUpdateUseCase;
 import io.jgitkins.server.support.ErrorStatusMappingTestConfig;

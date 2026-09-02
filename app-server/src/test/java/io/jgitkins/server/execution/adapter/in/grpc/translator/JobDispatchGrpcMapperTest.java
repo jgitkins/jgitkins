@@ -16,7 +16,7 @@ class JobDispatchGrpcMapperTest {
         assertThat(mapper.toDispatchCommand(JobDispatchRequest.newBuilder().setRunnerToken("token").build()).runnerToken()).isEqualTo("token");
         var command = mapper.toResultReportCommand(JobResultRequest.newBuilder().setRunnerToken("token").setJobId(7).setStatus(JobResultStatus.JOB_RESULT_FAILED).build());
         assertThat(command.jobId()).isEqualTo(7L);
-        assertThat(command.status()).isEqualTo(io.jgitkins.server.execution.application.contract.result.JobResultStatus.FAILED);
+        assertThat(command.status()).isEqualTo(io.jgitkins.server.execution.application.internal.JobResultStatus.FAILED);
     }
     @Test void payload_preservesNineWireFieldsAndOmitsInternalTimestamp() {
         JobDispatchResult result = new JobDispatchResult(1L, 2L, 3L, 4L, 5L, "commit", "main", 8L, LocalDateTime.now(), "url");

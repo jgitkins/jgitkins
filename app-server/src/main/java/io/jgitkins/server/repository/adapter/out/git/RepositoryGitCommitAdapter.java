@@ -6,7 +6,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import io.jgitkins.server.repository.application.contract.result.CommitFile;
+import io.jgitkins.server.repository.application.internal.CommitFile;
 import io.jgitkins.server.repository.application.contract.result.CommitHistory;
 import io.jgitkins.server.common.infrastructure.exception.CommitFailedException;
 import io.jgitkins.server.common.infrastructure.exception.CommitLoadFailedException;

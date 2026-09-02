@@ -1,6 +1,6 @@
 package io.jgitkins.server.execution.application.service;
 
-import io.jgitkins.server.execution.application.contract.result.RunnerExecutionConfig;
+import io.jgitkins.server.execution.application.internal.RunnerExecutionConfig;
 import io.jgitkins.server.execution.application.contract.command.RunnerRegisterCommand;
 import io.jgitkins.server.execution.application.contract.result.RunnerActivateResult;
 import io.jgitkins.server.execution.application.contract.result.RunnerRegistrationResult;

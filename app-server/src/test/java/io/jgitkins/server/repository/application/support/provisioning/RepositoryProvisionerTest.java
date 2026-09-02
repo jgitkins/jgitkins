@@ -6,7 +6,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import io.jgitkins.server.repository.application.contract.result.CommitFile;
+import io.jgitkins.server.repository.application.internal.CommitFile;
 import io.jgitkins.server.repository.application.port.out.CommitGitPort;
 import io.jgitkins.server.repository.application.port.out.RepositoryGitPort;
 import io.jgitkins.server.repository.application.support.CommitFilePreparer;

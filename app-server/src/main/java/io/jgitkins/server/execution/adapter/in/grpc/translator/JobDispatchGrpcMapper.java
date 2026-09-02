@@ -3,7 +3,7 @@ package io.jgitkins.server.execution.adapter.in.grpc.translator;
 import io.jgitkins.server.execution.application.contract.command.DispatchJobCommand;
 import io.jgitkins.server.execution.application.contract.command.JobResultReportCommand;
 import io.jgitkins.server.execution.application.contract.result.JobDispatchResult;
-import io.jgitkins.server.execution.application.contract.result.JobResultStatus;
+import io.jgitkins.server.execution.application.internal.JobResultStatus;
 import io.jgitkins.server.grpc.JobDispatchRequest;
 import io.jgitkins.server.grpc.JobPayload;
 import io.jgitkins.server.grpc.JobResultRequest;

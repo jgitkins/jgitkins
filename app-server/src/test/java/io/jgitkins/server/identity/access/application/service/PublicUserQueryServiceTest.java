@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import io.jgitkins.server.identity.access.application.contract.result.UserQueryResult;
+import io.jgitkins.server.identity.access.application.internal.UserQueryResult;
 import io.jgitkins.server.identity.access.application.contract.result.UserSummary;
 import io.jgitkins.server.identity.access.application.translator.UserApplicationMapper;
 import io.jgitkins.server.identity.access.application.port.out.UserQueryPort;

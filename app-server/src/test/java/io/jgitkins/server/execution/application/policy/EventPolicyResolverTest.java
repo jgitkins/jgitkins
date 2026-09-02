@@ -4,8 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 import io.jgitkins.server.shared.application.command.PushEventCommand;
-import io.jgitkins.server.execution.application.contract.result.JobPlan;
-import io.jgitkins.server.execution.application.contract.internal.PushJobPlanRequest;
+import io.jgitkins.server.execution.application.internal.JobPlan;
+import io.jgitkins.server.execution.application.internal.PushJobPlanRequest;
 import io.jgitkins.server.execution.application.policy.EventPolicyResolver;
 import io.jgitkins.server.execution.application.policy.PushJobCreationPolicy;
 import org.junit.jupiter.api.Test;

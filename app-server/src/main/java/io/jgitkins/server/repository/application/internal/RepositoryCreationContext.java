@@ -1,4 +1,4 @@
-package io.jgitkins.server.repository.application.contract.internal;
+package io.jgitkins.server.repository.application.internal;
 
 import io.jgitkins.server.shared.domain.model.vo.BranchName;
 import io.jgitkins.server.shared.domain.model.vo.RepositoryOwnerId;

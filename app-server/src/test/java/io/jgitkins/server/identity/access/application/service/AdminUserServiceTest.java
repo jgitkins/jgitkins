@@ -6,7 +6,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import io.jgitkins.server.identity.access.application.contract.result.UserQueryResult;
+import io.jgitkins.server.identity.access.application.internal.UserQueryResult;
 import io.jgitkins.server.identity.access.application.exception.AdminPrivilegeRequiredException;
 import io.jgitkins.server.shared.application.exception.UnauthenticatedException;
 import io.jgitkins.server.identity.access.application.contract.result.UserAdminDetail;

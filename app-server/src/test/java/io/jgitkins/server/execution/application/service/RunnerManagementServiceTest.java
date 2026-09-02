@@ -8,7 +8,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import io.jgitkins.server.shared.application.error.ApplicationErrorCode;
-import io.jgitkins.server.execution.application.contract.result.RunnerRuntimeConfig;
+import io.jgitkins.server.execution.application.internal.RunnerRuntimeConfig;
 import io.jgitkins.server.execution.application.contract.command.RunnerRegisterCommand;
 import io.jgitkins.server.execution.application.contract.result.RunnerActivateResult;
 import io.jgitkins.server.execution.application.contract.result.RunnerRegistrationResult;

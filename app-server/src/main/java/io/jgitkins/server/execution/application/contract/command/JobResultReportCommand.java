@@ -1,6 +1,6 @@
 package io.jgitkins.server.execution.application.contract.command;
 
-import io.jgitkins.server.execution.application.contract.result.JobResultStatus;
+import io.jgitkins.server.execution.application.internal.JobResultStatus;
 
 public record JobResultReportCommand(
         String runnerToken,

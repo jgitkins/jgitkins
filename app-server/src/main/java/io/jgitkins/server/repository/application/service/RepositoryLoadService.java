@@ -2,7 +2,7 @@ package io.jgitkins.server.repository.application.service;
 
 import io.jgitkins.server.repository.application.validate.RepositoryAccessValidator;
 import java.util.Optional;
-import io.jgitkins.server.repository.application.contract.internal.RepositoryKey;
+import io.jgitkins.server.repository.application.contract.result.RepositoryKey;
 import io.jgitkins.server.repository.application.contract.result.RepositoryResult;
 import io.jgitkins.server.repository.application.exception.RepositoryNotFoundException;
 import io.jgitkins.server.repository.application.port.in.RepositoryLoadUseCase;

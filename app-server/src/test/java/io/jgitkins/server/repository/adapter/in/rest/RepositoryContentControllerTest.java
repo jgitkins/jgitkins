@@ -6,7 +6,7 @@ import io.jgitkins.server.shared.application.exception.ApplicationException;
 import io.jgitkins.server.shared.application.error.ApplicationErrorCode;
 import io.jgitkins.server.repository.application.exception.RepositoryNotFoundException;
 import java.util.Optional;
-import io.jgitkins.server.repository.application.contract.internal.RepositoryKey;
+import io.jgitkins.server.repository.application.contract.result.RepositoryKey;
 import io.jgitkins.server.support.TestAuthentication;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;

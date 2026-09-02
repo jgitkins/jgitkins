@@ -1,7 +1,7 @@
 package io.jgitkins.server.repository.application.service;
 
 import io.jgitkins.server.repository.application.contract.result.FileEntry;
-import io.jgitkins.server.repository.application.contract.internal.RepositoryKey;
+import io.jgitkins.server.repository.application.contract.result.RepositoryKey;
 import io.jgitkins.server.repository.application.port.out.FileGitPort;
 import io.jgitkins.server.repository.application.contract.result.BranchSearchResult;
 import io.jgitkins.server.repository.application.contract.result.RepositoryOverviewResult;

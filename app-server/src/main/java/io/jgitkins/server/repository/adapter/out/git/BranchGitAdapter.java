@@ -5,7 +5,7 @@ import io.jgitkins.server.common.infrastructure.exception.BranchCreateFailedExce
 import io.jgitkins.server.common.infrastructure.exception.BranchDeleteFailedException;
 import io.jgitkins.server.common.infrastructure.exception.HeadReferenceResolveFailedException;
 import io.jgitkins.server.repository.infrastructure.support.RepositoryResolver;
-import io.jgitkins.server.repository.application.contract.internal.BranchCreationContext;
+import io.jgitkins.server.repository.application.internal.BranchCreationContext;
 import io.jgitkins.server.repository.application.port.out.BranchGitPort;
 import io.jgitkins.server.repository.application.port.out.exception.GitBranchRefAlreadyExistsException;
 import io.jgitkins.server.repository.application.port.out.exception.GitBranchRefMissingException;

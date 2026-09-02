@@ -8,7 +8,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import io.jgitkins.server.identity.access.application.contract.command.UserLoginOrSignUpCommand;
+import io.jgitkins.server.identity.access.application.internal.UserLoginOrSignUpCommand;
 import io.jgitkins.server.identity.access.application.port.out.UserIdentityPersistencePort;
 import io.jgitkins.server.identity.access.domain.repository.UserRepository;
 import io.jgitkins.server.identity.access.domain.aggregate.User;

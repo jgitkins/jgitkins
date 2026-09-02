@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 import io.jgitkins.server.repository.application.contract.result.BranchSearchResult;
-import io.jgitkins.server.repository.application.contract.internal.RepositoryKey;
+import io.jgitkins.server.repository.application.contract.result.RepositoryKey;
 import io.jgitkins.server.repository.application.exception.RepositoryNotFoundException;
 import io.jgitkins.server.repository.application.port.in.RepositoryLoadUseCase;
 import io.jgitkins.server.repository.application.port.out.BranchQueryPort;

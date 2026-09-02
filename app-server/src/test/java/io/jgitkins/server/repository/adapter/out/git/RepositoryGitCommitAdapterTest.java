@@ -3,7 +3,7 @@ package io.jgitkins.server.repository.adapter.out.git;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import io.jgitkins.server.repository.application.contract.result.CommitFile;
+import io.jgitkins.server.repository.application.internal.CommitFile;
 import io.jgitkins.server.repository.application.contract.result.CommitHistory;
 import io.jgitkins.server.repository.infrastructure.support.RepositoryResolver;
 import io.jgitkins.server.repository.application.port.out.exception.GitCommitObjectMissingException;

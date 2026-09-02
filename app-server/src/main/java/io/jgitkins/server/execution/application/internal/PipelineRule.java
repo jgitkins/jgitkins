@@ -1,4 +1,4 @@
-package io.jgitkins.server.execution.application.contract.pipeline;
+package io.jgitkins.server.execution.application.internal;
 
 import java.util.List;
 import lombok.Getter;

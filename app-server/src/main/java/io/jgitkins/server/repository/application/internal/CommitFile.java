@@ -1,4 +1,4 @@
-package io.jgitkins.server.repository.application.contract.result;
+package io.jgitkins.server.repository.application.internal;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

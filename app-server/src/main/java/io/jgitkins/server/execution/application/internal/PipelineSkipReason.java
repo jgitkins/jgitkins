@@ -1,4 +1,4 @@
-package io.jgitkins.server.execution.application.contract.result;
+package io.jgitkins.server.execution.application.internal;
 
 public enum PipelineSkipReason {
     SKIPPED_NO_RULE,

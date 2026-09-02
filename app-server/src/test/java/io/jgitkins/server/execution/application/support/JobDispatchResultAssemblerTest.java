@@ -2,9 +2,9 @@ package io.jgitkins.server.execution.application.support;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.jgitkins.server.execution.application.contract.internal.DispatchableJob;
-import io.jgitkins.server.execution.application.contract.internal.JobDispatchScope;
-import io.jgitkins.server.execution.application.contract.internal.RunnerDispatchContext;
+import io.jgitkins.server.execution.application.internal.DispatchableJob;
+import io.jgitkins.server.execution.application.internal.JobDispatchScope;
+import io.jgitkins.server.execution.application.internal.RunnerDispatchContext;
 import io.jgitkins.server.execution.domain.aggregate.Job;
 import io.jgitkins.server.execution.domain.vo.ExecutionActorId;
 import io.jgitkins.server.execution.domain.vo.ExecutionRepositoryId;

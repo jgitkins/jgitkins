@@ -1,13 +1,13 @@
 package io.jgitkins.server.execution.application.policy;
 
-import static io.jgitkins.server.execution.application.contract.result.PipelineSkipReason.SKIPPED_NO_RULE;
-import static io.jgitkins.server.execution.application.contract.result.PipelineSkipReason.SKIPPED_PIPELINE_NOT_FOUND;
+import static io.jgitkins.server.execution.application.internal.PipelineSkipReason.SKIPPED_NO_RULE;
+import static io.jgitkins.server.execution.application.internal.PipelineSkipReason.SKIPPED_PIPELINE_NOT_FOUND;
 
-import io.jgitkins.server.execution.application.contract.pipeline.PipelineConfig;
-import io.jgitkins.server.execution.application.contract.pipeline.PipelineRule;
-import io.jgitkins.server.execution.application.contract.result.JobPlan;
-import io.jgitkins.server.execution.application.contract.result.PipelineSkipReason;
-import io.jgitkins.server.execution.application.contract.internal.PushJobPlanRequest;
+import io.jgitkins.server.execution.application.internal.PipelineConfig;
+import io.jgitkins.server.execution.application.internal.PipelineRule;
+import io.jgitkins.server.execution.application.internal.JobPlan;
+import io.jgitkins.server.execution.application.internal.PipelineSkipReason;
+import io.jgitkins.server.execution.application.internal.PushJobPlanRequest;
 import io.jgitkins.server.execution.application.port.out.PipelineConfigPort;
 import io.jgitkins.server.execution.application.port.out.PipelineFileLookupPort;
 import lombok.RequiredArgsConstructor;

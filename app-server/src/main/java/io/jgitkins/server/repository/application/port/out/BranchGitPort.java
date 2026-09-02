@@ -1,6 +1,6 @@
 package io.jgitkins.server.repository.application.port.out;
 
-import io.jgitkins.server.repository.application.contract.internal.BranchCreationContext;
+import io.jgitkins.server.repository.application.internal.BranchCreationContext;
 
 public interface BranchGitPort {
     void createBranch(BranchCreationContext context);

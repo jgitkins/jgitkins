@@ -1,6 +1,6 @@
 package io.jgitkins.server.repository.application.service;
 
-import io.jgitkins.server.repository.application.contract.result.CommitFile;
+import io.jgitkins.server.repository.application.internal.CommitFile;
 import io.jgitkins.server.repository.application.contract.result.FileEntry;
 import io.jgitkins.server.repository.application.contract.command.FileUploadInfo;
 import io.jgitkins.server.repository.application.port.in.FileLoadUseCase;

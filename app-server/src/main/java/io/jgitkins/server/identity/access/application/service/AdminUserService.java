@@ -2,13 +2,13 @@ package io.jgitkins.server.identity.access.application.service;
 
 import io.jgitkins.server.identity.access.application.contract.result.UserAdminDetail;
 import io.jgitkins.server.identity.access.application.contract.result.UserAdminSummary;
-import io.jgitkins.server.identity.access.application.contract.result.UserIdentitySummary;
+import io.jgitkins.server.identity.access.application.internal.UserIdentitySummary;
 import io.jgitkins.server.identity.access.application.translator.UserApplicationMapper;
 import io.jgitkins.server.identity.access.application.port.in.AdminUserQueryUseCase;
 import io.jgitkins.server.identity.access.application.port.in.AdminUserUpdateUseCase;
 import io.jgitkins.server.identity.access.application.port.out.UserIdentityPersistencePort;
 import io.jgitkins.server.identity.access.application.port.out.UserQueryPort;
-import io.jgitkins.server.identity.access.application.contract.result.UserQueryResult;
+import io.jgitkins.server.identity.access.application.internal.UserQueryResult;
 import io.jgitkins.server.identity.access.domain.aggregate.User;
 import io.jgitkins.server.identity.access.domain.repository.UserRepository;
 import io.jgitkins.server.identity.access.application.exception.AdminPrivilegeRequiredException;

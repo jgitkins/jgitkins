@@ -1,6 +1,6 @@
-package io.jgitkins.server.identity.access.application.contract.command;
+package io.jgitkins.server.identity.access.application.internal;
 
-public record UserLoginOrSignUpCommand(
+public record UserIdentitySummary(
         String providerName,
         String providerSub,
         String email,

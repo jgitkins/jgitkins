@@ -1,4 +1,4 @@
-package io.jgitkins.server.identity.access.application.contract.result;
+package io.jgitkins.server.identity.access.application.internal;
 
 /**
  * An identity read out of a token whose signature, issuer, audience and expiry we checked.

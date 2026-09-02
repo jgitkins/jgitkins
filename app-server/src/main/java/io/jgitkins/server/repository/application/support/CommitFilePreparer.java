@@ -2,7 +2,7 @@ package io.jgitkins.server.repository.application.support;
 
 import io.jgitkins.server.common.infrastructure.exception.FileReadFailedException;
 import io.jgitkins.server.repository.application.contract.command.FileUploadInfo;
-import io.jgitkins.server.repository.application.contract.result.CommitFile;
+import io.jgitkins.server.repository.application.internal.CommitFile;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;

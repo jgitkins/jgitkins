@@ -3,7 +3,7 @@ package io.jgitkins.server.identity.access.application.service;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import io.jgitkins.server.identity.access.application.contract.result.JwtAuthenticationResult;
+import io.jgitkins.server.identity.access.application.internal.JwtAuthenticationResult;
 import io.jgitkins.server.identity.access.application.port.out.JwtTokenVerifierPort;
 import java.util.List;
 import java.util.Optional;

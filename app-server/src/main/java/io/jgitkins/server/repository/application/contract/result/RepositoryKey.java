@@ -1,4 +1,4 @@
-package io.jgitkins.server.repository.application.contract.internal;
+package io.jgitkins.server.repository.application.contract.result;
 
 import org.springframework.util.StringUtils;
 

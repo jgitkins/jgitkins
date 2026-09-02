@@ -52,6 +52,15 @@ class CrossContextSimpleNameCollisionTest {
             "collaboration", "change/review", "identity/access", "repository", "execution",
             "shared", "common");
 
+    /**
+     * File names that declare no type, so two contexts holding one is not a collision. There is
+     * nothing for an unqualified import to pick between: {@code package-info} carries package
+     * annotations and javadoc, {@code module-info} the module declaration, and neither is nameable
+     * from another file. Before the first {@code package-info.java} landed this repo had none, so
+     * the rule had never met the case and reported all three contexts as colliding on the name.
+     */
+    private static final List<String> DECLARES_NO_TYPE = List.of("package-info", "module-info");
+
     @Test
     void noTwoContextsDeclareTheSameSimpleName() throws IOException {
         List<Path> sources = mainSources();
@@ -88,6 +97,31 @@ class CrossContextSimpleNameCollisionTest {
         assertThat(collisions.get("OwnerId")).containsExactly("collaboration", "repository");
     }
 
+    /**
+     * The exclusion is narrow on purpose. It must swallow {@code package-info} in every context and
+     * nothing else, so this feeds the same call both at once: three package-infos that must not
+     * collide, and a real type beside them that must.
+     */
+    @Test
+    void filesDeclaringNoTypeAreNotCollisions_butRealTypesBesideThemStillAre() {
+        Path root = Path.of("io/jgitkins/server");
+        List<Path> synthetic = List.of(
+                root.resolve("execution/application/internal/package-info.java"),
+                root.resolve("identity/access/application/internal/package-info.java"),
+                root.resolve("repository/application/internal/package-info.java"),
+                root.resolve("execution/application/internal/JobPlan.java"),
+                root.resolve("repository/application/internal/JobPlan.java"));
+
+        Map<String, List<String>> collisions = collisionsIn(root, synthetic);
+
+        assertThat(collisions)
+                .as("package-info declares no type, so no import can pick between two of them; a "
+                        + "real name in the same input must still be caught, or the exclusion is "
+                        + "silently swallowing more than it should")
+                .containsOnlyKeys("JobPlan");
+        assertThat(collisions.get("JobPlan")).containsExactly("execution", "repository");
+    }
+
     private static List<Path> mainSources() throws IOException {
         Path root = ArchitectureScanner.mainRoot();
         if (!Files.isDirectory(root)) {
@@ -107,6 +141,9 @@ class CrossContextSimpleNameCollisionTest {
             String relative = root.relativize(source).toString();
             contextOf(relative).ifPresent(context -> {
                 String simpleName = source.getFileName().toString().replace(".java", "");
+                if (DECLARES_NO_TYPE.contains(simpleName)) {
+                    return;
+                }
                 byName.computeIfAbsent(simpleName, key -> new TreeSet<>()).add(context);
             });
         }

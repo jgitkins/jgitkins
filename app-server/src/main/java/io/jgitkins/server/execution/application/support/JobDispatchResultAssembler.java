@@ -1,7 +1,7 @@
 package io.jgitkins.server.execution.application.support;
 
-import io.jgitkins.server.execution.application.contract.internal.DispatchableJob;
-import io.jgitkins.server.execution.application.contract.internal.RunnerDispatchContext;
+import io.jgitkins.server.execution.application.internal.DispatchableJob;
+import io.jgitkins.server.execution.application.internal.RunnerDispatchContext;
 import io.jgitkins.server.execution.application.contract.result.JobDispatchResult;
 import io.jgitkins.server.execution.domain.aggregate.Job;
 import java.time.LocalDateTime;

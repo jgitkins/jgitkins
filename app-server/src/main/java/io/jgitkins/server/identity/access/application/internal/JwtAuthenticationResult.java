@@ -1,4 +1,4 @@
-package io.jgitkins.server.identity.access.application.contract.result;
+package io.jgitkins.server.identity.access.application.internal;
 
 import java.util.List;
 import java.util.Objects;

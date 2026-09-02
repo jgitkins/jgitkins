@@ -1,4 +1,4 @@
-package io.jgitkins.server.execution.application.contract.result;
+package io.jgitkins.server.execution.application.internal;
 
 public record JobCreationDecision(
         boolean creatable,

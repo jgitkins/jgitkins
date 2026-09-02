@@ -1,6 +1,6 @@
 package io.jgitkins.server.identity.access.application.port.out;
 
-import io.jgitkins.server.identity.access.application.contract.result.VerifiedOAuthIdentity;
+import io.jgitkins.server.identity.access.application.internal.VerifiedOAuthIdentity;
 
 /**
  * Turns a provider name and a raw id token into an identity the application is allowed to believe.

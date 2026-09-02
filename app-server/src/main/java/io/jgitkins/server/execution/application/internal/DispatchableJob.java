@@ -1,4 +1,4 @@
-package io.jgitkins.server.execution.application.contract.internal;
+package io.jgitkins.server.execution.application.internal;
 
 import io.jgitkins.server.execution.domain.aggregate.Job;
 

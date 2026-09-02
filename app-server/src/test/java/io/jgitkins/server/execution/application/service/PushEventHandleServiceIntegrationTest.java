@@ -6,8 +6,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import io.jgitkins.server.shared.application.command.PushEventCommand;
-import io.jgitkins.server.execution.application.contract.result.JobCreationDecision;
-import io.jgitkins.server.execution.application.contract.result.JobPlan;
+import io.jgitkins.server.execution.application.internal.JobCreationDecision;
+import io.jgitkins.server.execution.application.internal.JobPlan;
 import io.jgitkins.server.execution.application.port.in.JobCreateUseCase;
 import io.jgitkins.server.execution.application.policy.PushJobCreationPolicy;
 import io.jgitkins.server.shared.application.support.change.BranchChangeRecorder;

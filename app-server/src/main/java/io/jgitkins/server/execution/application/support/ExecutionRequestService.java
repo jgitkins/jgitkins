@@ -2,7 +2,7 @@ package io.jgitkins.server.execution.application.support;
 
 import io.jgitkins.server.execution.application.contract.command.JobCreateCommand;
 import io.jgitkins.server.shared.application.command.PushEventCommand;
-import io.jgitkins.server.execution.application.contract.result.JobPlan;
+import io.jgitkins.server.execution.application.internal.JobPlan;
 import io.jgitkins.server.execution.application.port.in.JobCreateUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

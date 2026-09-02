@@ -6,9 +6,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import io.jgitkins.server.identity.access.application.contract.command.OAuthLoginCommand;
-import io.jgitkins.server.identity.access.application.contract.command.UserLoginOrSignUpCommand;
+import io.jgitkins.server.identity.access.application.internal.UserLoginOrSignUpCommand;
 import io.jgitkins.server.identity.access.application.contract.result.OAuthLoginResult;
-import io.jgitkins.server.identity.access.application.contract.result.VerifiedOAuthIdentity;
+import io.jgitkins.server.identity.access.application.internal.VerifiedOAuthIdentity;
 import io.jgitkins.server.identity.access.application.port.out.OAuthIdTokenVerifierPort;
 import io.jgitkins.server.identity.access.application.port.out.TokenIssuerPort;
 import io.jgitkins.server.identity.access.application.support.UserService;

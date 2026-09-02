@@ -1,4 +1,4 @@
-package io.jgitkins.server.repository.application.contract.internal;
+package io.jgitkins.server.repository.application.internal;
 
 import io.jgitkins.server.repository.application.contract.command.BranchCreateCommand;
 import io.jgitkins.server.repository.domain.aggregate.Repository;
