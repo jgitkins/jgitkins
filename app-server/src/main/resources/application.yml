@@ -56,6 +56,34 @@ jgitkins:
       secret: ${JGITKINS_JWT_SECRET}
       ttl-seconds: ${JGITKINS_JWT_TTL:900}
 
+  # Persistence provider per capability slice. Absent means MyBatis, so every value here is a
+  # deliberate cutover: these seven lines are what makes the JPA adapters the runtime path rather
+  # than code that exists and is never constructed.
+  #
+  # Task 2.77 froze the MyBatis assets as RETAINED_BASELINE / DEFERRED_UNTIL_REFERENCE_ZERO and
+  # authorised no removal, on the reasoning that the MyBatis adapter's construction IS the rollback.
+  # That reasoning holds only while these keys are absent. Setting them supersedes it: the rollback
+  # for a bad JPA slice is now flipping one line back to mybatis, and it stays available until the
+  # MyBatis adapters are deleted at reference-zero.
+  #
+  # These are runtime properties. A -D flag at build time does not reach them.
+  persistence:
+    app-server:
+      change-review-pull-request-reference:
+        implementation: jpa
+      organize-organize-member-reference:
+        implementation: jpa
+      execution-job-dispatch-query-reference:
+        implementation: jpa
+      execution-job-reference:
+        implementation: jpa
+      execution-runner-reference:
+        implementation: jpa
+      identity-access-reference:
+        implementation: jpa
+      repository-reference:
+        implementation: jpa
+
 ---
 # OAuth
 #

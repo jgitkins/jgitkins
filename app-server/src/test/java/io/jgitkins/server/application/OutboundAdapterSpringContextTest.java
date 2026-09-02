@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import io.jgitkins.server.JGitkinsServerApplication;
 import io.jgitkins.server.identity.access.adapter.in.security.PatAuthenticationProvider;
-import io.jgitkins.server.collaboration.adapter.out.persistence.OrganizePersistenceAdapter;
+import io.jgitkins.server.collaboration.adapter.out.persistence.OrganizePersistence;
 import io.jgitkins.server.execution.application.service.JobDispatchService;
 import io.jgitkins.server.repository.application.service.RepositoryOverviewService;
 import io.jgitkins.server.repository.application.service.internal.GitRepositoryAccessService;
@@ -94,7 +94,11 @@ public class OutboundAdapterSpringContextTest {
         assertThat(applicationContext.getBean(RepositoryOverviewService.class)).isNotNull();
         assertThat(applicationContext.getBean(RepositoryAccessValidator.class)).isNotNull();
         assertThat(applicationContext.getBean(JobDispatchService.class)).isNotNull();
-        assertThat(applicationContext.getBean(OrganizePersistenceAdapter.class)).isNotNull();
+        // The port, not either implementation. application.yml selects JPA for this slice, so
+        // asserting OrganizePersistenceAdapter asserted a bean the selector no longer builds --
+        // and asserting OrganizeJpaPersistenceAdapter would break again on a rollback to mybatis.
+        // What this test is for is that the moved outbound adapter is wired at all.
+        assertThat(applicationContext.getBean(OrganizePersistence.class)).isNotNull();
         assertThat(applicationContext.getBean(OrganizationMembershipAclAdapter.class)).isNotNull();
 
         assertThat(applicationContext.getBean(RepositoryCloneUrlAclAdapter.class)).isNotNull();

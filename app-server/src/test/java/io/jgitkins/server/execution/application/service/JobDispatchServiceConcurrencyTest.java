@@ -58,6 +58,13 @@ import org.springframework.jdbc.core.JdbcTemplate;
         "spring.datasource.hikari.maximum-pool-size=8",
         "spring.datasource.hikari.transaction-isolation=TRANSACTION_READ_COMMITTED",
         "spring.sql.init.mode=never",
+        // Pinned to MyBatis on purpose. application.yml now selects JPA for this slice, and the
+        // verify below names historyMapper.selectLatestHistoryForUpdate, so without this pin the
+        // test fails on a mock that is no longer constructed. MyBatis is still the rollback for
+        // this slice until reference-zero, so its concurrency guarantee has to stay tested. Delete
+        // this test with the MyBatis adapter, not before: the JPA equivalent is already
+        // ExecutionJpaTransactionTest#preservesCompareBeforeAppend.
+        "jgitkins.persistence.app-server.execution-job-reference.implementation=mybatis",
         "server.port=18081", "grpc.server.port=19091",
         "REST_PORT=8080", "GRPC_PORT=9090", "BARE_PATH=/tmp", "SERVICE_HOST=localhost",
         "REST_SCHEME=http", "JGITKINS_JWT_SECRET=test-secret"

@@ -26,7 +26,23 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 
-@SpringBootTest(classes = JGitkinsServerApplication.class)
+/**
+ * Pinned to MyBatis. It injects {@link UserPersistenceAdapter} and {@link UserEntityMbgMapper}
+ * directly, so it tests that provider's activation behaviour rather than the port's, and
+ * application.yml now selects JPA for the identity-access slice.
+ *
+ * <p>Keeping it is not inertia: MyBatis stays the rollback for this slice until reference-zero, so
+ * its behaviour has to stay tested until it is deleted. But it should not be deleted blind either.
+ * Three behaviours live here and the JPA side has no proven counterpart for them:
+ * {@code activatesPendingUserThroughRealPersistenceAdapter},
+ * {@code normalizesLegacyPendingUsernameBeforeActivation} and
+ * {@code insertsSeparateUserWithGeneratedId}. The JPA reference slice covers
+ * {@code persistsReferenceSliceAgainstMariaDb} and nothing about legacy username normalisation.
+ * Whoever removes MyBatis owes those three a JPA equivalent first; that is the whole cost of this
+ * file, written down so it is not discovered by its absence.
+ */
+@SpringBootTest(classes = JGitkinsServerApplication.class, properties =
+        "jgitkins.persistence.app-server.identity-access-reference.implementation=mybatis")
 @ActiveProfiles("identity-access-integration")
 @Transactional
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
