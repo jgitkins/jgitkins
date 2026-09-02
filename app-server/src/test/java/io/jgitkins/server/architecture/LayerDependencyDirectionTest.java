@@ -29,16 +29,25 @@ import org.junit.jupiter.api.Test;
  *   app-web       --X-->  core.web.api.response.ApiResponse       (webMvcControllers_...)
  *   application   --X-->  infrastructure                          (repositoryApplication..., identityAccess...)
  *   adapter/in    --X-->  collaboration.infrastructure            (collaborationInboundAdapters_...)
+ *   (collaboration.infrastructure itself no longer exists; the rule is now a ratchet)
  *   adapter/out/git --X-->  application.exception                 (repositoryGitAdapters_...)
  *   core-persistence  must own no model/entity/adapter package    (corePersistence_...)
  * </pre>
  *
- * <p>Two of these forbid {@code io.jgitkins.server.infrastructure.}, a top-level package that task
- * 2.67 emptied and that no longer exists. They are ratchets rather than live guards: cheap to keep,
- * and they fail loudly if the package is recreated. {@code resolveExistingPath} throws when none of
- * its candidates exist, so a rule whose scan root is renamed away fails instead of silently passing
- * over nothing -- the failure mode that let a guard in this repo scan a renamed-away package and
- * stay green.
+ * <p>Three of these forbid a package that no longer exists:
+ * {@code io.jgitkins.server.infrastructure.}, the top-level location task 2.67 emptied, and
+ * {@code collaboration.infrastructure}, which went with the last of the per-context infrastructure
+ * packages. They are ratchets rather than live guards: cheap to keep, and they fail loudly if the
+ * package is recreated.
+ *
+ * <p>A fourth rule was deleted rather than kept as a ratchet, because the difference matters. A rule
+ * that forbids an import can outlive its target -- nothing can import what does not exist, and the
+ * rule starts mattering again the moment someone recreates it. A rule whose SCAN ROOT is gone has
+ * nothing to walk. {@code collaborationInfrastructureSources_doNotImportTopLevelInfrastructurePersistencePackages}
+ * was the second kind: {@code resolveExistingPath} threw for it as designed, which is the whole
+ * point of that helper -- a guard whose subject is renamed away must fail rather than silently pass
+ * over nothing, the failure mode that let a guard in this repo scan a renamed-away package and stay
+ * green.
  */
 class LayerDependencyDirectionTest {
 
@@ -56,14 +65,6 @@ class LayerDependencyDirectionTest {
                 "src/main/java/io/jgitkins/server/repository/application",
                 "app-server/src/main/java/io/jgitkins/server/repository/application");
         assertNoInfrastructureImports(repositoryApplicationRoot);
-    }
-
-    @Test
-    void collaborationInfrastructureSources_doNotImportTopLevelInfrastructurePersistencePackages() throws IOException {
-        Path collaborationInfrastructureRoot = resolveExistingPath(
-                "src/main/java/io/jgitkins/server/collaboration/infrastructure",
-                "app-server/src/main/java/io/jgitkins/server/collaboration/infrastructure");
-        assertNoImports(collaborationInfrastructureRoot, "import io.jgitkins.server.infrastructure.persistence.");
     }
 
     @Test

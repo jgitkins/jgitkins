@@ -2,7 +2,7 @@ package io.jgitkins.server.identity.access.adapter.out.security;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import io.jgitkins.server.identity.access.infrastructure.config.security.JwtProperties;
+import io.jgitkins.server.identity.access.adapter.out.security.JwtProperties;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;

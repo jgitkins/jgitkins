@@ -33,16 +33,28 @@ class InfrastructureAllowlistArchitectureTest {
     private static final List<String> BOUNDED_CONTEXTS =
             List.of("change/review", "collaboration", "execution", "identity/access", "repository");
 
-    /** Leaf directories a bounded context may keep under {@code infrastructure}, with the reason. */
-    private static final Map<String, String> ALLOWED_LEAVES = new LinkedHashMap<>(Map.of(
-            "config",
-            "composition roots and Spring configuration -- this is what infrastructure is for",
-            "support",
-            "EXCEPTION, repository context only: RepositoryFileSystemHelper and RepositoryResolver are "
-                    + "filesystem and git-path helpers, not persistence. They are infrastructural but "
-                    + "are not configuration, so the rule as written does not cover them. Moving them "
-                    + "is a separate decision about where filesystem access belongs and is deliberately "
-                    + "not made by this task"));
+    /**
+     * Leaf directories a bounded context may keep under {@code infrastructure}: none.
+     *
+     * <p>It was {@code config}, for composition roots and Spring configuration, plus a
+     * repository-context exception for {@code support}, holding {@code RepositoryFileSystemHelper}
+     * and {@code RepositoryResolver} -- filesystem and git-path helpers that are infrastructural
+     * without being configuration, so the rule as written did not cover them. That exception said the
+     * decision about where filesystem access belongs was deliberately not being made yet.
+     *
+     * <p>It has been made. Both helpers are in {@code repository/adapter/out/git}, beside the four
+     * adapters that were their only callers, and {@code config} emptied on its own: the seven
+     * capability selectors went with MyBatis, and the four remaining classes each moved next to their
+     * single consumer -- two {@code @ConfigurationProperties} beside the adapters that read them, two
+     * {@code @Configuration} classes replaced by {@code @Component} on what they constructed. No new
+     * package was invented for any of them.
+     *
+     * <p>Empty means the assertion is now absolute rather than an allowlist, which is a stronger rule
+     * and a cheaper one to read: a bounded context that grows an {@code infrastructure} package again
+     * fails here, and the argument for what it should hold instead has to be made in the review
+     * rather than in a map entry.
+     */
+    private static final Map<String, String> ALLOWED_LEAVES = Map.of();
 
     /**
      * {@code common} was outside this scan entirely, which is how {@code
@@ -156,8 +168,10 @@ class InfrastructureAllowlistArchitectureTest {
                         // construct them; that is the composition root doing its job. The test targets
                         // classes that *use* persistence APIs, which is what an import of the API itself
                         // indicates.
+                        // The SelectorConfiguration exclusion is gone with those classes: they named
+                        // both providers' types in order to construct one, which was the composition
+                        // root doing its job. JpaPersistenceConfiguration is the last such class.
                         if (source.contains("import " + forbidden)
-                                && !name.endsWith("SelectorConfiguration.java")
                                 && !name.equals("JpaPersistenceConfiguration.java")) {
                             violations.add(file + " imports " + forbidden
                                     + " -- persistence APIs belong to the outbound adapter, or to a "

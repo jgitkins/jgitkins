@@ -1,4 +1,4 @@
-package io.jgitkins.server.execution.infrastructure.config;
+package io.jgitkins.server.execution.adapter.out.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;

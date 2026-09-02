@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.jgitkins.server.repository.application.contract.external.CommitFile;
 import io.jgitkins.server.repository.application.contract.CommitHistory;
-import io.jgitkins.server.repository.infrastructure.support.RepositoryResolver;
+import io.jgitkins.server.repository.adapter.out.git.RepositoryResolver;
 import io.jgitkins.server.repository.application.port.out.exception.GitCommitObjectMissingException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;

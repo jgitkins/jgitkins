@@ -5,7 +5,7 @@ import io.jgitkins.server.execution.application.contract.internal.PipelineRule;
 import io.jgitkins.server.execution.application.port.out.PipelineConfigPort;
 import io.jgitkins.server.common.infrastructure.exception.FileLoadFailedException;
 import io.jgitkins.server.common.infrastructure.exception.InfrastructureException;
-import io.jgitkins.server.repository.infrastructure.support.RepositoryResolver;
+import io.jgitkins.server.repository.adapter.out.git.RepositoryResolver;
 import lombok.RequiredArgsConstructor;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;

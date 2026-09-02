@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.jgitkins.server.repository.application.contract.external.CommitFile;
 import io.jgitkins.server.shared.domain.model.vo.BranchName;
-import io.jgitkins.server.repository.infrastructure.support.RepositoryResolver;
+import io.jgitkins.server.repository.adapter.out.git.RepositoryResolver;
 import io.jgitkins.server.repository.application.contract.BranchCreateCommand;
 import io.jgitkins.server.repository.application.contract.external.BranchCreationContext;
 import io.jgitkins.server.repository.application.port.out.exception.GitBranchRefAlreadyExistsException;

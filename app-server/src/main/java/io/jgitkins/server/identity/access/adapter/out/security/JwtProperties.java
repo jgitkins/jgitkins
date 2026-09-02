@@ -1,4 +1,4 @@
-package io.jgitkins.server.identity.access.infrastructure.config.security;
+package io.jgitkins.server.identity.access.adapter.out.security;
 
 import lombok.Getter;
 import lombok.Setter;

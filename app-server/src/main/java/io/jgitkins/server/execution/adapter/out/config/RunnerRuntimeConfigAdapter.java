@@ -1,7 +1,7 @@
 package io.jgitkins.server.execution.adapter.out.config;
 
 import io.jgitkins.server.execution.application.port.out.RuntimeConfigPort;
-import io.jgitkins.server.execution.infrastructure.config.RunnerRuntimeProperties;
+import io.jgitkins.server.execution.adapter.out.config.RunnerRuntimeProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

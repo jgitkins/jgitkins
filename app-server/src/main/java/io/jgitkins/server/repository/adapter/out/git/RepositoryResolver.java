@@ -1,4 +1,4 @@
-package io.jgitkins.server.repository.infrastructure.support;
+package io.jgitkins.server.repository.adapter.out.git;
 
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryBuilder;

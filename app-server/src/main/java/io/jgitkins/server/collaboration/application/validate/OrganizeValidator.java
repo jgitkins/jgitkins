@@ -8,6 +8,8 @@ import io.jgitkins.server.collaboration.domain.aggregate.Organize;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeId;
 import io.jgitkins.server.collaboration.domain.vo.OrganizeName;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
+@Component
 @RequiredArgsConstructor
 public class OrganizeValidator {
 

@@ -50,7 +50,7 @@ import io.jgitkins.server.identity.access.adapter.in.security.JwtAuthenticationF
 import io.jgitkins.server.identity.access.adapter.out.security.JwtTokenIssuerAdapter;
 import io.jgitkins.server.identity.access.adapter.out.security.JwtTokenVerifierAdapter;
 import io.jgitkins.server.identity.access.application.service.JwtAuthService;
-import io.jgitkins.server.identity.access.infrastructure.config.security.JwtProperties;
+import io.jgitkins.server.identity.access.adapter.out.security.JwtProperties;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.nio.file.Files;

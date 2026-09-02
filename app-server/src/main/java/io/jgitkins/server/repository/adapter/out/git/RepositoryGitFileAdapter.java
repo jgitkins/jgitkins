@@ -4,7 +4,7 @@ import io.jgitkins.server.repository.application.contract.FileEntry;
 import io.jgitkins.server.repository.application.port.out.FileGitPort;
 import io.jgitkins.server.common.infrastructure.exception.FileLoadFailedException;
 import io.jgitkins.server.repository.application.port.out.exception.GitBranchRefMissingException;
-import io.jgitkins.server.repository.infrastructure.support.RepositoryResolver;
+import io.jgitkins.server.repository.adapter.out.git.RepositoryResolver;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;

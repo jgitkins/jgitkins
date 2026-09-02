@@ -10,7 +10,7 @@ import io.jgitkins.server.repository.application.contract.external.CommitFile;
 import io.jgitkins.server.repository.application.contract.CommitHistory;
 import io.jgitkins.server.common.infrastructure.exception.CommitFailedException;
 import io.jgitkins.server.common.infrastructure.exception.CommitLoadFailedException;
-import io.jgitkins.server.repository.infrastructure.support.RepositoryResolver;
+import io.jgitkins.server.repository.adapter.out.git.RepositoryResolver;
 import io.jgitkins.server.repository.application.port.out.CommitGitPort;
 import io.jgitkins.server.repository.application.port.out.exception.GitCommitObjectMissingException;
 import lombok.RequiredArgsConstructor;
