@@ -70,6 +70,26 @@ allowlist 자체가 필요 없어진다 — 2.107 이 스캔으로 바꾸려는 
 뒤가 자연스럽다. 2.107 이 컨트롤러 목록을 하나로 모은 뒤여야 이전 대상이 명확해진다.
 설계 근거: `~/.gstack/projects/jgitkins/hrk-refactor-package-naming-design-20260901-dto-to-contract-cluster.md`.
 
+**2026-09-02 — 블로커는 해소됐고, 그래도 아직 아니다.** 위에 적힌 보류 사유가 지목한
+2.131 은 랜딩됐다. 다만 사유의 무게는 태스크 번호가 아니라 "구조 변경과 동작 변경을 동시에
+하지 말 것" 이라는 규칙 쪽에 있고, 그 규칙은 그 뒤에 온 패키지 이동에도 똑같이 적용됐다 —
+`dto → contract` / `mapper → translator` (파일 317개), 그리고 유스케이스가 노출하지 않는 타입
+22개를 `application/internal` 로 뺀 이동. 둘 다 ArchUnit 없이 갔다.
+
+**대상 목록이 그 사이 줄었다.** `ArchitecturePackageConventionTest`(574 LOC, 27 @Test) 는
+삭제됐고 `InfrastructureOwnershipArchitectureTest` 는 389 → 222 줄로 줄었다. 근거는 측정이다:
+하드코딩 결합 119개 중 116개가 그 두 파일에 있었고, 아키텍처 테스트를 건드린 커밋 33개 중
+23개(70%)가 가드가 무언가를 잡은 게 아니라 구조 변경을 허용하려 고친 refactor 였다. 그래서
+이관 후보는 6개가 아니라 규칙 기반으로 남은 것들 + 새로 뽑은
+`architecture/LayerDependencyDirectionTest`(8) 와 `architecture/ApiResponseEnvelopeContractTest`(1) 다.
+
+**ArchUnit 을 고르는 이유는 하나 더 늘었다.** 이 저장소에는 가드가 대상을 못 찾고 조용히
+통과한 사례가 세 건 기록돼 있다 — 한 줄로 쓴 `@RestController` 애노테이션, `Adapter.java`
+접미어만 보는 필터, 그리고 개명으로 사라진 패키지를 스캔하던 루트. 추출한 9개에는
+"스캔 대상이 0개면 실패" 단정을 손으로 넣어 뒀지만(`assertFalse(...isEmpty(), "the rule
+examined nothing")`), 그건 규칙마다 기억해서 붙여야 하는 것이다. 바이트코드를 읽으면
+구조적으로 불가능해진다.
+
 ## ArchitectureScanner 의 Violation 은 이제 위반만 담지 않는다
 
 **현재**: `ArchitectureScanner` 의 상수는 `FORBIDDEN_*` 열넷과 `CONTROLLER` 하나다. 앞의 열넷은
